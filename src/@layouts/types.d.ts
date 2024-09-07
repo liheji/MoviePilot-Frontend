@@ -123,6 +123,7 @@ export interface NavLink extends NavLinkProps, Partial<AclProperties> {
 export interface NavMenu extends NavLink {
   header: string
   admin: boolean
+  enable?: boolean
   description?: string
 }
 

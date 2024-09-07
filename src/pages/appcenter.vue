@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { NavMenu } from '@/@layouts/types'
-import { SystemNavMenus } from '@/router/menu'
 import store from '@/store'
 import draggable from 'vuedraggable'
 
@@ -12,7 +11,7 @@ const appOrder = ref<string[]>([])
 
 // 根据分类获取菜单列表
 const getMenuList = () => {
-  return SystemNavMenus.filter((item: NavMenu) => !item.admin || superUser)
+  return store.state.menu.systemMenu.filter((item: NavMenu) => !item.admin || superUser)
 }
 
 // APP列表

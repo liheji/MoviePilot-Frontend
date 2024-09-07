@@ -3,6 +3,7 @@
 import { useToast } from 'vue-toast-notification'
 import { VRow } from 'vuetify/lib/components/index.mjs'
 import api from '@/api'
+import MenuTree from '@/components/tree/MenuTree.vue'
 
 // 选中的媒体服务器
 const selectedMediaServers = ref([])
@@ -228,6 +229,8 @@ async function loadSystemSettings() {
   }
 }
 
+const MenuTreeRef = ref()
+
 // 调用API保存系统设置
 async function saveSystemSetting() {
   try {
@@ -235,6 +238,8 @@ async function saveSystemSetting() {
 
     if (result.success) $toast.success('保存设置成功')
     else $toast.error('保存设置失败！')
+    // 保存菜单
+    MenuTreeRef.value.updateSystemMenu()
   } catch (error) {
     console.log(error)
   }
@@ -277,6 +282,9 @@ onMounted(() => {
                   hint="用于通知跳转，格式：http(s)://domain:port"
                   persistent-hint
                 />
+              </VCol>
+              <VCol cols="12" md="6">
+                <MenuTree ref="MenuTreeRef" />
               </VCol>
             </VRow>
           </VForm>

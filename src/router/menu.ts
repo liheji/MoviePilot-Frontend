@@ -1,5 +1,5 @@
 // 导般菜单
-export const SystemNavMenus = [
+export const MenuTemplate = [
   {
     title: '仪表板',
     icon: 'mdi-home-outline',
@@ -13,6 +13,7 @@ export const SystemNavMenus = [
     to: '/ranking',
     header: '发现',
     admin: false,
+    enable: true,
   },
   {
     title: '资源搜索',
@@ -20,6 +21,7 @@ export const SystemNavMenus = [
     to: '/resource',
     header: '发现',
     admin: false,
+    enable: true,
   },
   {
     title: '电影',
@@ -28,6 +30,7 @@ export const SystemNavMenus = [
     to: '/subscribe/movie',
     header: '订阅',
     admin: false,
+    enable: true,
   },
   {
     title: '电视剧',
@@ -36,6 +39,7 @@ export const SystemNavMenus = [
     to: '/subscribe/tv',
     header: '订阅',
     admin: false,
+    enable: true,
   },
   {
     title: '日历',
@@ -44,6 +48,7 @@ export const SystemNavMenus = [
     to: '/calendar',
     header: '订阅',
     admin: false,
+    enable: true,
   },
   {
     title: '正在下载',
@@ -51,6 +56,7 @@ export const SystemNavMenus = [
     to: '/downloading',
     header: '整理',
     admin: false,
+    enable: true,
   },
   {
     title: '历史记录',
@@ -58,6 +64,7 @@ export const SystemNavMenus = [
     to: '/history',
     header: '整理',
     admin: true,
+    enable: true,
   },
   {
     title: '文件管理',
@@ -65,6 +72,7 @@ export const SystemNavMenus = [
     to: '/filemanager',
     header: '整理',
     admin: true,
+    enable: true,
   },
   {
     title: '插件',

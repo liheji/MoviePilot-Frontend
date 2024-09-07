@@ -9,7 +9,6 @@ import SearchBar from '@/layouts/components/SearchBar.vue'
 import ShortcutBar from '@/layouts/components/ShortcutBar.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import store from '@/store'
-import { SystemNavMenus } from '@/router/menu'
 import { NavMenu } from '@/@layouts/types'
 import { useDisplay } from 'vuetify'
 
@@ -21,9 +20,22 @@ const appMode = computed(() => {
 // 从Vuex Store中获取superuser信息
 const superUser = store.state.auth.superUser
 
+// 从Vuex Store中获取菜单信息
+const systemMenu = ref(store.state.menu.systemMenu)
+
+// 计算属性，获取菜单
+watch(() => store.state.menu.systemMenu, (newValue): void => {
+  systemMenu.value = newValue
+}, { deep: true })
+
+// 根据分类获取菜单列表
+const getHeaderList = () => {
+  return new Set(systemMenu.value.filter((item: NavMenu) => item.enable ?? true).map((item: NavMenu) => item.header))
+}
+
 // 根据分类获取菜单列表
 const getMenuList = (header: string) => {
-  return SystemNavMenus.filter((item: NavMenu) => item.header === header && (!item.admin || superUser))
+  return systemMenu.value.filter((item: NavMenu) => item.enable ?? true).filter((item: NavMenu) => item.header === header && (!item.admin || superUser))
 }
 
 // 返回上一页
@@ -61,36 +73,13 @@ function goBack() {
     </template>
 
     <template #vertical-nav-content>
-      <VerticalNavLink v-for="item in getMenuList('开始')" :item="item" />
-      <!-- 👉 发现 -->
-      <VerticalNavSectionTitle
-        :item="{
-          heading: '发现',
-        }"
-      />
-      <VerticalNavLink v-for="item in getMenuList('发现')" :item="item" />
-      <!-- 👉 订阅 -->
-      <VerticalNavSectionTitle
-        :item="{
-          heading: '订阅',
-        }"
-      />
-      <VerticalNavLink v-for="item in getMenuList('订阅')" :item="item" />
-      <!-- 👉 整理 -->
-      <VerticalNavSectionTitle
-        :item="{
-          heading: '整理',
-        }"
-      />
-      <VerticalNavLink v-for="item in getMenuList('整理')" :item="item" />
-      <!-- 👉 系统 -->
-      <VerticalNavSectionTitle
-        v-if="superUser"
-        :item="{
-          heading: '系统',
-        }"
-      />
-      <VerticalNavLink v-for="item in getMenuList('系统')" :item="item" />
+      <template v-for="(header, index) in getHeaderList()">
+        <VerticalNavSectionTitle
+          v-if="index > 0"
+          :item="{ heading: header}"
+        />
+        <VerticalNavLink v-for="item in getMenuList(header)" :item="item" />
+      </template>
     </template>
 
     <template #after-vertical-nav-items />

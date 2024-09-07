@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import api from '@/api'
 import type { Plugin, Subscribe } from '@/api/types'
-import { SystemNavMenus, UserfulMenus, SettingTabs } from '@/router/menu'
+import { UserfulMenus, SettingTabs } from '@/router/menu'
 import { NavMenu } from '@/@layouts/types'
 import store from '@/store'
 
@@ -50,7 +50,7 @@ function loadRecentSearches() {
 function getMenus(): NavMenu[] {
   let menus: NavMenu[] = []
   // 导航菜单
-  SystemNavMenus.forEach(
+  store.state.menu.systemMenu.forEach(
     item =>
       item &&
       menus.push({
