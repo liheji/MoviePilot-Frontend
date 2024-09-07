@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useDisplay } from 'vuetify'
+import store from '@/store'
+import { NavMenu } from '@layouts/types'
 
 const display = useDisplay()
 const appMode = computed(() => {
@@ -9,18 +11,21 @@ const appMode = computed(() => {
 const route = useRoute()
 
 // 各按钮活动状态
-const activeState = computed(() => {
-  return {
-    home: route.path === '/dashboard',
-    ranking: route.path === '/ranking',
-    movie: route.path === '/subscribe/movie',
-    tv: route.path === '/subscribe/tv',
-    apps: route.path === '/apps',
-  }
-})
+const getMenuList = () => {
+  return store.state.menu.system.filter((item: NavMenu) => item.enable ?? true).slice(0, 4)
+}
+
+const activeIcon: Map<string, string> = new Map([
+  ['mdi-home-outline', 'mdi-home'],
+  ['mdi-star-outline', 'mdi-star'],
+  ['mdi-movie-open-outline', 'mdi-movie-open'],
+  ['mdi-television', 'mdi-television-play'],
+  ['mdi-dots-horizontal', 'mdi-dots-horizontal-circle'],
+])
 </script>
 
 <template>
+  <!--todo do something -->
   <div v-if="appMode" class="w-100" style="block-size: calc(3.5rem + env(safe-area-inset-bottom))">
     <VBottomNavigation
       grow
@@ -29,24 +34,12 @@ const activeState = computed(() => {
       class="footer-nav border-t"
       style="block-size: calc(3.5rem + env(safe-area-inset-bottom))"
     >
-      <VBtn to="/dashboard" :ripple="false">
-        <VIcon v-if="activeState.home" size="28">mdi-home</VIcon>
-        <VIcon v-else size="28">mdi-home-outline</VIcon>
-      </VBtn>
-      <VBtn to="/ranking" :ripple="false">
-        <VIcon v-if="activeState.ranking" size="28">mdi-star</VIcon>
-        <VIcon v-else size="28">mdi-star-outline</VIcon>
-      </VBtn>
-      <VBtn to="/subscribe/movie" :ripple="false">
-        <VIcon v-if="activeState.movie" size="28">mdi-movie-open</VIcon>
-        <VIcon v-else size="28">mdi-movie-open-outline</VIcon>
-      </VBtn>
-      <VBtn to="/subscribe/tv" :ripple="false">
-        <VIcon v-if="activeState.tv" size="28">mdi-television-play</VIcon>
-        <VIcon v-else size="28">mdi-television</VIcon>
+      <VBtn v-for="item in getMenuList()" :to="item.to as string" :ripple="false">
+        <VIcon v-if="route.path==item.to" size="28">{{ activeIcon.get(item.icon as string) || item.icon }}</VIcon>
+        <VIcon v-else size="28">{{ item.icon }}</VIcon>
       </VBtn>
       <VBtn to="/apps" :ripple="false">
-        <VIcon v-if="activeState.apps" size="28">mdi-dots-horizontal-circle</VIcon>
+        <VIcon v-if="route.path=='/apps'" size="28">mdi-dots-horizontal-circle</VIcon>
         <VIcon v-else size="28">mdi-dots-horizontal</VIcon>
       </VBtn>
     </VBottomNavigation>

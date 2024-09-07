@@ -1,20 +1,5 @@
 import type { Module } from 'vuex'
-
-// 定义状态类型
-interface AuthState {
-  token: string | null
-  remember: boolean
-  superUser: boolean
-  userName: string
-  avatar: string
-  originalPath: string | null
-  level: number
-}
-
-// 定义根状态类型
-interface RootState {
-  auth: AuthState
-}
+import { AuthState, RootState } from '@/store/types'
 
 // 导出模块
 const authModule: Module<AuthState, RootState> = {

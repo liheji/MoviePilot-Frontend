@@ -1,13 +1,14 @@
 import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 import authModule from './auth'
-import systemMenuModule from './system-menu'
+import menuModule from './menu'
 
 const store = createStore({
   modules: {
     // 用户认证store
     auth: authModule,
-    menu: systemMenuModule,
+    // 本地菜单store
+    menu: menuModule,
   },
   plugins: [
     createPersistedState({

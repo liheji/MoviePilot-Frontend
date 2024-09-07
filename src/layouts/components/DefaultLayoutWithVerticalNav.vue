@@ -21,12 +21,13 @@ const appMode = computed(() => {
 const superUser = store.state.auth.superUser
 
 // 从Vuex Store中获取菜单信息
-const systemMenu = ref(store.state.menu.systemMenu)
+const systemMenu = ref(store.state.menu.system)
 
 // 计算属性，获取菜单
-watch(() => store.state.menu.systemMenu, (newValue): void => {
-  systemMenu.value = newValue
-}, { deep: true })
+watch(() => store.state.menu.system,
+  (newValue): void => {
+    systemMenu.value = newValue
+  }, { deep: true })
 
 // 根据分类获取菜单列表
 const getHeaderList = () => {

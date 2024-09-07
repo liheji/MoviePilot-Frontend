@@ -50,7 +50,7 @@ function loadRecentSearches() {
 function getMenus(): NavMenu[] {
   let menus: NavMenu[] = []
   // 导航菜单
-  store.state.menu.systemMenu.forEach(
+  store.state.menu.system.forEach(
     item =>
       item &&
       menus.push({
@@ -253,7 +253,7 @@ onMounted(() => {
       <VCardText class="p-0">
         <VList lines="two" v-if="searchWord">
           <!-- 搜索结果 -->
-          <VListSubheader v-if="searchWord"> 媒体 & 资源 </VListSubheader>
+          <VListSubheader v-if="searchWord"> 媒体 & 资源</VListSubheader>
           <VHover>
             <template #default="hover">
               <VListItem
@@ -308,7 +308,7 @@ onMounted(() => {
               </VListItem>
             </template>
           </VHover>
-          <VListSubheader v-if="matchedSubscribeItems.length > 0"> 订阅 </VListSubheader>
+          <VListSubheader v-if="matchedSubscribeItems.length > 0"> 订阅</VListSubheader>
           <VHover
             v-if="matchedSubscribeItems.length > 0"
             v-for="subscribe in matchedSubscribeItems"
@@ -332,7 +332,7 @@ onMounted(() => {
               </VListItem>
             </template>
           </VHover>
-          <VListSubheader v-if="matchedMenuItems.length > 0"> 功能 </VListSubheader>
+          <VListSubheader v-if="matchedMenuItems.length > 0"> 功能</VListSubheader>
           <VHover v-if="matchedMenuItems.length > 0" v-for="menu in matchedMenuItems" :key="menu.title">
             <template #default="hover">
               <VListItem
@@ -345,14 +345,14 @@ onMounted(() => {
                 <VListItemTitle>
                   {{ menu.title }}
                 </VListItemTitle>
-                <VListItemSubtitle v-if="menu.description"> {{ menu.description }} </VListItemSubtitle>
+                <VListItemSubtitle v-if="menu.description"> {{ menu.description }}</VListItemSubtitle>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
                 </template>
               </VListItem>
             </template>
           </VHover>
-          <VListSubheader v-if="matchedPluginItems.length > 0"> 插件 </VListSubheader>
+          <VListSubheader v-if="matchedPluginItems.length > 0"> 插件</VListSubheader>
           <VHover v-if="matchedPluginItems.length > 0" v-for="plugin in matchedPluginItems" :key="plugin.id">
             <template #default="hover">
               <VListItem
@@ -362,8 +362,8 @@ onMounted(() => {
                 v-bind="hover.props"
                 @click="showPlugin(plugin.id ?? '')"
               >
-                <VListItemTitle> {{ plugin.plugin_name }} </VListItemTitle>
-                <VListItemSubtitle> {{ plugin.plugin_desc }} </VListItemSubtitle>
+                <VListItemTitle> {{ plugin.plugin_name }}</VListItemTitle>
+                <VListItemSubtitle> {{ plugin.plugin_desc }}</VListItemSubtitle>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
                 </template>
@@ -427,7 +427,7 @@ onMounted(() => {
                         v-bind="hover.props"
                         @click="showPlugin(plugin.id ?? '')"
                       >
-                        <VListItemTitle> {{ plugin.plugin_name }} </VListItemTitle>
+                        <VListItemTitle> {{ plugin.plugin_name }}</VListItemTitle>
                         <template #append>
                           <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
                         </template>
@@ -436,8 +436,8 @@ onMounted(() => {
                   </VHover>
                 </VList>
               </VCol>
-              <VCol cols="12" md="6"> </VCol>
-              <VCol cols="12" md="6"> </VCol>
+              <VCol cols="12" md="6"></VCol>
+              <VCol cols="12" md="6"></VCol>
             </VRow>
           </VCardText>
         </div>

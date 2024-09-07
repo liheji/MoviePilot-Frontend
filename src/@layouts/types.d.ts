@@ -123,8 +123,9 @@ export interface NavLink extends NavLinkProps, Partial<AclProperties> {
 export interface NavMenu extends NavLink {
   header: string
   admin: boolean
-  enable?: boolean
   description?: string
+  enable?: boolean
+  full_title?: string
 }
 
 // 👉 Vertical nav group
@@ -160,7 +161,7 @@ type Notification = {
   | { img: string; text?: never; icon?: never }
   | { img?: never; text: string; icon?: never }
   | { img?: never; text?: never; icon: string }
-)
+  )
 
 interface ThemeSwitcherTheme {
   name: string

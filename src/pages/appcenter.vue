@@ -11,7 +11,7 @@ const appOrder = ref<string[]>([])
 
 // 根据分类获取菜单列表
 const getMenuList = () => {
-  return store.state.menu.systemMenu.filter((item: NavMenu) => !item.admin || superUser)
+  return store.state.menu.system.filter((item: NavMenu) => item.enable ?? true).filter((item: NavMenu) => !item.admin || superUser)
 }
 
 // APP列表

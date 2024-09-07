@@ -86,9 +86,7 @@ function resetAvatar() {
 // 调用API，加载当前用户数据
 async function loadAccountInfo() {
   try {
-    const user: User = await api.get('user/current')
-    console.log(user)
-    accountInfo.value = user
+    accountInfo.value = await api.get('user/current')
     if (!accountInfo.value.avatar) accountInfo.value.avatar = avatar1
   } catch (error) {
     console.log(error)

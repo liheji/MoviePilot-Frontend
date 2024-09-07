@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { MenuTemplate } from '@/router/menu'
 import store from '@/store'
+import { SystemMenuTemplate } from '@/router/menu'
 
 interface TreeNode {
   title: string
@@ -8,20 +8,21 @@ interface TreeNode {
   children?: TreeNode[]
 }
 
-const openedNodes = ref([])
-const treeSelected = ref([])
-const headerTreeData = ref([])
+const openedNodes = ref<string[]>([])
+const treeSelected = ref<string[]>([])
+const headerTreeData = ref<TreeNode[]>([])
 
 // 从Vuex Store中获取菜单信息
-const systemMenu = ref(store.state.menu.systemMenu)
+const systemMenu = ref(store.state.menu.system)
 
 // 计算属性，获取菜单
-watch(() => store.state.menu.systemMenu,
+watch(() => store.state.menu.system,
   (newValue): void => {
     systemMenu.value = newValue
-  }, { deep: true })
+  }, { deep: true },
+)
 
-const treeOpen = (val) => {
+const treeOpen = (val: any) => {
   const openedValue = openedNodes.value
   while (openedValue.length > 0 && openedValue[0] !== val.id) {
     openedValue.shift()
@@ -36,7 +37,7 @@ function loadTreeData() {
     if ('enable' in item) {
       // 已选中
       if (item.enable) {
-        selectedItems.push(item.to)
+        selectedItems.push(item.to as string)
       }
       // 添加大类节点
       if (!headerMap.has(item.header)) {
@@ -47,10 +48,10 @@ function loadTreeData() {
         })
       }
       // 子类节点
-      const children = headerMap.get(item.header).children
+      const children = headerMap.get(item.header)?.children
       children?.push({
         title: item.title,
-        value: item.to,
+        value: item.to as string,
       })
     }
   })
@@ -65,7 +66,7 @@ onBeforeMount(() => {
 function updateSystemMenu() {
   // 保存系统菜单到本地
   const treeSet = new Set(treeSelected.value)
-  const saveMenu = MenuTemplate.map(
+  const saveMenu = SystemMenuTemplate.map(
     item => {
       if ('enable' in item) {
         item.enable = treeSet.has(item.to)
@@ -73,7 +74,7 @@ function updateSystemMenu() {
       return item
     },
   )
-  store.dispatch('menu/update', { systemMenu: saveMenu })
+  store.dispatch('menu/update', saveMenu)
 }
 
 defineExpose({

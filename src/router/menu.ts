@@ -1,5 +1,5 @@
 // 导般菜单
-export const MenuTemplate = [
+export const SystemMenuTemplate = [
   {
     title: '仪表板',
     icon: 'mdi-home-outline',
