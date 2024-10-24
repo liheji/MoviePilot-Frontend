@@ -134,6 +134,12 @@ export const SettingTabs = [
     description: '下载器（Qbittorrent、Transmission）、媒体服务器（Emby、Jellyfin、Plex）',
   },
   {
+    title: '网络',
+    icon: 'mdi-access-point-network',
+    tab: 'network',
+    description: 'Github、PIP、OCR、DOH',
+  },
+  {
     title: '存储 & 目录',
     icon: 'mdi-folder',
     tab: 'directory',

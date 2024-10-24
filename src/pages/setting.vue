@@ -11,6 +11,7 @@ import AccountSettingService from '@/views/setting/AccountSettingService.vue'
 import AccountSettingSystem from '@/views/setting/AccountSettingSystem.vue'
 import AccountSettingDirectory from '@/views/setting/AccountSettingDirectory.vue'
 import AccountSettingRule from '@/views/setting/AccountSettingRule.vue'
+import AccountSettingNetwork from '@/views/setting/AccountSettingNetwork.vue'
 import { SettingTabs } from '@/router/menu'
 
 const route = useRoute()
@@ -32,7 +33,7 @@ function jumpTab(tab: string) {
         @click="jumpTab(item.tab)"
         selected-class="v-slide-group-item--active v-tab--selected"
       >
-        <div>
+        <div class="flex align-center">
           <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </div>
@@ -45,6 +46,15 @@ function jumpTab(tab: string) {
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSystem />
+          </div>
+        </transition>
+      </VWindowItem>
+
+      <!-- 网络 -->
+      <VWindowItem value="network">
+        <transition name="fade-slide" appear>
+          <div>
+            <AccountSettingNetwork />
           </div>
         </transition>
       </VWindowItem>
