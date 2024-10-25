@@ -21,6 +21,8 @@ export async function copyToClipboard(content: string) {
     const input = document.createElement('textarea')
     input.value = content
     document.body.appendChild(input)
+    // 阻止事件冒泡到其他元素，确保 focusin 事件只在 textarea 元素上处理，不会影响其他元素
+    input.addEventListener('focusin', e => e.stopPropagation())
     input.select()
     document.execCommand('copy')
     document.body.removeChild(input)
