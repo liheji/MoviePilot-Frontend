@@ -1,25 +1,32 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
-import { VRow } from 'vuetify/lib/components/index.mjs'
+import {useToast} from 'vue-toast-notification'
+import {VRow} from 'vuetify/lib/components/index.mjs'
 import api from '@/api'
-import NetworkAdvancedSettingsDialog from '@/components/dialog/NetworkAdvancedSettingsDialog.vue'
 import debounce from 'lodash/debounce'
 
 // 系统设置项
 const SystemSettings = ref({
   DOH_ENABLE: false,
-  DOH_SERVER: '',
-  DOH_DOMAINS: '',
   GITHUB_PROXY: '',
   GITHUB_TOKEN: '',
   PIP_PROXY: '',
+
+  DOH_SERVER: '',
+  DOH_DOMAINS: '',
+  OCR_HOST: '',
+})
+
+// 高级设置项
+const AdvancedSettings = ref({
+  DOH_SERVER: '',
+  DOH_DOMAINS: '',
   OCR_HOST: '',
 })
 
 // 防抖时间
 const debounceTime = 500
 
-// 高级设置卡片开关
+// 高级设置弹窗
 const isAdvanced = ref(false)
 
 // 是否发送请求的总开关
@@ -47,20 +54,22 @@ async function loadSystemSettings() {
       const {
         // 需要查询的变量
         DOH_ENABLE,
-        DOH_SERVER,
-        DOH_DOMAINS,
         GITHUB_PROXY,
         GITHUB_TOKEN,
         PIP_PROXY,
+
+        DOH_SERVER,
+        DOH_DOMAINS,
         OCR_HOST,
       } = result.data
       SystemSettings.value = {
         DOH_ENABLE: DOH_ENABLE || false,
-        DOH_SERVER: DOH_SERVER || null,
-        DOH_DOMAINS: DOH_DOMAINS || null,
         GITHUB_PROXY: GITHUB_PROXY || null,
         GITHUB_TOKEN: GITHUB_TOKEN || null,
         PIP_PROXY: PIP_PROXY || null,
+
+        DOH_SERVER: DOH_SERVER || null,
+        DOH_DOMAINS: DOH_DOMAINS || null,
         OCR_HOST: OCR_HOST || null,
       }
     }
@@ -73,21 +82,13 @@ async function loadSystemSettings() {
 const saveSystemSetting = debounce(async () => {
   try {
     const result: { [key: string]: any } = await api.post('system/env', SystemSettings.value)
-
     if (result.success) {
       $toast.success('保存设置成功')
       await reloadSystem()
-    }
-    else $toast.error('保存设置失败！')
+    } else $toast.error('保存设置失败！')
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
-
-// 保存高级设置
-const saveAdvancedSettings = debounce(async () => {
-  await saveSystemSetting()
-  isAdvanced.value = false
 }, debounceTime)
 
 // 预设部分Github加速站
@@ -95,7 +96,6 @@ const githubMirrorsItems = [
   'https://mirror.ghproxy.com/',  // GitHub Proxy
   'https://ghp.ci/',  // GitHub Proxy 子站
 ]
-
 
 // 预设部分PIP镜像站
 const pipMirrorsItems = [
@@ -110,31 +110,48 @@ const pipMirrorsItems = [
   'https://mirrors.bfsu.edu.cn/pypi/web/simple', // 北京外国语大学
 ]
 
-// 恢复高级设置默认值，直接赋值
-const loadAdvancedSettings = () => {
-  SystemSettings.value = {
-    DOH_ENABLE: SystemSettings.value.DOH_ENABLE,
-    DOH_SERVER: "1.0.0.1,1.1.1.1,9.9.9.9,149.112.112.112",
-    DOH_DOMAINS: "api.themoviedb.org,api.tmdb.org,webservice.fanart.tv,api.github.com,github.com,raw.githubusercontent.com,api.telegram.org",
-    GITHUB_PROXY: SystemSettings.value.GITHUB_PROXY,
-    GITHUB_TOKEN: SystemSettings.value.GITHUB_TOKEN,
-    PIP_PROXY: SystemSettings.value.PIP_PROXY,
-    OCR_HOST: "https://movie-pilot.org",
+// 打开高级设置弹窗
+const openAdvancedSettings = () => {
+  for (const key in SystemSettings.value) {
+    AdvancedSettings.value[key] = SystemSettings.value[key]
+  }
+  isAdvanced.value = true
+}
+
+// 直接关闭高级设置弹窗
+const closeAdvancedSettings = () => {
+  isAdvanced.value = false
+  for (const key in SystemSettings.value) {
+    AdvancedSettings.value[key] = SystemSettings.value[key]
   }
 }
 
+// 保存高级设置
+const saveAdvancedSettings = debounce(async () => {
+  $toast.info('高级设置确定成功，待保存后生效')
+  for (const key in AdvancedSettings.value) {
+    SystemSettings.value[key] = AdvancedSettings.value[key]
+  }
+  isAdvanced.value = false
+}, debounceTime)
+
+// 恢复高级设置默认值，直接赋值
+const loadAdvancedSettings = () => {
+  AdvancedSettings.value = {
+    DOH_SERVER: "1.0.0.1,1.1.1.1,9.9.9.9,149.112.112.112",
+    DOH_DOMAINS: "api.themoviedb.org,api.tmdb.org,webservice.fanart.tv,api.github.com,github.com,raw.githubusercontent.com,api.telegram.org",
+    OCR_HOST: "https://movie-pilot.org",
+  }
+}
 
 // 加载数据
 onMounted(() => {
   loadSystemSettings()
 })
 
-onActivated(async () => {
-  isRequest.value = true
-})
-
-onDeactivated(() => {
-  isRequest.value = false
+// 当isAdvanced变化时，且为true时，重新从SystemSettings赋值到AdvancedSettings
+watch(isAdvanced, (value) => {
+  if (value) openAdvancedSettings()
 })
 </script>
 
@@ -149,7 +166,7 @@ onDeactivated(() => {
         </VCardItem>
         <VCardText>
           <VForm>
-            <VRow >
+            <VRow>
               <VCol cols="12" md="6" class="flex align-center">
                 <div>
                   <VSwitch
@@ -194,7 +211,7 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn mtype="submit" @click="saveSystemSetting"> 保存 </VBtn>
+              <VBtn mtype="submit" @click="saveSystemSetting"> 保存</VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -232,7 +249,8 @@ onDeactivated(() => {
                   persistent-hint
                   clearable
                   active
-                />
+                >
+                </VTextField>
               </VCol>
               <VCol cols="12" md="6">
                 <VCombobox
@@ -252,11 +270,81 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn mtype="submit" @click="saveSystemSetting"> 保存 </VBtn>
+              <VBtn mtype="submit" @click="saveSystemSetting"> 保存</VBtn>
             </div>
           </VForm>
         </VCardText>
       </VCard>
     </VCol>
+
+    <!-- 高级设置弹窗 -->
+    <VDialog v-model="isAdvanced" scrollable max-width="40rem" persistent>
+      <VCard>
+        <VCardItem>
+          <VCardTitle>网络高级设置</VCardTitle>
+          <VCardSubtitle>修改前，请先了解清除这些设置的作用。</VCardSubtitle>
+        </VCardItem>
+        <DialogCloseBtn @click="closeAdvancedSettings"/>
+        <VDivider/>
+        <VCardText>
+          <VForm>
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="AdvancedSettings.OCR_HOST"
+                  label="验证码识别服务器"
+                  hint="用于识别验证码"
+                  persistent-hint
+                  clearable
+                  active
+                />
+              </VCol>
+              <VCol cols="12">
+                <VTextarea
+                  v-model="AdvancedSettings.DOH_SERVER"
+                  label="DOH 服务器"
+                  placeholder="格式：https://dns.google/dns-query,1.1.1.1"
+                  hint="多个服务器使用逗号分隔"
+                  persistent-hint
+                  clearable
+                  active
+                />
+              </VCol>
+              <VCol cols="12">
+                <VTextarea
+                  v-model="AdvancedSettings.DOH_DOMAINS"
+                  label="DOH 域名"
+                  placeholder="格式：example.com,example2.com"
+                  hint="多个域名使用逗号分隔"
+                  persistent-hint
+                  clearable
+                  active
+                />
+              </VCol>
+            </VRow>
+          </VForm>
+        </VCardText>
+        <VCardActions class="pt-3">
+          <VBtn
+            color="info"
+            variant="elevated"
+            prepend-icon="mdi-reload"
+            @click="loadAdvancedSettings"
+            class="px-5"
+          >
+            默认值
+          </VBtn>
+          <VBtn
+            color="primary"
+            variant="elevated"
+            prepend-icon="mdi-content-save"
+            @click="saveAdvancedSettings"
+            class="px-5"
+          >
+            确定
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </VRow>
 </template>
