@@ -1042,6 +1042,8 @@ export interface TransferDirectoryConf {
   download_category_folder?: boolean
   // 监控方式 downloader/monitor，None为不监控
   monitor_type?: string
+  // 监控模式 fast/compatibility
+  monitor_mode?: string
   // 整理方式 move/copy/link/softlink
   transfer_type?: string
   // 文件覆盖模式 always/size/never/latest
@@ -1058,6 +1060,8 @@ export interface TransferDirectoryConf {
   library_type_folder?: boolean
   // 媒体库类别子目录
   library_category_folder?: boolean
+  // 是否发送通知
+  notify?: boolean
 }
 
 // 自定义规则项

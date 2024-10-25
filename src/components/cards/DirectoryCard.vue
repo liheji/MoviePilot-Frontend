@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TransferDirectoryConf } from '@/api/types'
-import { VTextField } from 'vuetify/lib/components/index.mjs'
+import { VDivider, VSpacer, VTextField } from 'vuetify/lib/components/index.mjs'
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import { nextTick } from 'vue'
@@ -26,6 +26,9 @@ const downloadPath = ref<string>('')
 // 媒体库路径
 const libraryPath = ref<string>('')
 
+// 卡版是否折叠状态
+const isCollapsed = ref(true)
+
 // 类型下拉字典
 const typeItems = [
   { title: '全部', value: '' },
@@ -46,6 +49,12 @@ const transferSourceItems = [
   { title: '不自动整理', value: '' },
   { title: '下载器监控', value: 'downloader' },
   { title: '目录监控', value: 'monitor' },
+]
+
+// 监控模式下拉字典
+const MonitorModeItems = [
+  { title: '性能模式', value: 'fast' },
+  { title: '兼容模式', value: 'compatibility' },
 ]
 
 // 整理方式下拉字典
@@ -182,7 +191,7 @@ watch(
         </IconBtn>
       </span>
     </VCardItem>
-    <VCardText>
+    <VCardText v-if="!isCollapsed">
       <VForm>
         <VRow>
           <VCol cols="6">
@@ -236,6 +245,14 @@ watch(
           </VCol>
         </VRow>
         <VRow v-if="$props.directory.monitor_type">
+          <VCol cols="12" v-if="$props.directory.monitor_type == 'monitor'">
+            <VSelect
+              v-model="props.directory.monitor_mode"
+              variant="underlined"
+              :items="MonitorModeItems"
+              label="监控模式"
+            />
+          </VCol>
           <VCol cols="4">
             <VSelect
               v-model="props.directory.library_storage"
@@ -285,8 +302,16 @@ watch(
           <VCol cols="6">
             <VSwitch v-model="props.directory.scraping" label="刮削元数据"></VSwitch>
           </VCol>
+          <VCol cols="6">
+            <VSwitch v-model="props.directory.notify" label="发送通知"></VSwitch>
+          </VCol>
         </VRow>
       </VForm>
     </VCardText>
+    <VCardActions class="text-center py-0">
+      <VSpacer />
+      <VBtn :icon="isCollapsed ? 'mdi-chevron-down' : 'mdi-chevron-up'" @click.stop="isCollapsed = !isCollapsed" />
+      <VSpacer />
+    </VCardActions>
   </VCard>
 </template>

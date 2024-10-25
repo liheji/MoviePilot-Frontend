@@ -123,7 +123,8 @@ export interface NavLink extends NavLinkProps, Partial<AclProperties> {
 export interface NavMenu extends NavLink {
   header: string
   description?: string
-  permission?: string
+  admin?: boolean
+  footer?: boolean
 }
 
 // 👉 Vertical nav group
