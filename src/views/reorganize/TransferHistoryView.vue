@@ -206,7 +206,7 @@ async function remove(item: TransferHistory, deleteSrc: boolean, deleteDest: boo
       data: item,
     })
 
-    if (!result.success) $toast.error(`删除失败: ${result.msg}`)
+    if (!result.success) $toast.error(`删除失败: ${result.message}`)
   } catch (error) {
     console.error(error)
   }
