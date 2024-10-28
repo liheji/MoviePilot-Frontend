@@ -128,7 +128,6 @@ function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
   // 将卡片规则接装为字符串
   const value = JSON.stringify(rules)
 
-  console.log(rules)
   // 复制到剪贴板
   try {
     copyToClipboard(value)
