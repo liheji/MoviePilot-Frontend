@@ -1,17 +1,17 @@
 <!-- eslint-disable sonarjs/no-duplicate-string -->
 <script lang="ts" setup>
-import {useToast} from 'vue-toast-notification'
-import {copyToClipboard} from '@/@core/utils/navigator'
+import { useToast } from 'vue-toast-notification'
+import { copyToClipboard } from '@/@core/utils/navigator'
 import draggable from 'vuedraggable'
-import {VRow} from 'vuetify/lib/components/index.mjs'
+import { VRow } from 'vuetify/lib/components/index.mjs'
 import api from '@/api'
-import {CustomRule, FilterRuleGroup} from '@/api/types'
+import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
 
 // 自定义规则列表
-let customRules = ref<CustomRule[]>([])
+const customRules = ref<CustomRule[]>([])
 
 // 所有规则组列表
 const filterRuleGroups = ref<FilterRuleGroup[]>([])
@@ -36,10 +36,10 @@ const $toast = useToast()
 
 // 种子优先规则下拉框
 const TorrentPriorityItems = [
-  {title: '资源优先级', value: 'torrent'},
-  {title: '站点优先级', value: 'site'},
-  {title: '站点上传量', value: 'upload'},
-  {title: '资源做种数', value: 'seeder'},
+  { title: '资源优先级', value: 'torrent' },
+  { title: '站点优先级', value: 'site' },
+  { title: '站点上传量', value: 'upload' },
+  { title: '资源做种数', value: 'seeder' },
 ]
 
 // 调用API查询自动分类配置
@@ -268,15 +268,15 @@ onMounted(() => {
           </draggable>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" class="me-2" @click="saveCustomRules"> 保存</VBtn>
+          <VBtn type="submit" class="me-2" @click="saveCustomRules"> 保存 </VBtn>
           <VBtn color="success" variant="tonal" @click="addCustomRule">
-            <VIcon icon="mdi-plus"/>
+            <VIcon icon="mdi-plus" />
           </VBtn>
           <VBtn color="success" variant="tonal" @click="importRules('custom')">
-            <VIcon icon="mdi-import"/>
+            <VIcon icon="mdi-import" />
           </VBtn>
           <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
-            <VIcon icon="mdi-share"/>
+            <VIcon icon="mdi-share" />
           </VBtn>
         </VCardText>
       </VCard>
@@ -308,15 +308,15 @@ onMounted(() => {
           </draggable>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups"> 保存</VBtn>
+          <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups"> 保存 </VBtn>
           <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
-            <VIcon icon="mdi-plus"/>
+            <VIcon icon="mdi-plus" />
           </VBtn>
           <VBtn color="success" variant="tonal" @click="importRules('group')">
-            <VIcon icon="mdi-import"/>
+            <VIcon icon="mdi-import" />
           </VBtn>
           <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
-            <VIcon icon="mdi-share"/>
+            <VIcon icon="mdi-share" />
           </VBtn>
         </VCardText>
         <VDialog v-model="importCodeDialog" width="60rem" scrollable>
@@ -349,7 +349,7 @@ onMounted(() => {
           </VForm>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" @click="saveTorrentPriority"> 保存</VBtn>
+          <VBtn type="submit" @click="saveTorrentPriority"> 保存 </VBtn>
         </VCardText>
       </VCard>
     </VCol>
