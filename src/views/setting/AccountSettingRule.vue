@@ -159,6 +159,7 @@ watchEffect(() => {
           exclude: item.exclude,
           publish_time: item.publish_time,
           seeders: item.seeders,
+          size_range: item.size_range,
         }
       })
     } else if (importCodeType.value === 'group') {
