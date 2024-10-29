@@ -270,15 +270,17 @@ onMounted(() => {
         </VCardText>
         <VCardText>
           <VBtn type="submit" class="me-2" @click="saveCustomRules"> 保存 </VBtn>
-          <VBtn color="success" variant="tonal" @click="addCustomRule">
-            <VIcon icon="mdi-plus" />
-          </VBtn>
-          <VBtn color="success" variant="tonal" @click="importRules('custom')">
-            <VIcon icon="mdi-import" />
-          </VBtn>
-          <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
-            <VIcon icon="mdi-share" />
-          </VBtn>
+          <VBtnGroup density="comfortable">
+            <VBtn color="success" variant="tonal" @click="addCustomRule">
+              <VIcon icon="mdi-plus" />
+            </VBtn>
+            <VBtn color="info" variant="tonal" @click="importRules('custom')">
+              <VIcon icon="mdi-import" />
+            </VBtn>
+            <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
+              <VIcon icon="mdi-share" />
+            </VBtn>
+          </VBtnGroup>
         </VCardText>
       </VCard>
     </VCol>
@@ -310,18 +312,20 @@ onMounted(() => {
         </VCardText>
         <VCardText>
           <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups"> 保存 </VBtn>
-          <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
-            <VIcon icon="mdi-plus" />
-          </VBtn>
-          <VBtn color="success" variant="tonal" @click="importRules('group')">
-            <VIcon icon="mdi-import" />
-          </VBtn>
-          <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
-            <VIcon icon="mdi-share" />
-          </VBtn>
+          <VBtnGroup density="comfortable">
+            <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
+              <VIcon icon="mdi-plus" />
+            </VBtn>
+            <VBtn color="info" variant="tonal" @click="importRules('group')">
+              <VIcon icon="mdi-import" />
+            </VBtn>
+            <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
+              <VIcon icon="mdi-share" />
+            </VBtn>
+          </VBtnGroup>
         </VCardText>
         <VDialog v-model="importCodeDialog" width="60rem" scrollable>
-          <ImportCodeDialog v-model="importCodeString" title="导入优先级规则" @close="importCodeDialog = false"/>
+          <ImportCodeDialog v-model="importCodeString" title="导入优先级规则" @close="importCodeDialog = false" />
         </VDialog>
       </VCard>
     </VCol>
