@@ -43,7 +43,7 @@ async function queryFilterRuleGroups() {
 
 // 调用API识别
 async function ruleTest() {
-  if (!ruleTestForm.title) return
+  if (!ruleTestForm.title || !ruleTestForm.rulegroup) return
 
   try {
     ruleTestLoading.value = true
