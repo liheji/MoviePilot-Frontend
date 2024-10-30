@@ -215,6 +215,12 @@ const iconPath: Ref<string> = computed(() => {
   return `./plugin_icon/${props.plugin?.plugin_icon}`
 })
 
+// 插件作者头像路径
+const authorPath: Ref<string> = computed(() => {
+  // 网络图片则使用代理后返回
+  return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(props.plugin?.author_url + '.png')}`
+})
+
 // 重置插件
 async function resetPlugin() {
   const isConfirmed = await createConfirm({
@@ -436,8 +442,8 @@ watch(
       </div>
     </div>
     <VCardText class="flex flex-none align-self-baseline py-3 w-full align-end">
-      <span>
-        <VIcon icon="mdi-github" class="me-1" />
+      <span class="author-info">
+        <VImg :src="authorPath" class="author-avatar" />
         <a :href="props.plugin?.author_url" target="_blank" @click.stop>
           {{ props.plugin?.plugin_author }}
         </a>
@@ -512,5 +518,16 @@ watch(
   background: rgba(29, 39, 59, 48%);
   content: '';
   inset: 0;
+}
+.author-info {
+  display: flex;
+  align-items: center;
+}
+.author-avatar {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 </style>
