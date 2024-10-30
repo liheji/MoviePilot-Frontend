@@ -9,9 +9,9 @@ import AccountSettingSearch from '@/views/setting/AccountSettingSearch.vue'
 import AccountSettingSubscribe from '@/views/setting/AccountSettingSubscribe.vue'
 import AccountSettingService from '@/views/setting/AccountSettingService.vue'
 import AccountSettingSystem from '@/views/setting/AccountSettingSystem.vue'
+import AccountSettingScheduler from '@/views/setting/AccountSettingScheduler.vue'
 import AccountSettingDirectory from '@/views/setting/AccountSettingDirectory.vue'
 import AccountSettingRule from '@/views/setting/AccountSettingRule.vue'
-import AccountSettingNetwork from '@/views/setting/AccountSettingNetwork.vue'
 import { SettingTabs } from '@/router/menu'
 
 const route = useRoute()
@@ -41,7 +41,7 @@ function jumpTab(tab: string) {
     </VTabs>
 
     <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
-      <!-- 连接 -->
+      <!-- 系统 -->
       <VWindowItem value="system">
         <transition name="fade-slide" appear>
           <div>
@@ -50,11 +50,11 @@ function jumpTab(tab: string) {
         </transition>
       </VWindowItem>
 
-      <!-- 网络 -->
-      <VWindowItem value="network">
+      <!-- 连接 -->
+      <VWindowItem value="service">
         <transition name="fade-slide" appear>
           <div>
-            <AccountSettingNetwork />
+            <AccountSettingService />
           </div>
         </transition>
       </VWindowItem>
@@ -103,10 +103,10 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 服务 -->
-      <VWindowItem value="service">
+      <VWindowItem value="scheduler">
         <transition name="fade-slide" appear>
           <div>
-            <AccountSettingService />
+            <AccountSettingScheduler />
           </div>
         </transition>
       </VWindowItem>

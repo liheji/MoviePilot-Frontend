@@ -132,16 +132,16 @@ export const UserfulMenus = [
 // 设定标签页
 export const SettingTabs = [
   {
-    title: '连接',
-    icon: 'mdi-server-network',
+    title: '系统',
+    icon: 'mdi-cog',
     tab: 'system',
-    description: '下载器（Qbittorrent、Transmission）、媒体服务器（Emby、Jellyfin、Plex）',
+    description: '基本设定、网络设定、高级设定',
   },
   {
-    title: '网络',
-    icon: 'mdi-access-point-network',
-    tab: 'network',
-    description: 'Github、PIP、OCR、DOH',
+    title: '连接',
+    icon: 'mdi-server-network',
+    tab: 'service',
+    description: '下载器（Qbittorrent、Transmission）、媒体服务器（Emby、Jellyfin、Plex）',
   },
   {
     title: '存储 & 目录',
@@ -174,9 +174,9 @@ export const SettingTabs = [
     description: '订阅站点、订阅模式、订阅优先级、洗版优先级、默认过滤规则',
   },
   {
-    title: '服务',
+    title: '调度',
     icon: 'mdi-list-box',
-    tab: 'service',
+    tab: 'scheduler',
     description: '定时作业',
   },
   {

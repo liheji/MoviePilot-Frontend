@@ -1,124 +1,356 @@
+<!-- eslint-disable sonarjs/no-duplicate-string -->
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
+import { VRow } from 'vuetify/lib/components/index.mjs'
+import draggable from 'vuedraggable'
 import api from '@/api'
-import type { ScheduleInfo } from '@/api/types'
+import { DownloaderConf, MediaServerConf } from '@/api/types'
+import DownloaderCard from '@/components/cards/DownloaderCard.vue'
+import MediaServerCard from '@/components/cards/MediaServerCard.vue'
+import debounce from 'lodash/debounce'
+
+// 防抖时间
+const debounceTime = 500
+
+// 系统设置项
+const SystemSettings = ref<any>({
+  MEDIASERVER_SYNC_INTERVAL: 6,
+})
+
+// 是否发送请求的总开关
+const isRequest = ref(true)
+
+// 选中的媒体服务器
+const mediaServers = ref<MediaServerConf[]>([])
+
+// 下载器
+const downloaders = ref<DownloaderConf[]>([])
 
 // 提示框
 const $toast = useToast()
 
-// 定时服务列表
-const schedulerList = ref<ScheduleInfo[]>([])
-
-// 定时器
-let refreshTimer: NodeJS.Timeout | null = null
-
-// 调用API加载定时服务列表
-async function loadSchedulerList() {
+// 调用API查询下载器设置
+async function loadDownloaderSetting() {
   try {
-    const res: ScheduleInfo[] = await api.get('dashboard/schedule')
-
-    schedulerList.value = res
-  } catch (e) {
-    console.log(e)
+    const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
+    downloaders.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
   }
 }
 
-// 任务状态颜色
-function getSchedulerColor(status: string) {
-  switch (status) {
-    case '正在运行':
-      return 'success'
-    case '已停止':
-      return 'error'
-    case '等待':
-      return ''
-    default:
-      return ''
-  }
-}
-
-// 执行命令
-function runCommand(id: string) {
+// 重载系统生效配置
+async function reloadSystem() {
   try {
-    // 异步提交
-    api.get('system/runscheduler', {
-      params: {
-        jobid: id,
-      },
-    })
-    $toast.success('定时作业执行请求提交成功！')
-    // 1秒后刷新数据
-    setTimeout(() => {
-      loadSchedulerList()
-    }, 1000)
-  } catch (e) {
-    console.log(e)
+    const result: { [key: string]: any } = await api.get('system/reload')
+    if (result.success) $toast.success('系统配置已生效')
+    else $toast.error('重载系统失败！')
+  } catch (error) {
+    console.log(error)
   }
 }
 
-onMounted(() => {
-  loadSchedulerList()
+// 调用API保存下载器设置
+const saveDownloaderSetting = debounce(async () => {
+  try {
+    // 提取启用的下载器
+    const enabledDownloaders = downloaders.value.filter(item => item.enabled);
+    // 有启动的下载器时
+    if (enabledDownloaders.length > 0) {
+      downloaders.value = handleDefaultDownloaders(enabledDownloaders, downloaders.value);
+    }
+    const result: { [key: string]: any } = await api.post('system/setting/Downloaders', downloaders.value)
+    if (result.success) $toast.success('下载器设置保存成功')
+    else $toast.error('下载器设置保存失败！')
 
-  // 启动定时器
-  refreshTimer = setInterval(() => {
-    loadSchedulerList()
-  }, 5000)
+    await loadDownloaderSetting()
+    await reloadSystem()
+  } catch (error) {
+    console.log(error)
+  }
+}, debounceTime)
+
+// 处理默认下载器状态
+function handleDefaultDownloaders(enabledDownloaders: any[], downloaders: any[]) {
+  const enabledDefaultDownloader = enabledDownloaders.find(item => item.default);
+  if (enabledDownloaders.length > 0 && !enabledDefaultDownloader) {
+    downloaders = downloaders.map(item => {
+      if (item === enabledDownloaders[0]) {
+        $toast.info(`未设置默认下载器，已将【${item.name}】作为默认下载器`);
+        return {...item, default: true };
+      }
+      // 清除其他下载器的默认下载器状态
+      return {...item, default: false };
+    });
+  }
+  return downloaders;
+}
+
+// 调用API查询媒体服务器设置
+async function loadMediaServerSetting() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/MediaServers')
+    mediaServers.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 调用API保存媒体服务器设置
+const saveMediaServerSetting = debounce(async () => {
+  try {
+    const result: { [key: string]: any } = await api.post('system/setting/MediaServers', mediaServers.value)
+    if (result.success) $toast.success('媒体服务器设置保存成功')
+    else $toast.error('媒体服务器设置保存失败！')
+
+    await loadMediaServerSetting()
+    await reloadSystem()
+  } catch (error) {
+    console.log(error)
+  }
+}, debounceTime)
+
+// 加载系统设置
+async function loadSystemSettings() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/env')
+    if (result.success) {
+      const {
+        MEDIASERVER_SYNC_INTERVAL,
+      } = result.data
+      SystemSettings.value = {
+        MEDIASERVER_SYNC_INTERVAL,
+      }
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 调用API保存系统设置
+const saveSystemSetting = debounce(async () => {
+  try {
+    const result: { [key: string]: any } = await api.post('system/env', SystemSettings.value)
+
+    if (result.success) $toast.success('保存设置成功')
+    else $toast.error('保存设置失败！')
+  } catch (error) {
+    console.log(error)
+  }
+}, debounceTime)
+
+// 添加下载器
+function addDownloader(downloader: string) {
+  let name = `下载器${downloaders.value.length + 1}`;
+  while (downloaders.value.some(item => item.name === name)) {
+    name = `下载器${parseInt(name.split('下载器')[1]) + 1}`;
+  }
+  downloaders.value.push({
+    name: name,
+    type: downloader,
+    default: false,
+    enabled: false,
+    config: {},
+  })
+}
+
+// 删除下载器
+function removeDownloader(ele: DownloaderConf) {
+  const index = downloaders.value.indexOf(ele)
+  downloaders.value.splice(index, 1)
+}
+
+// 下载器变化
+function onDownloaderChange(downloader: DownloaderConf) {
+  const index = downloaders.value.findIndex(item => item.name === downloader.name)
+  downloaders.value[index] = downloader
+}
+
+// 添加媒体服务器
+const addMediaServer = debounce( (mediaserver: string) => {
+  let name = `服务器${mediaServers.value.length + 1}`;
+  while (mediaServers.value.some(item => item.name === name)) {
+    name = `服务器${parseInt(name.split('服务器')[1]) + 1}`;
+  }
+  mediaServers.value.push({
+    name: name,
+    type: mediaserver,
+    enabled: false,
+    config: {},
+  })
+}, debounceTime)
+
+// 删除媒体服务器
+function removeMediaServer(ele: MediaServerConf) {
+  const index = mediaServers.value.indexOf(ele)
+  mediaServers.value.splice(index, 1)
+}
+
+// 变更媒体服务器
+function onMediaServerChange(mediaserver: MediaServerConf) {
+  const index = mediaServers.value.findIndex(item => item.name === mediaserver.name)
+  mediaServers.value[index] = mediaserver
+}
+
+// 禁止保存
+const isSystemSettingsSaveDisabled = computed(() => {
+  return SystemSettings.value.MEDIASERVER_SYNC_INTERVAL < 1
 })
 
-// 组件卸载时停止定时器
-onUnmounted(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
+// 加载数据
+onMounted(() => {
+  loadDownloaderSetting()
+  loadMediaServerSetting()
+  loadSystemSettings()
+})
+
+onActivated(async () => {
+  isRequest.value = true
+})
+
+onDeactivated(() => {
+  isRequest.value = false
 })
 </script>
 
 <template>
-  <VCard>
-    <VCardItem>
-      <VCardTitle>定时作业</VCardTitle>
-      <VCardSubtitle>包含系统内置服务以及插件提供的服务，手动执行不会影响作业正常的时间表。</VCardSubtitle>
-    </VCardItem>
-    <VTable class="text-no-wrap">
-      <thead>
-        <tr>
-          <th scope="col">提供者</th>
-          <th scope="col">任务名称</th>
-          <th scope="col">任务状态</th>
-          <th scope="col">下一次执行时间</th>
-          <th scope="col" />
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="scheduler in schedulerList" :key="scheduler.id">
-          <td>
-            {{ scheduler.provider }}
-          </td>
-          <td>
-            {{ scheduler.name }}
-          </td>
-          <td>
-            <VChip :color="getSchedulerColor(scheduler.status)">
-              {{ scheduler.status }}
-            </VChip>
-          </td>
-          <td>
-            {{ scheduler.next_run }}
-          </td>
-          <td>
-            <VBtn size="small" :disabled="scheduler.status === '正在运行'" @click="runCommand(scheduler.id)">
-              <template #prepend>
-                <VIcon>mdi-play</VIcon>
-              </template>
-              执行
-            </VBtn>
-          </td>
-        </tr>
-        <tr v-if="schedulerList.length === 0">
-          <td colspan="4" class="text-center">没有后台服务</td>
-        </tr>
-      </tbody>
-    </VTable>
-  </VCard>
+  <VRow>
+    <VCol cols="12">
+      <VCard>
+        <VCardItem>
+          <VCardTitle>基础设置</VCardTitle>
+          <VCardSubtitle>设置服务器的全局功能。</VCardSubtitle>
+        </VCardItem>
+        <VCardText>
+          <VForm>
+            <VRow>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="SystemSettings.MEDIASERVER_SYNC_INTERVAL"
+                  label="媒体服务器同步间隔"
+                  hint="不宜设置间隔过短的时间，这会导致服务器性能占用增高。"
+                  persistent-hint
+                  clearable
+                  suffix="小时"
+                  type="number"
+                  min="1"
+                  style="width: fit-content"
+                  :rules="[
+                    v => !!v || '必选项，请勿留空',
+                    v => !isNaN(v) || '仅支持输入数字，请勿输入其他字符',
+                    v => v >= 1 || '间隔不能小于1个小时',
+                  ]"
+                />
+              </VCol>
+            </VRow>
+          </VForm>
+        </VCardText>
+        <VCardText>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveSystemSetting" :disabled="isSystemSettingsSaveDisabled"> 保存 </VBtn>
+            </div>
+          </VForm>
+        </VCardText>
+      </VCard>
+    </VCol>
+    <VCol cols="12">
+      <VCard>
+        <VCardItem>
+          <VCardTitle>下载器</VCardTitle>
+          <VCardSubtitle>只有默认下载器才会被默认使用。</VCardSubtitle>
+        </VCardItem>
+        <VCardText>
+          <draggable
+            v-model="downloaders"
+            handle=".cursor-move"
+            item-key="name"
+            tag="div"
+            :component-data="{ 'class': 'grid gap-3 grid-app-card' }"
+          >
+            <template #item="{ element }">
+              <DownloaderCard
+                :downloader="element"
+                :downloaders="downloaders"
+                @close="removeDownloader(element)"
+                @change="onDownloaderChange"
+                :allow-refresh="isRequest"
+              />
+            </template>
+          </draggable>
+        </VCardText>
+        <VCardText>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveDownloaderSetting"> 保存 </VBtn>
+              <VBtn color="success" variant="tonal">
+                <VIcon icon="mdi-plus" />
+                <VMenu activator="parent" close-on-content-click>
+                  <VList>
+                    <VListItem variant="plain" @click="addDownloader('qbittorrent')">
+                      <VListItemTitle>Qbittorrent</VListItemTitle>
+                    </VListItem>
+                    <VListItem variant="plain" @click="addDownloader('transmission')">
+                      <VListItemTitle>Transmission</VListItemTitle>
+                    </VListItem>
+                  </VList>
+                </VMenu>
+              </VBtn>
+            </div>
+          </VForm>
+        </VCardText>
+      </VCard>
+    </VCol>
+  </VRow>
+  <VRow>
+    <VCol cols="12">
+      <VCard>
+        <VCardItem>
+          <VCardTitle>媒体服务器</VCardTitle>
+          <VCardSubtitle>所有启用的媒体服务器都会被使用。</VCardSubtitle>
+        </VCardItem>
+        <VCardText>
+          <draggable
+            v-model="mediaServers"
+            handle=".cursor-move"
+            item-key="name"
+            tag="div"
+            :component-data="{ 'class': 'grid gap-3 grid-app-card' }"
+          >
+            <template #item="{ element }">
+              <MediaServerCard
+                :mediaserver="element"
+                :mediaservers="mediaServers"
+                @close="removeMediaServer(element)"
+                @change="onMediaServerChange"
+              />
+            </template>
+          </draggable>
+        </VCardText>
+        <VCardText>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveMediaServerSetting"> 保存 </VBtn>
+              <VBtn color="success" variant="tonal">
+                <VIcon icon="mdi-plus" />
+                <VMenu activator="parent" close-on-content-click>
+                  <VList>
+                    <VListItem variant="plain" @click="addMediaServer('emby')">
+                      <VListItemTitle>Emby</VListItemTitle>
+                    </VListItem>
+                    <VListItem variant="plain" @click="addMediaServer('jellyfin')">
+                      <VListItemTitle>Jellyfin</VListItemTitle>
+                    </VListItem>
+                    <VListItem variant="plain" @click="addMediaServer('plex')">
+                      <VListItemTitle>Plex</VListItemTitle>
+                    </VListItem>
+                  </VList>
+                </VMenu>
+              </VBtn>
+            </div>
+          </VForm>
+        </VCardText>
+      </VCard>
+    </VCol>
+  </VRow>
 </template>
