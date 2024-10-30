@@ -233,15 +233,15 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="enableIntervalSearch"
-                  label="开启订阅定时搜索"
+                  label="订阅定时搜索"
                   hint="每隔24小时全站搜索，以补全订阅可能漏掉的资源"
                   persistent-hint
                 />
               </VCol>
-               <VCol cols="12" md="6">
+              <VCol cols="12" md="6">
                 <VSwitch
                   v-model="enableDirExistsSearch"
-                  label="开启检查本地媒体库是否存在资源"
+                  label="检查本地媒体库资源"
                   hint="检查存储盘是否存在资源，以避免重复下载"
                   persistent-hint
                 />
