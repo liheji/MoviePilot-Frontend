@@ -61,6 +61,9 @@ const pluginInfoDialog = ref(false)
 // 进度框文本
 const progressText = ref('正在更新插件...')
 
+// 用户头像是否加载完成
+const isAvatarLoaded = ref(false)
+
 // 插件数据页面配置项
 let pluginPageItems = ref([])
 
@@ -218,7 +221,9 @@ const iconPath: Ref<string> = computed(() => {
 // 插件作者头像路径
 const authorPath: Ref<string> = computed(() => {
   // 网络图片则使用代理后返回
-  return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(props.plugin?.author_url + '.png')}`
+  return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(
+    props.plugin?.author_url + '.png',
+  )}`
 })
 
 // 重置插件
@@ -443,7 +448,9 @@ watch(
     </div>
     <VCardText class="flex flex-none align-self-baseline py-3 w-full align-end">
       <span class="author-info">
-        <VImg :src="authorPath" class="author-avatar" />
+        <VImg :src="authorPath" class="author-avatar" @load="isAvatarLoaded = true">
+          <VIcon v-if="!isAvatarLoaded" icon="mdi-github" class="me-1" />
+        </VImg>
         <a :href="props.plugin?.author_url" target="_blank" @click.stop>
           {{ props.plugin?.plugin_author }}
         </a>
@@ -519,15 +526,17 @@ watch(
   content: '';
   inset: 0;
 }
+
 .author-info {
   display: flex;
   align-items: center;
 }
+
 .author-avatar {
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
   border-radius: 50%;
+  block-size: 24px;
+  inline-size: 24px;
+  margin-inline-end: 8px;
   object-fit: cover;
 }
 </style>

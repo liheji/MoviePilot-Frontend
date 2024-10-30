@@ -31,13 +31,9 @@ const isPasswordVisible = ref(false)
 // 错误信息
 const errorMessage = ref('')
 
-// 背景图片
+// 背景图片 URL 和预加载 URL
 const backgroundImageUrl = ref('')
-
-// 所有的背景图片
 const backgroundImages = ref<string[]>([])
-
-// 背景图片加载状态
 const isImageLoaded = ref(false)
 
 // 是否开启双重验证
@@ -54,13 +50,40 @@ async function fetchBackgroundImage() {
   try {
     backgroundImages.value = await api.get('/login/wallpapers')
     if (backgroundImages.value && backgroundImages.value.length > 0) {
-      // 随机打乱排序
       backgroundImages.value.sort(() => Math.random() - 0.5)
       backgroundImageUrl.value = backgroundImages.value[0]
     }
   } catch (e) {
     console.log(e)
   }
+}
+
+// 切换背景图片函数
+function startBackgroundImageRotation() {
+  let currentIndex = 0
+
+  intervalTimer = setInterval(() => {
+    if (backgroundImages.value.length > 1) {
+      // 更新下一张图片索引
+      const nextIndex = (currentIndex + 1) % backgroundImages.value.length
+      const nextImageUrl = backgroundImages.value[nextIndex]
+      // 使用预加载机制确保下一张图片已加载完成
+      const img = new Image()
+      img.src = nextImageUrl
+      img.onload = () => {
+        // 开始淡入过渡
+        isImageLoaded.value = false
+        // 延迟一小段时间触发淡入效果
+        setTimeout(() => {
+          // 更新当前索引并切换背景图片 URL
+          currentIndex = nextIndex
+          backgroundImageUrl.value = nextImageUrl
+          // 切换完成后显示图片
+          isImageLoaded.value = true
+        }, 1000)
+      }
+    }
+  }, 5000)
 }
 
 // 查询是否开启双重验证
@@ -205,14 +228,8 @@ onMounted(async () => {
   } else {
     // 获取背景图片
     await fetchBackgroundImage()
-
-    // 每隔5秒更换一次背景图片
-    intervalTimer = setInterval(() => {
-      if (backgroundImages.value.length > 0) {
-        const index = Math.floor(Math.random() * backgroundImages.value.length)
-        backgroundImageUrl.value = backgroundImages.value[index]
-      }
-    }, 5000)
+    // 开始背景图片定时切换
+    startBackgroundImageRotation()
   }
 })
 
@@ -222,19 +239,21 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <template v-for="image in backgroundImages">
-    <div v-if="backgroundImageUrl == image" class="absolute inset-0">
-      <VImg :src="image" class="w-full h-full" cover position="center top" @load="isImageLoaded = true">
-        <template #placeholder>
-          <VSkeletonLoader v-if="!isImageLoaded" class="object-cover" />
-        </template>
-        <div
-          class="absolute inset-0"
-          style="background-image: linear-gradient(rgba(45, 55, 72, 33%) 0%, rgb(26, 32, 46) 100%)"
-        />
-      </VImg>
-    </div>
-  </template>
+  <!-- 当前背景图片 -->
+  <div class="absolute inset-0 w-full h-full overflow-hidden">
+    <VImg
+      :src="backgroundImageUrl"
+      :class="{ 'opacity-0': !isImageLoaded, 'opacity-100': isImageLoaded }"
+      class="absolute inset-0 transition-opacity duration-1000"
+      cover
+      position="center top"
+    />
+    <div
+      class="absolute inset-0"
+      style="background-image: linear-gradient(rgba(45, 55, 72, 33%) 0%, rgb(26, 32, 46) 100%)"
+    />
+  </div>
+
   <div class="auth-wrapper d-flex align-center justify-center pa-4">
     <VCard
       class="auth-card px-7 py-3 w-full h-full rounded-lg"
