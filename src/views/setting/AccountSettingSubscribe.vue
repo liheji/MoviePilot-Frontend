@@ -123,7 +123,7 @@ async function querySubscribeSetting() {
     if (result5.success) selectedBestVersionRuleGroup.value = result5.data?.value
     // 查询检查本地媒体库是否存在资源开关
     const result6: { [key: string]: any } = await api.get('system/setting/LOCAL_EXISTS_SEARCH')
-    if (result6.success) enableDirExistsSearch.value = result.data?.value
+    if (result6.success) enableDirExistsSearch.value = result6.data?.value
   } catch (error) {
     console.log(error)
   }
