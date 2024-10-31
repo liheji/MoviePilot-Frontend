@@ -159,7 +159,6 @@ const addFilterRuleGroup = debounce(() => {
 }, debounceTime)
 
 // 分享规则
-// function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
 const shareRules = debounce((rules: CustomRule[] | FilterRuleGroup[]) => {
   if (!rules || rules.length === 0) return
 
@@ -369,7 +368,7 @@ onMounted(() => {
           </VForm>
         </VCardText>
         <VDialog v-model="importCodeDialog" width="60rem" scrollable>
-          <ImportCodeDialog v-model="importCodeString" title="导入优先级规则" @close="importCodeDialog = false" />
+          <ImportCodeDialog v-model="importCodeString" title="导入规则" @close="importCodeDialog = false" />
         </VDialog>
       </VCard>
     </VCol>
