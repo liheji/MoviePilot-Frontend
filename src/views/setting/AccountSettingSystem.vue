@@ -18,7 +18,7 @@ const SystemSettings = ref<any>({
     WALLPAPER: 'tmdb',
     PLUGIN_MARKET: '',
   },
-  // 高级系统设置 
+  // 高级系统设置
   Advanced: {
     DEV: false,
     DEBUG: false,
@@ -94,7 +94,6 @@ async function loadSystemSettings() {
 
 // 调用API保存设置
 async function saveSystemSetting(value: { [key: string]: any }) {
-  console.log(`正在保存设置：${JSON.stringify(value)}`)
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
 
@@ -134,7 +133,6 @@ function saveAdvancedSettings(Settings: any, key: string) {
     }
   }
   $toast.info('高级设置已更改，待保存后生效')
-  console.log(`保存后的SystemSettings：${JSON.stringify(SystemSettings.value[key])}`)
 }
 
 // 快捷复制到剪贴板
