@@ -4,9 +4,13 @@ import api from '@/api'
 import draggable from 'vuedraggable'
 import type { NotificationConf, NotificationSwitchConf } from '@/api/types'
 import NotificationChannelCard from '@/components/cards/NotificationChannelCard.vue'
+import debounce from 'lodash/debounce'
 
 // 所有消息渠道
 const notifications = ref<NotificationConf[]>([])
+
+// 防抖时间
+const debounceTime = 500
 
 // 提示框
 const $toast = useToast()
@@ -58,8 +62,8 @@ async function reloadSystem() {
   }
 }
 
-// 添加媒体服务器
-function addNotification(notification: string) {
+// 添加通知渠道
+const addNotification = debounce((notification: string) => {
   let name = `通知${notifications.value.length + 1}`;
   while (notifications.value.some(item => item.name === name)) {
     name = `通知${parseInt(name.split('通知')[1]) + 1}`;
@@ -70,15 +74,15 @@ function addNotification(notification: string) {
     enabled: false,
     config: {},
   })
-}
+}, debounceTime)
 
-// 移除媒体服务器
+// 移除通知渠道
 function removeNotification(notification: NotificationConf) {
   const index = notifications.value.indexOf(notification)
   if (index > -1) notifications.value.splice(index, 1)
 }
 
-// 调用API查询通知设置
+// 调用API查询通知渠道设置
 async function loadNotificationSetting() {
   try {
     const result: { [key: string]: any } = await api.get('system/setting/Notifications')
@@ -89,7 +93,7 @@ async function loadNotificationSetting() {
 }
 
 // 调用API保存通知设置
-async function saveNotificationSetting() {
+const saveNotificationSetting = debounce(async () => {
   try {
     const result: { [key: string]: any } = await api.post('system/setting/Notifications', notifications.value)
     if (result.success) {
@@ -99,6 +103,12 @@ async function saveNotificationSetting() {
   } catch (error) {
     console.log(error)
   }
+}, debounceTime)
+
+// 通知渠道设置变化时赋值
+function changNotificationSetting(notification: NotificationConf, name: string) {
+  const index = notifications.value.findIndex(item => item.name === name)
+  if (index !== -1) notifications.value[index] = notification
 }
 
 // 加载消息类型开关
@@ -112,7 +122,7 @@ async function loadNotificationSwitchs() {
 }
 
 // 保存消息类型开关
-async function saveNotificationSwitchs() {
+const saveNotificationSwitchs = debounce(async () => {
   try {
     const result: { [key: string]: any } = await api.post(
       'system/setting/NotificationSwitchs',
@@ -123,7 +133,7 @@ async function saveNotificationSwitchs() {
   } catch (error) {
     console.log(error)
   }
-}
+}, debounceTime)
 
 // 加载数据
 onMounted(() => {
@@ -152,6 +162,7 @@ onMounted(() => {
               <NotificationChannelCard
                 :notification="element"
                 :notifications="notifications"
+                @change="changNotificationSetting"
                 @close="removeNotification(element)"
               />
             </template>
@@ -161,7 +172,7 @@ onMounted(() => {
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
               <VBtn mtype="submit" @click="saveNotificationSetting"> 保存 </VBtn>
-              <VBtn color="success" variant="tonal" @click="">
+              <VBtn color="success" variant="tonal">
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
@@ -225,7 +236,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn mtype="submit" @click="saveNotificationSwitchs"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveNotificationSwitchs"> 保存 </VBtn>
             </div>
           </VForm>
         </VCardText>
