@@ -9,6 +9,10 @@ import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
+import debounce from 'lodash/debounce'
+
+// 防抖时间
+const debounceTime = 500
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
@@ -52,7 +56,29 @@ async function loadMediaCategories() {
 }
 
 // 保存自定义规则
-async function saveCustomRules() {
+const saveCustomRules = debounce(async () => {
+  // 检查是否存在空id规则
+  if (customRules.value.some(item => !item.id)) {
+    $toast.error('存在空ID的规则！无法保存，请修改！')
+    return
+  }
+  // 检查是否存在空的规则名称
+  if (customRules.value.some(item => !item.name)) {
+    $toast.error('存在空名字的规则！无法保存，请修改！')
+    return
+  }
+  // 检查是否存在重名的规则ID
+  const ids = customRules.value.map(item => item.id)
+  if (new Set(ids).size !== ids.length) {
+    $toast.error('存在重复规则ID！无法保存，请修改！')
+    return
+  }
+  // 检查是否存在重名规
+  const names = customRules.value.map(item => item.name)
+  if (new Set(names).size !== names.length) {
+    $toast.error('存在重复规则名称！无法保存，请修改！')
+    return
+  }
   try {
     const result: { [key: string]: any } = await api.post('system/setting/CustomFilterRules', customRules.value)
     if (result.success) $toast.success('自定义规则保存成功')
@@ -60,10 +86,10 @@ async function saveCustomRules() {
   } catch (error) {
     console.log(error)
   }
-}
+}, debounceTime)
 
 // 添加自定义规则
-function addCustomRule() {
+const addCustomRule = debounce(async () => {
   let id = `RULE${customRules.value.length + 1}`
   while (customRules.value.some(item => item.id === id)) {
     id = `RULE${parseInt(id.split('RULE')[1]) + 1}`
@@ -78,7 +104,7 @@ function addCustomRule() {
     include: '',
     exclude: '',
   })
-}
+}, debounceTime)
 
 // 移除自定义规则
 function removeCustomRule(rule: CustomRule) {
@@ -97,7 +123,18 @@ async function queryFilterRuleGroups() {
 }
 
 // 保存规则组
-async function saveFilterRuleGroups() {
+const saveFilterRuleGroups = debounce(async () => {
+  // 检查是否存在空的规则组名称
+  if (filterRuleGroups.value.some(item => !item.name)) {
+    $toast.error('存在空名字的规则组！无法保存，请修改！')
+    return
+  }
+  // 检查是否存在重名规则组
+  const names = filterRuleGroups.value.map(item => item.name)
+  if (new Set(names).size !== names.length) {
+    $toast.error('存在重复规则组名称！无法保存，请修改！')
+    return
+  }
   try {
     const result: { [key: string]: any } = await api.post('system/setting/UserFilterRuleGroups', filterRuleGroups.value)
     if (result.success) $toast.success('优先级规则组保存成功')
@@ -105,10 +142,10 @@ async function saveFilterRuleGroups() {
   } catch (error) {
     console.log(error)
   }
-}
+}, debounceTime)
 
 // 添加规则组
-function addFilterRuleGroup() {
+const addFilterRuleGroup = debounce(() => {
   let name = `规则组${filterRuleGroups.value.length + 1}`
   while (filterRuleGroups.value.some(item => item.name === name)) {
     name = `规则组${parseInt(name.split('规则组')[1]) + 1}`
@@ -119,10 +156,11 @@ function addFilterRuleGroup() {
     media_type: '',
     category: '',
   })
-}
+}, debounceTime)
 
 // 分享规则
-function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
+// function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
+const shareRules = debounce((rules: CustomRule[] | FilterRuleGroup[]) => {
   if (!rules || rules.length === 0) return
 
   // 将卡片规则接装为字符串
@@ -135,7 +173,7 @@ function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
   } catch (error) {
     $toast.error('优先级规则复制失败！')
   }
-}
+}, debounceTime)
 
 // 导入规则
 async function importRules(ruleType: string) {
@@ -179,8 +217,8 @@ watchEffect(() => {
 })
 
 // 规则变化时赋值
-function onRuleChange(rule: CustomRule) {
-  const index = customRules.value.findIndex(item => item.id === rule.id)
+function onRuleChange(rule: CustomRule, id: string) {
+  const index = customRules.value.findIndex(item => item.id === id)
   if (index !== -1) customRules.value[index] = rule
 }
 
@@ -191,8 +229,8 @@ function removeFilterRuleGroup(rule: FilterRuleGroup) {
 }
 
 // 规则组变化时赋值
-function changeRuleGroup(group: FilterRuleGroup) {
-  const index = filterRuleGroups.value.findIndex(item => item.name === group.name)
+function changeRuleGroup(group: FilterRuleGroup, name: string) {
+  const index = filterRuleGroups.value.findIndex(item => item.name === name)
   if (index !== -1) filterRuleGroups.value[index] = group
 }
 
@@ -218,20 +256,18 @@ async function queryCustomRules() {
 }
 
 // 保存种子优先规则
-async function saveTorrentPriority() {
+const saveTorrentPriority = debounce(async () => {
   try {
-    // 用户名密码
     const result: { [key: string]: any } = await api.post(
       'system/setting/TorrentsPriority',
       selectedTorrentPriority.value,
     )
-
     if (result.success) $toast.success('优先规则保存成功')
     else $toast.error('优先规则保存失败！')
   } catch (error) {
     console.log(error)
   }
-}
+}, debounceTime)
 
 // 加载数据
 onMounted(() => {

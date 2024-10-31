@@ -6,6 +6,7 @@ import FilterRuleCard from '@/components/cards/FilterRuleCard.vue'
 import { useToast } from 'vue-toast-notification'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
 import filter_group_svg from '@images/svg/filter-group.svg'
+import { cloneDeep } from 'lodash'
 
 // 输入参数
 const props = defineProps({
@@ -53,9 +54,6 @@ const groupInfo = ref<FilterRuleGroup>({
   category: props.group?.category,
 })
 
-// 规则组名称
-const groupName = ref('')
-
 // 媒体类型字典
 const mediaTypeItems = [
   { title: '通用', value: '' },
@@ -88,15 +86,12 @@ function updateFilterCardValue(pri: string, rules: string[]) {
 
 // 移除卡片
 function filterCardClose(pri: string) {
-  // 将pri对应的卡片从列表中删除，并更新剩余卡片的序号
-  const updatedCards = filterRuleCards.value
+  filterRuleCards.value = filterRuleCards.value
     .filter(card => card.pri !== pri)
     .map((card, index) => {
       card.pri = (index + 1).toString()
       return card
     })
-  // 更新 filterRuleCards.value
-  filterRuleCards.value = updatedCards
 }
 
 // 分享规则
@@ -163,8 +158,8 @@ function dragOrderEnd() {
 
 // 打开详情弹窗
 function opengroupInfoDialog() {
-  groupInfo.value = props.group
-  groupName.value = props.group.name
+  // 深复制
+  groupInfo.value = cloneDeep(props.group)
   if (props.group.rule_string) {
     filterRuleCards.value = props.group.rule_string.split('>').map((group: string, index: number) => {
       return {
@@ -177,26 +172,25 @@ function opengroupInfoDialog() {
 }
 
 // 保存详情数据
-function savegroupInfo() {
+function saveGroupInfo() {
   // 为空
-  if (!groupName.value) {
+  if (!groupInfo.value.name) {
     $toast.error('规则组名称不能为空')
     return
   }
   // 重名判断
-  if (props.groups.some(item => item.name === groupName.value && item !== props.group)) {
-    $toast.error(`规则组名称【${groupName.value}】已存在，请替换`)
+  if (props.groups.some(item => item.name === groupInfo.value.name && item !== props.group)) {
+    $toast.error(`规则组名称【${groupInfo.value.name}】已存在，请替换`)
     return
   }
   // 保存
   groupInfoDialog.value = false
-  groupInfo.value.name = groupName.value
   // 更新到 groupInfo的rule_string
   groupInfo.value.rule_string = filterRuleCards.value
     .filter(card => card.rules.length > 0)
     .map(card => card.rules.join('&'))
     .join('>')
-  emit('change', groupInfo.value)
+  emit('change', groupInfo.value, props.group.name)
   emit('done')
 }
 
@@ -226,7 +220,7 @@ function onClose() {
         <VImg :src="filter_group_svg" cover class="mt-10" max-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog v-model="groupInfoDialog" scrollable max-width="80rem" persistent >
+    <VDialog v-model="groupInfoDialog" scrollable max-width="80rem" persistent>
       <VCard :title="`${props.group.name} - 配置`" class="rounded-t">
         <DialogCloseBtn v-model="groupInfoDialog" />
         <VDivider />
@@ -234,7 +228,7 @@ function onClose() {
           <VRow>
             <VCol cols="12" md="6">
               <VTextField
-                v-model="groupName"
+                v-model="groupInfo.name"
                 label="规则组名称"
                 placeholder="必填；不可与其他规则组重名"
                 hint="自定义规则组名称"
@@ -297,7 +291,7 @@ function onClose() {
             <VIcon icon="mdi-share" />
           </VBtn>
           <VSpacer />
-          <VBtn @click="savegroupInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5"> 确定 </VBtn>
+          <VBtn @click="saveGroupInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5"> 确定 </VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
