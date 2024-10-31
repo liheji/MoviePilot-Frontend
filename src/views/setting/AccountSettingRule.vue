@@ -305,18 +305,22 @@ onMounted(() => {
           </draggable>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" class="me-2" @click="saveCustomRules"> 保存 </VBtn>
-          <VBtnGroup density="comfortable">
-            <VBtn color="success" variant="tonal" @click="addCustomRule">
-              <VIcon icon="mdi-plus" />
-            </VBtn>
-            <VBtn color="info" variant="tonal" @click="importRules('custom')">
-              <VIcon icon="mdi-import" />
-            </VBtn>
-            <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
-              <VIcon icon="mdi-share" />
-            </VBtn>
-          </VBtnGroup>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" class="me-2" @click="saveCustomRules"> 保存 </VBtn>
+              <VBtnGroup density="comfortable">
+                <VBtn color="success" variant="tonal" @click="addCustomRule">
+                  <VIcon icon="mdi-plus" />
+                </VBtn>
+                <VBtn color="info" variant="tonal" @click="importRules('custom')">
+                  <VIcon icon="mdi-import" />
+                </VBtn>
+                <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
+                  <VIcon icon="mdi-share" />
+                </VBtn>
+              </VBtnGroup>
+            </div>
+          </VForm>
         </VCardText>
       </VCard>
     </VCol>
@@ -347,18 +351,22 @@ onMounted(() => {
           </draggable>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups"> 保存 </VBtn>
-          <VBtnGroup density="comfortable">
-            <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
-              <VIcon icon="mdi-plus" />
-            </VBtn>
-            <VBtn color="info" variant="tonal" @click="importRules('group')">
-              <VIcon icon="mdi-import" />
-            </VBtn>
-            <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
-              <VIcon icon="mdi-share" />
-            </VBtn>
-          </VBtnGroup>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups"> 保存 </VBtn>
+              <VBtnGroup density="comfortable">
+                <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
+                  <VIcon icon="mdi-plus" />
+                </VBtn>
+                <VBtn color="info" variant="tonal" @click="importRules('group')">
+                  <VIcon icon="mdi-import" />
+                </VBtn>
+                <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
+                  <VIcon icon="mdi-share" />
+                </VBtn>
+              </VBtnGroup>
+            </div>
+          </VForm>
         </VCardText>
         <VDialog v-model="importCodeDialog" width="60rem" scrollable>
           <ImportCodeDialog v-model="importCodeString" title="导入优先级规则" @close="importCodeDialog = false" />
@@ -390,7 +398,11 @@ onMounted(() => {
           </VForm>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" @click="saveTorrentPriority"> 保存 </VBtn>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveTorrentPriority"> 保存 </VBtn>
+            </div>
+          </VForm>
         </VCardText>
       </VCard>
     </VCol>

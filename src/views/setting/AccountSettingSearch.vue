@@ -171,7 +171,11 @@ onMounted(() => {
           </VRow>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" @click="saveSearchSetting"> 保存 </VBtn>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveSearchSetting"> 保存 </VBtn>
+            </div>
+          </VForm>
         </VCardText>
       </VCard>
     </VCol>
@@ -196,7 +200,11 @@ onMounted(() => {
           </VChipGroup>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" @click="saveSelectedSites"> 保存 </VBtn>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveSelectedSites"> 保存 </VBtn>
+            </div>
+          </VForm>
         </VCardText>
       </VCard>
     </VCol>

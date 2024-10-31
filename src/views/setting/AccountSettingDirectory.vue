@@ -164,7 +164,11 @@ onMounted(() => {
           </draggable>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" class="me-2" @click="saveStorages"> 保存 </VBtn>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" class="me-2" @click="saveStorages"> 保存 </VBtn>
+            </div>
+          </VForm>
         </VCardText>
       </VCard>
     </VCol>
@@ -194,10 +198,14 @@ onMounted(() => {
           </draggable>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" class="me-2" @click="saveDirectories"> 保存 </VBtn>
-          <VBtn color="success" variant="tonal" @click="addDirectory">
-            <VIcon icon="mdi-plus" />
-          </VBtn>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveDirectories"> 保存 </VBtn>
+              <VBtn color="success" variant="tonal" @click="addDirectory">
+                <VIcon icon="mdi-plus" />
+              </VBtn>
+            </div>
+          </VForm>
         </VCardText>
       </VCard>
     </VCol>
