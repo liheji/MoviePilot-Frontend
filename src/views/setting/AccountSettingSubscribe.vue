@@ -258,6 +258,8 @@ onMounted(() => {
         </VCardText>
       </VCard>
     </VCol>
+  </VRow>
+  <VRow>
     <VCol cols="12">
       <VCard>
         <VCardItem>

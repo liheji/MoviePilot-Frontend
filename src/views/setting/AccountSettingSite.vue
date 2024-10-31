@@ -205,7 +205,8 @@ onMounted(() => {
         </VCardText>
       </VCard>
     </VCol>
-
+  </VRow>
+  <VRow>
     <VCol cols="12">
       <VCard title="站点数据刷新">
         <VCardText>
@@ -232,7 +233,8 @@ onMounted(() => {
         </VCardText>
       </VCard>
     </VCol>
-
+  </VRow>
+  <VRow>
     <VCol cols="12">
       <VCard title="站点重置">
         <VCardText>
