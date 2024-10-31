@@ -2,6 +2,10 @@
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { FilterRuleGroup, Site } from '@/api/types'
+import debounce from 'lodash/debounce'
+
+// 防抖时间
+const debounceTime = 500
 
 // 提示框
 const $toast = useToast()
@@ -79,7 +83,7 @@ async function querySelectedSites() {
 }
 
 // 保存用户选中的站点
-async function saveSelectedSites() {
+const saveSelectedSites = debounce(async () => {
   try {
     // 用户名密码
     const result: { [key: string]: any } = await api.post('system/setting/IndexerSites', selectedSites.value)
@@ -89,7 +93,7 @@ async function saveSelectedSites() {
   } catch (error) {
     console.log(error)
   }
-}
+}, debounceTime)
 
 // 调用API查询下载器设置
 async function loadSearchSetting() {
@@ -104,7 +108,7 @@ async function loadSearchSetting() {
 }
 
 // 调用API保存设置
-async function saveSearchSetting() {
+const saveSearchSetting = debounce(async () => {
   try {
     const result1: { [key: string]: any } = await api.post(
       'system/setting/SEARCH_SOURCE',
@@ -124,7 +128,7 @@ async function saveSearchSetting() {
   } catch (error) {
     console.log(error)
   }
-}
+}, debounceTime)
 
 onMounted(() => {
   querySites()
