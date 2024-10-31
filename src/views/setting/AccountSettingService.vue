@@ -155,15 +155,15 @@ function addDownloader(downloader: string) {
 }
 
 // 删除下载器
-function removeDownloader(ele: DownloaderConf) {
+const removeDownloader = debounce((ele: DownloaderConf) => {
   const index = downloaders.value.indexOf(ele)
   downloaders.value.splice(index, 1)
-}
+}, debounceTime)
 
 // 下载器变化
-function onDownloaderChange(downloader: DownloaderConf) {
-  const index = downloaders.value.findIndex(item => item.name === downloader.name)
-  downloaders.value[index] = downloader
+function onDownloaderChange(downloader: DownloaderConf, name: string) {
+  const index = downloaders.value.findIndex(item => item.name === name)
+  if (index !== -1) downloaders.value[index] = downloader
 }
 
 // 添加媒体服务器
@@ -181,15 +181,15 @@ const addMediaServer = debounce( (mediaserver: string) => {
 }, debounceTime)
 
 // 删除媒体服务器
-function removeMediaServer(ele: MediaServerConf) {
+const removeMediaServer = debounce((ele: MediaServerConf) => {
   const index = mediaServers.value.indexOf(ele)
-  mediaServers.value.splice(index, 1)
-}
+  if (index !== -1) mediaServers.value.splice(index, 1)
+}, debounceTime)
 
 // 变更媒体服务器
-function onMediaServerChange(mediaserver: MediaServerConf) {
-  const index = mediaServers.value.findIndex(item => item.name === mediaserver.name)
-  mediaServers.value[index] = mediaserver
+function onMediaServerChange(mediaserver: MediaServerConf, name: string) {
+  const index = mediaServers.value.findIndex(item => item.name === name)
+  if (index !== -1) mediaServers.value[index] = mediaserver
 }
 
 // 禁止保存
