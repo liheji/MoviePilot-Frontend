@@ -182,7 +182,7 @@ onMounted(() => {
             </span>
           </div>
         </div>
-        <VImg :src="getIcon" cover class="mt-5 me-3" max-width="3rem" min-width="3rem" />
+        <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" min-width="3rem" />
       </VCardText>
     </VCard>
     <VDialog v-model="mediaServerInfoDialog" scrollable max-width="40rem" persistent>

@@ -168,7 +168,7 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="h-20">
-          <VImg :src="getIcon" cover class="mt-7" max-width="3rem" min-width="3rem" />
+          <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" min-width="3rem" />
         </div>
       </VCardText>
     </VCard>

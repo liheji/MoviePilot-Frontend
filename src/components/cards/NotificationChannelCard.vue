@@ -129,7 +129,7 @@ function onClose() {
           </div>
           <div class="text-body-1 mb-3">{{ notificationTypeNames[notification.type] }}</div>
         </div>
-        <VImg :src="getIcon" cover class="mt-7 me-7" max-width="3rem" />
+        <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" />
       </VCardText>
     </VCard>
     <VDialog v-model="notificationInfoDialog" scrollable max-width="40rem" persistent>
