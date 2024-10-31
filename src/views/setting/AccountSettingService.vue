@@ -192,11 +192,6 @@ function onMediaServerChange(mediaserver: MediaServerConf, name: string) {
   if (index !== -1) mediaServers.value[index] = mediaserver
 }
 
-// 禁止保存
-const isSystemSettingsSaveDisabled = computed(() => {
-  return SystemSettings.value.MEDIASERVER_SYNC_INTERVAL < 1
-})
-
 // 加载数据
 onMounted(() => {
   loadDownloaderSetting()
@@ -248,7 +243,7 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSystemSetting" :disabled="isSystemSettingsSaveDisabled"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveSystemSetting"> 保存 </VBtn>
             </div>
           </VForm>
         </VCardText>
