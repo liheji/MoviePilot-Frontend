@@ -28,7 +28,7 @@ function saveAdvancedSettings() {
       <VDivider />
       <VCardText>
         <VRow>
-          <VCol cols="12" md="3">
+          <VCol cols="12" md="4">
             <VSwitch
               v-model="AdvancedSettings.DEV"
               label="DEV模式"
@@ -36,7 +36,7 @@ function saveAdvancedSettings() {
               persistent-hint
             />
           </VCol>
-          <VCol cols="12" md="3">
+          <VCol cols="12" md="4">
             <VSwitch
               v-model="AdvancedSettings.DEBUG"
               label="DEBUG日志"
@@ -44,7 +44,7 @@ function saveAdvancedSettings() {
               persistent-hint
             />
           </VCol>
-          <VCol cols="12" md="3">
+          <VCol cols="12" md="4">
             <VSwitch
               v-model="AdvancedSettings.PLUGIN_AUTO_RELOAD"
               label="插件热加载"
