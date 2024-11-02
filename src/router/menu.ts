@@ -168,6 +168,12 @@ export const SettingTabs = [
     description: '媒体数据源（TheMovieDb、豆瓣、Bangumi）、搜索站点、搜索优先级、默认过滤规则',
   },
   {
+    title: '整理',
+    icon: 'mdi-folder-multiple-outline',
+    tab: 'transfer',
+    description: '转移重命名、刮削来源',
+  },
+  {
     title: '订阅',
     icon: 'mdi-rss',
     tab: 'subscribe',
