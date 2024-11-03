@@ -82,10 +82,24 @@ function changeAvatar(file: Event) {
   const fileReader = new FileReader()
   const { files } = file.target as HTMLInputElement
   if (files && files.length > 0) {
-    fileReader.readAsDataURL(files[0])
+    const selectedFile = files[0]
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']
+    const maxSize = 800 * 1024
+    // 检查文件是否为图片
+    if (!allowedTypes.includes(selectedFile.type)) {
+      $toast.error('上传的文件不符合要求，请重新选择头像');
+      return;
+    }
+    // 检查文件大小
+    if (selectedFile.size > maxSize) {
+      $toast.error('文件大小不得大于800KB')
+      return
+    }
+    fileReader.readAsDataURL(selectedFile)
     fileReader.onload = () => {
       if (typeof fileReader.result === 'string') {
         currentAvatar.value = fileReader.result
+        $toast.success('新头像上传成功，待保存后生效!')
       }
     }
   }
@@ -289,7 +303,7 @@ onMounted(() => {
             </VBtn>
           </div>
 
-          <p class="text-body-1 mb-0">允许 JPG、PNG、GIF 格式， 最大尺寸 800K。</p>
+          <p class="text-body-1 mb-0">允许 JPG、PNG、GIF 格式， 最大尺寸 800KB。</p>
         </form>
       </VCardText>
       <VCardText>
