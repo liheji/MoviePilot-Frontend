@@ -4,13 +4,9 @@ import api from '@/api'
 import draggable from 'vuedraggable'
 import type { NotificationConf, NotificationSwitchConf } from '@/api/types'
 import NotificationChannelCard from '@/components/cards/NotificationChannelCard.vue'
-import debounce from 'lodash/debounce'
 
 // 所有消息渠道
 const notifications = ref<NotificationConf[]>([])
-
-// 防抖时间
-const debounceTime = 500
 
 // 提示框
 const $toast = useToast()
@@ -63,10 +59,10 @@ async function reloadSystem() {
 }
 
 // 添加通知渠道
-const addNotification = debounce((notification: string) => {
-  let name = `通知${notifications.value.length + 1}`;
+function addNotification(notification: string) {
+  let name = `通知${notifications.value.length + 1}`
   while (notifications.value.some(item => item.name === name)) {
-    name = `通知${parseInt(name.split('通知')[1]) + 1}`;
+    name = `通知${parseInt(name.split('通知')[1]) + 1}`
   }
   notifications.value.push({
     name: name,
@@ -74,7 +70,7 @@ const addNotification = debounce((notification: string) => {
     enabled: false,
     config: {},
   })
-}, debounceTime)
+}
 
 // 移除通知渠道
 function removeNotification(notification: NotificationConf) {
@@ -93,7 +89,7 @@ async function loadNotificationSetting() {
 }
 
 // 调用API保存通知设置
-const saveNotificationSetting = debounce(async () => {
+async function saveNotificationSetting() {
   try {
     const result: { [key: string]: any } = await api.post('system/setting/Notifications', notifications.value)
     if (result.success) {
@@ -103,7 +99,7 @@ const saveNotificationSetting = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 通知渠道设置变化时赋值
 function changNotificationSetting(notification: NotificationConf, name: string) {
@@ -122,7 +118,7 @@ async function loadNotificationSwitchs() {
 }
 
 // 保存消息类型开关
-const saveNotificationSwitchs = debounce(async () => {
+async function saveNotificationSwitchs() {
   try {
     const result: { [key: string]: any } = await api.post(
       'system/setting/NotificationSwitchs',
@@ -133,7 +129,7 @@ const saveNotificationSwitchs = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 加载数据
 onMounted(() => {

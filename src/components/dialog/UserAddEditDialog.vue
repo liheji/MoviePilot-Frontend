@@ -6,7 +6,6 @@ import api from '@/api'
 import { useDisplay } from 'vuetify'
 import avatar1 from '@images/avatars/avatar-1.png'
 import store from '@/store'
-import { debounce } from 'lodash'
 
 // 显示器宽度
 const display = useDisplay()
@@ -23,9 +22,6 @@ const props = defineProps({
   usernames: Array,
   oper: String,
 })
-
-// 防抖时间
-const debounceTime = 500
 
 // 当前登录用户名称
 const currentLoginUser = store.state.auth.userName
@@ -87,8 +83,8 @@ function changeAvatar(file: Event) {
     const maxSize = 800 * 1024
     // 检查文件是否为图片
     if (!allowedTypes.includes(selectedFile.type)) {
-      $toast.error('上传的文件不符合要求，请重新选择头像');
-      return;
+      $toast.error('上传的文件不符合要求，请重新选择头像')
+      return
     }
     // 检查文件大小
     if (selectedFile.size > maxSize) {
@@ -133,7 +129,7 @@ async function fetchUserInfo() {
 }
 
 // 调用API 新增用户
-const addUser = debounce(async () => {
+async function addUser() {
   if (isAdding.value) {
     $toast.error(`正在创建【${userForm.value.name}】用户，请稍后`)
     return
@@ -172,10 +168,10 @@ const addUser = debounce(async () => {
   }
   doneNProgress()
   isAdding.value = false
-}, debounceTime)
+}
 
 // 调用API更新用户信息
-const updateUser = debounce(async () => {
+async function updateUser() {
   if (isUpdating.value) {
     $toast.error(`正在更新【${userForm.value.name}】用户，请稍后`)
     return
@@ -232,7 +228,7 @@ const updateUser = debounce(async () => {
   }
   doneNProgress()
   isUpdating.value = false
-}, debounceTime)
+}
 
 // 用户状态转换，true/false转换为1/0
 const userStatus = computed({

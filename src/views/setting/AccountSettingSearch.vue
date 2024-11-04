@@ -2,10 +2,6 @@
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { FilterRuleGroup, Site } from '@/api/types'
-import debounce from 'lodash/debounce'
-
-// 防抖时间
-const debounceTime = 500
 
 // 提示框
 const $toast = useToast()
@@ -18,9 +14,7 @@ const selectedSites = ref<number[]>([])
 
 // 系统设置
 const SystemSettings = ref<any>({
-  Basis: {
-
-  },
+  Basis: {},
   Advanced: {
     SEARCH_MULTIPLE_NAME: false,
     DOWNLOAD_SUBTITLE: false,
@@ -95,7 +89,7 @@ async function querySelectedSites() {
 }
 
 // 保存用户选中的站点
-const saveSelectedSites = debounce(async () => {
+async function saveSelectedSites() {
   try {
     // 用户名密码
     const result: { [key: string]: any } = await api.post('system/setting/IndexerSites', selectedSites.value)
@@ -105,7 +99,7 @@ const saveSelectedSites = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 调用API查询设置
 async function loadSearchSetting() {
@@ -120,7 +114,7 @@ async function loadSearchSetting() {
 }
 
 // 调用API保存设置
-const saveSearchSetting = debounce(async () => {
+async function saveSearchSetting() {
   try {
     const result1: { [key: string]: any } = await api.post(
       'system/setting/SEARCH_SOURCE',
@@ -141,7 +135,7 @@ const saveSearchSetting = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 加载系统设置
 async function loadSystemSettings() {
@@ -158,7 +152,7 @@ async function loadSystemSettings() {
             if (v === '') {
               v = null
             }
-            (SystemSettings.value[sectionKey] as any)[key] = v
+            ;(SystemSettings.value[sectionKey] as any)[key] = v
           }
         })
       }
@@ -169,7 +163,7 @@ async function loadSystemSettings() {
 }
 
 // 保存设置
-const saveSystemSettings = debounce(async (value: any) => {
+async function saveSystemSettings(value: any) {
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
@@ -182,7 +176,7 @@ const saveSystemSettings = debounce(async (value: any) => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 重载系统生效配置
 async function reloadSystem() {

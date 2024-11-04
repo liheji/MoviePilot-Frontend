@@ -7,10 +7,6 @@ import api from '@/api'
 import { DownloaderConf, MediaServerConf } from '@/api/types'
 import DownloaderCard from '@/components/cards/DownloaderCard.vue'
 import MediaServerCard from '@/components/cards/MediaServerCard.vue'
-import debounce from 'lodash/debounce'
-
-// 防抖时间
-const debounceTime = 500
 
 // 系统设置项
 const SystemSettings = ref<any>({
@@ -51,13 +47,13 @@ async function reloadSystem() {
 }
 
 // 调用API保存下载器设置
-const saveDownloaderSetting = debounce(async () => {
+async function saveDownloaderSetting() {
   try {
     // 提取启用的下载器
-    const enabledDownloaders = downloaders.value.filter(item => item.enabled);
+    const enabledDownloaders = downloaders.value.filter(item => item.enabled)
     // 有启动的下载器时
     if (enabledDownloaders.length > 0) {
-      downloaders.value = handleDefaultDownloaders(enabledDownloaders, downloaders.value);
+      downloaders.value = handleDefaultDownloaders(enabledDownloaders, downloaders.value)
     }
     const result: { [key: string]: any } = await api.post('system/setting/Downloaders', downloaders.value)
     if (result.success) $toast.success('下载器设置保存成功')
@@ -68,22 +64,22 @@ const saveDownloaderSetting = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 处理默认下载器状态
 function handleDefaultDownloaders(enabledDownloaders: any[], downloaders: any[]) {
-  const enabledDefaultDownloader = enabledDownloaders.find(item => item.default);
+  const enabledDefaultDownloader = enabledDownloaders.find(item => item.default)
   if (enabledDownloaders.length > 0 && !enabledDefaultDownloader) {
     downloaders = downloaders.map(item => {
       if (item === enabledDownloaders[0]) {
-        $toast.info(`未设置默认下载器，已将【${item.name}】作为默认下载器`);
-        return {...item, default: true };
+        $toast.info(`未设置默认下载器，已将【${item.name}】作为默认下载器`)
+        return { ...item, default: true }
       }
       // 清除其他下载器的默认下载器状态
-      return {...item, default: false };
-    });
+      return { ...item, default: false }
+    })
   }
-  return downloaders;
+  return downloaders
 }
 
 // 调用API查询媒体服务器设置
@@ -97,7 +93,7 @@ async function loadMediaServerSetting() {
 }
 
 // 调用API保存媒体服务器设置
-const saveMediaServerSetting = debounce(async () => {
+async function saveMediaServerSetting() {
   try {
     const result: { [key: string]: any } = await api.post('system/setting/MediaServers', mediaServers.value)
     if (result.success) $toast.success('媒体服务器设置保存成功')
@@ -108,16 +104,14 @@ const saveMediaServerSetting = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 加载系统设置
 async function loadSystemSettings() {
   try {
     const result: { [key: string]: any } = await api.get('system/env')
     if (result.success) {
-      const {
-        MEDIASERVER_SYNC_INTERVAL,
-      } = result.data
+      const { MEDIASERVER_SYNC_INTERVAL } = result.data
       SystemSettings.value = {
         MEDIASERVER_SYNC_INTERVAL,
       }
@@ -128,7 +122,7 @@ async function loadSystemSettings() {
 }
 
 // 调用API保存系统设置
-const saveSystemSetting = debounce(async () => {
+async function saveSystemSetting() {
   try {
     const result: { [key: string]: any } = await api.post('system/env', SystemSettings.value)
 
@@ -137,13 +131,13 @@ const saveSystemSetting = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 添加下载器
 function addDownloader(downloader: string) {
-  let name = `下载器${downloaders.value.length + 1}`;
+  let name = `下载器${downloaders.value.length + 1}`
   while (downloaders.value.some(item => item.name === name)) {
-    name = `下载器${parseInt(name.split('下载器')[1]) + 1}`;
+    name = `下载器${parseInt(name.split('下载器')[1]) + 1}`
   }
   downloaders.value.push({
     name: name,
@@ -155,10 +149,10 @@ function addDownloader(downloader: string) {
 }
 
 // 删除下载器
-const removeDownloader = debounce((ele: DownloaderConf) => {
+function removeDownloader(ele: DownloaderConf) {
   const index = downloaders.value.indexOf(ele)
   downloaders.value.splice(index, 1)
-}, debounceTime)
+}
 
 // 下载器变化
 function onDownloaderChange(downloader: DownloaderConf, name: string) {
@@ -167,10 +161,10 @@ function onDownloaderChange(downloader: DownloaderConf, name: string) {
 }
 
 // 添加媒体服务器
-const addMediaServer = debounce( (mediaserver: string) => {
-  let name = `服务器${mediaServers.value.length + 1}`;
+function addMediaServer(mediaserver: string) {
+  let name = `服务器${mediaServers.value.length + 1}`
   while (mediaServers.value.some(item => item.name === name)) {
-    name = `服务器${parseInt(name.split('服务器')[1]) + 1}`;
+    name = `服务器${parseInt(name.split('服务器')[1]) + 1}`
   }
   mediaServers.value.push({
     name: name,
@@ -178,13 +172,13 @@ const addMediaServer = debounce( (mediaserver: string) => {
     enabled: false,
     config: {},
   })
-}, debounceTime)
+}
 
 // 删除媒体服务器
-const removeMediaServer = debounce((ele: MediaServerConf) => {
+function removeMediaServer(ele: MediaServerConf) {
   const index = mediaServers.value.indexOf(ele)
   if (index !== -1) mediaServers.value.splice(index, 1)
-}, debounceTime)
+}
 
 // 变更媒体服务器
 function onMediaServerChange(mediaserver: MediaServerConf, name: string) {
@@ -229,11 +223,11 @@ onDeactivated(() => {
                   suffix="小时"
                   type="number"
                   min="1"
-                  style="width: fit-content"
+                  style="inline-size: fit-content"
                   :rules="[
-                    v => !!v || '必选项，请勿留空',
-                    v => !isNaN(v) || '仅支持输入数字，请勿输入其他字符',
-                    v => v >= 1 || '间隔不能小于1个小时',
+                    (v: any) => !!v || '必选项，请勿留空',
+                    (v: any) => !isNaN(v) || '仅支持输入数字，请勿输入其他字符',
+                    (v: any) => v >= 1 || '间隔不能小于1个小时',
                   ]"
                 />
               </VCol>

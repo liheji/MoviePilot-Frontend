@@ -44,9 +44,6 @@ const SystemSettings = ref<any>({
   },
 })
 
-// 防抖时间
-const debounceTime = 500
-
 // 高级设置弹窗
 const isAdvancedSystemSettingsDialogOpen = ref(false)
 const isAdvancedNetworkSettingsDialogOpen = ref(false)
@@ -110,18 +107,18 @@ async function saveSystemSetting(value: { [key: string]: any }) {
 }
 
 // 保存系统设置
-const saveSystemSettings = debounce(async () => {
+async function saveSystemSettings() {
   const Settings = { ...SystemSettings.value.Basis, ...SystemSettings.value.Advanced }
   await saveSystemSetting(Settings)
-}, debounceTime)
+}
 
 // 保存网络设置
-const saveNetworkSettings = debounce(async () => {
+async function saveNetworkSettings() {
   const Settings = { ...SystemSettings.value.Network, ...SystemSettings.value.AdvancedNetwork }
   // 查找PROXY_HOST，并删除，避免意外覆盖
   if (Settings.PROXY_HOST) delete Settings.PROXY_HOST
   await saveSystemSetting(Settings)
-}, debounceTime)
+}
 
 // 高级设置变化，等待保存
 function saveAdvancedSettings(Settings: any, key: string) {

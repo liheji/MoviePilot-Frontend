@@ -1,10 +1,6 @@
 <script lang="ts" setup>
-import {useToast} from 'vue-toast-notification'
-import api from "@/api"
-import debounce from 'lodash/debounce'
-
-// 防抖时间
-const debounceTime = 500
+import { useToast } from 'vue-toast-notification'
+import api from '@/api'
 
 // 提示框
 const $toast = useToast()
@@ -36,7 +32,7 @@ async function loadSystemSettings() {
             if (v === '') {
               v = null
             }
-            (SystemSettings.value[sectionKey] as any)[key] = v
+            ;(SystemSettings.value[sectionKey] as any)[key] = v
           }
         })
       }
@@ -47,7 +43,7 @@ async function loadSystemSettings() {
 }
 
 // 保存设置
-const saveSystemSettings = debounce(async (value: any) => {
+async function saveSystemSettings(value: any) {
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
@@ -58,7 +54,7 @@ const saveSystemSettings = debounce(async (value: any) => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 重载系统生效配置
 async function reloadSystem() {
@@ -74,19 +70,21 @@ async function reloadSystem() {
 }
 
 // 恢复电影设置默认值
-const loadDefaultMovieSetting = debounce(async () => {
-  SystemSettings.value.Basis.MOVIE_RENAME_FORMAT = '{{title}}{% if year %} ({{year}}){% endif %}/{{title}}{% if year %} ({{year}}){% endif %}{% if part %}-{{part}}{% endif %}{% if videoFormat %} - {{videoFormat}}{% endif %}{{fileExt}}'
-}, debounceTime)
+async function loadDefaultMovieSetting() {
+  SystemSettings.value.Basis.MOVIE_RENAME_FORMAT =
+    '{{title}}{% if year %} ({{year}}){% endif %}/{{title}}{% if year %} ({{year}}){% endif %}{% if part %}-{{part}}{% endif %}{% if videoFormat %} - {{videoFormat}}{% endif %}{{fileExt}}'
+}
 
 // 恢复电视剧设置默认值
-const loadDefaultTVSetting = debounce(async () => {
-  SystemSettings.value.Basis.TV_RENAME_FORMAT = '{{title}}{% if year %} ({{year}}){% endif %}/Season {{season}}/{{title}} - {{season_episode}}{% if part %}-{{part}}{% endif %}{% if episode %} - 第 {{episode}} 集{% endif %}{{fileExt}}'
-}, debounceTime)
+async function loadDefaultTVSetting() {
+  SystemSettings.value.Basis.TV_RENAME_FORMAT =
+    '{{title}}{% if year %} ({{year}}){% endif %}/Season {{season}}/{{title}} - {{season_episode}}{% if part %}-{{part}}{% endif %}{% if episode %} - 第 {{episode}} 集{% endif %}{{fileExt}}'
+}
 
 // 数据源
 const sourceItems = [
-  { "title": "TheMovieDb", "value": "themoviedb"},
-  { "title": "豆瓣", "value": "douban" }
+  { 'title': 'TheMovieDb', 'value': 'themoviedb' },
+  { 'title': '豆瓣', 'value': 'douban' },
 ]
 
 // 加载数据
@@ -140,10 +138,7 @@ onMounted(() => {
                 min="0"
                 type="number"
                 suffix="小时"
-                :rules="[
-                   v => v === 0 || !!v || '请输入元数据缓存时间',
-                   v => v >= 0 || '元数据缓存时间必须大于等于0'
-                   ]"
+                :rules="[(v: any) => v === 0 || !!v || '请输入元数据缓存时间', (v: any) => v >= 0 || '元数据缓存时间必须大于等于0']"
               />
             </VCol>
             <VCol cols="12">
@@ -191,4 +186,3 @@ onMounted(() => {
     </VCol>
   </VRow>
 </template>
-

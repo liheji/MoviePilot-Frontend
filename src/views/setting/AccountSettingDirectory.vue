@@ -7,10 +7,6 @@ import api from '@/api'
 import { TransferDirectoryConf, StorageConf } from '@/api/types'
 import DirectoryCard from '@/components/cards/DirectoryCard.vue'
 import StorageCard from '@/components/cards/StorageCard.vue'
-import debounce from 'lodash/debounce'
-
-// 防抖时间
-const debounceTime = 500
 
 // 所有下载目录
 const directories = ref<TransferDirectoryConf[]>([])
@@ -55,7 +51,7 @@ async function loadStorages() {
 }
 
 // 保存存储
-const saveStorages = debounce(async () => {
+async function saveStorages() {
   try {
     const result: { [key: string]: any } = await api.post('system/setting/Storages', storages.value)
     if (result.success) $toast.success('存储设置保存成功')
@@ -63,7 +59,7 @@ const saveStorages = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 修改后生效
 async function updatedStorage() {
@@ -81,7 +77,7 @@ async function loadDirectories() {
 }
 
 // 保存目录
-const saveDirectories = debounce(async () => {
+async function saveDirectories() {
   orderDirectoryCards()
   try {
     const names = directories.value.map(item => item.name)
@@ -97,10 +93,10 @@ const saveDirectories = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 添加媒体库目录
-const addDirectory = debounce(() => {
+function addDirectory() {
   let name = `目录${directories.value.length + 1}`
   while (directories.value.some(item => item.name === name)) {
     name = `目录${parseInt(name.split('目录')[1]) + 1}`
@@ -115,15 +111,15 @@ const addDirectory = debounce(() => {
     media_category: '',
   })
   orderDirectoryCards()
-}, debounceTime)
+}
 
 // 移除媒体库目录
-const removeDirectory = debounce((directory: TransferDirectoryConf) => {
+function removeDirectory(directory: TransferDirectoryConf) {
   const index = directories.value.indexOf(directory)
   if (index > -1) {
     directories.value.splice(index, 1)
   }
-}, debounceTime)
+}
 
 // 调用API查询自动分类配置
 async function loadMediaCategories() {

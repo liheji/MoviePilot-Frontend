@@ -1,10 +1,6 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
-import debounce from 'lodash/debounce'
-
-// 防抖时间
-const debounceTime = 500
 
 // 提示框
 const $toast = useToast()
@@ -31,9 +27,9 @@ const siteSetting = ref<any>({
     COOKIECLOUD_ENABLE_LOCAL: false,
     COOKIECLOUD_BLACKLIST: '',
   },
-  Site:{
+  Site: {
     SITEDATA_REFRESH_INTERVAL: 0,
-  }
+  },
 })
 
 // 同步间隔下拉框
@@ -58,7 +54,7 @@ const SiteDataRefreshIntervalItems = [
 ]
 
 // 重置站点
-const resetSites = debounce(async () => {
+async function resetSites() {
   try {
     resetSitesDisabled.value = true
     resetSitesText.value = '正在重置...'
@@ -72,7 +68,7 @@ const resetSites = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 加载站点设置
 async function loadSiteSettings() {
@@ -86,8 +82,10 @@ async function loadSiteSettings() {
           if (result.data.hasOwnProperty(key)) {
             v = result.data[key]
             // 空字符串转为null，避免空字符串导致前端显示问题
-            if (v === '') { v = null }
-            (siteSetting.value[sectionKey] as any)[key] = v
+            if (v === '') {
+              v = null
+            }
+            ;(siteSetting.value[sectionKey] as any)[key] = v
           }
         })
       }
@@ -98,7 +96,7 @@ async function loadSiteSettings() {
 }
 
 // 调用API保存设置
-const saveSiteSetting = debounce(async (value: { [key: string]: any }) => {
+async function saveSiteSetting(value: { [key: string]: any }) {
   console.log(`正在保存设置：${JSON.stringify(value)}`)
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
@@ -109,7 +107,7 @@ const saveSiteSetting = debounce(async (value: { [key: string]: any }) => {
     console.log(error)
     $toast.error('保存设置失败！')
   }
-}, debounceTime)
+}
 
 // 加载数据
 onMounted(() => {
@@ -197,7 +195,7 @@ onMounted(() => {
           </VForm>
         </VCardText>
         <VCardText>
-           <VForm @submit.prevent="() => {}">
+          <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
               <VBtn type="submit" @click="saveSiteSetting(siteSetting.CookieCloud)"> 保存 </VBtn>
             </div>

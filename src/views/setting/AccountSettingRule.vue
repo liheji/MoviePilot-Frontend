@@ -9,10 +9,6 @@ import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
-import debounce from 'lodash/debounce'
-
-// 防抖时间
-const debounceTime = 1
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
@@ -56,7 +52,7 @@ async function loadMediaCategories() {
 }
 
 // 保存自定义规则
-const saveCustomRules = debounce(async () => {
+async function saveCustomRules() {
   // 检查是否存在空id规则
   if (customRules.value.some(item => !item.id)) {
     $toast.error('存在空ID的规则，无法保存，请修改！')
@@ -87,10 +83,10 @@ const saveCustomRules = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 添加自定义规则
-const addCustomRule = debounce(async () => {
+async function addCustomRule() {
   let id = `RULE${customRules.value.length + 1}`
   while (customRules.value.some(item => item.id === id)) {
     id = `RULE${parseInt(id.split('RULE')[1]) + 1}`
@@ -105,7 +101,7 @@ const addCustomRule = debounce(async () => {
     include: '',
     exclude: '',
   })
-}, debounceTime)
+}
 
 // 移除自定义规则
 function removeCustomRule(rule: CustomRule) {
@@ -124,7 +120,7 @@ async function queryFilterRuleGroups() {
 }
 
 // 保存规则组
-const saveFilterRuleGroups = debounce(async () => {
+async function saveFilterRuleGroups() {
   // 检查是否存在空的规则组名称
   if (filterRuleGroups.value.some(item => !item.name)) {
     $toast.error('存在空名字的规则组！无法保存，请修改！')
@@ -143,10 +139,10 @@ const saveFilterRuleGroups = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 添加规则组
-const addFilterRuleGroup = debounce(() => {
+function addFilterRuleGroup() {
   let name = `规则组${filterRuleGroups.value.length + 1}`
   while (filterRuleGroups.value.some(item => item.name === name)) {
     name = `规则组${parseInt(name.split('规则组')[1]) + 1}`
@@ -157,10 +153,10 @@ const addFilterRuleGroup = debounce(() => {
     media_type: '',
     category: '',
   })
-}, debounceTime)
+}
 
 // 分享规则
-const shareRules = debounce((rules: CustomRule[] | FilterRuleGroup[]) => {
+function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
   if (!rules || rules.length === 0) return
 
   // 将卡片规则接装为字符串
@@ -173,7 +169,7 @@ const shareRules = debounce((rules: CustomRule[] | FilterRuleGroup[]) => {
   } catch (error) {
     $toast.error('优先级规则复制失败！')
   }
-}, debounceTime)
+}
 
 // 导入规则
 async function importRules(ruleType: string) {
@@ -256,7 +252,7 @@ async function queryCustomRules() {
 }
 
 // 保存种子优先规则
-const saveTorrentPriority = debounce(async () => {
+async function saveTorrentPriority() {
   try {
     const result: { [key: string]: any } = await api.post(
       'system/setting/TorrentsPriority',
@@ -267,7 +263,7 @@ const saveTorrentPriority = debounce(async () => {
   } catch (error) {
     console.log(error)
   }
-}, debounceTime)
+}
 
 // 加载数据
 onMounted(() => {
