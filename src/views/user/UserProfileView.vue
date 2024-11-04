@@ -75,7 +75,7 @@ function changeAvatar(file: Event) {
   const { files } = file.target as HTMLInputElement
   if (files && files.length > 0) {
     const selectedFile = files[0]
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif']
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
     const maxSize = 800 * 1024
     // 检查文件是否为图片
     if (!allowedTypes.includes(selectedFile.type)) {
@@ -297,7 +297,7 @@ watch(
                 </VBtn>
               </div>
 
-              <p class="text-body-1 mb-0">允许 JPG、PNG、GIF 格式， 最大尺寸 800KB。</p>
+              <p class="text-body-1 mb-0">允许 JPG、PNG、GIF、WEBP 格式， 最大尺寸 800KB。</p>
             </form>
           </VCardText>
 
