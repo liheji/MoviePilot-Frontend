@@ -2,6 +2,10 @@
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { FilterRuleGroup, Site } from '@/api/types'
+import debounce from 'lodash/debounce'
+
+// 防抖时间
+const debounceTime = 500
 
 // 提示框
 const $toast = useToast()
@@ -11,6 +15,18 @@ const allSites = ref<Site[]>([])
 
 // 选中订阅站点
 const selectedSites = ref<number[]>([])
+
+// 系统设置
+const SystemSettings = ref<any>({
+  Basis: {
+
+  },
+  Advanced: {
+    SEARCH_MULTIPLE_NAME: false,
+    DOWNLOAD_SUBTITLE: false,
+    AUTO_DOWNLOAD_USER: '',
+  },
+})
 
 // 媒体信息数据源字典
 const mediaSourcesDict = [
@@ -79,7 +95,7 @@ async function querySelectedSites() {
 }
 
 // 保存用户选中的站点
-async function saveSelectedSites() {
+const saveSelectedSites = debounce(async () => {
   try {
     // 用户名密码
     const result: { [key: string]: any } = await api.post('system/setting/IndexerSites', selectedSites.value)
@@ -89,9 +105,9 @@ async function saveSelectedSites() {
   } catch (error) {
     console.log(error)
   }
-}
+}, debounceTime)
 
-// 调用API查询下载器设置
+// 调用API查询设置
 async function loadSearchSetting() {
   try {
     const result1: { [key: string]: any } = await api.get('system/setting/SEARCH_SOURCE')
@@ -104,7 +120,7 @@ async function loadSearchSetting() {
 }
 
 // 调用API保存设置
-async function saveSearchSetting() {
+const saveSearchSetting = debounce(async () => {
   try {
     const result1: { [key: string]: any } = await api.post(
       'system/setting/SEARCH_SOURCE',
@@ -117,10 +133,65 @@ async function saveSearchSetting() {
     )
 
     if (result1.success && result2.success) {
-      $toast.success('保存媒体数据源设置成功')
+      $toast.success('保存设置成功')
+      await reloadSystem()
     } else {
-      $toast.error('保存媒体数据源设置失败！')
+      $toast.error('保存设置失败！')
     }
+  } catch (error) {
+    console.log(error)
+  }
+}, debounceTime)
+
+// 加载系统设置
+async function loadSystemSettings() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/env')
+    if (result.success) {
+      // 将API返回的值赋值给SystemSettings
+      for (const sectionKey of Object.keys(SystemSettings.value) as Array<keyof typeof SystemSettings.value>) {
+        Object.keys(SystemSettings.value[sectionKey]).forEach((key: string) => {
+          let v: any
+          if (result.data.hasOwnProperty(key)) {
+            v = result.data[key]
+            // 空字符串转为null，避免空字符串导致前端显示问题
+            if (v === '') {
+              v = null
+            }
+            (SystemSettings.value[sectionKey] as any)[key] = v
+          }
+        })
+      }
+    } else $toast.error('加载设置失败！')
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 保存设置
+const saveSystemSettings = debounce(async (value: any) => {
+  try {
+    const result: { [key: string]: any } = await api.post('system/env', value)
+    if (result.success) {
+      $toast.success('保存设置成功')
+      await reloadSystem()
+      await loadSystemSettings()
+    } else {
+      $toast.error('保存设置失败！')
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}, debounceTime)
+
+// 重载系统生效配置
+async function reloadSystem() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/reload')
+    if (result.success) {
+      $toast.success('系统配置已生效')
+      await loadSystemSettings()
+    } else $toast.error('重载系统失败！')
   } catch (error) {
     console.log(error)
   }
@@ -131,6 +202,7 @@ onMounted(() => {
   queryFilterRuleGroups()
   querySelectedSites()
   loadSearchSetting()
+  loadSystemSettings()
 })
 </script>
 
@@ -151,7 +223,7 @@ onMounted(() => {
                 clearable
                 chips
                 :items="mediaSourcesDict"
-                label="媒体数据源"
+                label="媒体搜索数据源"
                 hint="搜索媒体信息时使用的数据源以及排序"
                 persistent-hint
               />
@@ -171,10 +243,16 @@ onMounted(() => {
           </VRow>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" @click="saveSearchSetting"> 保存 </VBtn>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveSearchSetting"> 保存 </VBtn>
+            </div>
+          </VForm>
         </VCardText>
       </VCard>
     </VCol>
+  </VRow>
+  <VRow>
     <VCol cols="12">
       <VCard>
         <VCardItem>
@@ -196,7 +274,56 @@ onMounted(() => {
           </VChipGroup>
         </VCardText>
         <VCardText>
-          <VBtn type="submit" @click="saveSelectedSites"> 保存 </VBtn>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveSelectedSites"> 保存 </VBtn>
+            </div>
+          </VForm>
+        </VCardText>
+      </VCard>
+    </VCol>
+  </VRow>
+  <VRow>
+    <VCol cols="12">
+      <VCard>
+        <VCardItem>
+          <VCardTitle>高级设置</VCardTitle>
+          <VCardSubtitle>设置交互搜索自动下载用户ID、字幕。</VCardSubtitle>
+        </VCardItem>
+        <VCardText>
+          <VRow>
+            <VCol cols="12" md="6">
+              <VSwitch
+                v-model="SystemSettings.Advanced.SEARCH_MULTIPLE_NAME"
+                label="整合多名称资源搜索结果"
+                hint="搜索多个名称的资源时，整合多名称的结果"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <VSwitch
+                v-model="SystemSettings.Advanced.DOWNLOAD_SUBTITLE"
+                label="下载站点字幕"
+                hint="当选定的资源所在站点中，存在字幕文件时，同步自动下载"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12">
+              <VCombobox
+                v-model="SystemSettings.Advanced.AUTO_DOWNLOAD_USER"
+                label="交互式搜索自动下载用户"
+                hint="针对使用tg、微信等第三方交互的特化功能。使用逗号分割，设置为 all 代表所有用户自动择优下载，未设置时，需要用户手动选择资源 或 回复 ` 0 ` 才自动择优下载"
+                persistent-hint
+              />
+            </VCol>
+          </VRow>
+        </VCardText>
+        <VCardText>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveSystemSettings(SystemSettings.Advanced)"> 保存 </VBtn>
+            </div>
+          </VForm>
         </VCardText>
       </VCard>
     </VCol>
