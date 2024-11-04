@@ -321,10 +321,9 @@ onMounted(() => {
           <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
             <VWindowItem value="basic">
               <div>
-                <VRow>
+                <VRow v-if="!props.default">
                   <VCol cols="12" md="4">
                     <VTextField
-                      v-if="!props.default"
                       v-model="subscribeForm.keyword"
                       label="搜索关键词"
                       hint="指定搜索站点时使用的关键词"
@@ -454,7 +453,7 @@ onMounted(() => {
                       persistent-hint
                     />
                   </VCol>
-                  <VCol cols="12" md="6">
+                  <VCol cols="12" md="6" v-if="!props.default">
                     <VTextField
                       v-model="subscribeForm.media_category"
                       label="自定义类别"
@@ -462,9 +461,7 @@ onMounted(() => {
                       persistent-hint
                     />
                   </VCol>
-                </VRow>
-                <VRow>
-                  <VCol cols="12">
+                  <VCol cols="12" md="6">
                     <VCombobox
                       v-model="subscribeForm.save_path"
                       :items="targetDirectories"
@@ -474,7 +471,7 @@ onMounted(() => {
                     />
                   </VCol>
                 </VRow>
-                <VRow>
+                <VRow v-if="!props.default">
                   <VCol cols="12">
                     <VTextarea
                       v-model="subscribeForm.custom_words"
