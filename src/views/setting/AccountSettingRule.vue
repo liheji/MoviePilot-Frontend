@@ -12,7 +12,7 @@ import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
 import debounce from 'lodash/debounce'
 
 // 防抖时间
-const debounceTime = 500
+const debounceTime = 1
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
@@ -46,48 +46,6 @@ const TorrentPriorityItems = [
   { title: '资源做种数', value: 'seeder' },
 ]
 
-// 内置的规则
-const selectFilterOptions = ref<{ [key: string]: string }[]>([
-  { title: '特效字幕', value: ' SPECSUB ' },
-  { title: '中文字幕', value: ' CNSUB ' },
-  { title: '国语配音', value: ' CNVOI ' },
-  { title: '官种', value: ' GZ ' },
-  { title: '排除: 国语配音', value: ' !CNVOI ' },
-  { title: '粤语配音', value: ' HKVOI ' },
-  { title: '排除: 粤语配音', value: ' !HKVOI ' },
-  { title: '促销: 免费', value: ' FREE ' },
-  { title: '分辨率: 4K', value: ' 4K ' },
-  { title: '分辨率: 1080P', value: ' 1080P ' },
-  { title: '分辨率: 720P', value: ' 720P ' },
-  { title: '排除: 720P', value: ' !720P ' },
-  { title: '质量: 蓝光原盘', value: ' BLU ' },
-  { title: '排除: 蓝光原盘', value: ' !BLU ' },
-  { title: '质量: BLURAY', value: ' BLURAY ' },
-  { title: '排除: BLURAY', value: ' !BLURAY ' },
-  { title: '质量: UHD', value: ' UHD ' },
-  { title: '排除: UHD', value: ' !UHD ' },
-  { title: '质量: REMUX', value: ' REMUX ' },
-  { title: '排除: REMUX', value: ' !REMUX ' },
-  { title: '质量: WEB-DL', value: ' WEBDL ' },
-  { title: '排除: WEB-DL', value: ' !WEBDL ' },
-  { title: '质量: 60fps', value: ' 60FPS ' },
-  { title: '排除: 60fps', value: ' !60FPS ' },
-  { title: '编码: H265', value: ' H265 ' },
-  { title: '排除: H265', value: ' !H265 ' },
-  { title: '编码: H264', value: ' H264 ' },
-  { title: '排除: H264', value: ' !H264 ' },
-  { title: '效果: 杜比视界', value: ' DOLBY ' },
-  { title: '排除: 杜比视界', value: ' !DOLBY ' },
-  { title: '效果: 杜比全景声', value: ' ATMOS ' },
-  { title: '排除: 杜比全景声', value: ' !ATMOS ' },
-  { title: '效果: HDR', value: ' HDR ' },
-  { title: '排除: HDR', value: ' !HDR ' },
-  { title: '效果: SDR', value: ' SDR ' },
-  { title: '排除: SDR', value: ' !SDR ' },
-  { title: '效果: 3D', value: ' 3D ' },
-  { title: '排除: 3D', value: ' !3D ' },
-])
-
 // 调用API查询自动分类配置
 async function loadMediaCategories() {
   try {
@@ -101,27 +59,17 @@ async function loadMediaCategories() {
 const saveCustomRules = debounce(async () => {
   // 检查是否存在空id规则
   if (customRules.value.some(item => !item.id)) {
-    $toast.error('存在空ID的规则！无法保存，请修改！')
+    $toast.error('存在空ID的规则，无法保存，请修改！')
     return
   }
   // 检查是否存在空的规则名称
   if (customRules.value.some(item => !item.name)) {
-    $toast.error('存在空名字的规则！无法保存，请修改！')
+    $toast.error('存在空名字的规则，无法保存，请修改！')
     return
   }
   // 获取所有规则ID和名称
   const ids = customRules.value.map(item => item.id)
   const names = customRules.value.map(item => item.name)
-  // 检查是否存在有规则ID是否已经被内置规则使用，如果有则提示，并提示出具体是哪个规则ID
-  if (ids.some(id => selectFilterOptions.value.some(option => option.value === id))) {
-    $toast.error('存在规则ID与内置规则ID重复！无法保存，请修改！')
-    return
-  }
-  // 检查是否存在有规则名称是否已经被内置规则使用，如果有则提示，并提示出具体是哪个规则名称
-  if (names.some(name => selectFilterOptions.value.some(option => option.title === name))) {
-    $toast.error('存在规则名称与内置规则名称重复！无法保存，请修改！')
-    return
-  }
   // 检查是否存在重名的规则ID
   if (new Set(ids).size !== ids.length) {
     $toast.error('存在重复规则ID！无法保存，请修改！')
