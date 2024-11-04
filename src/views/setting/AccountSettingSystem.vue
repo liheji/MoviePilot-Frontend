@@ -16,7 +16,6 @@ const SystemSettings = ref<any>({
     APP_DOMAIN: '',
     API_TOKEN: '',
     WALLPAPER: 'tmdb',
-    PLUGIN_MARKET: '',
   },
   // 高级系统设置
   Advanced: {
@@ -80,8 +79,10 @@ async function loadSystemSettings() {
           if (result.data.hasOwnProperty(key)) {
             v = result.data[key]
             // 空字符串转为null，避免空字符串导致前端显示问题
-            if (v === '') { v = null }
-            (SystemSettings.value[sectionKey] as any)[key] = v
+            if (v === '') {
+              v = null
+            }
+            ;(SystemSettings.value[sectionKey] as any)[key] = v
           }
         })
       }
@@ -129,7 +130,7 @@ function saveAdvancedSettings(Settings: any, key: string) {
   // 检查Settings中的键是否在SystemSettings的[key]中存在，有则使用Settings的值替换SystemSettings中的值
   for (const settingKey in Settings) {
     if (SystemSettings.value[key].hasOwnProperty(settingKey)) {
-      (SystemSettings.value[key] as any)[settingKey] = Settings[settingKey]
+      ;(SystemSettings.value[key] as any)[settingKey] = Settings[settingKey]
     }
   }
   $toast.info('高级设置已更改，待保存后生效')
@@ -254,16 +255,6 @@ onMounted(() => {
                   @click:prependInner="createRandomString"
                   @click:appendInner="SystemSettings.Basis.API_TOKEN && copyValue(SystemSettings.Basis.API_TOKEN)"
                   :rules="[(v: string) => !!v || '必填项；请输入API Token', (v: string) => v.length >= 16 || 'API Token不得低于16位']"
-                />
-              </VCol>
-              <VCol cols="12">
-                <VTextarea
-                  v-model="SystemSettings.Basis.PLUGIN_MARKET"
-                  label="插件市场"
-                  placeholder="格式：https://github.com/jxxghp/MoviePilot-Plugins/,https://github.com/xxxx/xxxxxx/"
-                  hint="插件市场仓库地址，多个地址使用逗号分隔，确保每个地址以/结尾，仅支持Github仓库"
-                  persistent-hint
-                  clearable
                 />
               </VCol>
             </VRow>
