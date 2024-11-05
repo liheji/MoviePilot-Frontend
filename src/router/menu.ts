@@ -133,15 +133,9 @@ export const UserfulMenus = [
 export const SettingTabs = [
   {
     title: '系统',
-    icon: 'mdi-cog',
-    tab: 'system',
-    description: '基本设定、网络设定、高级设定',
-  },
-  {
-    title: '连接',
     icon: 'mdi-server-network',
-    tab: 'service',
-    description: '下载器（Qbittorrent、Transmission）、媒体服务器（Emby、Jellyfin、Plex）',
+    tab: 'system',
+    description: '系统设置、下载器（Qbittorrent、Transmission）、媒体服务器（Emby、Jellyfin、Plex）',
   },
   {
     title: '存储 & 目录',
@@ -168,19 +162,13 @@ export const SettingTabs = [
     description: '媒体数据源（TheMovieDb、豆瓣、Bangumi）、搜索站点、搜索优先级、默认过滤规则',
   },
   {
-    title: '整理',
-    icon: 'mdi-folder-multiple-outline',
-    tab: 'transfer',
-    description: '转移重命名、刮削来源',
-  },
-  {
     title: '订阅',
     icon: 'mdi-rss',
     tab: 'subscribe',
     description: '订阅站点、订阅模式、订阅优先级、洗版优先级、默认过滤规则',
   },
   {
-    title: '调度',
+    title: '服务',
     icon: 'mdi-list-box',
     tab: 'scheduler',
     description: '定时作业',

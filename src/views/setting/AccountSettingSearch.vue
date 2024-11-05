@@ -14,11 +14,10 @@ const selectedSites = ref<number[]>([])
 
 // 系统设置
 const SystemSettings = ref<any>({
-  Basis: {},
-  Advanced: {
+  Basic: {
     SEARCH_MULTIPLE_NAME: false,
     DOWNLOAD_SUBTITLE: false,
-    AUTO_DOWNLOAD_USER: '',
+    AUTO_DOWNLOAD_USER: null,
   },
 })
 
@@ -114,6 +113,18 @@ async function loadSearchSetting() {
 }
 
 // 调用API保存设置
+async function saveSystemSetting(value: { [key: string]: any }) {
+  try {
+    const result: { [key: string]: any } = await api.post('system/env', value)
+
+    if (result.success) {
+      return true
+    }
+  } catch (error) {}
+  return false
+}
+
+// 调用API保存设置
 async function saveSearchSetting() {
   try {
     const result1: { [key: string]: any } = await api.post(
@@ -126,11 +137,12 @@ async function saveSearchSetting() {
       selectedFilterGroup.value,
     )
 
-    if (result1.success && result2.success) {
-      $toast.success('保存设置成功')
-      await reloadSystem()
+    const result3 = await saveSystemSetting(SystemSettings.value.Basic)
+
+    if (result1.success && result2.success && result3) {
+      $toast.success('搜索基础设置保存成功')
     } else {
-      $toast.error('保存设置失败！')
+      $toast.error('搜索基础设置保存失败！')
     }
   } catch (error) {
     console.log(error)
@@ -145,47 +157,10 @@ async function loadSystemSettings() {
       // 将API返回的值赋值给SystemSettings
       for (const sectionKey of Object.keys(SystemSettings.value) as Array<keyof typeof SystemSettings.value>) {
         Object.keys(SystemSettings.value[sectionKey]).forEach((key: string) => {
-          let v: any
-          if (result.data.hasOwnProperty(key)) {
-            v = result.data[key]
-            // 空字符串转为null，避免空字符串导致前端显示问题
-            if (v === '') {
-              v = null
-            }
-            ;(SystemSettings.value[sectionKey] as any)[key] = v
-          }
+          if (result.data.hasOwnProperty(key)) (SystemSettings.value[sectionKey] as any)[key] = result.data[key]
         })
       }
-    } else $toast.error('加载设置失败！')
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-// 保存设置
-async function saveSystemSettings(value: any) {
-  try {
-    const result: { [key: string]: any } = await api.post('system/env', value)
-    if (result.success) {
-      $toast.success('保存设置成功')
-      await reloadSystem()
-      await loadSystemSettings()
-    } else {
-      $toast.error('保存设置失败！')
     }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-// 重载系统生效配置
-async function reloadSystem() {
-  try {
-    const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) {
-      $toast.success('系统配置已生效')
-      await loadSystemSettings()
-    } else $toast.error('重载系统失败！')
   } catch (error) {
     console.log(error)
   }
@@ -205,7 +180,7 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>数据源 & 规则</VCardTitle>
+          <VCardTitle>基础设置</VCardTitle>
           <VCardSubtitle>设定数据源、规则组等基础信息。</VCardSubtitle>
         </VCardItem>
         <VCardText>
@@ -231,6 +206,33 @@ onMounted(() => {
                 :items="filterRuleGroupOptions"
                 label="优先级规则组"
                 hint="搜索媒体信息时按选定的过滤规则组对结果进行过滤"
+                persistent-hint
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="12">
+              <VCombobox
+                v-model="SystemSettings.Basic.AUTO_DOWNLOAD_USER"
+                label="远程搜索自动下载用户名单"
+                placeholder="用户ID1,用户ID2"
+                hint="使用Telegram、微信等搜索时是否自动下载，使用逗号分割，设置为 all 代表所有用户自动择优下载"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <VSwitch
+                v-model="SystemSettings.Basic.SEARCH_MULTIPLE_NAME"
+                label="多名称资源搜索"
+                hint="使用中英文等多个名称搜索站点资源并合并搜索结果，将会增加站点访问频率"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <VSwitch
+                v-model="SystemSettings.Basic.DOWNLOAD_SUBTITLE"
+                label="下载站点字幕"
+                hint="检查站点资源是否有独立的字幕文件，有则自动下载"
                 persistent-hint
               />
             </VCol>
@@ -271,51 +273,6 @@ onMounted(() => {
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
               <VBtn type="submit" @click="saveSelectedSites"> 保存 </VBtn>
-            </div>
-          </VForm>
-        </VCardText>
-      </VCard>
-    </VCol>
-  </VRow>
-  <VRow>
-    <VCol cols="12">
-      <VCard>
-        <VCardItem>
-          <VCardTitle>高级设置</VCardTitle>
-          <VCardSubtitle>设置交互搜索自动下载用户ID、字幕。</VCardSubtitle>
-        </VCardItem>
-        <VCardText>
-          <VRow>
-            <VCol cols="12" md="6">
-              <VSwitch
-                v-model="SystemSettings.Advanced.SEARCH_MULTIPLE_NAME"
-                label="整合多名称资源搜索结果"
-                hint="搜索多个名称的资源时，整合多名称的结果"
-                persistent-hint
-              />
-            </VCol>
-            <VCol cols="12" md="6">
-              <VSwitch
-                v-model="SystemSettings.Advanced.DOWNLOAD_SUBTITLE"
-                label="下载站点字幕"
-                hint="当选定的资源所在站点中，存在字幕文件时，同步自动下载"
-                persistent-hint
-              />
-            </VCol>
-            <VCol cols="12">
-              <VCombobox
-                v-model="SystemSettings.Advanced.AUTO_DOWNLOAD_USER"
-                label="交互式搜索自动下载用户"
-                hint="针对使用tg、微信等第三方交互的特化功能。使用逗号分割，设置为 all 代表所有用户自动择优下载，未设置时，需要用户手动选择资源 或 回复 ` 0 ` 才自动择优下载"
-                persistent-hint
-              />
-            </VCol>
-          </VRow>
-        </VCardText>
-        <VCardText>
-          <VForm @submit.prevent="() => {}">
-            <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSystemSettings(SystemSettings.Advanced)"> 保存 </VBtn>
             </div>
           </VForm>
         </VCardText>

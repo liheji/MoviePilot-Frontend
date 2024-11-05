@@ -95,6 +95,17 @@ async function loadSiteSettings() {
   }
 }
 
+// 重载系统生效配置
+async function reloadSystem() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/reload')
+    if (result.success) $toast.success('系统配置已生效')
+    else $toast.error('重载系统失败！')
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // 调用API保存设置
 async function saveSiteSetting(value: { [key: string]: any }) {
   console.log(`正在保存设置：${JSON.stringify(value)}`)
@@ -102,6 +113,7 @@ async function saveSiteSetting(value: { [key: string]: any }) {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
       $toast.success('保存设置成功')
+      await reloadSystem()
     }
   } catch (error) {
     console.log(error)

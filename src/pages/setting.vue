@@ -7,12 +7,10 @@ import AccountSettingWords from '@/views/setting/AccountSettingWords.vue'
 import AccountSettingAbout from '@/views/setting/AccountSettingAbout.vue'
 import AccountSettingSearch from '@/views/setting/AccountSettingSearch.vue'
 import AccountSettingSubscribe from '@/views/setting/AccountSettingSubscribe.vue'
-import AccountSettingService from '@/views/setting/AccountSettingService.vue'
 import AccountSettingSystem from '@/views/setting/AccountSettingSystem.vue'
 import AccountSettingScheduler from '@/views/setting/AccountSettingScheduler.vue'
 import AccountSettingDirectory from '@/views/setting/AccountSettingDirectory.vue'
 import AccountSettingRule from '@/views/setting/AccountSettingRule.vue'
-import AccountSettingTransfer from "@/views/setting/AccountSettingTransfer.vue"
 import { SettingTabs } from '@/router/menu'
 
 const route = useRoute()
@@ -51,15 +49,6 @@ function jumpTab(tab: string) {
         </transition>
       </VWindowItem>
 
-      <!-- 连接 -->
-      <VWindowItem value="service">
-        <transition name="fade-slide" appear>
-          <div>
-            <AccountSettingService />
-          </div>
-        </transition>
-      </VWindowItem>
-
       <!-- 目录 -->
       <VWindowItem value="directory">
         <transition name="fade-slide" appear>
@@ -90,15 +79,6 @@ function jumpTab(tab: string) {
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSearch />
-          </div>
-        </transition>
-      </VWindowItem>
-
-      <!-- 整理 -->
-      <VWindowItem value="transfer">
-        <transition name="fade-slide" appear>
-          <div>
-            <AccountSettingTransfer />
           </div>
         </transition>
       </VWindowItem>
