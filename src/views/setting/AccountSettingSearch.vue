@@ -18,6 +18,7 @@ const SystemSettings = ref<any>({
     SEARCH_MULTIPLE_NAME: false,
     DOWNLOAD_SUBTITLE: false,
     AUTO_DOWNLOAD_USER: null,
+    TORRENT_TAG: 'MOVIEPILOT',
   },
 })
 
@@ -211,7 +212,16 @@ onMounted(() => {
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="12">
+            <VCol cols="12" md="6">
+              <VTextField
+                v-model="SystemSettings.Basic.TORRENT_TAG"
+                label="下载任务标签"
+                placeholder="MOVIEPILOT"
+                hint="MoviePilot添加的下载任务标签"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="6">
               <VCombobox
                 v-model="SystemSettings.Basic.AUTO_DOWNLOAD_USER"
                 label="远程搜索自动下载用户名单"

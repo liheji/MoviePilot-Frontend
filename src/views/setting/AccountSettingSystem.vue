@@ -26,11 +26,15 @@ const SystemSettings = ref<any>({
     // 全局
     AUXILIARY_AUTH_ENABLE: false,
     GLOBAL_IMAGE_CACHE: false,
+    BIG_MEMORY_MODE: false,
     // 媒体
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
     META_CACHE_EXPIRE: 0,
     FANART_ENABLE: false,
+    SCRAP_FOLLOW_TMDB: true,
+    SUBSCRIBE_STATISTIC_SHARE: true,
+    PLUGIN_STATISTIC_SHARE: true,
     // 网络
     PROXY_HOST: null,
     GITHUB_PROXY: null,
@@ -544,6 +548,30 @@ onDeactivated(() => {
                     persistent-hint
                   />
                 </VCol>
+                <VCol cols="12" md="6">
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.SUBSCRIBE_STATISTIC_SHARE"
+                    label="分享订阅数据"
+                    hint="分享订阅统计数据到热门订阅，供其他MPer参考"
+                    persistent-hint
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.PLUGIN_STATISTIC_SHARE"
+                    label="上报插件安装数据"
+                    hint="上报插件安装数据给服务器，用于统计展示插件安装情况"
+                    persistent-hint
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.BIG_MEMORY_MODE"
+                    label="大内存模式"
+                    hint="使用更大的内存缓存数据，提升系统性能"
+                    persistent-hint
+                  />
+                </VCol>
               </VRow>
             </div>
           </VWindowItem>
@@ -582,6 +610,16 @@ onDeactivated(() => {
                     type="number"
                     suffix="小时"
                     :rules="[(v: any) => v === 0 || !!v || '请输入元数据缓存时间', (v: any) => v >= 0 || '元数据缓存时间必须大于等于0']"
+                  />
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol cols="12" md="6">
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.SCRAP_FOLLOW_TMDB"
+                    label="跟随TMDB识别整理"
+                    hint="关闭时以整理历史记录为准（如有），避免TMDB数据在订阅中途修改"
+                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
