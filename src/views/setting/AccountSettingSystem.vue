@@ -237,7 +237,7 @@ const pipMirrorsItems = [
 // 创建随机字符串
 function createRandomString() {
   const charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
-  const array = new Uint8Array(16)
+  const array = new Uint8Array(32)
   window.crypto.getRandomValues(array)
   SystemSettings.value.Basic.API_TOKEN = Array.from(array, byte => charset[byte % charset.length]).join('')
 }
