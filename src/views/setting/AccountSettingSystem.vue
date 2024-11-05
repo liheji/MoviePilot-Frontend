@@ -624,7 +624,7 @@ onDeactivated(() => {
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
-                    v-model="SystemSettings.Basic.FANART_ENABLE"
+                    v-model="SystemSettings.Advanced.FANART_ENABLE"
                     label="Fanart图片数据源"
                     hint="使用 fanart.tv 的图片数据"
                     persistent-hint
