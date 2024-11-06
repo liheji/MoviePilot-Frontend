@@ -184,8 +184,8 @@ watchEffect(() => {
   // 导入代码需要json格式
   try {
     if (importCodeType.value === 'custom') {
-      // 将导入的代码转换为规则卡片
-      customRules.value = JSON.parse(importCodeString.value).map((item: any) => {
+      // 将导入的代码转换为规则卡片，并追加到已有的 customRules
+      const newCustomRules = JSON.parse(importCodeString.value).map((item: any) => {
         return {
           id: item.id,
           name: item.name,
@@ -196,9 +196,10 @@ watchEffect(() => {
           size_range: item.size_range,
         }
       })
+      customRules.value = [...customRules.value, ...newCustomRules] // 合并已有的和新导入的规则
     } else if (importCodeType.value === 'group') {
-      // 将导入的代码转换为规则卡片
-      filterRuleGroups.value = JSON.parse(importCodeString.value).map((item: any) => {
+      // 将导入的代码转换为规则卡片，并追加到已有的 filterRuleGroups
+      const newFilterRuleGroups = JSON.parse(importCodeString.value).map((item: any) => {
         return {
           name: item.name,
           rule_string: item.rule_string,
@@ -206,6 +207,7 @@ watchEffect(() => {
           category: item.category,
         }
       })
+      filterRuleGroups.value = [...filterRuleGroups.value, ...newFilterRuleGroups] // 合并已有的和新导入的规则
     }
   } catch (error) {
     $toast.error('规则导入失败！')
