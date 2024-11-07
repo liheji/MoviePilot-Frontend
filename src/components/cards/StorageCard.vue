@@ -56,7 +56,7 @@ function openStorageDialog() {
       rcloneConfigDialog.value = true
       break
     default:
-      $toast.info('此存储类型无需配置参数')
+      $toast.info('此存储类型无需配置参数，请直接配置目录！')
       break
   }
 }
@@ -90,7 +90,7 @@ const progressColor = computed(() => {
 
 // 计算存储使用率
 const usage = computed(() => {
-  return Math.round(((used.value) / (total.value || 1)) * 1000) / 10
+  return Math.round((used.value / (total.value || 1)) * 1000) / 10
 })
 
 // 查询存储信息
