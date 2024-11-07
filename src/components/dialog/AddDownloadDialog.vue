@@ -130,9 +130,10 @@ onMounted(() => {
       <VCardText>
         <VRow>
           <VCol cols="12" class="text-lg text-high-emphasis pb-0">
-            <strong>标题：</strong>{{ props.torrent?.title }}<br />
-            <strong>站点：</strong>{{ props.torrent?.site_name }}<br />
-            <strong>大小：</strong>{{ formatFileSize(props.torrent?.size || 0) }}
+            <div><strong>站点：</strong>{{ props.torrent?.site_name }}</div>
+            <div><strong>标题：</strong>{{ props.torrent?.title }}</div>
+            <div><strong>描述：</strong>{{ props.torrent?.description }}</div>
+            <div><strong>大小：</strong>{{ formatFileSize(props.torrent?.size || 0) }}</div>
           </VCol>
           <VCol cols="12" md="4">
             <VSelect
