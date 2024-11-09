@@ -156,7 +156,7 @@ function onClose() {
                   v-model="ruleInfo.size_range"
                   placeholder="0/1-10"
                   label="资源体积（MB）"
-                  hint="最小资源文件体积或文件体积范围"
+                  hint="最小资源文件体积或体积范围（剧集计算单集平均大小）"
                   persistent-hint
                   active
                 />
