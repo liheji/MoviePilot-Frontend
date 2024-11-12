@@ -27,6 +27,7 @@ const SystemSettings = ref<any>({
     AUXILIARY_AUTH_ENABLE: false,
     GLOBAL_IMAGE_CACHE: false,
     BIG_MEMORY_MODE: false,
+    DB_WAL_ENABLE: false,
     // 媒体
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
@@ -569,6 +570,14 @@ onDeactivated(() => {
                     v-model="SystemSettings.Advanced.BIG_MEMORY_MODE"
                     label="大内存模式"
                     hint="使用更大的内存缓存数据，提升系统性能"
+                    persistent-hint
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.DB_WAL_ENABLE"
+                    label="WAL模式"
+                    hint="可提升读写并发性能，但可能在异常情况下增加数据丢失风险，更改后需重启生效"
                     persistent-hint
                   />
                 </VCol>
