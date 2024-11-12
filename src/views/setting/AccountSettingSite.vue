@@ -29,6 +29,7 @@ const siteSetting = ref<any>({
   },
   Site: {
     SITEDATA_REFRESH_INTERVAL: 0,
+    SITE_MESSAGE: false,
   },
 })
 
@@ -228,6 +229,16 @@ onMounted(() => {
                   label="站点数据刷新间隔"
                   :items="SiteDataRefreshIntervalItems"
                   hint="刷新站点用户上传下载等数据的时间间隔"
+                  persistent-hint
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12" md="6">
+                <VSwitch
+                  v-model="siteSetting.Site.SITE_MESSAGE"
+                  label="阅读站点消息"
+                  hint="刷新数据时读取站点消息并发送通知"
                   persistent-hint
                 />
               </VCol>
