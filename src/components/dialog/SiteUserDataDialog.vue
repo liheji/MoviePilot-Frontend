@@ -31,8 +31,8 @@ const currentTheme = controlledComputed(
 // 站点数据列表
 const siteDatas = ref<SiteUserData[]>([])
 
-// 最新一天的数据，按时间倒序排序后取第一条记录
-const siteData = computed(() => siteDatas.value[0])
+// 最新一天的数据
+const siteData = computed(() => siteDatas.value[siteDatas.value.length - 1])
 
 
 // 站点数据列表中的上传量、下载量数据生成图形使用的数据
@@ -267,7 +267,7 @@ onBeforeMount(async () => {
   <VDialog scrollable eager max-width="80rem" :fullscreen="!display.mdAndUp.value">
     <VCard class="rounded-t">
       <VCardItem>
-        <VCardTitle>{{ `数据 - ${props.site?.name}` }} 
+        <VCardTitle>{{ `数据 - ${props.site?.name}` }}
         <IconBtn @click.stop="refreshSiteData" color="info"><VIcon icon="mdi-refresh"</VIcon></IconBtn>
         </VCardTitle>
         <DialogCloseBtn @click="emit('close')" />
