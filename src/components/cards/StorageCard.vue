@@ -5,10 +5,12 @@ import storage_png from '@images/misc/storage.png'
 import alipan_png from '@images/misc/alipan.webp'
 import u115_png from '@images/misc/u115.png'
 import rclone_png from '@images/misc/rclone.png'
+import alist_png from '@images/misc/alist.svg'
 import api from '@/api'
 import AliyunAuthDialog from '../dialog/AliyunAuthDialog.vue'
 import U115AuthDialog from '../dialog/U115AuthDialog.vue'
 import RcloneConfigDialog from '../dialog/RcloneConfigDialog.vue'
+import AlistConfigDialog from '../dialog/AlistConfigDialog.vue'
 import { useToast } from 'vue-toast-notification'
 
 // 定义输入
@@ -42,6 +44,8 @@ const aliyunAuthDialog = ref(false)
 const u115AuthDialog = ref(false)
 // Rclone配置对话框
 const rcloneConfigDialog = ref(false)
+// AList配置对话框
+const aListConfigDialog = ref(false)
 
 // 打开存储对话框
 function openStorageDialog() {
@@ -54,6 +58,9 @@ function openStorageDialog() {
       break
     case 'rclone':
       rcloneConfigDialog.value = true
+      break
+    case 'alist':
+      aListConfigDialog.value = true
       break
     default:
       $toast.info('此存储类型无需配置参数，请直接配置目录！')
@@ -72,6 +79,8 @@ const getIcon = computed(() => {
       return u115_png
     case 'rclone':
       return rclone_png
+    case 'alist':
+      return alist_png
     default:
       return storage_png
   }
@@ -109,6 +118,7 @@ function handleDone() {
   aliyunAuthDialog.value = false
   u115AuthDialog.value = false
   rcloneConfigDialog.value = false
+  aListConfigDialog.value = false
   emit('done')
 }
 
@@ -142,6 +152,13 @@ onMounted(() => {
     v-model="rcloneConfigDialog"
     :conf="props.storage.config || {}"
     @close="rcloneConfigDialog = false"
+    @done="handleDone"
+  />
+  <AlistConfigDialog
+    v-if="aListConfigDialog"
+    v-model="aListConfigDialog"
+    :conf="props.storage.config || {}"
+    @close="aListConfigDialog = false"
     @done="handleDone"
   />
 </template>

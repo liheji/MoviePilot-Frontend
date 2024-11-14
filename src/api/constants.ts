@@ -15,6 +15,10 @@ export const storageOptions = [
     title: 'Rclone网盘',
     value: 'rclone',
   },
+  {
+    title: 'AList',
+    value: 'alist',
+  },
 ]
 
 export const innerFilterRules = [
