@@ -48,10 +48,10 @@ const groupInfoDialog = ref(false)
 
 // 规则详情
 const groupInfo = ref<FilterRuleGroup>({
-  name: props.group?.name,
-  rule_string: props.group?.rule_string,
-  media_type: props.group?.media_type,
-  category: props.group?.category,
+  name: props.group?.name ?? '',
+  rule_string: props.group?.rule_string ?? '',
+  media_type: props.group?.media_type ?? '',
+  category: props.group?.category ?? '',
 })
 
 // 媒体类型字典
@@ -64,9 +64,10 @@ const mediaTypeItems = [
 // 根据选中的媒体类型，获取对应的媒体类别
 const getCategories = computed(() => {
   const default_value = [{ title: '全部', value: '' }]
-  if (!props.categories || !groupInfo.value.media_type || !props.categories[groupInfo.value.media_type ?? ''])
+  if (!props.categories || !groupInfo.value.media_type || !props.categories[groupInfo.value.media_type]) {
     return default_value
-  return default_value.concat(props.categories[groupInfo.value.media_type ?? ''])
+  }
+  return default_value.concat(props.categories[groupInfo.value.media_type] || [])
 })
 
 // 规则组规则卡片列表
@@ -81,7 +82,7 @@ const importCodeString = ref('')
 // 更新规则卡片的值
 function updateFilterCardValue(pri: string, rules: string[]) {
   const card = filterRuleCards.value.find(card => card.pri === pri)
-  if (card) card.rules = rules
+  if (card && Array.isArray(rules)) card.rules = rules
 }
 
 // 移除卡片
@@ -96,16 +97,13 @@ function filterCardClose(pri: string) {
 
 // 分享规则
 function shareRules() {
-  // 有值才处理
   if (filterRuleCards.value.length === 0) return
 
-  // 将卡片规则接装为字符串
   const value = filterRuleCards.value
-    .filter(card => card.rules.length > 0)
+    .filter(card => Array.isArray(card.rules) && card.rules.length > 0)
     .map(card => card.rules.join('&'))
     .join('>')
 
-  // 复制到剪贴板
   try {
     copyToClipboard(value)
     $toast.success('优先级规则已复制到剪贴板')
@@ -123,71 +121,57 @@ async function importRules() {
 // 监听导入代码变化
 watchEffect(() => {
   if (!importCodeString.value) return
-  // 导入代码需要以空格开头和结束，没有则拼接
+
   if (!importCodeString.value.startsWith(' ')) importCodeString.value = ` ${importCodeString.value}`
   if (!importCodeString.value.endsWith(' ')) importCodeString.value = `${importCodeString.value} `
-  // 将导入的代码转换为规则卡片
+
   const groups = importCodeString.value.split('>')
-  filterRuleCards.value = groups.map((group: string, index: number) => {
-    return {
-      pri: (index + 1).toString(),
-      rules: group.split('&'),
-    }
-  })
+  filterRuleCards.value = groups.map((group: string, index: number) => ({
+    pri: (index + 1).toString(),
+    rules: group.split('&').filter(rule => rule),
+  }))
 })
 
 // 增加卡片
 function addFilterCard() {
-  // 优先级
   const pri = (filterRuleCards.value.length + 1).toString()
-
-  // 新卡片
   const newCard: FilterCard = { pri, rules: [] }
-
-  // 添加到列表
   filterRuleCards.value.push(newCard)
 }
 
 // 根据列表的拖动顺序更新优先级
 function dragOrderEnd() {
-  filterRuleCards.value.map((card, index) => {
+  filterRuleCards.value.forEach((card, index) => {
     card.pri = (index + 1).toString()
-    return card
   })
 }
 
 // 打开详情弹窗
 function opengroupInfoDialog() {
-  // 深复制
   groupInfo.value = cloneDeep(props.group)
   if (props.group.rule_string) {
-    filterRuleCards.value = props.group.rule_string.split('>').map((group: string, index: number) => {
-      return {
-        pri: (index + 1).toString(),
-        rules: group.split('&'),
-      }
-    })
+    filterRuleCards.value = props.group.rule_string.split('>').map((group: string, index: number) => ({
+      pri: (index + 1).toString(),
+      rules: group.split('&').filter(rule => rule),
+    }))
   }
   groupInfoDialog.value = true
 }
 
 // 保存详情数据
 function saveGroupInfo() {
-  // 为空
-  if (!groupInfo.value.name) {
+  if (!groupInfo.value.name.trim()) {
     $toast.error('规则组名称不能为空')
     return
   }
-  // 重名判断
   if (props.groups.some(item => item.name === groupInfo.value.name && item !== props.group)) {
     $toast.error(`规则组名称【${groupInfo.value.name}】已存在，请替换`)
     return
   }
-  // 保存
+
   groupInfoDialog.value = false
-  // 更新到 groupInfo的rule_string
   groupInfo.value.rule_string = filterRuleCards.value
-    .filter(card => card.rules.length > 0)
+    .filter(card => Array.isArray(card.rules) && card.rules.length > 0)
     .map(card => card.rules.join('&'))
     .join('>')
   emit('change', groupInfo.value, props.group.name)
