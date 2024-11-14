@@ -38,7 +38,7 @@ async function savaRcloneConfig() {
 
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
-    <VCard title="Rclone网盘配置" class="rounded-t">
+    <VCard title="RClone配置" class="rounded-t">
       <DialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VRow>
