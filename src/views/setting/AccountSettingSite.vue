@@ -79,7 +79,7 @@ async function loadSiteSettings() {
       // 将API返回的值赋值给SystemSettings
       for (const sectionKey of Object.keys(siteSetting.value) as Array<keyof typeof siteSetting.value>) {
         Object.keys(siteSetting.value[sectionKey]).forEach((key: string) => {
-          if (result.data.hasOwnProperty(key)) (SystemSettings.value[sectionKey] as any)[key] = result.data[key]
+          if (result.data.hasOwnProperty(key)) (siteSetting.value[sectionKey] as any)[key] = result.data[key]
         })
       }
     }
