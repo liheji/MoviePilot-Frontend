@@ -46,9 +46,10 @@ const storageItems = [
 
 // 自动整理方式下拉字典
 const transferSourceItems = [
-  { title: '不自动整理', value: '' },
+  { title: '不整理', value: '' },
   { title: '下载器监控', value: 'downloader' },
   { title: '目录监控', value: 'monitor' },
+  { title: '手动整理', value: 'manual' },
 ]
 
 // 监控模式下拉字典
