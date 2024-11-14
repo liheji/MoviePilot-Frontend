@@ -2,22 +2,27 @@ export const storageOptions = [
   {
     title: '本地',
     value: 'local',
+    icon: 'mdi-folder-multiple-outline',
   },
   {
     title: '阿里云盘',
     value: 'alipan',
+    icon: 'mdi-cloud-outline',
   },
   {
     title: '115网盘',
     value: 'u115',
+    icon: 'mdi-cloud-outline',
   },
   {
-    title: 'Rclone网盘',
+    title: 'RClone',
     value: 'rclone',
+    icon: 'mdi-cloud-outline',
   },
   {
     title: 'AList',
     value: 'alist',
+    icon: 'mdi-cloud-outline',
   },
 ]
 
