@@ -48,6 +48,11 @@ const availableStorages = [
     code: 'rclone',
     icon: 'mdi-cloud-outline',
   },
+  {
+    name: 'AList',
+    code: 'alist',
+    icon: 'mdi-cloud-outline',
+  },
 ]
 
 const fileIcons = {
