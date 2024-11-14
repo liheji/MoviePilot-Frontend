@@ -122,7 +122,7 @@ onMounted(() => {
   <VDialog max-width="45rem" scrollable>
     <VCard>
       <VCardItem>
-        <VCardTitle v-if="title">下载 - {{ torrent?.site_name }}</VCardTitle>
+        <VCardTitle v-if="title">{{ torrent?.site_name }} - {{ title }}</VCardTitle>
         <VCardTitle v-else>确认下载</VCardTitle>
         <DialogCloseBtn @click="emit('close')" />
       </VCardItem>
