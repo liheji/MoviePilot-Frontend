@@ -387,6 +387,8 @@ export interface Site {
   pri?: number
   // RSS地址
   rss?: string
+  // 下载器
+  downloader?: string
   // Cookie
   cookie?: string
   // ApiKey
