@@ -607,6 +607,8 @@ export interface TorrentInfo {
   site_proxy: boolean
   // 站点优先级
   site_order: number
+  // 站点下载器
+  site_downloader?: string
   // 种子名称
   title?: string
   // 种子副标题
