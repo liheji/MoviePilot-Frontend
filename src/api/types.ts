@@ -72,6 +72,8 @@ export interface Subscribe {
   media_category?: string
   // 过滤规则组
   filter_groups?: string[]
+  // 下载器
+  downloader?: string
 }
 
 // 订阅分享

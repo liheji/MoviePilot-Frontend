@@ -57,6 +57,25 @@ const subscribeForm = ref<Subscribe>({
 // 提示框
 const $toast = useToast()
 
+// 下载器选项
+const downloaderOptions = ref<{ title: string; value: string }[]>([])
+
+async function loadDownloaderSetting() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
+    const downloaders = result.data?.value ?? []
+    downloaderOptions.value = [
+      { title: '默认', value: null },
+      ...downloaders.map((item: { name: any }) => ({
+        title: item.name,
+        value: item.name,
+      })),
+    ]
+  } catch (error) {
+    console.error('加载下载器设置失败:', error)
+  }
+}
+
 // 加载规则组
 async function queryFilterRuleGroups() {
   try {
@@ -292,6 +311,7 @@ onMounted(() => {
   queryFilterRuleGroups()
   loadDownloadDirectories()
   getSiteList()
+  loadDownloaderSetting()
   if (props.subid) getSubscribeInfo()
   if (props.default) queryDefaultSubscribeConfig()
 })
@@ -393,6 +413,26 @@ onMounted(() => {
                   </VCol>
                 </VRow>
                 <VRow>
+                  <VCol cols="12" md="6">
+                    <VSelect
+                      v-model="subscribeForm.downloader"
+                      :items="downloaderOptions"
+                      label="下载器"
+                      hint="指定该订阅使用的下载器，留空自动使用默认下载器"
+                      persistent-hint
+                    />
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <VCombobox
+                      v-model="subscribeForm.save_path"
+                      :items="targetDirectories"
+                      label="保存路径"
+                      hint="指定该订阅的下载保存路径，留空自动使用设定的下载目录"
+                      persistent-hint
+                    />
+                  </VCol>
+                </VRow>
+                <VRow>
                   <VCol cols="12" md="4">
                     <VSwitch
                       v-model="subscribeForm.best_version"
@@ -458,15 +498,6 @@ onMounted(() => {
                       v-model="subscribeForm.media_category"
                       label="自定义类别"
                       hint="指定类别名称，留空自动识别"
-                      persistent-hint
-                    />
-                  </VCol>
-                  <VCol cols="12" md="6">
-                    <VCombobox
-                      v-model="subscribeForm.save_path"
-                      :items="targetDirectories"
-                      label="自定义保存路径"
-                      hint="指定该订阅的下载保存路径，留空自动使用设定的下载目录"
                       persistent-hint
                     />
                   </VCol>

@@ -67,10 +67,13 @@ async function loadDownloaderSetting() {
   try {
     const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
     const downloaders = result.data?.value ?? []
-    downloaderOptions.value = [{ title: '默认下载器', value: null }, ...downloaders.map((item: { name: any }) => ({
-      title: item.name,
-      value: item.name,
-    }))]
+    downloaderOptions.value = [
+      { title: '默认', value: null },
+      ...downloaders.map((item: { name: any }) => ({
+        title: item.name,
+        value: item.name,
+      })),
+    ]
   } catch (error) {
     console.error('加载下载器设置失败:', error)
   }
