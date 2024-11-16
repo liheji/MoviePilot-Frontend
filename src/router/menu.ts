@@ -219,6 +219,11 @@ export const SubscribeTvTabs = [
     tab: 'popular',
     icon: 'mdi-television',
   },
+  {
+    title: '订阅分享',
+    tab: 'share',
+    icon: 'mdi-television',
+  },
 ]
 
 // 插件标签页
