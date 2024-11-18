@@ -19,11 +19,11 @@ function jumpTab(tab: string) {
 <template>
   <div>
     <VTabs v-model="activeTab">
-      <VTab v-for="item in SubscribeMovieTabs" :value="item.tab" @to="jumpTab(item.tab)">
+      <VTab v-if="subType == '电影'" v-for="item in SubscribeMovieTabs" :value="item.tab" @to="jumpTab(item.tab)">
         <span class="mx-5">{{ item.title }}</span>
       </VTab>
-      <VTab v-if="subType == '电视剧'" value="share" @to="jumpTab('share')">
-        <span class="mx-5">订阅分享</span>
+      <VTab v-if="subType == '电视剧'" v-for="item in SubscribeTvTabs" :value="item.tab" @to="jumpTab(item.tab)">
+        <span class="mx-5">{{ item.title }}</span>
       </VTab>
     </VTabs>
 
