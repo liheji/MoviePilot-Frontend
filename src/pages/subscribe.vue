@@ -2,7 +2,7 @@
 import SubscribeListView from '@/views/subscribe/SubscribeListView.vue'
 import SubscribePopularView from '@/views/subscribe/SubscribePopularView.vue'
 import SubscribeShareView from '@/views/subscribe/SubscribeShareView.vue'
-import { SubscribeMovieTabs } from '@/router/menu'
+import { SubscribeMovieTabs, SubscribeTvTabs } from '@/router/menu'
 import router from '@/router'
 
 const route = useRoute()
