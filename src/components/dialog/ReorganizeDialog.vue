@@ -104,13 +104,14 @@ const targetDirectories = computed(() => {
   return [...new Set(libraryDirectories)]
 })
 
-// 监听目的路径变化，自动查询目录削配置
-watch(transferForm, async () => {
-  if (transferForm.target_path) {
-    const directory = directories.value.find(item => item.library_path === transferForm.target_path)
+// 监听目的路径变化，配置默认值
+watch(() => transferForm.target_path, async (newPath) => {
+  if (newPath) {
+    const directory = directories.value.find(item => item.library_path === newPath)
     if (directory) {
+      transferForm.target_storage = directory.storage ?? 'local'
+      transferForm.transfer_type = directory.transfer_type?? ''
       transferForm.scrape = directory.scraping ?? false
-      transferForm.transfer_type = directory.transfer_type ?? ''
     }
   }
 })
