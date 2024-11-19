@@ -61,7 +61,7 @@ async function loadLastAuthParams() {
   try {
     const result: { [key: string]: any } = await api.get(`system/setting/UserSiteAuthParams`)
     if (result.success) {
-      authForm.value = result.data?.value || {}
+      authForm.value = result.data?.value || { site: null, params: {} }
     }
   } catch (e) {
     console.error(e)
