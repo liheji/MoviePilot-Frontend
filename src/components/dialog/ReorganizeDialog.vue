@@ -100,21 +100,23 @@ async function loadDirectories() {
 
 // 目的目录下拉框
 const targetDirectories = computed(() => {
-  const libraryDirectories = directories.value.map(item => item.library_path)
-  return [...new Set(libraryDirectories)]
+  return directories.value.map(item => item.library_path)
 })
 
 // 监听目的路径变化，配置默认值
-watch(() => transferForm.target_path, async (newPath) => {
-  if (newPath) {
-    const directory = directories.value.find(item => item.library_path === newPath)
-    if (directory) {
-      transferForm.target_storage = directory.storage ?? 'local'
-      transferForm.transfer_type = directory.transfer_type?? ''
-      transferForm.scrape = directory.scraping ?? false
+watch(
+  () => transferForm.target_path,
+  async newPath => {
+    if (newPath) {
+      const directory = directories.value.find(item => item.library_path === newPath)
+      if (directory) {
+        transferForm.target_storage = directory.storage ?? 'local'
+        transferForm.transfer_type = directory.transfer_type ?? ''
+        transferForm.scrape = directory.scraping ?? false
+      }
     }
-  }
-})
+  },
+)
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
