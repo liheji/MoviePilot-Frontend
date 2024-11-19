@@ -215,7 +215,12 @@ onMounted(async () => {
               />
             </VCol>
             <VCol cols="12" md="3">
-              <VTextField v-model="siteForm.timeout" label="超时时间（秒）" hint="站点请求超时时间" persistent-hint />
+              <VTextField
+                v-model="siteForm.timeout"
+                label="超时时间（秒）"
+                hint="站点请求超时时间，为0时不限制"
+                persistent-hint
+              />
             </VCol>
             <VCol cols="6" md="3">
               <VSelect
