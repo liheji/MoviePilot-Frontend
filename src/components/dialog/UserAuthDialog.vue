@@ -127,7 +127,7 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol v-for="param in formFields" :key="param.key" cols="12" md="6">
+          <VCol v-for="param in formFields" :key="param.key">
             <VTextField
               v-model="authForm.params[param.site.toUpperCase() + '_' + param.key.toUpperCase()]"
               :type="param.type"
