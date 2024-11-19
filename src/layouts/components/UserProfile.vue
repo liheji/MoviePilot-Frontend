@@ -6,6 +6,7 @@ import router from '@/router'
 import avatar1 from '@images/avatars/avatar-1.png'
 import api from '@/api'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
+import UserAuthDialog from '@/components/dialog/UserAuthDialog.vue'
 
 // Vuex Store
 const store = useStore()
@@ -18,6 +19,9 @@ const $toast = useToast()
 
 // 进度框
 const progressDialog = ref(false)
+
+// 站点认证对话框
+const siteAuthDialog = ref(false)
 
 // 执行注销操作
 function logout() {
@@ -56,10 +60,22 @@ async function restart() {
   }
 }
 
+// 显示站点认证对话框
+function showSiteAuthDialog() {
+  siteAuthDialog.value = true
+}
+
+// 用户站点认证成功
+function siteAuthDone() {
+  siteAuthDialog.value = false
+  logout()
+}
+
 // 从Vuex Store中获取信息
 const superUser = computed(() => store.state.auth.superUser)
 const userName = computed(() => store.state.auth.userName)
 const avatar = computed(() => store.state.auth.avatar || avatar1)
+const userLevel = computed(() => store.state.auth.level)
 </script>
 
 <template>
@@ -94,6 +110,14 @@ const avatar = computed(() => store.state.auth.avatar || avatar1)
           <VListItemTitle>个人信息</VListItemTitle>
         </VListItem>
 
+        <!-- 👉 Site Auth -->
+        <VListItem v-if="userLevel < 2" link @click="showSiteAuthDialog">
+          <template #prepend>
+            <VIcon class="me-2" icon="mdi-lock-check-outline" size="22" />
+          </template>
+          <VListItemTitle>用户认证</VListItemTitle>
+        </VListItem>
+
         <!-- 👉 FAQ -->
         <VListItem href="https://wiki.movie-pilot.org" target="_blank">
           <template #prepend>
@@ -126,4 +150,6 @@ const avatar = computed(() => store.state.auth.avatar || avatar1)
   </VAvatar>
   <!-- 重启进度框 -->
   <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在重启 ..." />
+  <!-- 用户认证对话框 -->
+  <UserAuthDialog v-if="siteAuthDialog" v-model="siteAuthDialog" @done="siteAuthDone" @close="siteAuthDialog = false" />
 </template>
