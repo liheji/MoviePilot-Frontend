@@ -50,6 +50,7 @@ const subscribeForm = ref<Subscribe>({
   sites: [],
   best_version: undefined,
   current_priority: 0,
+  downloader: '',
   date: '',
   show_edit_dialog: false,
 })
@@ -65,7 +66,7 @@ async function loadDownloaderSetting() {
     const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
     const downloaders = result.data?.value ?? []
     downloaderOptions.value = [
-      { title: '默认', value: null },
+      { title: '默认', value: '' },
       ...downloaders.map((item: { name: any }) => ({
         title: item.name,
         value: item.name,
