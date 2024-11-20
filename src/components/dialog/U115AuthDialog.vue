@@ -1,6 +1,15 @@
 <script lang="ts" setup>
 import api from '@/api'
 import QrcodeVue from 'qrcode.vue'
+import { VCardItem, VTextField } from 'vuetify/lib/components/index.mjs'
+
+// 定义输入
+const props = defineProps({
+  conf: {
+    type: Object as PropType<{ [key: string]: any }>,
+    required: true,
+  },
+})
 
 // 定义事件
 const emit = defineEmits(['done', 'close'])
@@ -9,7 +18,7 @@ const emit = defineEmits(['done', 'close'])
 const qrCodeContent = ref('')
 
 // 下方的提示信息
-const text = ref('请使用微信或115客户端扫码')
+const text = ref('请使用微信或115客户端扫码，或在下方输入Cookie')
 
 // 提醒类型
 const alertType = ref<'success' | 'info' | 'error' | 'warning' | undefined>('info')
@@ -19,6 +28,9 @@ let timeoutTimer: NodeJS.Timeout | undefined = undefined
 
 // 完成
 async function handleDone() {
+  if (props.conf?.cookie) {
+    await savaAlistConfig()
+  }
   emit('done')
 }
 
@@ -71,6 +83,15 @@ async function checkQrcode() {
   }
 }
 
+// 保存cookie设置
+async function savaAlistConfig() {
+  try {
+    await api.post(`storage/save/u115`, props.conf)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 onMounted(async () => {
   await getQrcode()
   timeoutTimer = setTimeout(checkQrcode, 3000)
@@ -92,6 +113,13 @@ onUnmounted(() => {
         <VAlert variant="tonal" :type="alertType" class="my-4 text-center" :text="text">
           <template #prepend />
         </VAlert>
+      </VCardText>
+      <VCardText>
+        <VRow>
+          <VCol class="mt-2">
+            <VTextField label="自定义Cookie" v-model="props.conf.cookie" outlined dense />
+          </VCol>
+        </VRow>
       </VCardText>
       <VCardActions>
         <VSpacer />

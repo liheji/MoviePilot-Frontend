@@ -147,7 +147,13 @@ onMounted(() => {
     @close="aliyunAuthDialog = false"
     @done="handleDone"
   />
-  <U115AuthDialog v-if="u115AuthDialog" v-model="u115AuthDialog" @close="u115AuthDialog = false" @done="handleDone" />
+  <U115AuthDialog
+    v-if="u115AuthDialog"
+    v-model="u115AuthDialog"
+    :conf="props.storage.config || {}"
+    @close="u115AuthDialog = false"
+    @done="handleDone"
+  />
   <RcloneConfigDialog
     v-if="rcloneConfigDialog"
     v-model="rcloneConfigDialog"
