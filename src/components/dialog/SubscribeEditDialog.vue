@@ -418,7 +418,7 @@ onMounted(() => {
                       v-model="subscribeForm.downloader"
                       :items="downloaderOptions"
                       label="下载器"
-                      hint="指定该订阅使用的下载器，留空自动使用默认下载器"
+                      hint="指定该订阅使用的下载器"
                       persistent-hint
                     />
                   </VCol>
