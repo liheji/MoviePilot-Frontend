@@ -111,7 +111,7 @@ const userLevel = computed(() => store.state.auth.level)
         </VListItem>
 
         <!-- 👉 Site Auth -->
-        <VListItem v-if="userLevel < 2" link @click="showSiteAuthDialog">
+        <VListItem v-if="userLevel < 2 && superUser" link @click="showSiteAuthDialog">
           <template #prepend>
             <VIcon class="me-2" icon="mdi-lock-check-outline" size="22" />
           </template>
