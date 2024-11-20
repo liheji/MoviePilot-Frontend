@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { isNullOrEmptyObject } from '@/@core/utils'
 import api from '@/api'
 import { useToast } from 'vue-toast-notification'
 
@@ -61,7 +62,10 @@ async function loadLastAuthParams() {
   try {
     const result: { [key: string]: any } = await api.get(`system/setting/UserSiteAuthParams`)
     if (result.success) {
-      authForm.value = result.data?.value || { site: null, params: {} }
+      const ret = result.data?.value
+      if (ret && !isNullOrEmptyObject(ret.params)) {
+        authForm.value = ret
+      }
     }
   } catch (e) {
     console.error(e)
@@ -84,6 +88,22 @@ async function handleDone() {
 
 // 认证处理
 async function checkUser() {
+  if (!authForm.value.site) {
+    $toast.error('请选择认证站点！')
+    return
+  }
+  if (!authSites.value[authForm.value.site]) {
+    $toast.error('站点配置不存在！')
+    return
+  }
+  if (formFields.value.length > 0) {
+    for (const field of formFields.value) {
+      if (!authForm.value.params[field.site.toUpperCase() + '_' + field.key.toUpperCase()]) {
+        $toast.error(`请输入${field.name}！`)
+        return
+      }
+    }
+  }
   loading.value = true
   try {
     const result: { [key: string]: any } = await api.post(`site/auth`, authForm.value)

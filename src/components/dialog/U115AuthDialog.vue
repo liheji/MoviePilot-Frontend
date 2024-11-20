@@ -28,8 +28,9 @@ let timeoutTimer: NodeJS.Timeout | undefined = undefined
 
 // 完成
 async function handleDone() {
+  clearTimeout(timeoutTimer)
   if (props.conf?.cookie) {
-    await savaAlistConfig()
+    await savaU115Config()
   }
   emit('done')
 }
@@ -84,7 +85,7 @@ async function checkQrcode() {
 }
 
 // 保存cookie设置
-async function savaAlistConfig() {
+async function savaU115Config() {
   try {
     await api.post(`storage/save/u115`, props.conf)
   } catch (e) {

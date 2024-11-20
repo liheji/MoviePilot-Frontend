@@ -2,6 +2,14 @@
 import QrcodeVue from 'qrcode.vue'
 import api from '@/api'
 
+// 定义输入
+const props = defineProps({
+  conf: {
+    type: Object as PropType<{ [key: string]: any }>,
+    required: true,
+  },
+})
+
 // 定义事件
 const emit = defineEmits(['done', 'close'])
 
@@ -25,6 +33,10 @@ let timeoutTimer: NodeJS.Timeout | undefined = undefined
 
 // 完成
 async function handleDone() {
+  clearTimeout(timeoutTimer)
+  if (props.conf?.refreshToken) {
+    await savaAliPanConfig()
+  }
   emit('done')
 }
 
@@ -75,6 +87,15 @@ async function checkQrcode() {
   }
 }
 
+// 保存cookie设置
+async function savaAliPanConfig() {
+  try {
+    await api.post(`storage/save/alipan`, props.conf)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 onMounted(async () => {
   await getQrcode()
   timeoutTimer = setTimeout(checkQrcode, 3000)
@@ -96,6 +117,13 @@ onUnmounted(() => {
         <VAlert variant="tonal" :type="alertType" class="my-4 text-center" :text="text">
           <template #prepend />
         </VAlert>
+      </VCardText>
+      <VCardText>
+        <VRow>
+          <VCol class="mt-2">
+            <VTextField label="自定义refreshToken" v-model="props.conf.refreshToken" outlined dense />
+          </VCol>
+        </VRow>
       </VCardText>
       <VCardActions>
         <VSpacer />

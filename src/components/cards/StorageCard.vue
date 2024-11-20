@@ -144,6 +144,7 @@ onMounted(() => {
   <AliyunAuthDialog
     v-if="aliyunAuthDialog"
     v-model="aliyunAuthDialog"
+    :conf="props.storage.config || {}"
     @close="aliyunAuthDialog = false"
     @done="handleDone"
   />
