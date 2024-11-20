@@ -3,7 +3,6 @@ import api from '@/api'
 import { FileItem } from '@/api/types'
 import { VTreeview } from 'vuetify/labs/VTreeview'
 
-// 输入变量为默认路径
 const props = defineProps({
   root: {
     type: String,
@@ -16,16 +15,12 @@ const props = defineProps({
   },
 })
 
-// update:modelValue 事件
 const emit = defineEmits(['update:modelValue'])
 
-// 激活的目录
 const activedDirs = ref<string[]>([])
-
-// 打开的目录
 const openedDirs = ref<string[]>([])
+const isUserAction = ref(false) // 标志：是否为用户主动操作
 
-// 目录列表
 const treeItems = ref<FileItem[]>([
   {
     name: '/',
@@ -37,19 +32,16 @@ const treeItems = ref<FileItem[]>([
   },
 ])
 
-// 拉取子目录
 async function fetchDirs(item: any) {
   return api
     .post('/storage/list', item)
     .then((data: any) => {
-      // 只添加目录到子目录
       data = data.filter((i: any) => i.type === 'dir')
       item.children.push(...data)
     })
     .catch(err => console.warn(err))
 }
 
-// 获取选择的目录路径
 const selectedPath = computed(() => {
   if (activedDirs.value.length > 0) {
     return activedDirs.value[0]
@@ -57,13 +49,12 @@ const selectedPath = computed(() => {
   return ''
 })
 
-// 监听目录变化
 watch(activedDirs, newVal => {
-  if (!newVal.length) return
-  emit('update:modelValue', selectedPath)
+  if (!newVal.length || !isUserAction.value) return
+  emit('update:modelValue', selectedPath.value)
+  isUserAction.value = false
 })
 
-// 监听存储变化
 watch(
   () => props.storage,
   async newVal => {
@@ -81,6 +72,10 @@ watch(
     activedDirs.value = []
   },
 )
+
+function handleUserSelect() {
+  isUserAction.value = true
+}
 </script>
 
 <template>
@@ -102,7 +97,7 @@ watch(
       max-height="20rem"
       expand-icon="mdi-folder"
       collapse-icon="mdi-folder-open"
-    >
-    </VTreeview>
+      @update:activated="handleUserSelect"
+    />
   </VMenu>
 </template>
