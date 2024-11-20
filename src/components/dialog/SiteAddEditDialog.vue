@@ -6,6 +6,8 @@ import { numberValidator, requiredValidator } from '@/@validators'
 import api from '@/api'
 import { useDisplay } from 'vuetify'
 import { useConfirm } from 'vuetify-use-dialog'
+import { reduce } from 'lodash'
+import { it } from 'node:test'
 
 // 显示器宽度
 const display = useDisplay()
@@ -35,6 +37,7 @@ const siteForm = ref<Site>({
   limit_seconds: 0,
   name: '',
   domain: '',
+  downloader: '',
 })
 
 // 提示框
@@ -68,7 +71,7 @@ async function loadDownloaderSetting() {
     const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
     const downloaders = result.data?.value ?? []
     downloaderOptions.value = [
-      { title: '默认', value: null },
+      { title: '默认', value: '' },
       ...downloaders.map((item: { name: any }) => ({
         title: item.name,
         value: item.name,
