@@ -6,8 +6,6 @@ import { numberValidator, requiredValidator } from '@/@validators'
 import api from '@/api'
 import { useDisplay } from 'vuetify'
 import { useConfirm } from 'vuetify-use-dialog'
-import { reduce } from 'lodash'
-import { it } from 'node:test'
 
 // 显示器宽度
 const display = useDisplay()
