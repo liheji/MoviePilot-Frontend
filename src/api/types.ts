@@ -73,7 +73,7 @@ export interface Subscribe {
   // 过滤规则组
   filter_groups?: string[]
   // 下载器
-  downloader?: string
+  downloader: string
 }
 
 // 订阅分享
@@ -390,7 +390,7 @@ export interface Site {
   // RSS地址
   rss?: string
   // 下载器
-  downloader?: string
+  downloader: string
   // Cookie
   cookie?: string
   // ApiKey

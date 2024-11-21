@@ -35,6 +35,7 @@ const siteForm = ref<Site>({
   limit_seconds: 0,
   name: '',
   domain: '',
+  downloader: '',
 })
 
 // 提示框
@@ -67,7 +68,7 @@ async function loadDownloaderSetting() {
   try {
     const downloaders: DownloaderConf[] = await api.get('download/clients')
     downloaderOptions.value = [
-      { title: '默认', value: null },
+      { title: '默认', value: '' },
       ...downloaders.map((item: { name: any }) => ({
         title: item.name,
         value: item.name,
