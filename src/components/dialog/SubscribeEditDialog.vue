@@ -2,7 +2,7 @@
 import { useToast } from 'vue-toast-notification'
 import { numberValidator } from '@/@validators'
 import api from '@/api'
-import type { FilterRuleGroup, Site, Subscribe, TransferDirectoryConf } from '@/api/types'
+import type { DownloaderConf, FilterRuleGroup, Site, Subscribe, TransferDirectoryConf } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import { useConfirm } from 'vuetify-use-dialog'
 import { VTextarea, VTextField } from 'vuetify/lib/components/index.mjs'
@@ -63,8 +63,7 @@ const downloaderOptions = ref<{ title: string; value: string }[]>([])
 
 async function loadDownloaderSetting() {
   try {
-    const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
-    const downloaders = result.data?.value ?? []
+    const downloaders: DownloaderConf[] = await api.get('download/clients')
     downloaderOptions.value = [
       { title: '默认', value: '' },
       ...downloaders.map((item: { name: any }) => ({

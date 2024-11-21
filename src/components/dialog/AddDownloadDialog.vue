@@ -13,6 +13,9 @@ const props = defineProps({
   torrent: Object as PropType<TorrentInfo>,
 })
 
+// 定义成功和失败事件
+const emit = defineEmits(['done', 'error', 'close'])
+
 // 提示框
 const $toast = useToast()
 
@@ -22,8 +25,8 @@ const selectedDownloader = ref<string | null>(null)
 // 选择的保存目录
 const selectedDirectory = ref<string | null>(null)
 
-// 定义成功和失败事件
-const emit = defineEmits(['done', 'error', 'close'])
+// 下载器
+const downloaders = ref<DownloaderConf[]>([])
 
 // 所有目录设置
 const directories = ref<TransferDirectoryConf[]>([])
@@ -53,14 +56,10 @@ const targetDirectories = computed(() => {
   return [...new Set(downloadDirectories)]
 })
 
-// 下载器
-const downloaders = ref<DownloaderConf[]>([])
-
 // 调用API查询下载器设置
 async function loadDownloaderSetting() {
   try {
-    const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
-    downloaders.value = result.data?.value ?? []
+    downloaders.value = await api.get('download/clients')
   } catch (error) {
     console.log(error)
   }

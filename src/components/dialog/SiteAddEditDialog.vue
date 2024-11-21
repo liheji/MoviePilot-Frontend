@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
-import type { Site } from '@/api/types'
+import type { DownloaderConf, Site } from '@/api/types'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { numberValidator, requiredValidator } from '@/@validators'
 import api from '@/api'
@@ -65,8 +65,7 @@ const downloaderOptions = ref<{ title: string; value: string }[]>([])
 
 async function loadDownloaderSetting() {
   try {
-    const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
-    const downloaders = result.data?.value ?? []
+    const downloaders: DownloaderConf[] = await api.get('download/clients')
     downloaderOptions.value = [
       { title: '默认', value: null },
       ...downloaders.map((item: { name: any }) => ({
