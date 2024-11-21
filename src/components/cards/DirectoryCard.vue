@@ -29,6 +29,14 @@ const libraryPath = ref<string>('')
 // 卡版是否折叠状态
 const isCollapsed = ref(true)
 
+// 下载目录存储选项
+const downloadStoragies = [
+  {
+    title: '本地',
+    value: 'local',
+  },
+]
+
 // 类型下拉字典
 const typeItems = [
   { title: '全部', value: '' },
@@ -220,7 +228,12 @@ watch(
             />
           </VCol>
           <VCol cols="4">
-            <VSelect v-model="props.directory.storage" variant="underlined" :items="storageOptions" label="下载存储" />
+            <VSelect
+              v-model="props.directory.storage"
+              variant="underlined"
+              :items="downloadStoragies"
+              label="下载存储"
+            />
           </VCol>
           <VCol cols="8">
             <VPathField @update:modelValue="updateDownloadPath" :storage="props.directory.storage">

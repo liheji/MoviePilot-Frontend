@@ -28,6 +28,7 @@ const currentHistory = ref<TransferHistory>()
 
 // 重新整理IDS
 const redoIds = ref<number[]>([])
+const redoTargetStorage = ref<string>()
 
 // 已选中的数据
 const selected = ref<TransferHistory[]>([])
@@ -301,6 +302,7 @@ const dropdownItems = ref([
       prependIcon: 'mdi-redo-variant',
       click: (item: TransferHistory) => {
         redoIds.value = [item.id]
+        redoTargetStorage.value = item.dest_storage
         redoDialog.value = true
       },
     },
@@ -530,6 +532,7 @@ onMounted(fetchData)
     v-if="redoDialog"
     v-model="redoDialog"
     :logids="redoIds"
+    :target_storage="redoTargetStorage"
     @done="transferDone"
     @close="redoDialog = false"
   />
