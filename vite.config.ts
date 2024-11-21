@@ -138,6 +138,15 @@ export default defineConfig({
     },
   },
   build: {
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        // 控制console.log()是否被移除，生产环境建议移除，存在内存泄漏风险
+        drop_console: true,
+        // 控制debugger是否被移除，酌情处理
+        drop_debugger: false,
+      },
+    },
     chunkSizeWarningLimit: 5000,
     cssCodeSplit: false,
     rollupOptions: {
