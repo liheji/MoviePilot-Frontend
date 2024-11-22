@@ -129,6 +129,26 @@ const targets = ref<Address[]>([
     message: '未测试',
     btndisable: false,
   },
+  {
+    image: github,
+    name: 'api.github.com',
+    url: 'https://api.github.com',
+    proxy: true,
+    status: 'Normal',
+    time: '',
+    message: '未测试',
+    btndisable: false,
+  },
+  {
+    image: github,
+    name: 'raw.githubusercontent.com',
+    url: 'https://raw.githubusercontent.com',
+    proxy: true,
+    status: 'Normal',
+    time: '',
+    message: '未测试',
+    btndisable: false,
+  },
 ])
 
 const resolveStatusColor: Status = {

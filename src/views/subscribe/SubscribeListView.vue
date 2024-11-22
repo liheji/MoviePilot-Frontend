@@ -100,29 +100,31 @@ onActivated(async () => {
     />
   </VPullToRefresh>
   <!-- 底部操作按钮 -->
-  <VFab
-    v-if="store.state.auth.superUser"
-    icon="mdi-clipboard-edit"
-    location="bottom"
-    size="x-large"
-    fixed
-    app
-    appear
-    @click="subscribeEditDialog = true"
-    :class="{ 'mb-12': appMode }"
-  />
-  <VFab
-    v-if="store.state.auth.superUser"
-    icon="mdi-history"
-    color="info"
-    location="bottom"
-    :class="appMode ? 'mb-28' : 'mb-16'"
-    size="x-large"
-    fixed
-    app
-    appear
-    @click="historyDialog = true"
-  />
+  <div>
+    <VFab
+      v-if="store.state.auth.superUser"
+      icon="mdi-clipboard-edit"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="subscribeEditDialog = true"
+      :class="{ 'mb-12': appMode }"
+    />
+    <VFab
+      v-if="store.state.auth.superUser"
+      icon="mdi-history"
+      color="info"
+      location="bottom"
+      :class="appMode ? 'mb-28' : 'mb-16'"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="historyDialog = true"
+    />
+  </div>
   <!-- 订阅编辑弹窗 -->
   <SubscribeEditDialog
     v-if="subscribeEditDialog"

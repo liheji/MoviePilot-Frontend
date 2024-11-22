@@ -446,31 +446,32 @@ onBeforeMount(async () => {
     </VWindow>
   </div>
 
-  <!-- 插件搜索图标 -->
-  <VFab
-    icon="mdi-magnify"
-    color="info"
-    location="bottom"
-    size="x-large"
-    fixed
-    app
-    appear
-    @click="SearchDialog = true"
-    :class="appMode ? 'mb-28' : 'mb-16'"
-  />
-  <!-- 插件市场设置图标 -->
-  <VFab
-    icon="mdi-store-cog"
-    color="warning"
-    location="bottom"
-    size="x-large"
-    fixed
-    app
-    appear
-    @click="MarketSettingDialog = true"
-    :class="{ 'mb-12': appMode }"
-  />
-
+  <div>
+    <!-- 插件搜索图标 -->
+    <VFab
+      icon="mdi-magnify"
+      color="info"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="SearchDialog = true"
+      :class="appMode ? 'mb-28' : 'mb-16'"
+    />
+    <!-- 插件市场设置图标 -->
+    <VFab
+      icon="mdi-store-cog"
+      color="warning"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="MarketSettingDialog = true"
+      :class="{ 'mb-12': appMode }"
+    />
+  </div>
   <!-- 插件市场设置窗口 -->
   <PluginMarketSettingDialog
     v-if="MarketSettingDialog"

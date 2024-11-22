@@ -481,7 +481,7 @@ onMounted(fetchData)
   </VCard>
 
   <!-- 底部操作按钮 -->
-  <span>
+  <div>
     <VFab
       v-if="selected.length > 0"
       icon="mdi-trash-can-outline"
@@ -505,7 +505,7 @@ onMounted(fetchData)
       appear
       @click="retransferBatch"
     />
-  </span>
+  </div>
   <!-- 底部弹窗 -->
   <VBottomSheet v-model="deleteConfirmDialog" inset>
     <VCard class="text-center rounded-t">
