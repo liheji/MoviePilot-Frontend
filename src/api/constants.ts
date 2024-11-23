@@ -71,3 +71,10 @@ export const storageDict = storageOptions.reduce((dict, item) => {
   dict[item.value] = item.title
   return dict
 }, {} as Record<string, string>)
+
+export const transferTypeOptions = [
+  { title: '复制', value: 'copy' },
+  { title: '移动', value: 'move' },
+  { title: '硬链接', value: 'link' },
+  { title: '软链接', value: 'softlink' },
+]

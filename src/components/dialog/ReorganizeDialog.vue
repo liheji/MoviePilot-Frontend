@@ -7,6 +7,7 @@ import { numberValidator } from '@/@validators'
 import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
 import { FileItem } from '@/api/types'
+import { transferTypeOptions } from '@/api/constants'
 
 // 显示器宽度
 const display = useDisplay()
@@ -75,7 +76,7 @@ const transferForm = reactive({
   doubanid: null,
   season: null,
   type_name: '',
-  transfer_type: '',
+  transfer_type: 'copy',
   episode_format: '',
   episode_detail: '',
   episode_part: '',
@@ -190,13 +191,7 @@ async function handleTransferLog(logid: number) {
               <VSelect
                 v-model="transferForm.transfer_type"
                 label="整理方式"
-                :items="[
-                  { title: '默认', value: '' },
-                  { title: '移动', value: 'move' },
-                  { title: '复制', value: 'copy' },
-                  { title: '硬链接', value: 'link' },
-                  { title: '软链接', value: 'softlink' },
-                ]"
+                :items="transferTypeOptions"
                 hint="文件操作整理方式"
                 persistent-hint
               />
