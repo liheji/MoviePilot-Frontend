@@ -83,6 +83,8 @@ const transferForm = reactive({
   min_filesize: 0,
   scrape: false,
   from_history: false,
+  library_type_folder: false,
+  library_category_folder: false,
 })
 
 // 下载路径更新
@@ -315,6 +317,22 @@ async function handleTransferLog(logid: number) {
             </VCol>
           </VRow>
           <VRow>
+            <VCol cols="12" md="6">
+              <VSwitch
+                v-model="transferForm.library_type_folder"
+                label="按类型分类"
+                hint="整理时目的路径下按媒体类型添加子目录"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <VSwitch
+                v-model="transferForm.library_category_folder"
+                label="按类别分类"
+                hint="整理时在目的路径下按媒体类别添加子目录"
+                persistent-hint
+              />
+            </VCol>
             <VCol cols="12" md="6">
               <VSwitch
                 v-model="transferForm.scrape"
