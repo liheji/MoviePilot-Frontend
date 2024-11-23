@@ -215,6 +215,7 @@ onUnmounted(() => {
                   hint="登录使用的用户名"
                   persistent-hint
                   active
+                  :rules="[(v: string) => !!v || '用户名不能为空', (v: string) => v.length >= 3 || '用户名不得小于三个字符']"
                 />
               </VCol>
               <VCol cols="12" md="6">
