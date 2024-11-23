@@ -6,7 +6,7 @@ import { storageOptions } from '@/api/constants'
 import { numberValidator } from '@/@validators'
 import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
-import { FileItem } from '@/api/types'
+import { FileItem, TransferDirectoryConf } from '@/api/types'
 
 // 显示器宽度
 const display = useDisplay()
@@ -87,12 +87,41 @@ const transferForm = reactive({
   library_category_folder: false,
 })
 
-// 下载路径更新
-function updateTargetPath(value: string) {
-  if (value !== transferForm.target_path) {
-    transferForm.target_path = value // 仅在值真正改变时更新
+// 所有媒体库目录
+const directories = ref<TransferDirectoryConf[]>([])
+
+// 查询目录
+async function loadDirectories() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/Directories')
+    directories.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
   }
 }
+
+// 目的目录下拉框
+const targetDirectories = computed(() => {
+  const libraryDirectories = directories.value.map(item => item.library_path)
+  return [...new Set(libraryDirectories)]
+})
+
+// 监听目的路径变化，配置默认值
+watch(
+  () => transferForm.target_path,
+  async newPath => {
+    if (newPath) {
+      const directory = directories.value.find(item => item.library_path === newPath)
+      if (directory) {
+        transferForm.target_storage = directory.storage ?? 'local'
+        transferForm.transfer_type = directory.transfer_type ?? ''
+        transferForm.scrape = directory.scraping ?? false
+        transferForm.library_category_folder = directory.library_category_folder ?? false
+        transferForm.library_type_folder = directory.library_type_folder ?? false
+      }
+    }
+  }
+)
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
@@ -166,6 +195,10 @@ async function handleTransferLog(logid: number) {
     console.log(e)
   }
 }
+
+onMounted(() => {
+  loadDirectories()
+})
 </script>
 
 <template>
@@ -202,19 +235,14 @@ async function handleTransferLog(logid: number) {
               />
             </VCol>
             <VCol cols="12">
-              <VPathField @update:modelValue="updateTargetPath" :storage="transferForm.target_storage">
-                <template #activator="{ menuprops }">
-                  <VTextField
-                    v-model="transferForm.target_path"
-                    v-bind="menuprops"
-                    label="目的路径"
-                    placeholder="留空自动"
-                    hint="整理目的路径，留空将自动匹配"
-                    persistent-hint
-                    clearable
-                  />
-                </template>
-              </VPathField>
+              <VCombobox
+                v-model="transferForm.target_path"
+                :items="targetDirectories"
+                label="目的路径"
+                placeholder="留空自动"
+                hint="整理目的路径，留空将自动匹配"
+                persistent-hint
+              />
             </VCol>
           </VRow>
           <VRow>
