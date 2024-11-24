@@ -2,12 +2,11 @@
 import { useToast } from 'vue-toast-notification'
 import MediaIdSelector from '../misc/MediaIdSelector.vue'
 import api from '@/api'
-import { storageOptions } from '@/api/constants'
+import { storageOptions, transferTypeOptions } from '@/api/constants'
 import { numberValidator } from '@/@validators'
 import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
 import { FileItem, TransferDirectoryConf } from '@/api/types'
-import { transferTypeOptions } from '@/api/constants'
 
 // 显示器宽度
 const display = useDisplay()
@@ -114,7 +113,7 @@ watch(
     if (newPath) {
       const directory = directories.value.find(item => item.library_path === newPath)
       if (directory) {
-        transferForm.target_storage = directory.storage ?? 'local'
+        transferForm.target_storage = directory.library_storage ?? 'local'
         transferForm.transfer_type = directory.transfer_type ?? ''
         transferForm.scrape = directory.scraping ?? false
         transferForm.library_category_folder = directory.library_category_folder ?? false
