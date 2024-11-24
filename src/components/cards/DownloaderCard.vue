@@ -6,7 +6,7 @@ import { useToast } from 'vue-toast-notification'
 import type { DownloaderInfo } from '@/api/types'
 import qbittorrent_image from '@images/logos/qbittorrent.png'
 import transmission_image from '@images/logos/transmission.png'
-import {cloneDeep} from "lodash";
+import { cloneDeep } from 'lodash'
 
 // 定义输入
 const props = defineProps({
@@ -211,11 +211,9 @@ onUnmounted(() => {
                 <VTextField
                   v-model="downloaderInfo.config.username"
                   label="用户名"
-                  placeholder="admin"
                   hint="登录使用的用户名"
                   persistent-hint
                   active
-                  :rules="[(v: string) => !!v || '用户名不能为空', (v: string) => v.length >= 3 || '用户名不得小于三个字符']"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -290,7 +288,6 @@ onUnmounted(() => {
                 <VTextField
                   v-model="downloaderInfo.config.username"
                   label="用户名"
-                  placeholder="admin"
                   hint="登录使用的用户名"
                   persistent-hint
                   active
