@@ -75,7 +75,7 @@ const transferForm = reactive({
   doubanid: null,
   season: null,
   type_name: '',
-  transfer_type: 'copy',
+  transfer_type: '',
   episode_format: '',
   episode_detail: '',
   episode_part: '',

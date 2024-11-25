@@ -73,6 +73,7 @@ export const storageDict = storageOptions.reduce((dict, item) => {
 }, {} as Record<string, string>)
 
 export const transferTypeOptions = [
+  { title: '自动', value: '' },
   { title: '复制', value: 'copy' },
   { title: '移动', value: 'move' },
   { title: '硬链接', value: 'link' },
