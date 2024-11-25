@@ -12,7 +12,7 @@ import { isPWA } from './@core/utils/navigator'
 import './ace-config'
 import { VAceEditor } from 'vue3-ace-editor'
 import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar'
-import { VTreeview } from 'vuetify/labs/VTreeview'
+// import { VTreeview } from 'vuetify/labs/VTreeview'
 import ToastPlugin from 'vue-toast-notification'
 import VuetifyUseDialog from 'vuetify-use-dialog'
 import VueApexCharts from 'vue3-apexcharts'
@@ -49,6 +49,11 @@ async function initializeApp() {
 
 // 注册全局组件
 initializeApp().then(() => {
+  // 优先注册框架
+  app
+    .use(vuetify)
+  
+  // 注册组件
   app
     .component('VAceEditor', VAceEditor)
     .component('VApexChart', VueApexCharts)
@@ -60,12 +65,11 @@ initializeApp().then(() => {
     .component('VMediaInfoCard', MediaInfoCard)
     .component('VTorrentCard', TorrentCard)
     .component('VMediaIdSelector', MediaIdSelector)
-    .component('VTreeview', VTreeview)
+    // .component('VTreeview', VTreeview)
     .component('VPathField', PathField)
 
   // 注册插件
   app
-    .use(vuetify)
     .use(router)
     .use(store)
     .use(ToastPlugin, {
