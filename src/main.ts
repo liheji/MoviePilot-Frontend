@@ -53,7 +53,7 @@ initializeApp().then(() => {
   app
     .use(vuetify)
   
-  // 注册组件
+  // 注册全局组件
   app
     .component('VAceEditor', VAceEditor)
     .component('VApexChart', VueApexCharts)
