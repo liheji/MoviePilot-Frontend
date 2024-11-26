@@ -75,7 +75,7 @@ const transferForm = reactive({
   doubanid: null,
   season: null,
   type_name: '',
-  transfer_type: 'copy',
+  transfer_type: '',
   episode_format: '',
   episode_detail: '',
   episode_part: '',
@@ -114,11 +114,19 @@ watch(
       const directory = directories.value.find(item => item.library_path === newPath)
       if (directory) {
         transferForm.target_storage = directory.library_storage ?? 'local'
-        transferForm.transfer_type = directory.transfer_type ?? ''
+        transferForm.transfer_type = transferForm.transfer_type || directory.transfer_type
         transferForm.scrape = directory.scraping ?? false
         transferForm.library_category_folder = directory.library_category_folder ?? false
         transferForm.library_type_folder = directory.library_type_folder ?? false
+      } else {
+        transferForm.transfer_type = transferForm.transfer_type || 'copy'
+        transferForm.scrape = false
+        transferForm.library_category_folder = false
+        transferForm.library_type_folder = false
       }
+    } else {
+      // 路径为空时, 整理方式留空(自动)
+      transferForm.transfer_type = ''
     }
   }
 )
@@ -225,8 +233,11 @@ onMounted(() => {
                 label="整理方式"
                 :items="transferTypeOptions"
                 hint="文件操作整理方式"
-                persistent-hint
-              />
+                persistent-hint>
+                <template v-slot:selection="{ item }">
+                  {{ transferForm.transfer_type === '' ? '自动' : item.title }}
+                </template>
+              </VSelect>
             </VCol>
             <VCol cols="12">
               <VCombobox
