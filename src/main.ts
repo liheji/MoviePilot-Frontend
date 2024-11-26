@@ -12,7 +12,6 @@ import { isPWA } from './@core/utils/navigator'
 import './ace-config'
 import { VAceEditor } from 'vue3-ace-editor'
 import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar'
-// import { VTreeview } from 'vuetify/labs/VTreeview'
 import ToastPlugin from 'vue-toast-notification'
 import VuetifyUseDialog from 'vuetify-use-dialog'
 import VueApexCharts from 'vue3-apexcharts'
@@ -65,7 +64,6 @@ initializeApp().then(() => {
     .component('VMediaInfoCard', MediaInfoCard)
     .component('VTorrentCard', TorrentCard)
     .component('VMediaIdSelector', MediaIdSelector)
-    // .component('VTreeview', VTreeview)
     .component('VPathField', PathField)
 
   // 注册插件
