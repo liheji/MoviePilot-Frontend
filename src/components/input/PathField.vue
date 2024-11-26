@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import api from '@/api'
 import { FileItem } from '@/api/types'
-import { VTreeview } from 'vuetify/labs/VTreeview'
 
 const props = defineProps({
   root: {
