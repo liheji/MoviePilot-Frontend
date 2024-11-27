@@ -28,6 +28,7 @@ const SystemSettings = ref<any>({
     GLOBAL_IMAGE_CACHE: false,
     BIG_MEMORY_MODE: false,
     DB_WAL_ENABLE: false,
+    ENCODING_DETECTION_PERFORMANCE_MODE: true,
     // 媒体
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
@@ -700,7 +701,7 @@ onDeactivated(() => {
           <VWindowItem value="dev">
             <div>
               <VRow>
-                <VCol cols="12" md="6">
+                <VCol cols="12" md="4">
                   <VSwitch
                     v-model="SystemSettings.Advanced.DEBUG"
                     label="DEBUG日志"
@@ -708,11 +709,19 @@ onDeactivated(() => {
                     persistent-hint
                   />
                 </VCol>
-                <VCol cols="12" md="6">
+                <VCol cols="12" md="4">
                   <VSwitch
                     v-model="SystemSettings.Advanced.PLUGIN_AUTO_RELOAD"
                     label="插件热加载"
                     hint="修改插件文件后自动重新加载，开发插件时使用"
+                    persistent-hint
+                  />
+                </VCol>
+                <VCol cols="12" md="4">
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.ENCODING_DETECTION_PERFORMANCE_MODE"
+                    label="编码探测性能模式"
+                    hint="优先提升探测效率，但可能降低编码探测的准确性"
                     persistent-hint
                   />
                 </VCol>
