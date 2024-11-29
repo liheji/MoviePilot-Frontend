@@ -2,17 +2,18 @@
 // 输入参数
 const props = defineProps({
   title: String,
+  dataType: String,
 })
-
-// 定义事件
-const emit = defineEmits(['update:modelValue', 'close'])
 
 // 代码
 const codeString = ref('')
 
+// 定义事件
+const emit = defineEmits(['close', 'save'])
+
 // 导入
 function handleImport() {
-  emit('update:modelValue', codeString.value)
+  emit('save', props.dataType, codeString)
   emit('close')
 }
 </script>
