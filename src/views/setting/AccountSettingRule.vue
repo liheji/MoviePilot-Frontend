@@ -3,18 +3,46 @@
 import { useToast } from 'vue-toast-notification'
 import { copyToClipboard } from '@/@core/utils/navigator'
 import draggable from 'vuedraggable'
-import { VRow } from 'vuetify/lib/components/index.mjs'
 import api from '@/api'
 import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
+import internal from 'stream'
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
+// 自定义规则类型，仅用于导入判断
+const customRulesType = ref<CustomRule>({
+  // 规则ID
+  id: '',
+  // 名称
+  name: '',
+  // 包含
+  include: '',
+  // 排除
+  exclude: '',
+  // 大小范围
+  size_range: '',
+  // 最少做种人数
+  seeders: '',
+  // 发布时间
+  publish_time: '',
+})
 
 // 所有规则组列表
 const filterRuleGroups = ref<FilterRuleGroup[]>([])
+// 规则组类型，仅用于导入判断
+const filterRuleGroupsType = ref<FilterRuleGroup>({
+  // 名称
+  name: '',
+  // 规则串
+  rule_string: '',
+  // 适用类媒体类型 None-全部 电影/电视剧
+  media_type: '',
+  // # 适用媒体类别 None-全部 对应二级分类
+  category: '',
+})
 
 // 种子优先规则
 const selectedTorrentPriority = ref<string>('seeder')
@@ -24,9 +52,6 @@ const mediaCategories = ref<{ [key: string]: any }>({})
 
 // 导入代码弹窗
 const importCodeDialog = ref(false)
-
-// 导入的代码
-const importCodeString = ref('')
 
 // 导入代码类型
 const importCodeType = ref('')
@@ -171,48 +196,96 @@ function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
   }
 }
 
-// 导入规则
+// 打开弹窗
 async function importRules(ruleType: string) {
   importCodeType.value = ruleType
-  importCodeString.value = ''
   importCodeDialog.value = true
 }
 
-// 监听导入代码变化
-watchEffect(() => {
-  if (!importCodeString.value) return
-  // 导入代码需要json格式
+// 保存导入的代码
+function saveCodeString(type: string, codeString: any) {
+  // codeString从子组件传递过来，从对象转换为JSON
+  let parsedCode
   try {
-    if (importCodeType.value === 'custom') {
-      // 将导入的代码转换为规则卡片，并追加到已有的 customRules
-      const newCustomRules = JSON.parse(importCodeString.value).map((item: any) => {
-        return {
-          id: item.id,
-          name: item.name,
-          include: item.include,
-          exclude: item.exclude,
-          publish_time: item.publish_time,
-          seeders: item.seeders,
-          size_range: item.size_range,
-        }
-      })
-      customRules.value = [...customRules.value, ...newCustomRules] // 合并已有的和新导入的规则
-    } else if (importCodeType.value === 'group') {
-      // 将导入的代码转换为规则卡片，并追加到已有的 filterRuleGroups
-      const newFilterRuleGroups = JSON.parse(importCodeString.value).map((item: any) => {
-        return {
-          name: item.name,
-          rule_string: item.rule_string,
-          media_type: item.media_type,
-          category: item.category,
-        }
-      })
-      filterRuleGroups.value = [...filterRuleGroups.value, ...newFilterRuleGroups] // 合并已有的和新导入的规则
-    }
-  } catch (error) {
-    $toast.error('规则导入失败！')
+    parsedCode = JSON.parse(codeString.value)
+  } catch (e) {
+    $toast.error('导入规则失败！无法解析输入的数据！')
+    console.error(e)
+    return
   }
-})
+
+  // 更新数据
+  try {
+    if (type === 'custom') {
+      for (const value of parsedCode) {
+        if (!validateValueAgainstInterface(value, customRulesType)) return false
+      }
+      const newCustomRules = extractCustomRules(parsedCode) || []
+      customRules.value = [...customRules.value, ...newCustomRules]
+    } else if (type === 'group') {
+      for (const value of parsedCode) {
+        if (!validateValueAgainstInterface(value, filterRuleGroupsType)) return false
+      }
+      const newFilterRuleGroups = extractFilterRuleGroups(parsedCode) || []
+      filterRuleGroups.value = [...filterRuleGroups.value, ...newFilterRuleGroups]
+    } else {
+      $toast.error('导入规则失败！未知的数据类型！')
+    }
+  } catch (e) {
+    $toast.error('导入规则失败！')
+    console.error(e)
+  }
+}
+
+// 赋值自定义规则，避免存在多余的属性
+function extractCustomRules(value: any) {
+  try {
+    return value.map((item: any) => {
+      return {
+        id: item.id,
+        name: item.name,
+        include: item.include,
+        exclude: item.exclude,
+      }
+    })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+// 赋值规则组，避免存在多余的属性
+function extractFilterRuleGroups(value: any) {
+  try {
+    return value.map((item: any) => {
+      return {
+        name: item.name,
+        rule_string: item.rule_string,
+        media_type: item.media_type,
+        category: item.category,
+      }
+    })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+function validateValueAgainstInterface(value: any, interfaceDefinition: any): boolean {
+  console.log(value)
+  console.log(interfaceDefinition)
+  try {
+    // 循环判断是否命中全部接口定义，暂时只检查是否存在，不检查是否多出
+    for (const key in interfaceDefinition.value) {
+      if (value[key] === undefined) {
+        $toast.error(`导入规则失败！输入了不符合要求的数据！`)
+        return false
+      }
+    }
+    return true
+  } catch (e) {
+    console.error(e)
+    return false
+  }
+}
 
 // 规则变化时赋值
 function onRuleChange(rule: CustomRule, id: string) {
@@ -368,12 +441,17 @@ onMounted(() => {
             </div>
           </VForm>
         </VCardText>
-        <VDialog v-model="importCodeDialog" width="60rem" scrollable>
-          <ImportCodeDialog v-model="importCodeString" title="导入规则" @close="importCodeDialog = false" />
-        </VDialog>
       </VCard>
     </VCol>
   </VRow>
+  <ImportCodeDialog
+    v-if="importCodeDialog"
+    v-model="importCodeDialog"
+    :title="`导入${importCodeType === 'custom' ? '自定义规则' : '规则组'}`"
+    :dataType="importCodeType"
+    @close="importCodeDialog = false"
+    @save="saveCodeString"
+  />
   <VRow>
     <VCol cols="12">
       <VCard>
