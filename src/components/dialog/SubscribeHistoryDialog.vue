@@ -86,7 +86,7 @@ async function reSubscribe(item: Subscribe) {
   else progressText.value = `正在重新订阅 ${item.name} 第 ${item.season} 季 ...`
   progressDialog.value = true
   try {
-    const result: { [key: string]: any } = await api.post('subscribe', item)
+    const result: { [key: string]: any } = await api.post('subscribe/', item)
     if (result.success) {
       emit('save')
     }
