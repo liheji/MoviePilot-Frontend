@@ -1051,7 +1051,7 @@ export interface TransferDirectoryConf {
   // 监控模式 fast/compatibility
   monitor_mode?: string
   // 整理方式 move/copy/link/softlink
-  transfer_type?: string
+  transfer_type: string
   // 文件覆盖模式 always/size/never/latest
   overwrite_mode?: string
   // 整理到媒体库目录
@@ -1138,4 +1138,43 @@ export interface SubscrbieInfo {
   subscribe: Subscribe
   // 集信息 {集号: {download: 文件路径，library: 文件路径, backdrop: url, title: 标题, description: 描述}}
   episodes: Record<number, SubscribeEpisodeInfo>
+}
+
+export interface TransferForm {
+  // 文件项
+  fileitem: FileItem
+  // 历史ID
+  logid: number
+  // 目标存储
+  target_storage: string
+  // 目标路径
+  target_path: string
+  // TMDB ID
+  tmdbid?: number
+  // 豆瓣 ID
+  doubanid?: string
+  // 季号
+  season?: number
+  // 类型
+  type_name?: string
+  // 整理方式
+  transfer_type: string
+  // 自定义格式
+  episode_format?: string
+  // 指定集数
+  episode_detail?: string
+  // 指定PART
+  episode_part?: string
+  // 集数偏移
+  episode_offset?: string
+  // 最小文件大小
+  min_filesize: number
+  // 刮削
+  scrape: boolean
+  // 复用历史识别信息
+  from_history: boolean
+  // 媒体库类型子目录
+  library_type_folder?: boolean
+  // 媒体库类别子目录
+  library_category_folder?: boolean
 }

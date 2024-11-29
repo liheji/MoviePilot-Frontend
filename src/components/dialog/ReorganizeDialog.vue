@@ -6,7 +6,7 @@ import { storageOptions, transferTypeOptions } from '@/api/constants'
 import { numberValidator } from '@/@validators'
 import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
-import { FileItem, TransferDirectoryConf } from '@/api/types'
+import { FileItem, TransferDirectoryConf, TransferForm } from '@/api/types'
 
 // 显示器宽度
 const display = useDisplay()
@@ -66,30 +66,19 @@ const dialogTitle = computed(() => {
 })
 
 // 表单
-const transferForm = reactive({
-  fileitem: {},
+const transferForm = reactive<TransferForm>({
+  fileitem: {} as FileItem,
   logid: 0,
   target_storage: props.target_storage ?? 'local',
-  target_path: props.target_path ?? null,
-  tmdbid: null,
-  doubanid: null,
-  season: null,
-  type_name: '',
   transfer_type: '',
-  episode_format: '',
-  episode_detail: '',
-  episode_part: '',
-  episode_offset: null,
+  target_path: '',
   min_filesize: 0,
   scrape: false,
   from_history: false,
-  library_type_folder: false,
-  library_category_folder: false,
 })
 
 // 所有媒体库目录
 const directories = ref<TransferDirectoryConf[]>([])
-
 // 查询目录
 async function loadDirectories() {
   try {
@@ -125,8 +114,10 @@ watch(
         transferForm.library_type_folder = false
       }
     } else {
-      // 路径为空时, 整理方式留空(自动)
+      // 路径为空时, 恢复到`自动`条件
       transferForm.transfer_type = ''
+      transferForm.library_type_folder = undefined
+      transferForm.library_category_folder = undefined
     }
   }
 )
@@ -195,7 +186,7 @@ async function handleTransfer(item: FileItem) {
 // 整理日志
 async function handleTransferLog(logid: number) {
   transferForm.logid = logid
-  transferForm.fileitem = {}
+  transferForm.fileitem = {} as FileItem
   try {
     const result: { [key: string]: any } = await api.post('transfer/manual', transferForm)
     if (!result.success) $toast.error(`历史记录 ${logid} 重新整理失败：${result.message}！`)
@@ -350,7 +341,7 @@ onMounted(() => {
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="12" md="6">
+            <VCol cols="12" md="6" v-if="transferForm.target_path">
               <VSwitch
                 v-model="transferForm.library_type_folder"
                 label="按类型分类"
@@ -358,7 +349,7 @@ onMounted(() => {
                 persistent-hint
               />
             </VCol>
-            <VCol cols="12" md="6">
+            <VCol cols="12" md="6" v-if="transferForm.target_path">
               <VSwitch
                 v-model="transferForm.library_category_folder"
                 label="按类别分类"
