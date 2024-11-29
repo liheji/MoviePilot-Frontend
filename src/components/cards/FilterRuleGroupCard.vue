@@ -72,12 +72,17 @@ const getCategories = computed(() => {
 
 // 规则组规则卡片列表
 const filterRuleCards = ref<FilterCard[]>([])
+// 规则组类型，仅用于导入判断
+const filterRuleCardsType = ref<FilterCard>({
+  pri: '',
+  rules: [],
+})
 
 // 导入代码弹窗
 const importCodeDialog = ref(false)
 
-// 导入的代码
-const importCodeString = ref('')
+// 导入代码类型
+const importCodeType = ref('')
 
 // 更新规则卡片的值
 function updateFilterCardValue(pri: string, rules: string[]) {
@@ -109,28 +114,37 @@ function shareRules() {
     $toast.success('优先级规则已复制到剪贴板')
   } catch (error) {
     $toast.error('优先级规则复制失败！')
+    console.error(error)
   }
 }
 
 // 导入规则
-async function importRules() {
-  importCodeString.value = ''
+async function importRules(ruleType: string) {
+  importCodeType.value = ruleType
   importCodeDialog.value = true
 }
 
-// 监听导入代码变化
-watchEffect(() => {
-  if (!importCodeString.value) return
-
-  if (!importCodeString.value.startsWith(' ')) importCodeString.value = ` ${importCodeString.value}`
-  if (!importCodeString.value.endsWith(' ')) importCodeString.value = `${importCodeString.value} `
-
-  const groups = importCodeString.value.split('>')
-  filterRuleCards.value = groups.map((group: string, index: number) => ({
-    pri: (index + 1).toString(),
-    rules: group.split('&').filter(rule => rule),
-  }))
-})
+// 保存导入的代码，直接覆盖原有值
+function saveCodeString(type: string, code: any) {
+  try {
+    code = code.value
+    if (type === 'priority') {
+      // 解析值
+      if (!code) return
+      // 首尾增加空格
+      if (!code.startsWith(' ')) code = ` ${code}`
+      if (!code.endsWith(' ')) code = `${code} `
+      const groups = code.split('>')
+      filterRuleCards.value = groups.map((group: string, index: number) => ({
+        pri: (index + 1).toString(),
+        rules: group.split('&').filter(rule => rule),
+      }))
+    }
+  } catch (error) {
+    $toast.error('导入失败！')
+    console.error(error)
+  }
+}
 
 // 增加卡片
 function addFilterCard() {
@@ -268,7 +282,7 @@ function onClose() {
           <VBtn color="primary" variant="tonal" @click="addFilterCard">
             <VIcon icon="mdi-plus" />
           </VBtn>
-          <VBtn color="success" variant="tonal" @click="importRules">
+          <VBtn color="success" variant="tonal" @click="importRules('priority')">
             <VIcon icon="mdi-import" />
           </VBtn>
           <VBtn color="info" variant="tonal" @click="shareRules">
@@ -279,8 +293,13 @@ function onClose() {
         </VCardActions>
       </VCard>
     </VDialog>
-    <VDialog v-model="importCodeDialog" width="60rem" scrollable>
-      <ImportCodeDialog v-model="importCodeString" title="导入优先级规则" @close="importCodeDialog = false" />
-    </VDialog>
+    <ImportCodeDialog
+      v-if="importCodeDialog"
+      v-model="importCodeDialog"
+      title="导入规则优先级"
+      :dataType="importCodeType"
+      @close="importCodeDialog = false"
+      @save="saveCodeString"
+    />
   </div>
 </template>
