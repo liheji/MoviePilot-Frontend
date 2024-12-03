@@ -105,8 +105,10 @@ async function saveSiteSetting(value: { [key: string]: any }) {
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
-      $toast.success('保存设置成功')
+      $toast.success('保存站点设置成功')
       await reloadSystem()
+    } else {
+      $toast.error('站点设置保存失败！')
     }
   } catch (error) {
     console.log(error)
