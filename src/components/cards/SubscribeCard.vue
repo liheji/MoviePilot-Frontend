@@ -38,6 +38,9 @@ const subscribeFilesDialog = ref(false)
 // 分享订阅弹窗
 const subscribeShareDialog = ref(false)
 
+// 定义一个变量来保存当前的订阅状态
+const subscribeState = ref<string>(props.media?.state ?? 'P')
+
 // 上一次更新时间
 const lastUpdateText = ref(props.media && props.media.last_update ? formatDateDifference(props.media.last_update) : '')
 
@@ -76,6 +79,32 @@ async function searchSubscribe() {
 
     // 提示
     if (result.success) $toast.success(`${props.media?.name} 提交搜索请求成功！`)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+// 切换订阅状态
+async function toggleSubscribeStatus(state: 'R' | 'S') {
+  try {
+    // 根据传入的 state 判断对应的操作文字
+    const action = state === 'S' ? '暂停' : '启用'
+    // 弹出确认框
+    const isConfirmed = await createConfirm({
+      title: `确认${action}`,
+      content: `是否${action}订阅 ${props.media?.name}？`,
+    })
+    if (!isConfirmed) return
+    // 调用 API 更新订阅状态
+    const result: { [key: string]: any } = await api.put(`subscribe/status/${props.media?.id}?state=${state}`)
+    // 提示
+    if (result.success) {
+      $toast.success(`${props.media?.name} 已${action}！`)
+      subscribeState.value = state
+      emit('save')
+    } else {
+      $toast.error(`${action}失败：${result.message}`)
+    }
   } catch (e) {
     console.log(e)
   }
@@ -129,7 +158,7 @@ async function viewSubscribeFiles() {
 }
 
 // 弹出菜单
-const dropdownItems = ref([
+const dropdownItems = computed(() => [
   {
     title: '编辑',
     value: 1,
@@ -163,8 +192,17 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '重置',
+    title: subscribeState.value === 'S' ? '启用' : '暂停',
     value: 5,
+    props: {
+      prependIcon: subscribeState.value === 'S' ? 'mdi-play' : 'mdi-pause',
+      click: () => toggleSubscribeStatus(subscribeState.value === 'S' ? 'R' : 'S'),
+      color: subscribeState.value === 'S' ? 'success' : 'info',
+    },
+  },
+  {
+    title: '重置',
+    value: 6,
     props: {
       prependIcon: 'mdi-restore-alert',
       click: resetSubscribe,
@@ -174,7 +212,7 @@ const dropdownItems = ref([
   },
   {
     title: '分享',
-    value: 6,
+    value: 7,
     props: {
       prependIcon: 'mdi-share',
       click: shareSubscribe,
@@ -184,7 +222,7 @@ const dropdownItems = ref([
   },
   {
     title: '取消订阅',
-    value: 7,
+    value: 8,
     props: {
       prependIcon: 'mdi-trash-can-outline',
       color: 'error',
@@ -242,6 +280,7 @@ function onSubscribeEditRemove() {
         :class="{
           'outline-dashed outline-1': props.media?.best_version && imageLoaded,
           'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
+          'opacity-70': subscribeState === 'S',
         }"
         min-height="170"
         @click="editSubscribeDialog"
@@ -277,6 +316,10 @@ function onSubscribeEditRemove() {
             </template>
             <div class="absolute inset-0 subscribe-card-background"></div>
           </VImg>
+          <div
+            v-if="subscribeState === 'P'"
+            class="absolute inset-0 bg-yellow-900 opacity-40 pointer-events-none"
+          ></div>
         </template>
         <div>
           <VCardText class="flex items-center">

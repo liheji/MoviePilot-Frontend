@@ -44,7 +44,7 @@ export interface Subscribe {
   lack_episode?: number
   // 附加信息
   note?: string
-  // 状态：N-新建， R-订阅中
+  // 状态：N-新建 R-订阅中 P-待定 S-暂停
   state: string
   // 最后更新时间
   last_update: string
