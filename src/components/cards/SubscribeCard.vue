@@ -84,6 +84,32 @@ async function searchSubscribe() {
   }
 }
 
+// 切换订阅状态
+async function toggleSubscribeStatus(state: 'R' | 'S') {
+  try {
+    // 根据传入的 state 判断对应的操作文字
+    const action = state === 'S' ? '暂停' : '启用'
+    // 弹出确认框
+    const isConfirmed = await createConfirm({
+      title: `确认${action}`,
+      content: `是否${action}订阅 ${props.media?.name}？`,
+    })
+    if (!isConfirmed) return
+    // 调用 API 更新订阅状态
+    const result: { [key: string]: any } = await api.put(`subscribe/status/${props.media?.id}?state=${state}`)
+    // 提示
+    if (result.success) {
+      $toast.success(`${props.media?.name} 已${action}！`)
+      subscribeState.value = state
+      emit('save')
+    } else {
+      $toast.error(`${action}失败：${result.message}`)
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 // 重置订阅
 async function resetSubscribe() {
   // 确认
@@ -132,7 +158,7 @@ async function viewSubscribeFiles() {
 }
 
 // 弹出菜单
-const dropdownItems = ref([
+const dropdownItems = computed(() => [
   {
     title: '编辑',
     value: 1,
@@ -166,8 +192,17 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '重置',
+    title: subscribeState.value === 'S' ? '启用' : '暂停',
     value: 5,
+    props: {
+      prependIcon: subscribeState.value === 'S' ? 'mdi-play' : 'mdi-pause',
+      click: () => toggleSubscribeStatus(subscribeState.value === 'S' ? 'R' : 'S'),
+      color: subscribeState.value === 'S' ? 'success' : 'info',
+    },
+  },
+  {
+    title: '重置',
+    value: 6,
     props: {
       prependIcon: 'mdi-restore-alert',
       click: resetSubscribe,
@@ -177,7 +212,7 @@ const dropdownItems = ref([
   },
   {
     title: '分享',
-    value: 6,
+    value: 7,
     props: {
       prependIcon: 'mdi-share',
       click: shareSubscribe,
@@ -187,7 +222,7 @@ const dropdownItems = ref([
   },
   {
     title: '取消订阅',
-    value: 7,
+    value: 8,
     props: {
       prependIcon: 'mdi-trash-can-outline',
       color: 'error',
