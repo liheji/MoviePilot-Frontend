@@ -38,6 +38,9 @@ const subscribeFilesDialog = ref(false)
 // 分享订阅弹窗
 const subscribeShareDialog = ref(false)
 
+// 定义一个变量来保存当前的订阅状态
+const subscribeState = ref<string>(props.media?.state ?? 'P')
+
 // 上一次更新时间
 const lastUpdateText = ref(props.media && props.media.last_update ? formatDateDifference(props.media.last_update) : '')
 
@@ -242,6 +245,7 @@ function onSubscribeEditRemove() {
         :class="{
           'outline-dashed outline-1': props.media?.best_version && imageLoaded,
           'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
+          'opacity-70': subscribeState === 'S',
         }"
         min-height="170"
         @click="editSubscribeDialog"
@@ -277,6 +281,10 @@ function onSubscribeEditRemove() {
             </template>
             <div class="absolute inset-0 subscribe-card-background"></div>
           </VImg>
+          <div
+            v-if="subscribeState === 'P'"
+            class="absolute inset-0 bg-yellow-900 opacity-40 pointer-events-none"
+          ></div>
         </template>
         <div>
           <VCardText class="flex items-center">
