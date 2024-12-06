@@ -8,41 +8,12 @@ import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
-import internal from 'stream'
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
-// 自定义规则类型，仅用于导入判断
-const customRulesType = ref<CustomRule>({
-  // 规则ID
-  id: '',
-  // 名称
-  name: '',
-  // 包含
-  include: '',
-  // 排除
-  exclude: '',
-  // 大小范围
-  size_range: '',
-  // 最少做种人数
-  seeders: '',
-  // 发布时间
-  publish_time: '',
-})
 
 // 所有规则组列表
 const filterRuleGroups = ref<FilterRuleGroup[]>([])
-// 规则组类型，仅用于导入判断
-const filterRuleGroupsType = ref<FilterRuleGroup>({
-  // 名称
-  name: '',
-  // 规则串
-  rule_string: '',
-  // 适用类媒体类型 None-全部 电影/电视剧
-  media_type: '',
-  // # 适用媒体类别 None-全部 对应二级分类
-  category: '',
-})
 
 // 种子优先规则
 const selectedTorrentPriority = ref<string>('seeder')
@@ -217,15 +188,11 @@ function saveCodeString(type: string, codeString: any) {
   // 更新数据
   try {
     if (type === 'custom') {
-      for (const value of parsedCode) {
-        if (!validateValueAgainstInterface(value, customRulesType)) return false
-      }
+      if (!checkValueValidity(parsedCode, type)) return false
       const newCustomRules = extractCustomRules(parsedCode) || []
       customRules.value = [...customRules.value, ...newCustomRules]
     } else if (type === 'group') {
-      for (const value of parsedCode) {
-        if (!validateValueAgainstInterface(value, filterRuleGroupsType)) return false
-      }
+      if (!checkValueValidity(parsedCode, type)) return false
       const newFilterRuleGroups = extractFilterRuleGroups(parsedCode) || []
       filterRuleGroups.value = [...filterRuleGroups.value, ...newFilterRuleGroups]
     } else {
@@ -269,14 +236,33 @@ function extractFilterRuleGroups(value: any) {
   }
 }
 
-function validateValueAgainstInterface(value: any, interfaceDefinition: any): boolean {
-  console.log(value)
-  console.log(interfaceDefinition)
+// 根据ID简单区分规则与规则组
+function checkValueValidity(values: any, type: string): boolean {
   try {
-    // 循环判断是否命中全部接口定义，暂时只检查是否存在，不检查是否多出
-    for (const key in interfaceDefinition.value) {
-      if (value[key] === undefined) {
-        $toast.error(`导入规则失败！输入了不符合要求的数据！`)
+    // 允许空值存在，不影响最终的导入
+    if (!values) return true
+    if (!type) return false
+    for (const value of values) {
+      const keys = Object.keys(value)
+      const uniqueKeys = new Set(keys)
+
+      const hasName = keys.includes('name')
+      const hasId = keys.includes('id')
+      const noDuplicates = keys.length === uniqueKeys.size
+      if (type == 'custom') {
+        if (!hasName || !hasId || !noDuplicates) {
+          if (!noDuplicates) $toast.warning(`存在重名值`)
+          if (!hasId) $toast.error(`导入失败！发现有规则不存在ID，可能属于优先级规则组！`)
+          return false
+        }
+      } else if (type == 'group') {
+        if (!hasName || hasId || !noDuplicates) {
+          if (!noDuplicates) $toast.warning(`存在重名值`)
+          if (hasId) $toast.error(`导入失败！发现有规则存在ID，可能属于自定义规则！`)
+          return false
+        }
+      } else {
+        console.error(`传入了不合法类型`)
         return false
       }
     }
