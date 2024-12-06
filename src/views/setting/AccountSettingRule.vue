@@ -188,15 +188,11 @@ function saveCodeString(type: string, codeString: any) {
   // 更新数据
   try {
     if (type === 'custom') {
-      for (const value of parsedCode) {
-        if (!checkValueValidity(value, type)) return false
-      }
+      if (!checkValueValidity(parsedCode, type)) return false
       const newCustomRules = extractCustomRules(parsedCode) || []
       customRules.value = [...customRules.value, ...newCustomRules]
     } else if (type === 'group') {
-      for (const value of parsedCode) {
-        if (!checkValueValidity(value, type)) return false
-      }
+      if (!checkValueValidity(parsedCode, type)) return false
       const newFilterRuleGroups = extractFilterRuleGroups(parsedCode) || []
       filterRuleGroups.value = [...filterRuleGroups.value, ...newFilterRuleGroups]
     } else {
@@ -241,33 +237,40 @@ function extractFilterRuleGroups(value: any) {
 }
 
 // 根据ID简单区分规则与规则组
-function checkValueValidity(value: any, type: string): boolean {
-  // 允许空值存在，不影响最终的导入
-  if (!value) return true
-  if (!type) return false
-  const keys = Object.keys(value)
-  const uniqueKeys = new Set(keys)
+function checkValueValidity(values: any, type: string): boolean {
+  try {
+    // 允许空值存在，不影响最终的导入
+    if (!values) return true
+    if (!type) return false
+    for (const value of values) {
+      const keys = Object.keys(value)
+      const uniqueKeys = new Set(keys)
 
-  const hasName = keys.includes('name')
-  const hasId = keys.includes('id')
-  const noDuplicates = keys.length === uniqueKeys.size
-  if (type == 'custom') {
-    if (!hasName || !hasId || !noDuplicates) {
-      if (!noDuplicates) $toast.warning(`存在重名值`)
-      if (!hasId) $toast.error(`导入失败！发现有规则不存在ID，可能属于优先级规则组！`)
-      return false
+      const hasName = keys.includes('name')
+      const hasId = keys.includes('id')
+      const noDuplicates = keys.length === uniqueKeys.size
+      if (type == 'custom') {
+        if (!hasName || !hasId || !noDuplicates) {
+          if (!noDuplicates) $toast.warning(`存在重名值`)
+          if (!hasId) $toast.error(`导入失败！发现有规则不存在ID，可能属于优先级规则组！`)
+          return false
+        }
+      } else if (type == 'group') {
+        if (!hasName || hasId || !noDuplicates) {
+          if (!noDuplicates) $toast.warning(`存在重名值`)
+          if (hasId) $toast.error(`导入失败！发现有规则存在ID，可能属于自定义规则！`)
+          return false
+        }
+      } else {
+        console.error(`传入了不合法类型`)
+        return false
+      }
     }
-  } else if (type == 'group') {
-    if (!hasName || hasId || !noDuplicates) {
-      if (!noDuplicates) $toast.warning(`存在重名值`)
-      if (hasId) $toast.error(`导入失败！发现有规则存在ID，可能属于自定义规则！`)
-      return false
-    }
-  } else {
-    console.error(`传入了不合法类型`)
+    return true
+  } catch (e) {
+    console.error(e)
     return false
   }
-  return true
 }
 
 // 规则变化时赋值
