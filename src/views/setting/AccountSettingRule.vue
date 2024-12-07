@@ -94,11 +94,6 @@ async function addCustomRule() {
   customRules.value.push({
     id: id,
     name: name,
-    include: '',
-    exclude: '',
-    publish_time: '',
-    seeders: '',
-    size_range: '',
   })
 }
 
@@ -148,9 +143,6 @@ function addFilterRuleGroup() {
   }
   filterRuleGroups.value.push({
     name: name,
-    rule_string: '',
-    media_type: '',
-    category: '',
   })
 }
 
@@ -216,9 +208,9 @@ function extractCustomRules(value: any) {
         name: item.name,
         include: item.include,
         exclude: item.exclude,
-        publish_time: item.publish._time,
+        size_range: item.size_rang,
         seeders: item.seeders,
-        size_range: item.size_range,
+        publish_time: item.publish_time,
       }
     })
   } catch (e) {
@@ -268,7 +260,7 @@ function checkValueValidity(values: any, type: string): boolean {
           return false
         }
       } else {
-        console.error(`传入了不合法类型`)
+        console.error(`传入了不合法的类型！`)
         return false
       }
     }
@@ -439,7 +431,7 @@ onMounted(() => {
   <ImportCodeDialog
     v-if="importCodeDialog"
     v-model="importCodeDialog"
-    :title="`导入${importCodeType === 'custom' ? '自定义规则' : '规则组'}`"
+    :title="`导入${importCodeType === 'custom' ? '自定义规则' : '优先级规则组'}`"
     :dataType="importCodeType"
     @close="importCodeDialog = false"
     @save="saveCodeString"
