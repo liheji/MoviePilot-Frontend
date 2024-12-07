@@ -96,6 +96,9 @@ async function addCustomRule() {
     name: name,
     include: '',
     exclude: '',
+    publish_time: '',
+    seeders: '',
+    size_range: '',
   })
 }
 
@@ -213,6 +216,9 @@ function extractCustomRules(value: any) {
         name: item.name,
         include: item.include,
         exclude: item.exclude,
+        publish_time: item.publish._time,
+        seeders: item.seeders,
+        size_range: item.size_range,
       }
     })
   } catch (e) {
