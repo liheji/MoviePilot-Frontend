@@ -8,6 +8,7 @@ import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
+import { VCard, VDialog } from 'vuetify/lib/components/index.mjs'
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
@@ -26,6 +27,12 @@ const importCodeDialog = ref(false)
 
 // 导入代码类型
 const importCodeType = ref('')
+
+// 统一删除弹窗
+const deleteAllDateDialog = ref(false)
+
+// 统一删除弹窗的代码类型
+const deleteAllDateDialogType = ref('')
 
 // 提示框
 const $toast = useToast()
@@ -271,6 +278,18 @@ function checkValueValidity(values: any, type: string): boolean {
   }
 }
 
+// 清空规则（组）
+function deleteAllRules(dateType: string) {
+  if (!dateType) return
+  if (dateType === 'custom') {
+    customRules.value = []
+  } else if (dateType === 'group') {
+    filterRuleGroups.value = []
+  } else {
+    console.error(`传入了不支持的类型！`)
+  }
+}
+
 // 规则变化时赋值
 function onRuleChange(rule: CustomRule, id: string) {
   const index = customRules.value.findIndex(item => item.id === id)
@@ -367,11 +386,14 @@ onMounted(() => {
                 <VBtn color="success" variant="tonal" @click="addCustomRule">
                   <VIcon icon="mdi-plus" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="importRules('custom')">
+                <VBtn color="primary" variant="tonal" @click="importRules('custom')">
                   <VIcon icon="mdi-import" />
                 </VBtn>
                 <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
                   <VIcon icon="mdi-share" />
+                </VBtn>
+                <VBtn color="error" variant="tonal" @click="deleteAllRules('custom')">
+                  <VIcon icon="mdi-delete" />
                 </VBtn>
               </VBtnGroup>
             </div>
@@ -415,11 +437,14 @@ onMounted(() => {
                 <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
                   <VIcon icon="mdi-plus" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="importRules('group')">
+                <VBtn color="primary" variant="tonal" @click="importRules('group')">
                   <VIcon icon="mdi-import" />
                 </VBtn>
                 <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
                   <VIcon icon="mdi-share" />
+                </VBtn>
+                <VBtn color="error" variant="tonal" @click="deleteAllRules('group')">
+                  <VIcon icon="mdi-delete" />
                 </VBtn>
               </VBtnGroup>
             </div>
