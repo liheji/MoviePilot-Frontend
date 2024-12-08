@@ -28,12 +28,6 @@ const importCodeDialog = ref(false)
 // 导入代码类型
 const importCodeType = ref('')
 
-// 统一删除弹窗
-const deleteAllDateDialog = ref(false)
-
-// 统一删除弹窗的代码类型
-const deleteAllDateDialogType = ref('')
-
 // 提示框
 const $toast = useToast()
 
