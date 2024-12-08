@@ -94,8 +94,6 @@ async function addCustomRule() {
   customRules.value.push({
     id: id,
     name: name,
-    include: '',
-    exclude: '',
   })
 }
 
@@ -145,9 +143,6 @@ function addFilterRuleGroup() {
   }
   filterRuleGroups.value.push({
     name: name,
-    rule_string: '',
-    media_type: '',
-    category: '',
   })
 }
 
@@ -213,6 +208,9 @@ function extractCustomRules(value: any) {
         name: item.name,
         include: item.include,
         exclude: item.exclude,
+        size_range: item.size_rang,
+        seeders: item.seeders,
+        publish_time: item.publish_time,
       }
     })
   } catch (e) {
@@ -262,7 +260,7 @@ function checkValueValidity(values: any, type: string): boolean {
           return false
         }
       } else {
-        console.error(`传入了不合法类型`)
+        console.error(`传入了不合法的类型！`)
         return false
       }
     }
@@ -270,6 +268,18 @@ function checkValueValidity(values: any, type: string): boolean {
   } catch (e) {
     console.error(e)
     return false
+  }
+}
+
+// 清空规则（组）
+function deleteAllRules(dateType: string) {
+  if (!dateType) return
+  if (dateType === 'custom') {
+    customRules.value = []
+  } else if (dateType === 'group') {
+    filterRuleGroups.value = []
+  } else {
+    console.error(`传入了不支持的类型！`)
   }
 }
 
@@ -369,11 +379,14 @@ onMounted(() => {
                 <VBtn color="success" variant="tonal" @click="addCustomRule">
                   <VIcon icon="mdi-plus" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="importRules('custom')">
+                <VBtn color="primary" variant="tonal" @click="importRules('custom')">
                   <VIcon icon="mdi-import" />
                 </VBtn>
                 <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
                   <VIcon icon="mdi-share" />
+                </VBtn>
+                <VBtn color="error" variant="tonal" @click="deleteAllRules('custom')">
+                  <VIcon icon="mdi-delete" />
                 </VBtn>
               </VBtnGroup>
             </div>
@@ -417,11 +430,14 @@ onMounted(() => {
                 <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
                   <VIcon icon="mdi-plus" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="importRules('group')">
+                <VBtn color="primary" variant="tonal" @click="importRules('group')">
                   <VIcon icon="mdi-import" />
                 </VBtn>
                 <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
                   <VIcon icon="mdi-share" />
+                </VBtn>
+                <VBtn color="error" variant="tonal" @click="deleteAllRules('group')">
+                  <VIcon icon="mdi-delete" />
                 </VBtn>
               </VBtnGroup>
             </div>
@@ -433,7 +449,7 @@ onMounted(() => {
   <ImportCodeDialog
     v-if="importCodeDialog"
     v-model="importCodeDialog"
-    :title="`导入${importCodeType === 'custom' ? '自定义规则' : '规则组'}`"
+    :title="`导入${importCodeType === 'custom' ? '自定义规则' : '优先级规则组'}`"
     :dataType="importCodeType"
     @close="importCodeDialog = false"
     @save="saveCodeString"
