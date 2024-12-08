@@ -8,7 +8,6 @@ import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
-import { VCard, VDialog } from 'vuetify/lib/components/index.mjs'
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
