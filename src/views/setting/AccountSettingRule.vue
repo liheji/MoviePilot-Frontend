@@ -158,7 +158,7 @@ async function shareRules(rules: CustomRule[] | FilterRuleGroup[], type: string)
     let success
     success = copyToClipboard(value)
     if (await success) $toast.success(`${type === 'custom' ? '自定义规则' : '优先级规则组'}已复制到剪贴板！`)
-    else $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败：可能是浏览器不支持或被用户阻止!`)
+    else $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败：可能是浏览器不支持或被用户阻止！`)
   } catch (e) {
     $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败！`)
     console.error(e)
