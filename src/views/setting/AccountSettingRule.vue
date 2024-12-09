@@ -147,7 +147,7 @@ function addFilterRuleGroup() {
 }
 
 // 分享规则
-function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
+async function shareRules(rules: CustomRule[] | FilterRuleGroup[], type: string) {
   if (!rules || rules.length === 0) return
 
   // 将卡片规则接装为字符串
@@ -155,10 +155,13 @@ function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
 
   // 复制到剪贴板
   try {
-    copyToClipboard(value)
-    $toast.success('优先级规则已复制到剪贴板')
-  } catch (error) {
-    $toast.error('优先级规则复制失败！')
+    let success
+    success = copyToClipboard(value)
+    if (await success) $toast.success(`${type === 'custom' ? '自定义规则' : '优先级规则组'}已复制到剪贴板！`)
+    else $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败：可能是浏览器不支持或被用户阻止!`)
+  } catch (e) {
+    $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败！`)
+    console.error(e)
   }
 }
 
@@ -382,7 +385,7 @@ onMounted(() => {
                 <VBtn color="primary" variant="tonal" @click="importRules('custom')">
                   <VIcon icon="mdi-import" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
+                <VBtn color="info" variant="tonal" @click="shareRules(customRules, 'custom')">
                   <VIcon icon="mdi-share" />
                 </VBtn>
                 <VBtn color="error" variant="tonal" @click="deleteAllRules('custom')">
@@ -433,7 +436,7 @@ onMounted(() => {
                 <VBtn color="primary" variant="tonal" @click="importRules('group')">
                   <VIcon icon="mdi-import" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
+                <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups, 'group')">
                   <VIcon icon="mdi-share" />
                 </VBtn>
                 <VBtn color="error" variant="tonal" @click="deleteAllRules('group')">
