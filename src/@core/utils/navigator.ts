@@ -1,3 +1,5 @@
+import copy from 'copy-to-clipboard'
+
 // 请求和获取剪贴板内容
 export async function getClipboardContent() {
   if (navigator.clipboard && window.isSecureContext) {
@@ -13,20 +15,10 @@ export async function getClipboardContent() {
   }
 }
 
-// 将内容复制到剪贴板，兼容非安全域场景
+// 将内容复制到剪贴板
 export async function copyToClipboard(content: string) {
-  if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(content)
-  } else {
-    const input = document.createElement('textarea')
-    input.value = content
-    document.body.appendChild(input)
-    // 阻止事件冒泡到其他元素，确保 focusin 事件只在 textarea 元素上处理，不会影响其他元素
-    input.addEventListener('focusin', e => e.stopPropagation())
-    input.select()
-    document.execCommand('copy')
-    document.body.removeChild(input)
-  }
+  const success = copy(content)
+  return success
 }
 
 // VAPID公钥转Uint8Array

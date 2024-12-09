@@ -101,7 +101,7 @@ function filterCardClose(pri: string) {
 }
 
 // 分享规则
-function shareRules() {
+async function shareRules() {
   if (filterRuleCards.value.length === 0) return
 
   const value = filterRuleCards.value
@@ -110,8 +110,10 @@ function shareRules() {
     .join('>')
 
   try {
-    copyToClipboard(value)
-    $toast.success('优先级规则已复制到剪贴板')
+    let success
+    success = copyToClipboard(value)
+    if (await success) $toast.success('优先级规则已复制到剪贴板！')
+    else $toast.error('优先级规则复制失败：可能是浏览器不支持或被用户阻止！')
   } catch (error) {
     $toast.error('优先级规则复制失败！')
     console.error(error)
