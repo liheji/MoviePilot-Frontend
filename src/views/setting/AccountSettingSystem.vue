@@ -204,8 +204,8 @@ async function copyValue(value: string) {
   try {
     let success
     success = copyToClipboard(value)
-    if (await success) $toast.success('已复制到剪贴板')
-    else $toast.error(`复制失败：可能是浏览器不支持或被用户阻止!`)
+    if (await success) $toast.success('已复制到剪贴板！')
+    else $toast.error(`复制失败：可能是浏览器不支持或被用户阻止！`)
   } catch (error) {
     $toast.error('复制失败！')
     console.log(error)
