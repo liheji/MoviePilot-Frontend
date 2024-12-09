@@ -98,8 +98,8 @@ function onClose() {
       <DialogCloseBtn @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start">
-          <h5 class="text-h6 mb-1">{{ props.rule.id }}</h5>
-          <div class="text-body-1 mb-3">{{ props.rule.name }}</div>
+          <h5 class="text-h6 mb-1">{{ props.rule.name }}</h5>
+          <div class="text-body-1 mb-3">{{ props.rule.id }}</div>
         </div>
         <VImg :src="filter_svg" cover class="mt-7" max-width="3rem" />
       </VCardText>
