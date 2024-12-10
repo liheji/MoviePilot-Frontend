@@ -174,9 +174,9 @@ function onClose() {
               <VCol cols="6">
                 <VTextField
                   v-model="ruleInfo.publish_time"
-                  placeholder="0"
+                  placeholder="0/1-10"
                   label="发布时间（分钟）"
-                  hint="距离资源发布的最小时间间隔"
+                  hint="距离资源发布的最小时间间隔或时间区间"
                   persistent-hint
                   active
                 />
