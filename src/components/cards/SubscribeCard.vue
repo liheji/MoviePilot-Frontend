@@ -116,7 +116,7 @@ async function resetSubscribe() {
   try {
     const isConfirmed = await createConfirm({
       title: '确认',
-      content: `重置后 ${props.media?.name} 已下载记录将被清除，未入库的剧集将会重新下载，是否确认？`,
+      content: `重置后 ${props.media?.name} 将恢复初始状态，已下载记录将被清除，未入库的剧集将会重新下载，是否确认？`,
     })
     if (!isConfirmed) return
     // 重置
