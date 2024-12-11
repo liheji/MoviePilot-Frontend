@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import draggable from 'vuedraggable'
 import { VPullToRefresh } from 'vuetify/labs/VPullToRefresh'
 import api from '@/api'
 import type { Subscribe } from '@/api/types'
@@ -31,6 +32,52 @@ const subscribeEditDialog = ref(false)
 // 历史记录弹窗
 const historyDialog = ref(false)
 
+// 订阅顺序配置
+const orderConfig = ref<{ id: number }[]>([])
+
+// 加载顺序
+async function loadSubscribeOrderConfig() {
+  // 顺序配置
+  const local_order = localStorage.getItem('MP_SUBSCRIBE_ORDER')
+  if (local_order) {
+    orderConfig.value = JSON.parse(local_order)
+  } else {
+    const response2 = await api.get('/user/config/SubscribeOrder')
+    if (response2 && response2.data && response2.data.value) {
+      orderConfig.value = response2.data.value
+      localStorage.setItem('MP_SUBSCRIBE_ORDER', JSON.stringify(orderConfig.value))
+    }
+  }
+  // 排序
+  if (orderConfig.value) {
+    sortSubscribeOrder()
+  }
+}
+
+// 按order的顺序排序
+function sortSubscribeOrder() {
+  displayList.value.sort((a, b) => {
+    const aIndex = orderConfig.value.findIndex((item: { id: number }) => item.id === a.id)
+    const bIndex = orderConfig.value.findIndex((item: { id: number }) => item.id === b.id)
+    return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
+  })
+}
+
+// 保存顺序设置
+async function saveSubscribeOrder() {
+  // 顺序配置
+  const orderObj = displayList.value.map(item => ({ id: item.id }))
+  const orderString = JSON.stringify(orderObj)
+  localStorage.setItem('MP_SUBSCRIBE_ORDER', orderString)
+
+  // 保存到服务端
+  try {
+    await api.post('/user/config/SubscribeOrder', orderObj)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 // 获取订阅列表数据
 async function fetchData() {
   try {
@@ -49,20 +96,28 @@ const loading = ref(false)
 // 下拉刷新
 async function onRefresh({ done }: { done: any }) {
   await fetchData()
+  await loadSubscribeOrderConfig()
   done('ok')
 }
 
-// 过滤数据，管理员用户显示全部，非管理员只显示自己的订阅
-const filteredDataList = computed(() => {
+// 显示的订阅列表
+const displayList = ref<Subscribe[]>([])
+
+// 监听dataList变化，同步更新displayList
+watch(dataList, () => {
   // 从Vuex Store中获取用户信息
   const superUser = store.state.auth.superUser
   const userName = store.state.auth.userName
-  if (superUser) return dataList.value.filter(data => data.type === props.type)
-  else return dataList.value.filter(data => data.type === props.type && data.username === userName)
+  if (superUser) displayList.value = dataList.value.filter(data => data.type === props.type)
+  else displayList.value = dataList.value.filter(data => data.type === props.type && data.username === userName)
 })
+
+// 过滤数据，管理员用户显示全部，非管理员只显示自己的订阅
+const filteredDataList = computed(() => {})
 
 onMounted(async () => {
   await fetchData()
+  await loadSubscribeOrderConfig()
   if (props.subid) {
     // 找到这个订阅
     const sub = dataList.value.find(sub => sub.id.toString() == props.subid?.toString())
@@ -75,7 +130,8 @@ onMounted(async () => {
 
 onActivated(async () => {
   if (!loading.value) {
-    fetchData()
+    await fetchData()
+    await loadSubscribeOrderConfig()
   }
 })
 </script>
@@ -83,17 +139,21 @@ onActivated(async () => {
 <template>
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
   <VPullToRefresh v-model="loading" @load="onRefresh">
-    <div v-if="filteredDataList.length > 0" class="mx-3 grid gap-4 grid-subscribe-card p-1">
-      <SubscribeCard
-        v-for="data in filteredDataList"
-        :key="data.id"
-        :media="data"
-        @remove="fetchData"
-        @save="fetchData"
-      />
-    </div>
+    <draggable
+      v-if="displayList.length > 0"
+      v-model="displayList"
+      @end="saveSubscribeOrder"
+      handle=".cursor-move"
+      item-key="id"
+      tag="div"
+      :component-data="{ class: 'mx-3 grid gap-4 grid-subscribe-card p-1' }"
+    >
+      <template #item="{ element }">
+        <SubscribeCard :key="element.id" :media="element" @remove="fetchData" @save="fetchData" />
+      </template>
+    </draggable>
     <NoDataFound
-      v-if="filteredDataList.length === 0 && isRefreshed"
+      v-if="displayList.length === 0 && isRefreshed"
       error-code="404"
       error-title="没有订阅"
       error-description="请通过搜索添加电影、电视剧订阅。"

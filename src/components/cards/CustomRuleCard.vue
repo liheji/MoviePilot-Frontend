@@ -98,8 +98,8 @@ function onClose() {
       <DialogCloseBtn @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start">
-          <h5 class="text-h6 mb-1">{{ props.rule.id }}</h5>
-          <div class="text-body-1 mb-3">{{ props.rule.name }}</div>
+          <h5 class="text-h6 mb-1">{{ props.rule.name }}</h5>
+          <div class="text-body-1 mb-3">{{ props.rule.id }}</div>
         </div>
         <VImg :src="filter_svg" cover class="mt-7" max-width="3rem" />
       </VCardText>
@@ -174,9 +174,9 @@ function onClose() {
               <VCol cols="6">
                 <VTextField
                   v-model="ruleInfo.publish_time"
-                  placeholder="0"
+                  placeholder="0/1-10"
                   label="发布时间（分钟）"
-                  hint="距离资源发布的最小时间间隔"
+                  hint="距离资源发布的最小时间间隔或时间区间"
                   persistent-hint
                   active
                 />

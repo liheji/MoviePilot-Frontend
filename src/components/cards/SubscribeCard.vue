@@ -271,134 +271,136 @@ function onSubscribeEditRemove() {
 </script>
 
 <template>
-  <VHover>
-    <template #default="hover">
-      <VCard
-        v-bind="hover.props"
-        :key="props.media?.id"
-        class="flex flex-col rounded-lg"
-        :class="{
-          'outline-dashed outline-1': props.media?.best_version && imageLoaded,
-          'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
-          'opacity-70': subscribeState === 'S',
-        }"
-        min-height="170"
-        @click="editSubscribeDialog"
-      >
-        <div class="me-n3 absolute top-1 right-2">
-          <IconBtn>
-            <VIcon icon="mdi-dots-vertical" color="white" />
-            <VMenu activator="parent" close-on-content-click>
-              <VList>
-                <template v-for="(item, i) in dropdownItems" :key="i">
-                  <VListItem
-                    v-if="item.show !== false"
-                    variant="plain"
-                    :base-color="item.props.color"
-                    @click="item.props.click"
-                  >
-                    <template #prepend>
-                      <VIcon :icon="item.props.prependIcon" />
-                    </template>
-                    <VListItemTitle v-text="item.title" />
-                  </VListItem>
-                </template>
-              </VList>
-            </VMenu>
-          </IconBtn>
-        </div>
-        <template #image>
-          <VImg :src="backdropUrl || posterUrl" aspect-ratio="3/2" cover @load="imageLoadHandler" position="top">
-            <template #placeholder>
-              <div class="w-full h-full">
-                <VSkeletonLoader class="object-cover aspect-w-3 aspect-h-2" />
-              </div>
-            </template>
-            <div class="absolute inset-0 subscribe-card-background"></div>
-          </VImg>
-          <div
-            v-if="subscribeState === 'P'"
-            class="absolute inset-0 bg-yellow-900 opacity-40 pointer-events-none"
-          ></div>
-        </template>
-        <div>
-          <VCardText class="flex items-center">
-            <div class="h-auto w-12 flex-shrink-0 overflow-hidden rounded-md shadow-lg" v-if="imageLoaded">
-              <VImg :src="posterUrl" aspect-ratio="2/3" cover @click.stop="viewMediaDetail">
-                <template #placeholder>
-                  <div class="w-full h-full">
-                    <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
-                  </div>
-                </template>
-              </VImg>
-            </div>
-            <div class="flex flex-col justify-center overflow-hidden pl-2 xl:pl-4">
-              <div class="text-sm font-medium text-white sm:pt-1">{{ props.media?.year }}</div>
-              <div class="mr-2 min-w-0 text-lg font-bold text-white">
-                {{ props.media?.name }}
-                {{ formatSeason(props.media?.season ? props.media?.season.toString() : '') }}
-              </div>
-            </div>
-          </VCardText>
-          <VCardText class="flex justify-space-between align-center flex-wrap">
-            <div class="flex align-center">
-              <IconBtn
-                v-if="props.media?.total_episode"
-                v-bind="props"
-                icon="mdi-progress-download"
-                color="white"
-                class="me-1"
-              />
-              <div v-if="props.media?.season" class="text-subtitle-2 me-4 text-white">
-                {{ (props.media?.total_episode || 0) - (props.media?.lack_episode || 0) }} /
-                {{ props.media?.total_episode }}
-              </div>
-              <IconBtn v-if="props.media?.username" icon="mdi-account" color="white" class="me-1" />
-              <span v-if="props.media?.username" class="text-subtitle-2 me-4 text-white">
-                {{ props.media?.username }}
-              </span>
-            </div>
-          </VCardText>
-          <VCardText v-if="lastUpdateText" class="absolute right-0 bottom-0 d-flex align-center p-2 text-gray-300">
-            <VIcon icon="mdi-download" class="me-1" />
-            {{ lastUpdateText }}
-          </VCardText>
-          <div class="w-full absolute bottom-0">
-            <VProgressLinear
-              v-if="getPercentage() > 0"
-              :model-value="getPercentage()"
-              bg-color="success"
-              color="success"
-            />
+  <div>
+    <VHover>
+      <template #default="hover">
+        <VCard
+          v-bind="hover.props"
+          :key="props.media?.id"
+          class="flex flex-col rounded-lg h-full"
+          :class="{
+            'outline-dashed outline-1': props.media?.best_version && imageLoaded,
+            'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
+            'opacity-70': subscribeState === 'S',
+          }"
+          min-height="170"
+          @click="editSubscribeDialog"
+        >
+          <div class="me-n3 absolute top-1 right-2">
+            <IconBtn>
+              <VIcon icon="mdi-dots-vertical" color="white" />
+              <VMenu activator="parent" close-on-content-click>
+                <VList>
+                  <template v-for="(item, i) in dropdownItems" :key="i">
+                    <VListItem
+                      v-if="item.show !== false"
+                      variant="plain"
+                      :base-color="item.props.color"
+                      @click="item.props.click"
+                    >
+                      <template #prepend>
+                        <VIcon :icon="item.props.prependIcon" />
+                      </template>
+                      <VListItemTitle v-text="item.title" />
+                    </VListItem>
+                  </template>
+                </VList>
+              </VMenu>
+            </IconBtn>
           </div>
-        </div>
-      </VCard>
-    </template>
-  </VHover>
-  <!-- 订阅编辑弹窗 -->
-  <SubscribeEditDialog
-    v-if="subscribeEditDialog"
-    v-model="subscribeEditDialog"
-    :subid="props.media?.id"
-    @remove="onSubscribeEditRemove"
-    @save="onSubscribeEditSave"
-    @close="subscribeEditDialog = false"
-  />
+          <template #image>
+            <VImg :src="backdropUrl || posterUrl" aspect-ratio="3/2" cover @load="imageLoadHandler" position="top">
+              <template #placeholder>
+                <div class="w-full h-full">
+                  <VSkeletonLoader class="object-cover aspect-w-3 aspect-h-2" />
+                </div>
+              </template>
+              <div class="absolute inset-0 subscribe-card-background"></div>
+            </VImg>
+            <div v-if="subscribeState === 'P'" class="absolute inset-0 bg-yellow-900 opacity-80 pointer-events-none" />
+          </template>
+          <div>
+            <VCardText class="flex items-center">
+              <div class="h-auto w-12 flex-shrink-0 overflow-hidden rounded-md shadow-lg" v-if="imageLoaded">
+                <VImg :src="posterUrl" aspect-ratio="2/3" cover @click.stop="viewMediaDetail">
+                  <template #placeholder>
+                    <div class="w-full h-full">
+                      <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
+                    </div>
+                  </template>
+                </VImg>
+              </div>
+              <div class="flex flex-col justify-center overflow-hidden pl-2 xl:pl-4">
+                <div class="text-sm font-medium text-white sm:pt-1">{{ props.media?.year }}</div>
+                <div class="mr-2 min-w-0 text-lg font-bold text-white">
+                  {{ props.media?.name }}
+                  {{ formatSeason(props.media?.season ? props.media?.season.toString() : '') }}
+                </div>
+              </div>
+            </VCardText>
+            <VCardText class="flex justify-space-between align-center flex-wrap">
+              <div class="flex align-center">
+                <IconBtn
+                  v-if="props.media?.total_episode"
+                  v-bind="props"
+                  icon="mdi-progress-download"
+                  color="white"
+                  class="me-1"
+                />
+                <div v-if="props.media?.season" class="text-subtitle-2 me-4 text-white">
+                  {{ (props.media?.total_episode || 0) - (props.media?.lack_episode || 0) }} /
+                  {{ props.media?.total_episode }}
+                </div>
+                <IconBtn v-if="props.media?.username" icon="mdi-account" color="white" class="me-1" />
+                <span v-if="props.media?.username" class="text-subtitle-2 me-4 text-white">
+                  {{ props.media?.username }}
+                </span>
+              </div>
+            </VCardText>
+            <VCardText v-if="lastUpdateText" class="absolute right-0 bottom-0 d-flex align-center p-2 text-gray-300">
+              <VIcon icon="mdi-download" class="me-1" />
+              {{ lastUpdateText }}
+            </VCardText>
+            <div class="w-full absolute bottom-0">
+              <VProgressLinear
+                v-if="getPercentage() > 0"
+                :model-value="getPercentage()"
+                bg-color="success"
+                color="success"
+              />
+            </div>
+            <div v-if="hover.isHovering" class="me-n3 absolute top-1 right-10">
+              <IconBtn><VIcon class="cursor-move text-white">mdi-drag</VIcon></IconBtn>
+            </div>
+          </div>
+        </VCard>
+      </template>
+    </VHover>
+    <!-- 订阅编辑弹窗 -->
+    <SubscribeEditDialog
+      v-if="subscribeEditDialog"
+      v-model="subscribeEditDialog"
+      :subid="props.media?.id"
+      @remove="onSubscribeEditRemove"
+      @save="onSubscribeEditSave"
+      @close="subscribeEditDialog = false"
+    />
 
-  <!-- 订阅文件信息弹窗 -->
-  <SubscribeFilesDialog
-    v-if="subscribeFilesDialog"
-    v-model="subscribeFilesDialog"
-    :subid="props.media?.id"
-    @close="subscribeFilesDialog = false"
-  />
-  <!-- 分享订阅弹窗 -->
-  <SubscribeShareDialog
-    v-if="subscribeShareDialog"
-    v-model="subscribeShareDialog"
-    :sub="props.media"
-    @close="subscribeShareDialog = false"
-  />
+    <!-- 订阅文件信息弹窗 -->
+    <SubscribeFilesDialog
+      v-if="subscribeFilesDialog"
+      v-model="subscribeFilesDialog"
+      :subid="props.media?.id"
+      @close="subscribeFilesDialog = false"
+    />
+    <!-- 分享订阅弹窗 -->
+    <SubscribeShareDialog
+      v-if="subscribeShareDialog"
+      v-model="subscribeShareDialog"
+      :sub="props.media"
+      @close="subscribeShareDialog = false"
+    />
+  </div>
 </template>
 <style lang="scss">
 .subscribe-card-background {

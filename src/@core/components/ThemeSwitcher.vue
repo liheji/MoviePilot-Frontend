@@ -115,7 +115,7 @@ function changeTheme(theme: string) {
   // 保存主题到服务端
   try {
     api.post('/user/config/Layout', {
-      theme: nextTheme
+      theme: nextTheme,
     })
   } catch (e) {
     console.error('保存主题到服务端失败')
@@ -176,7 +176,7 @@ async function saveCustomCSS() {
       },
     })
 
-    if (result.success) $toast.success('自定义CSS保存成功！')
+    if (result.success) $toast.success('自定义CSS保存成功，请刷新页面生效！')
   } catch (e) {
     console.error('保存自定义 CSS 到服务端失败')
   }

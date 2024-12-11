@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import draggable from 'vuedraggable'
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { Plugin } from '@/api/types'
@@ -27,6 +28,9 @@ const pluginId = ref(route.query.id)
 
 // 当前排序字段
 const activeSort = ref(null)
+
+// 插件顺序配置
+const orderConfig = ref<{ id: string }[]>([])
 
 // 排序选项
 const sortOptions = [
@@ -103,6 +107,49 @@ const authorFilterOptions = ref<string[]>([])
 const labelFilterOptions = ref<string[]>([])
 // 插件库过滤项
 const repoFilterOptions = ref<string[]>([])
+
+// 加载插件顺序
+async function loadPluginOrderConfig() {
+  // 顺序配置
+  const local_order = localStorage.getItem('MP_PLUGIN_ORDER')
+  if (local_order) {
+    orderConfig.value = JSON.parse(local_order)
+  } else {
+    const response2 = await api.get('/user/config/PluginOrder')
+    if (response2 && response2.data && response2.data.value) {
+      orderConfig.value = response2.data.value
+      localStorage.setItem('MP_PLUGIN_ORDER', JSON.stringify(orderConfig.value))
+    }
+  }
+  // 排序
+  if (orderConfig.value) {
+    sortPluginOrder()
+  }
+}
+
+// 按order的顺序对插件进行排序
+function sortPluginOrder() {
+  dataList.value.sort((a, b) => {
+    const aIndex = orderConfig.value.findIndex((item: { id: string }) => item.id === a.id)
+    const bIndex = orderConfig.value.findIndex((item: { id: string }) => item.id === b.id)
+    return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
+  })
+}
+
+// 保存顺序设置
+async function savePluginOrder() {
+  // 顺序配置
+  const orderObj = dataList.value.map(item => ({ id: item.id }))
+  const orderString = JSON.stringify(orderObj)
+  localStorage.setItem('MP_PLUGIN_ORDER', orderString)
+
+  // 保存到服务端
+  try {
+    await api.post('/user/config/PluginOrder', orderObj)
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 // 初始化过滤选项
 function initOptions(item: Plugin) {
@@ -329,8 +376,9 @@ function handleRepoUrl(url: string | undefined) {
 }
 
 // 加载时获取数据
-onBeforeMount(async () => {
+onMounted(async () => {
   await refreshData()
+  await loadPluginOrderConfig()
   getPluginStatistics()
   if (activeTab.value != 'market' && pluginId.value) {
     // 找到这个插件
@@ -356,18 +404,26 @@ onBeforeMount(async () => {
         <transition name="fade-slide" appear>
           <div>
             <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-            <div v-if="dataList.length > 0" class="grid gap-4 grid-plugin-card">
-              <template v-for="(data, index) in dataList" :key="`${data.id}_v${data.plugin_version}`">
+            <draggable
+              v-if="dataList.length > 0"
+              v-model="dataList"
+              @end="savePluginOrder"
+              handle=".cursor-move"
+              item-key="id"
+              tag="div"
+              :component-data="{ class: 'grid gap-4 grid-plugin-card' }"
+            >
+              <template #item="{ element }">
                 <PluginCard
-                  :count="PluginStatistics[data.id || '0']"
-                  :plugin="data"
-                  :action="pluginActions[data.id || '0']"
+                  :count="PluginStatistics[element.id || '0']"
+                  :plugin="element"
+                  :action="pluginActions[element.id || '0']"
                   @remove="refreshData"
                   @save="refreshData"
-                  @action-done="pluginActions[data.id || '0'] = false"
+                  @action-done="pluginActions[element.id || '0'] = false"
                 />
               </template>
-            </div>
+            </draggable>
             <NoDataFound
               v-if="dataList.length === 0 && isRefreshed"
               error-code="404"

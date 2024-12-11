@@ -8,41 +8,12 @@ import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
-import internal from 'stream'
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
-// 自定义规则类型，仅用于导入判断
-const customRulesType = ref<CustomRule>({
-  // 规则ID
-  id: '',
-  // 名称
-  name: '',
-  // 包含
-  include: '',
-  // 排除
-  exclude: '',
-  // 大小范围
-  size_range: '',
-  // 最少做种人数
-  seeders: '',
-  // 发布时间
-  publish_time: '',
-})
 
 // 所有规则组列表
 const filterRuleGroups = ref<FilterRuleGroup[]>([])
-// 规则组类型，仅用于导入判断
-const filterRuleGroupsType = ref<FilterRuleGroup>({
-  // 名称
-  name: '',
-  // 规则串
-  rule_string: '',
-  // 适用类媒体类型 None-全部 电影/电视剧
-  media_type: '',
-  // # 适用媒体类别 None-全部 对应二级分类
-  category: '',
-})
 
 // 种子优先规则
 const selectedTorrentPriority = ref<string>('seeder')
@@ -123,8 +94,6 @@ async function addCustomRule() {
   customRules.value.push({
     id: id,
     name: name,
-    include: '',
-    exclude: '',
   })
 }
 
@@ -174,14 +143,11 @@ function addFilterRuleGroup() {
   }
   filterRuleGroups.value.push({
     name: name,
-    rule_string: '',
-    media_type: '',
-    category: '',
   })
 }
 
 // 分享规则
-function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
+async function shareRules(rules: CustomRule[] | FilterRuleGroup[], type: string) {
   if (!rules || rules.length === 0) return
 
   // 将卡片规则接装为字符串
@@ -189,10 +155,13 @@ function shareRules(rules: CustomRule[] | FilterRuleGroup[]) {
 
   // 复制到剪贴板
   try {
-    copyToClipboard(value)
-    $toast.success('优先级规则已复制到剪贴板')
-  } catch (error) {
-    $toast.error('优先级规则复制失败！')
+    let success
+    success = copyToClipboard(value)
+    if (await success) $toast.success(`${type === 'custom' ? '自定义规则' : '优先级规则组'}已复制到剪贴板！`)
+    else $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败：可能是浏览器不支持或被用户阻止！`)
+  } catch (e) {
+    $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败！`)
+    console.error(e)
   }
 }
 
@@ -217,15 +186,11 @@ function saveCodeString(type: string, codeString: any) {
   // 更新数据
   try {
     if (type === 'custom') {
-      for (const value of parsedCode) {
-        if (!validateValueAgainstInterface(value, customRulesType)) return false
-      }
+      if (!checkValueValidity(parsedCode, type)) return false
       const newCustomRules = extractCustomRules(parsedCode) || []
       customRules.value = [...customRules.value, ...newCustomRules]
     } else if (type === 'group') {
-      for (const value of parsedCode) {
-        if (!validateValueAgainstInterface(value, filterRuleGroupsType)) return false
-      }
+      if (!checkValueValidity(parsedCode, type)) return false
       const newFilterRuleGroups = extractFilterRuleGroups(parsedCode) || []
       filterRuleGroups.value = [...filterRuleGroups.value, ...newFilterRuleGroups]
     } else {
@@ -246,6 +211,9 @@ function extractCustomRules(value: any) {
         name: item.name,
         include: item.include,
         exclude: item.exclude,
+        size_range: item.size_rang,
+        seeders: item.seeders,
+        publish_time: item.publish_time,
       }
     })
   } catch (e) {
@@ -269,14 +237,33 @@ function extractFilterRuleGroups(value: any) {
   }
 }
 
-function validateValueAgainstInterface(value: any, interfaceDefinition: any): boolean {
-  console.log(value)
-  console.log(interfaceDefinition)
+// 根据ID简单区分规则与规则组
+function checkValueValidity(values: any, type: string): boolean {
   try {
-    // 循环判断是否命中全部接口定义，暂时只检查是否存在，不检查是否多出
-    for (const key in interfaceDefinition.value) {
-      if (value[key] === undefined) {
-        $toast.error(`导入规则失败！输入了不符合要求的数据！`)
+    // 允许空值存在，不影响最终的导入
+    if (!values) return true
+    if (!type) return false
+    for (const value of values) {
+      const keys = Object.keys(value)
+      const uniqueKeys = new Set(keys)
+
+      const hasName = keys.includes('name')
+      const hasId = keys.includes('id')
+      const noDuplicates = keys.length === uniqueKeys.size
+      if (type == 'custom') {
+        if (!hasName || !hasId || !noDuplicates) {
+          if (!noDuplicates) $toast.warning(`存在重名值`)
+          if (!hasId) $toast.error(`导入失败！发现有规则不存在ID，可能属于优先级规则组！`)
+          return false
+        }
+      } else if (type == 'group') {
+        if (!hasName || hasId || !noDuplicates) {
+          if (!noDuplicates) $toast.warning(`存在重名值`)
+          if (hasId) $toast.error(`导入失败！发现有规则存在ID，可能属于自定义规则！`)
+          return false
+        }
+      } else {
+        console.error(`传入了不合法的类型！`)
         return false
       }
     }
@@ -284,6 +271,18 @@ function validateValueAgainstInterface(value: any, interfaceDefinition: any): bo
   } catch (e) {
     console.error(e)
     return false
+  }
+}
+
+// 清空规则（组）
+function deleteAllRules(dateType: string) {
+  if (!dateType) return
+  if (dateType === 'custom') {
+    customRules.value = []
+  } else if (dateType === 'group') {
+    filterRuleGroups.value = []
+  } else {
+    console.error(`传入了不支持的类型！`)
   }
 }
 
@@ -383,11 +382,14 @@ onMounted(() => {
                 <VBtn color="success" variant="tonal" @click="addCustomRule">
                   <VIcon icon="mdi-plus" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="importRules('custom')">
+                <VBtn color="primary" variant="tonal" @click="importRules('custom')">
                   <VIcon icon="mdi-import" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="shareRules(customRules)">
+                <VBtn color="info" variant="tonal" @click="shareRules(customRules, 'custom')">
                   <VIcon icon="mdi-share" />
+                </VBtn>
+                <VBtn color="error" variant="tonal" @click="deleteAllRules('custom')">
+                  <VIcon icon="mdi-delete" />
                 </VBtn>
               </VBtnGroup>
             </div>
@@ -431,11 +433,14 @@ onMounted(() => {
                 <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
                   <VIcon icon="mdi-plus" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="importRules('group')">
+                <VBtn color="primary" variant="tonal" @click="importRules('group')">
                   <VIcon icon="mdi-import" />
                 </VBtn>
-                <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups)">
+                <VBtn color="info" variant="tonal" @click="shareRules(filterRuleGroups, 'group')">
                   <VIcon icon="mdi-share" />
+                </VBtn>
+                <VBtn color="error" variant="tonal" @click="deleteAllRules('group')">
+                  <VIcon icon="mdi-delete" />
                 </VBtn>
               </VBtnGroup>
             </div>
@@ -447,7 +452,7 @@ onMounted(() => {
   <ImportCodeDialog
     v-if="importCodeDialog"
     v-model="importCodeDialog"
-    :title="`导入${importCodeType === 'custom' ? '自定义规则' : '规则组'}`"
+    :title="`导入${importCodeType === 'custom' ? '自定义规则' : '优先级规则组'}`"
     :dataType="importCodeType"
     @close="importCodeDialog = false"
     @save="saveCodeString"
