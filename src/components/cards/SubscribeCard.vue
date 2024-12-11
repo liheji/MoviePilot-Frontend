@@ -124,6 +124,7 @@ async function resetSubscribe() {
     // 提示
     if (result.success) {
       $toast.success(`${props.media?.name} 重置成功！`)
+      subscribeState.value = 'R'
       emit('save')
     } else $toast.error(`${props.media?.name} 重置失败：${result.message}`)
   } catch (e) {
