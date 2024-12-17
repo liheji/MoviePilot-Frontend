@@ -211,7 +211,7 @@ function extractCustomRules(value: any) {
         name: item.name,
         include: item.include,
         exclude: item.exclude,
-        size_range: item.size_rang,
+        size_range: item.size_range,
         seeders: item.seeders,
         publish_time: item.publish_time,
       }
