@@ -121,14 +121,16 @@ async function loadPluginOrderConfig() {
       localStorage.setItem('MP_PLUGIN_ORDER', JSON.stringify(orderConfig.value))
     }
   }
-  // 排序
-  if (orderConfig.value) {
-    sortPluginOrder()
-  }
 }
 
 // 按order的顺序对插件进行排序
 function sortPluginOrder() {
+  if (!orderConfig.value) {
+    return
+  }
+  if (dataList.value.length === 0) {
+    return
+  }
   dataList.value.sort((a, b) => {
     const aIndex = orderConfig.value.findIndex((item: { id: string }) => item.id === a.id)
     const bIndex = orderConfig.value.findIndex((item: { id: string }) => item.id === b.id)
@@ -139,7 +141,8 @@ function sortPluginOrder() {
 // 保存顺序设置
 async function savePluginOrder() {
   // 顺序配置
-  const orderObj = dataList.value.map(item => ({ id: item.id }))
+  const orderObj = dataList.value.map(item => ({ id: item.id || '' }))
+  orderConfig.value = orderObj
   const orderString = JSON.stringify(orderObj)
   localStorage.setItem('MP_PLUGIN_ORDER', orderString)
 
@@ -255,6 +258,8 @@ async function fetchInstalledPlugins() {
         state: 'installed',
       },
     })
+    // 排序
+    sortPluginOrder()
     loading.value = false
     isRefreshed.value = true
   } catch (error) {
@@ -377,8 +382,8 @@ function handleRepoUrl(url: string | undefined) {
 
 // 加载时获取数据
 onMounted(async () => {
-  await refreshData()
   await loadPluginOrderConfig()
+  refreshData()
   getPluginStatistics()
   if (activeTab.value != 'market' && pluginId.value) {
     // 找到这个插件
