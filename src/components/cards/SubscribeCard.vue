@@ -38,11 +38,11 @@ const subscribeFilesDialog = ref(false)
 // 分享订阅弹窗
 const subscribeShareDialog = ref(false)
 
-// 定义一个变量来保存当前的订阅状态
+// 当前的订阅状态
 const subscribeState = ref<string>(props.media?.state ?? 'P')
 
 // 上一次更新时间
-const lastUpdateText = ref(props.media && props.media.last_update ? formatDateDifference(props.media.last_update) : '')
+const lastUpdateText = computed(() => (props.media?.last_update ? formatDateDifference(props.media.last_update) : ''))
 
 // 图片加载完成响应
 function imageLoadHandler() {
@@ -236,6 +236,14 @@ watch(
   () => props.media?.page_open,
   (newOpenState, _) => {
     if (newOpenState) editSubscribeDialog()
+  },
+)
+
+// 监听订阅状态
+watch(
+  () => props.media?.state,
+  newState => {
+    subscribeState.value = newState ?? 'P'
   },
 )
 
