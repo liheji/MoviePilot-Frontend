@@ -35,6 +35,18 @@ const historyDialog = ref(false)
 // 订阅顺序配置
 const orderConfig = ref<{ id: number }[]>([])
 
+// 显示的订阅列表
+const displayList = ref<Subscribe[]>([])
+
+// 监听dataList变化，同步更新displayList
+watch(dataList, () => {
+  // 从Vuex Store中获取用户信息
+  const superUser = store.state.auth.superUser
+  const userName = store.state.auth.userName
+  if (superUser) displayList.value = dataList.value.filter(data => data.type === props.type)
+  else displayList.value = dataList.value.filter(data => data.type === props.type && data.username === userName)
+})
+
 // 加载顺序
 async function loadSubscribeOrderConfig() {
   // 顺序配置
@@ -48,15 +60,17 @@ async function loadSubscribeOrderConfig() {
       localStorage.setItem('MP_SUBSCRIBE_ORDER', JSON.stringify(orderConfig.value))
     }
   }
-  // 排序
-  if (orderConfig.value) {
-    sortSubscribeOrder()
-  }
 }
 
 // 按order的顺序排序
 function sortSubscribeOrder() {
-  displayList.value.sort((a, b) => {
+  if (!orderConfig.value) {
+    return
+  }
+  if (dataList.value.length === 0) {
+    return
+  }
+  dataList.value.sort((a, b) => {
     const aIndex = orderConfig.value.findIndex((item: { id: number }) => item.id === a.id)
     const bIndex = orderConfig.value.findIndex((item: { id: number }) => item.id === b.id)
     return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
@@ -67,6 +81,7 @@ function sortSubscribeOrder() {
 async function saveSubscribeOrder() {
   // 顺序配置
   const orderObj = displayList.value.map(item => ({ id: item.id }))
+  orderConfig.value = orderObj
   const orderString = JSON.stringify(orderObj)
   localStorage.setItem('MP_SUBSCRIBE_ORDER', orderString)
 
@@ -83,6 +98,8 @@ async function fetchData() {
   try {
     loading.value = true
     dataList.value = await api.get('subscribe/')
+    // 排序
+    sortSubscribeOrder()
     loading.value = false
     isRefreshed.value = true
   } catch (error) {
@@ -96,28 +113,12 @@ const loading = ref(false)
 // 下拉刷新
 async function onRefresh({ done }: { done: any }) {
   await fetchData()
-  await loadSubscribeOrderConfig()
   done('ok')
 }
 
-// 显示的订阅列表
-const displayList = ref<Subscribe[]>([])
-
-// 监听dataList变化，同步更新displayList
-watch(dataList, () => {
-  // 从Vuex Store中获取用户信息
-  const superUser = store.state.auth.superUser
-  const userName = store.state.auth.userName
-  if (superUser) displayList.value = dataList.value.filter(data => data.type === props.type)
-  else displayList.value = dataList.value.filter(data => data.type === props.type && data.username === userName)
-})
-
-// 过滤数据，管理员用户显示全部，非管理员只显示自己的订阅
-const filteredDataList = computed(() => {})
-
 onMounted(async () => {
-  await fetchData()
   await loadSubscribeOrderConfig()
+  await fetchData()
   if (props.subid) {
     // 找到这个订阅
     const sub = dataList.value.find(sub => sub.id.toString() == props.subid?.toString())
@@ -131,7 +132,6 @@ onMounted(async () => {
 onActivated(async () => {
   if (!loading.value) {
     await fetchData()
-    await loadSubscribeOrderConfig()
   }
 })
 </script>
