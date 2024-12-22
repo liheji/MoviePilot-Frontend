@@ -67,6 +67,12 @@ const sourceIconDict: { [key: string]: any } = {
   bangumi: bangumiImage,
 }
 
+// 绑定MediaCard元素
+const mediaCardRef = ref<HTMLElement | null>(null)
+
+// 创建Intersection Observer实例
+const observer = ref<IntersectionObserver | null>(null)
+
 // 获得mediaid
 function getMediaId() {
   if (props.media?.tmdb_id) return `tmdb:${props.media?.tmdb_id}`
@@ -359,10 +365,40 @@ function handleSearch() {
   })
 }
 
-// 装载时检查是否已订阅
-onBeforeMount(() => {
+// 懒加载检查
+function handleCheckLazy() {
   handleCheckSubscribe()
   handleCheckExists()
+}
+
+// 在元素进入视窗时触发懒加载函数
+function setupIntersectionObserver() {
+  if (mediaCardRef.value) {
+    observer.value = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // 只要MediaCard进入视窗，就调用懒加载的操作
+            handleCheckLazy()
+            // 加载后销毁观察者实例
+            observer.value?.disconnect()
+            observer.value = null
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
+    observer.value.observe(mediaCardRef.value)
+  }
+}
+
+onMounted(() => {
+  setupIntersectionObserver()
+})
+
+onBeforeUnmount(() => {
+  observer.value?.disconnect()
+  observer.value = null
 })
 
 // 计算图片地址
@@ -407,82 +443,84 @@ function onRemoveSubscribe() {
 <template>
   <VHover>
     <template #default="hover">
-      <VCard
-        v-bind="hover.props"
-        :height="props.height"
-        :width="props.width"
-        class="outline-none shadow ring-gray-500 rounded-lg"
-        :class="{
-          'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
-          'ring-1': isImageLoaded,
-        }"
-        @click.stop="goMediaDetail(hover.isHovering ?? false)"
-      >
-        <VImg
-          aspect-ratio="2/3"
-          :src="getImgUrl"
-          class="object-cover aspect-w-2 aspect-h-3"
-          cover
-          @load="isImageLoaded = true"
-          @error="imageLoadError = true"
+      <div ref="mediaCardRef">
+        <VCard
+          v-bind="hover.props"
+          :height="props.height"
+          :width="props.width"
+          class="outline-none shadow ring-gray-500 rounded-lg"
+          :class="{
+            'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
+            'ring-1': isImageLoaded,
+          }"
+          @click.stop="goMediaDetail(hover.isHovering ?? false)"
         >
-          <template #placeholder>
-            <div class="w-full h-full">
-              <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
+          <VImg
+            aspect-ratio="2/3"
+            :src="getImgUrl"
+            class="object-cover aspect-w-2 aspect-h-3"
+            cover
+            @load="isImageLoaded = true"
+            @error="imageLoadError = true"
+          >
+            <template #placeholder>
+              <div class="w-full h-full">
+                <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
+              </div>
+            </template>
+          </VImg>
+          <!-- 详情 -->
+          <VCardText
+            v-show="hover.isHovering || imageLoadError"
+            class="w-full h-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2"
+            style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
+          >
+            <span class="font-bold">{{ props.media?.year }}</span>
+            <h1 class="mb-1 text-white font-extrabold text-xl line-clamp-2 overflow-hidden text-ellipsis ...">
+              {{ props.media?.title }}
+            </h1>
+            <p class="leading-4 line-clamp-4 overflow-hidden text-ellipsis ...">
+              {{ props.media?.overview }}
+            </p>
+            <div class="flex align-center justify-between">
+              <IconBtn icon="mdi-magnify" color="white" @click.stop="handleSearch" />
+              <IconBtn icon="mdi-heart" :color="isSubscribed ? 'error' : 'white'" @click.stop="handleSubscribe" />
             </div>
-          </template>
-        </VImg>
-        <!-- 详情 -->
-        <VCardText
-          v-show="hover.isHovering || imageLoadError"
-          class="w-full h-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2"
-          style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
-        >
-          <span class="font-bold">{{ props.media?.year }}</span>
-          <h1 class="mb-1 text-white font-extrabold text-xl line-clamp-2 overflow-hidden text-ellipsis ...">
-            {{ props.media?.title }}
-          </h1>
-          <p class="leading-4 line-clamp-4 overflow-hidden text-ellipsis ...">
-            {{ props.media?.overview }}
-          </p>
-          <div class="flex align-center justify-between">
-            <IconBtn icon="mdi-magnify" color="white" @click.stop="handleSearch" />
-            <IconBtn icon="mdi-heart" :color="isSubscribed ? 'error' : 'white'" @click.stop="handleSubscribe" />
-          </div>
-        </VCardText>
-        <!-- 类型角标 -->
-        <VChip
-          v-show="isImageLoaded"
-          variant="elevated"
-          size="small"
-          :class="getChipColor(props.media?.type || '')"
-          class="absolute left-2 top-2 bg-opacity-80 shadow-md text-white font-bold"
-        >
-          {{ props.media?.type }}
-        </VChip>
-        <!-- 本地存在标识 -->
-        <ExistIcon v-if="isExists && !hover.isHovering" />
-        <!-- 评分角标 -->
-        <VChip
-          v-if="isImageLoaded && props.media?.vote_average && !(isExists && !hover.isHovering)"
-          variant="elevated"
-          size="small"
-          :class="getChipColor('rating')"
-          class="absolute right-2 top-2 bg-opacity-80 shadow-md text-white font-bold"
-        >
-          {{ props.media?.vote_average }}
-        </VChip>
-        <!--来源图标-->
-        <VAvatar
-          size="24"
-          density="compact"
-          class="absolute bottom-1 right-1"
-          tile
-          v-if="!hover.isHovering && isImageLoaded && props.media?.source"
-        >
-          <VImg cover :src="sourceIconDict[props.media?.source]" class="shadow-lg" />
-        </VAvatar>
-      </VCard>
+          </VCardText>
+          <!-- 类型角标 -->
+          <VChip
+            v-show="isImageLoaded"
+            variant="elevated"
+            size="small"
+            :class="getChipColor(props.media?.type || '')"
+            class="absolute left-2 top-2 bg-opacity-80 shadow-md text-white font-bold"
+          >
+            {{ props.media?.type }}
+          </VChip>
+          <!-- 本地存在标识 -->
+          <ExistIcon v-if="isExists && !hover.isHovering" />
+          <!-- 评分角标 -->
+          <VChip
+            v-if="isImageLoaded && props.media?.vote_average && !(isExists && !hover.isHovering)"
+            variant="elevated"
+            size="small"
+            :class="getChipColor('rating')"
+            class="absolute right-2 top-2 bg-opacity-80 shadow-md text-white font-bold"
+          >
+            {{ props.media?.vote_average }}
+          </VChip>
+          <!--来源图标-->
+          <VAvatar
+            size="24"
+            density="compact"
+            class="absolute bottom-1 right-1"
+            tile
+            v-if="!hover.isHovering && isImageLoaded && props.media?.source"
+          >
+            <VImg cover :src="sourceIconDict[props.media?.source]" class="shadow-lg" />
+          </VAvatar>
+        </VCard>
+      </div>
     </template>
   </VHover>
   <!-- 订阅季弹窗 -->
