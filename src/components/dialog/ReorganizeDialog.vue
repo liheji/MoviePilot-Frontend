@@ -46,7 +46,7 @@ const mediaSelectorDialog = ref(false)
 const progressDialog = ref(false)
 
 // 整理进度文本
-const progressText = ref('请稍候 ...')
+const progressText = ref('正在处理 ...')
 
 // 整理进度
 const progressValue = ref(0)
@@ -153,7 +153,6 @@ async function handleTransfer(item: FileItem) {
   try {
     const result: { [key: string]: any } = await api.post('transfer/manual', transferForm)
     if (!result.success) $toast.error(`文件 ${item.name} 整理失败：${result.message}！`)
-    else $toast.success(`文件 ${item.name} 已添加至后台整理队列！`)
   } catch (e) {
     console.log(e)
   }
@@ -166,7 +165,6 @@ async function handleTransferLog(logid: number) {
   try {
     const result: { [key: string]: any } = await api.post('transfer/manual', transferForm)
     if (!result.success) $toast.error(`历史记录 ${logid} 重新整理失败：${result.message}！`)
-    else $toast.success(`历史记录 ${logid} 已添加至后台整理队列！`)
   } catch (e) {
     console.log(e)
   }
