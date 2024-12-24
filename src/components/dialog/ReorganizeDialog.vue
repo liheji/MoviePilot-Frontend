@@ -42,9 +42,6 @@ const $toast = useToast()
 // TMDB选择对话框
 const mediaSelectorDialog = ref(false)
 
-// 加载进度SSE
-const progressEventSource = ref<EventSource>()
-
 // 整理进度条
 const progressDialog = ref(false)
 
@@ -119,26 +116,8 @@ watch(
       transferForm.library_type_folder = undefined
       transferForm.library_category_folder = undefined
     }
-  }
+  },
 )
-
-// 使用SSE监听加载进度
-function startLoadingProgress() {
-  progressText.value = '请稍候 ...'
-  progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`)
-  progressEventSource.value.onmessage = event => {
-    const progress = JSON.parse(event.data)
-    if (progress) {
-      progressText.value = progress.text
-      progressValue.value = progress.value
-    }
-  }
-}
-
-// 停止监听加载进度
-function stopLoadingProgress() {
-  progressEventSource.value?.close()
-}
 
 // 整理文件
 async function transfer() {
@@ -146,8 +125,6 @@ async function transfer() {
 
   // 显示进度条
   progressDialog.value = true
-  // 开始监听进度
-  startLoadingProgress()
 
   // 文件整理
   if (props.items) {
@@ -163,8 +140,6 @@ async function transfer() {
     }
   }
 
-  // 停止监听进度
-  stopLoadingProgress()
   // 关闭进度条
   progressDialog.value = false
   // 重新加载
@@ -177,7 +152,8 @@ async function handleTransfer(item: FileItem) {
   transferForm.logid = 0
   try {
     const result: { [key: string]: any } = await api.post('transfer/manual', transferForm)
-    if (!result.success) $toast.error(`文件 ${item.path} 整理失败：${result.message}！`)
+    if (!result.success) $toast.error(`文件 ${item.name} 整理失败：${result.message}！`)
+    else $toast.success(`文件 ${item.name} 已添加至后台整理队列！`)
   } catch (e) {
     console.log(e)
   }
@@ -190,6 +166,7 @@ async function handleTransferLog(logid: number) {
   try {
     const result: { [key: string]: any } = await api.post('transfer/manual', transferForm)
     if (!result.success) $toast.error(`历史记录 ${logid} 重新整理失败：${result.message}！`)
+    else $toast.success(`历史记录 ${logid} 已添加至后台整理队列！`)
   } catch (e) {
     console.log(e)
   }
@@ -224,7 +201,8 @@ onMounted(() => {
                 label="整理方式"
                 :items="transferTypeOptions"
                 hint="文件操作整理方式"
-                persistent-hint>
+                persistent-hint
+              >
                 <template v-slot:selection="{ item }">
                   {{ transferForm.transfer_type === '' ? '自动' : item.title }}
                 </template>
