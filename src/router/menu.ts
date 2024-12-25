@@ -58,7 +58,7 @@ export const SystemNavMenus = [
   },
   {
     title: '整理刮削',
-    icon: 'mdi-history',
+    icon: 'mdi-filmstrip-box-multiple',
     to: '/history',
     header: '整理',
     admin: true,
@@ -97,35 +97,6 @@ export const SystemNavMenus = [
     to: '/setting',
     header: '系统',
     admin: true,
-  },
-]
-
-// 常用菜单功能
-export const UserfulMenus = [
-  {
-    title: '搜索设置',
-    icon: 'mdi-magnify',
-    to: 'setting?tab=search',
-  },
-  {
-    title: '订阅设置',
-    icon: 'mdi-rss',
-    to: 'setting?tab=subscribe',
-  },
-  {
-    title: '服务',
-    icon: 'mdi-list-box',
-    to: 'setting?tab=service',
-  },
-  {
-    title: '词表',
-    icon: 'mdi-file-word-box',
-    to: 'setting?tab=words',
-  },
-  {
-    title: '整理刮削',
-    icon: 'mdi-history',
-    to: 'history',
   },
 ]
 

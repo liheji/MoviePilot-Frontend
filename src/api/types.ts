@@ -1100,6 +1100,7 @@ export interface FilterRuleGroup {
   category?: string
 }
 
+// 订阅下载文件详情
 export interface SubscribeDownloadFileInfo {
   // 种子名称
   torrent_title?: string
@@ -1113,6 +1114,7 @@ export interface SubscribeDownloadFileInfo {
   file_path?: string
 }
 
+// 订阅媒体库文件详情
 export interface SubscribeLibraryFileInfo {
   // 存储
   storage?: string
@@ -1120,6 +1122,7 @@ export interface SubscribeLibraryFileInfo {
   file_path?: string
 }
 
+// 订阅集详情
 export interface SubscribeEpisodeInfo {
   // 标题
   title?: string
@@ -1133,6 +1136,7 @@ export interface SubscribeEpisodeInfo {
   library?: SubscribeLibraryFileInfo[]
 }
 
+// 订阅详情
 export interface SubscrbieInfo {
   // 订阅信息
   subscribe: Subscribe
@@ -1140,6 +1144,7 @@ export interface SubscrbieInfo {
   episodes: Record<number, SubscribeEpisodeInfo>
 }
 
+// 整理表单
 export interface TransferForm {
   // 文件项
   fileitem: FileItem
@@ -1177,4 +1182,21 @@ export interface TransferForm {
   library_type_folder?: boolean
   // 媒体库类别子目录
   library_category_folder?: boolean
+}
+
+// 整理队列
+export interface TransferQueue {
+  // 媒体信息
+  media: MediaInfo
+  // 季
+  season?: number
+  // 任务列表
+  tasks: {
+    // 文件项
+    fileitem: FileItem
+    // 元数据
+    meta: MetaInfo
+    // 状态
+    state: string
+  }[]
 }

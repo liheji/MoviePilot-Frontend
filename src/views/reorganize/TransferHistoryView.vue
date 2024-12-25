@@ -4,6 +4,7 @@ import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { TransferHistory } from '@/api/types'
 import ReorganizeDialog from '@/components/dialog/ReorganizeDialog.vue'
+import TransferQueueDialog from '@/components/dialog/TransferQueueDialog.vue'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
@@ -23,6 +24,9 @@ const route = useRoute()
 
 // 重新整理对话框
 const redoDialog = ref(false)
+
+// 整理队列对话框
+const transferQueueDialog = ref(false)
 
 // 当前操作记录
 const currentHistory = ref<TransferHistory>()
@@ -380,7 +384,12 @@ onMounted(fetchData)
             />
           </VCol>
           <VCol cols="4" md="6" class="text-end">
-            <VBtn color="primary" prepend-icon="mdi-tray-full" append-icon="mdi-dots-horizontal">
+            <VBtn
+              color="primary"
+              prepend-icon="mdi-tray-full"
+              append-icon="mdi-dots-horizontal"
+              @click="transferQueueDialog = true"
+            >
               <span v-if="display.mdAndUp.value" class="ms-2">整理队列</span>
             </VBtn>
           </VCol>
@@ -541,6 +550,8 @@ onMounted(fetchData)
     @done="transferDone"
     @close="redoDialog = false"
   />
+  <!-- 整理队列进度弹窗 -->
+  <TransferQueueDialog v-if="transferQueueDialog" v-model="transferQueueDialog" @close="transferQueueDialog = false" />
 </template>
 
 <style lang="scss">
