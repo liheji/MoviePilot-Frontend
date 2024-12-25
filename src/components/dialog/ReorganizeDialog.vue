@@ -42,6 +42,9 @@ const $toast = useToast()
 // TMDB选择对话框
 const mediaSelectorDialog = ref(false)
 
+// 加载进度SSE
+const progressEventSource = ref<EventSource>()
+
 // 整理进度条
 const progressDialog = ref(false)
 
@@ -145,12 +148,35 @@ async function handleTransferLog(logid: number, background: boolean = false) {
   }
 }
 
+// 使用SSE监听加载进度
+function startLoadingProgress() {
+  progressText.value = '请稍候 ...'
+  progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`)
+  progressEventSource.value.onmessage = event => {
+    const progress = JSON.parse(event.data)
+    if (progress) {
+      progressText.value = progress.text
+      progressValue.value = progress.value
+    }
+  }
+}
+
+// 停止监听加载进度
+function stopLoadingProgress() {
+  progressEventSource.value?.close()
+}
+
 // 整理文件
 async function transfer(background: boolean = false) {
   if (!props.logids && !props.items) return
 
   // 显示进度条
   progressDialog.value = true
+
+  if (!background) {
+    // 开始监听进度
+    startLoadingProgress()
+  }
 
   // 文件整理
   if (props.items) {
@@ -166,19 +192,23 @@ async function transfer(background: boolean = false) {
     }
   }
 
+  if (!background) {
+    // 停止监听进度
+    stopLoadingProgress()
+  }
+
   // 关闭进度条
   progressDialog.value = false
   // 重新加载
   emit('done')
 }
 
-// 后台整理
-async function transferAsync() {
-  await transfer(true)
-}
-
 onMounted(() => {
   loadDirectories()
+})
+
+onUnmounted(() => {
+  stopLoadingProgress()
 })
 </script>
 
@@ -361,10 +391,12 @@ onMounted(() => {
       </VCardText>
       <VCardActions class="pt-3">
         <VSpacer />
-        <VBtn variant="elevated" color="success" @click="transferAsync" prepend-icon="mdi-plus" class="px-5">
+        <VBtn variant="elevated" color="success" @click="transfer(true)" prepend-icon="mdi-plus" class="px-5">
           加入整理队列
         </VBtn>
-        <VBtn variant="elevated" @click="transfer" prepend-icon="mdi-arrow-right-bold" class="px-5"> 立即整理 </VBtn>
+        <VBtn variant="elevated" @click="transfer(false)" prepend-icon="mdi-arrow-right-bold" class="px-5">
+          立即整理
+        </VBtn>
       </VCardActions>
     </VCard>
     <!-- 手动整理进度框 -->
