@@ -50,14 +50,14 @@ export const SystemNavMenus = [
     admin: false,
   },
   {
-    title: '正在下载',
+    title: '下载管理',
     icon: 'mdi-download-outline',
     to: '/downloading',
     header: '整理',
     admin: false,
   },
   {
-    title: '历史记录',
+    title: '整理刮削',
     icon: 'mdi-history',
     to: '/history',
     header: '整理',
@@ -123,7 +123,7 @@ export const UserfulMenus = [
     to: 'setting?tab=words',
   },
   {
-    title: '历史记录',
+    title: '整理刮削',
     icon: 'mdi-history',
     to: 'history',
   },

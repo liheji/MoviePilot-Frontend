@@ -9,6 +9,7 @@ import { useRoute } from 'vue-router'
 import router from '@/router'
 import { useDisplay } from 'vuetify'
 import { storageDict } from '@/api/constants'
+import { VIcon } from 'vuetify/lib/components/index.mjs'
 
 // APP
 const display = useDisplay()
@@ -361,7 +362,6 @@ onMounted(fetchData)
     <VCardItem>
       <VCardTitle>
         <VRow>
-          <VCol cols="4" md="6"> 历史记录 </VCol>
           <VCol cols="8" md="6" class="flex">
             <VCombobox
               key="search_navbar"
@@ -369,7 +369,7 @@ onMounted(fetchData)
               :items="searchHintList"
               class="text-disabled"
               density="compact"
-              label="搜索目录、状态"
+              label="搜索历史记录"
               prepend-inner-icon="mdi-magnify"
               variant="solo-filled"
               single-line
@@ -378,6 +378,11 @@ onMounted(fetchData)
               rounded
               clearable
             />
+          </VCol>
+          <VCol cols="4" md="6" class="text-end">
+            <VBtn color="primary" prepend-icon="mdi-tray-full" append-icon="mdi-dots-horizontal">
+              <span v-if="display.mdAndUp.value" class="ms-2">整理队列</span>
+            </VBtn>
           </VCol>
         </VRow>
       </VCardTitle>

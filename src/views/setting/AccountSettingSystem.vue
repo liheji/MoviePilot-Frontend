@@ -402,7 +402,14 @@ onDeactivated(() => {
             <div class="d-flex flex-wrap gap-4 mt-4">
               <VBtn type="submit" @click="saveBasicSettings"> 保存 </VBtn>
               <VSpacer />
-              <VBtn color="warning" @click="advancedDialog = true" append-icon="mdi-dots-horizontal"> 高级设置 </VBtn>
+              <VBtn
+                color="error"
+                @click="advancedDialog = true"
+                prepend-icon="mdi-cog"
+                append-icon="mdi-dots-horizontal"
+              >
+                高级设置
+              </VBtn>
             </div>
           </VForm>
         </VCardText>
