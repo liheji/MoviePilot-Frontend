@@ -120,7 +120,33 @@ watch(
 )
 
 // 整理文件
-async function transfer() {
+async function handleTransfer(item: FileItem, background: boolean = false) {
+  transferForm.fileitem = item
+  transferForm.logid = 0
+  try {
+    const result: { [key: string]: any } = await api.post(`transfer/manual?background=${background}`, transferForm)
+    if (!result.success) $toast.error(`文件 ${item.name} 整理失败：${result.message}！`)
+    else if (background) $toast.success(`文件 ${item.name} 已加入整理队列！`)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+// 整理日志
+async function handleTransferLog(logid: number, background: boolean = false) {
+  transferForm.logid = logid
+  transferForm.fileitem = {} as FileItem
+  try {
+    const result: { [key: string]: any } = await api.post(`transfer/manual?background=${background}`, transferForm)
+    if (!result.success) $toast.error(`历史记录 ${logid} 重新整理失败：${result.message}！`)
+    else if (background) $toast.success(`历史记录 ${logid} 已加入整理队列！`)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+// 整理文件
+async function transfer(background: boolean = false) {
   if (!props.logids && !props.items) return
 
   // 显示进度条
@@ -129,14 +155,14 @@ async function transfer() {
   // 文件整理
   if (props.items) {
     for (const item of props.items) {
-      await handleTransfer(item)
+      await handleTransfer(item, background)
     }
   }
 
   // 日志整理
   if (props.logids) {
     for (const logid of props.logids) {
-      await handleTransferLog(logid)
+      await handleTransferLog(logid, background)
     }
   }
 
@@ -146,28 +172,9 @@ async function transfer() {
   emit('done')
 }
 
-// 整理文件
-async function handleTransfer(item: FileItem) {
-  transferForm.fileitem = item
-  transferForm.logid = 0
-  try {
-    const result: { [key: string]: any } = await api.post('transfer/manual', transferForm)
-    if (!result.success) $toast.error(`文件 ${item.name} 整理失败：${result.message}！`)
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-// 整理日志
-async function handleTransferLog(logid: number) {
-  transferForm.logid = logid
-  transferForm.fileitem = {} as FileItem
-  try {
-    const result: { [key: string]: any } = await api.post('transfer/manual', transferForm)
-    if (!result.success) $toast.error(`历史记录 ${logid} 重新整理失败：${result.message}！`)
-  } catch (e) {
-    console.log(e)
-  }
+// 后台整理
+async function transferAsync() {
+  await transfer(true)
 }
 
 onMounted(() => {
@@ -354,7 +361,10 @@ onMounted(() => {
       </VCardText>
       <VCardActions class="pt-3">
         <VSpacer />
-        <VBtn variant="elevated" @click="transfer" prepend-icon="mdi-arrow-right-bold" class="px-5"> 开始整理 </VBtn>
+        <VBtn variant="elevated" color="success" @click="transferAsync" prepend-icon="mdi-plus" class="px-5">
+          加入整理队列
+        </VBtn>
+        <VBtn variant="elevated" @click="transfer" prepend-icon="mdi-arrow-right-bold" class="px-5"> 立即整理 </VBtn>
       </VCardActions>
     </VCard>
     <!-- 手动整理进度框 -->
