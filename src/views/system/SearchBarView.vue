@@ -300,7 +300,7 @@ onMounted(() => {
             <template #default="hover">
               <VListItem prepend-icon="mdi-history" link v-bind="hover.props" @click="searchHistory">
                 <VListItemTitle class="break-words whitespace-break-spaces">
-                  搜索 <span class="font-bold">{{ searchWord }}</span> 相关的【历史记录】 ...
+                  搜索 <span class="font-bold">{{ searchWord }}</span> 相关的【整理记录】 ...
                 </VListItemTitle>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />

@@ -739,7 +739,7 @@ onDeactivated(() => {
                   <VSwitch
                     v-model="SystemSettings.Advanced.TOKENIZED_SEARCH"
                     label="分词搜索"
-                    hint="提升历史记录搜索精度，但可能增加性能开销和意外结果"
+                    hint="提升整理历史记录搜索精度，但可能增加性能开销和意外结果"
                     persistent-hint
                   />
                 </VCol>

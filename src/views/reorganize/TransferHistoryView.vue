@@ -373,7 +373,7 @@ onMounted(fetchData)
               :items="searchHintList"
               class="text-disabled"
               density="compact"
-              label="搜索历史记录"
+              label="搜索整理记录"
               prepend-inner-icon="mdi-magnify"
               variant="solo-filled"
               single-line
@@ -528,13 +528,13 @@ onMounted(fetchData)
         {{ confirmTitle }}
       </VCardTitle>
       <div class="d-flex flex-column flex-lg-row justify-center my-3">
-        <VBtn color="primary" class="mb-2 mx-2" @click="deleteConfirmHandler(false, false)"> 仅删除历史记录 </VBtn>
-        <VBtn color="warning" class="mb-2 mx-2" @click="deleteConfirmHandler(true, false)"> 删除历史记录和源文件 </VBtn>
+        <VBtn color="primary" class="mb-2 mx-2" @click="deleteConfirmHandler(false, false)"> 仅删除整理记录 </VBtn>
+        <VBtn color="warning" class="mb-2 mx-2" @click="deleteConfirmHandler(true, false)"> 删除整理记录和源文件 </VBtn>
         <VBtn color="info" class="mb-2 mx-2" @click="deleteConfirmHandler(false, true)">
-          删除历史记录和媒体库文件
+          删除整理记录和媒体库文件
         </VBtn>
         <VBtn color="error" class="mb-2 mx-2" @click="deleteConfirmHandler(true, true)">
-          删除历史记录、源文件和媒体库文件
+          删除整理记录、源文件和媒体库文件
         </VBtn>
       </div>
     </VCard>
