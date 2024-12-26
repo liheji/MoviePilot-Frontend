@@ -135,7 +135,7 @@ async function handleTransfer(item: FileItem, background: boolean = false) {
   transferForm.logid = 0
   try {
     const result: { [key: string]: any } = await api.post(`transfer/manual?background=${background}`, transferForm)
-    if (!result.success) $toast.error(`文件 ${item.name} 整理失败：${result.message}！`)
+    if (!result.success) $toast.error(result.message)
     else if (background) $toast.success(`文件 ${item.name} 已加入整理队列！`)
   } catch (e) {
     console.log(e)

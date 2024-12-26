@@ -1,8 +1,10 @@
 <script lang="ts" setup>
+import { formatFileSize } from '@/@core/utils/formatters'
 import api from '@/api'
-import { TransferQueue } from '@/api/types'
+import { FileItem, TransferQueue } from '@/api/types'
 import { useDisplay } from 'vuetify'
-import { VProgressLinear } from 'vuetify/lib/components/index.mjs'
+import { VAvatar, VListItemAction, VProgressLinear } from 'vuetify/lib/components/index.mjs'
+import PosterCard from '../cards/PosterCard.vue'
 
 // 显示器宽度
 const display = useDisplay()
@@ -24,10 +26,36 @@ const progressValue = ref(0)
 // 数据可刷新标志
 const refreshFlag = ref(false)
 
+// 活动标签
+const activeTab = ref('')
+
+// 从dataList中提取所有的媒体信息
+const mediaList = computed(() => {
+  return dataList.value.map(item => item.media)
+})
+
+// 根据媒体信息获取对应的整理任务
+const activeTasks = computed(() => {
+  return dataList.value.find(item => item.media.title_year === activeTab.value)?.tasks
+})
+
 // 调用API获取队列信息
 async function get_transfer_queue() {
   try {
     dataList.value = await api.get('transfer/queue')
+    if (dataList.value.length > 0) {
+      activeTab.value = dataList.value[0].media.title_year || ''
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// 移除队列任务
+async function remove_queue_task(fileitem: FileItem) {
+  try {
+    await api.delete(`transfer/queue`, { data: { fileitem } })
+    get_transfer_queue()
   } catch (error) {
     console.error(error)
   }
@@ -40,6 +68,7 @@ function startLoadingProgress() {
   progressEventSource.value.onmessage = event => {
     const progress = JSON.parse(event.data)
     if (progress) {
+      if (!progress.enable) return
       progressText.value = progress.text
       progressValue.value = progress.value
       if (progress.value === 100 && refreshFlag.value) {
@@ -73,14 +102,35 @@ onUnmounted(() => {
       <VCardItem>
         <VCardTitle>整理任务队列</VCardTitle>
       </VCardItem>
-      <VDivider />
       <DialogCloseBtn @click="emit('close')" />
-
       <VCardText v-if="dataList.length === 0" class="text-center"> 没有正在整理的任务 </VCardText>
-      <VCardText v-else>
-        <VProgressLinear v-if="progressValue > 0" :value="progressValue" color="primary" rounded indeterminate>
-          {{ progressText }}
-        </VProgressLinear>
+      <VCardText v-else-if="progressValue > 0" class="text-center">
+        {{ progressText }}
+        <VProgressLinear :value="progressValue" color="primary" rounded indeterminate class="mt-2" />
+      </VCardText>
+      <VCardText>
+        <VTabs v-model="activeTab" show-arrows class="v-tabs-pill">
+          <VTab
+            v-for="media in mediaList"
+            :value="media.title_year"
+            selected-class="v-slide-group-item--active v-tab--selected"
+          >
+            {{ media.title_year }}
+          </VTab>
+        </VTabs>
+        <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
+          <VWindowItem v-for="media in mediaList" :value="media.title_year">
+            <VList>
+              <VListItem v-for="task in activeTasks">
+                <VListItemTitle>{{ task.fileitem.name }}</VListItemTitle>
+                <VListItemSubtitle>{{ formatFileSize(task.fileitem.size || 0) }}</VListItemSubtitle>
+                <template #append>
+                  <IconBtn color="error" size="small" icon="mdi-close" @click="remove_queue_task(task.fileitem)" />
+                </template>
+              </VListItem>
+            </VList>
+          </VWindowItem>
+        </VWindow>
       </VCardText>
     </VCard>
   </VDialog>
