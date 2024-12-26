@@ -65,6 +65,13 @@ const dialogTitle = computed(() => {
   return '手动整理'
 })
 
+// 禁用指定集数
+const disableEpisodeDetail = computed(() => {
+  if (props.items) {
+    return !(props.items.length === 1 && props.items[0].type !== 'dir')
+  }
+})
+
 // 表单
 const transferForm = reactive<TransferForm>({
   fileitem: {} as FileItem,
@@ -318,6 +325,7 @@ onUnmounted(() => {
             <VCol cols="12" md="4">
               <VTextField
                 v-model="transferForm.episode_detail"
+                :disabled="disableEpisodeDetail"
                 label="指定集数"
                 placeholder="起始集,终止集，如1或1,2"
                 hint="指定集数或范围，如1或1,2"
