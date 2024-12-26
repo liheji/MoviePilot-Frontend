@@ -57,7 +57,7 @@ export const SystemNavMenus = [
     admin: false,
   },
   {
-    title: '整理刮削',
+    title: '媒体整理',
     icon: 'mdi-filmstrip-box-multiple',
     to: '/history',
     header: '整理',
