@@ -3,8 +3,7 @@ import { formatFileSize } from '@/@core/utils/formatters'
 import api from '@/api'
 import { FileItem, TransferQueue } from '@/api/types'
 import { useDisplay } from 'vuetify'
-import { VAvatar, VListItemAction, VProgressLinear } from 'vuetify/lib/components/index.mjs'
-import PosterCard from '../cards/PosterCard.vue'
+import { VChip, VDivider, VProgressLinear } from 'vuetify/lib/components/index.mjs'
 
 // 显示器宽度
 const display = useDisplay()
@@ -37,10 +36,29 @@ const stateDict: { [key: string]: string } = {
   'failed': '失败',
 }
 
+// 获取状态颜色
+function getStateColor(state: string) {
+  if (state === 'waiting') return 'gray'
+  else if (state === 'running') return 'primary'
+  else if (state === 'completed') return 'success'
+  else return 'error'
+}
+
 // 从dataList中提取所有的媒体信息
 const mediaList = computed(() => {
   return dataList.value.map(item => item.media)
 })
+
+// 按media计算总数和完成数，返回 x/x
+function getMediaCount(title_year: string) {
+  // 按title_year查询出所有media列表
+  const medias = dataList.value.filter(item => item.media.title_year === title_year)
+  // 计算media下任务的总数
+  const total = medias.reduce((acc, cur) => acc + cur.tasks.length, 0)
+  // 计算media下任务的完成数
+  const completed = medias.reduce((acc, cur) => acc + cur.tasks.filter(task => task.state === 'completed').length, 0)
+  return `${completed} / ${total}`
+}
 
 // 根据媒体信息获取对应的整理任务
 const activeTasks = computed(() => {
@@ -52,7 +70,7 @@ async function get_transfer_queue() {
   try {
     dataList.value = await api.get('transfer/queue')
     if (dataList.value.length > 0) {
-      activeTab.value = dataList.value[0].media.title_year || ''
+      if (!activeTab.value || activeTasks.value?.length == 0) activeTab.value = dataList.value[0].media.title_year || ''
     }
   } catch (error) {
     console.error(error)
@@ -62,7 +80,7 @@ async function get_transfer_queue() {
 // 移除队列任务
 async function remove_queue_task(fileitem: FileItem) {
   try {
-    await api.delete(`transfer/queue`, { data: { fileitem } })
+    await api.delete(`transfer/queue`, { data: fileitem })
     get_transfer_queue()
   } catch (error) {
     console.error(error)
@@ -111,19 +129,26 @@ onUnmounted(() => {
         <VCardTitle>整理队列</VCardTitle>
       </VCardItem>
       <DialogCloseBtn @click="emit('close')" />
+      <VDivider />
+      <VProgressLinear
+        v-if="dataList.length > 0 && progressValue > 0"
+        :value="progressValue"
+        color="primary"
+        indeterminate
+      />
       <VCardText v-if="dataList.length > 0 && progressValue > 0" class="text-center">
-        <VProgressLinear :value="progressValue" color="primary" rounded indeterminate />
         <span class="mt-2">{{ progressText }}</span>
       </VCardText>
       <VCardText v-if="dataList.length === 0" class="text-center"> 没有正在整理的任务 </VCardText>
       <VCardText>
-        <VTabs v-model="activeTab" show-arrows class="v-tabs-pill">
+        <VTabs v-model="activeTab" show-arrows class="v-tabs-pill" stacked>
           <VTab
             v-for="media in mediaList"
             :value="media.title_year"
             selected-class="v-slide-group-item--active v-tab--selected"
           >
-            {{ media.title_year }}
+            <div class="font-bold text-lg">{{ media.title }}</div>
+            <div>({{ getMediaCount(media.title_year || '') }})</div>
           </VTab>
         </VTabs>
         <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
@@ -132,10 +157,13 @@ onUnmounted(() => {
               <VListItem v-for="task in activeTasks">
                 <VListItemTitle>{{ task.fileitem.name }}</VListItemTitle>
                 <VListItemSubtitle>
-                  {{ formatFileSize(task.fileitem.size || 0) }} {{ stateDict[task.state] }}
+                  大小：{{ formatFileSize(task.fileitem.size || 0) }}
+                  <VChip size="small" :color="getStateColor(task.state)" class="ms-2">
+                    {{ stateDict[task.state] }}
+                  </VChip>
                 </VListItemSubtitle>
                 <template #append>
-                  <IconBtn color="error" size="small" icon="mdi-close" @click="remove_queue_task(task.fileitem)" />
+                  <IconBtn size="small" icon="mdi-cancel" @click="remove_queue_task(task.fileitem)" />
                 </template>
               </VListItem>
             </VList>

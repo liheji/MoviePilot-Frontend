@@ -148,7 +148,7 @@ async function handleTransferLog(logid: number, background: boolean = false) {
   transferForm.fileitem = {} as FileItem
   try {
     const result: { [key: string]: any } = await api.post(`transfer/manual?background=${background}`, transferForm)
-    if (!result.success) $toast.error(`历史记录 ${logid} 重新整理失败：${result.message}！`)
+    if (!result.success) $toast.error(result.message)
     else if (background) $toast.success(`历史记录 ${logid} 已加入整理队列！`)
   } catch (e) {
     console.log(e)
