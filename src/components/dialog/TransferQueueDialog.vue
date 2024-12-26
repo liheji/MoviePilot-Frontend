@@ -108,7 +108,7 @@ onUnmounted(() => {
   <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard class="mx-auto" width="100%">
       <VCardItem>
-        <VCardTitle>整理任务队列</VCardTitle>
+        <VCardTitle>整理队列</VCardTitle>
       </VCardItem>
       <DialogCloseBtn @click="emit('close')" />
       <VCardText v-if="dataList.length > 0 && progressValue > 0" class="text-center">
