@@ -29,6 +29,14 @@ const refreshFlag = ref(false)
 // 活动标签
 const activeTab = ref('')
 
+// 状态标签
+const stateDict: { [key: string]: string } = {
+  'waiting': '等待中',
+  'running': '正在整理',
+  'completed': '完成',
+  'failed': '失败',
+}
+
 // 从dataList中提取所有的媒体信息
 const mediaList = computed(() => {
   return dataList.value.map(item => item.media)
@@ -103,11 +111,11 @@ onUnmounted(() => {
         <VCardTitle>整理任务队列</VCardTitle>
       </VCardItem>
       <DialogCloseBtn @click="emit('close')" />
-      <VCardText v-if="dataList.length === 0" class="text-center"> 没有正在整理的任务 </VCardText>
-      <VCardText v-else-if="progressValue > 0" class="text-center">
-        {{ progressText }}
-        <VProgressLinear :value="progressValue" color="primary" rounded indeterminate class="mt-2" />
+      <VCardText v-if="dataList.length > 0 && progressValue > 0" class="text-center">
+        <VProgressLinear :value="progressValue" color="primary" rounded indeterminate />
+        <span class="mt-2">{{ progressText }}</span>
       </VCardText>
+      <VCardText v-if="dataList.length === 0" class="text-center"> 没有正在整理的任务 </VCardText>
       <VCardText>
         <VTabs v-model="activeTab" show-arrows class="v-tabs-pill">
           <VTab
@@ -123,7 +131,9 @@ onUnmounted(() => {
             <VList>
               <VListItem v-for="task in activeTasks">
                 <VListItemTitle>{{ task.fileitem.name }}</VListItemTitle>
-                <VListItemSubtitle>{{ formatFileSize(task.fileitem.size || 0) }}</VListItemSubtitle>
+                <VListItemSubtitle>
+                  {{ formatFileSize(task.fileitem.size || 0) }} {{ stateDict[task.state] }}
+                </VListItemSubtitle>
                 <template #append>
                   <IconBtn color="error" size="small" icon="mdi-close" @click="remove_queue_task(task.fileitem)" />
                 </template>
