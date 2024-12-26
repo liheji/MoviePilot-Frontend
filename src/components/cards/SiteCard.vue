@@ -8,7 +8,6 @@ import SiteCookieUpdateDialog from '../dialog/SiteCookieUpdateDialog.vue'
 import api from '@/api'
 import type { Site, SiteStatistic, SiteUserData } from '@/api/types'
 import { isNullOrEmptyObject } from '@/@core/utils'
-import { VCardActions, VExpandTransition, VProgressLinear, VSpacer } from 'vuetify/lib/components/index.mjs'
 import { formatFileSize } from '@/@core/utils/formatters'
 
 // 输入参数
@@ -204,33 +203,35 @@ onMounted(() => {
         </span>
         <VSpacer />
       </VCardActions>
-      <VDivider class="mb-1" v-if="siteActionShow" />
-      <VExpandTransition>
-        <div v-show="siteActionShow" class="py-1 pe-12">
-          <VBtn v-if="!cardProps.site?.public" @click.stop="handleSiteUpdate" variant="text">
-            <template #prepend>
-              <VIcon icon="mdi-refresh" />
-            </template>
-            更新
-          </VBtn>
-          <VBtn :disabled="testButtonDisable" @click.stop="testSite" variant="text">
-            <template #prepend>
-              <VIcon icon="mdi-link" />
-            </template>
-            {{ testButtonText }}
-          </VBtn>
-          <VBtn @click.stop="handleResourceBrowse" variant="text">
-            <template #prepend>
-              <VIcon icon="mdi-web" />
-            </template>
-            浏览
-          </VBtn>
-          <VBtn @click.stop="handleSiteUserData" variant="text">
-            <template #prepend>
-              <VIcon icon="mdi-chart-bell-curve" />
-            </template>
-            数据
-          </VBtn>
+      <VExpandTransition v-show="siteActionShow">
+        <div>
+          <VDivider />
+          <div class="py-1 pe-12">
+            <VBtn v-if="!cardProps.site?.public" @click.stop="handleSiteUpdate" variant="text">
+              <template #prepend>
+                <VIcon icon="mdi-refresh" />
+              </template>
+              更新
+            </VBtn>
+            <VBtn :disabled="testButtonDisable" @click.stop="testSite" variant="text">
+              <template #prepend>
+                <VIcon icon="mdi-link" />
+              </template>
+              {{ testButtonText }}
+            </VBtn>
+            <VBtn @click.stop="handleResourceBrowse" variant="text">
+              <template #prepend>
+                <VIcon icon="mdi-web" />
+              </template>
+              浏览
+            </VBtn>
+            <VBtn @click.stop="handleSiteUserData" variant="text">
+              <template #prepend>
+                <VIcon icon="mdi-chart-bell-curve" />
+              </template>
+              数据
+            </VBtn>
+          </div>
         </div>
       </VExpandTransition>
       <StatIcon v-if="cardProps.site?.is_active" :color="statColor" />
