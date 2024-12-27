@@ -10,8 +10,6 @@ import { useRoute } from 'vue-router'
 import router from '@/router'
 import { useDisplay } from 'vuetify'
 import { storageDict } from '@/api/constants'
-import { VIcon } from 'vuetify/lib/components/index.mjs'
-import { L } from '@fullcalendar/list/internal-common'
 
 // APP
 const display = useDisplay()
@@ -23,7 +21,7 @@ const $toast = useToast()
 // 路由
 const route = useRoute()
 
-// 组合输入状态
+// 组合式输入法状态
 const isComposing = ref(false)
 
 // 重新整理对话框
