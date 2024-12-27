@@ -105,11 +105,12 @@ function startLoadingProgress() {
       }
       progressText.value = progress.text
       progressValue.value = progress.value
-      if (progress.value === 100 && refreshFlag.value) {
+      if (progress.value >= 100 && refreshFlag.value) {
         refreshFlag.value = false
         get_transfer_queue()
       } else {
-        if (progress.text?.includes('整理完成')) {
+        if (progress.value > 0 && refreshFlag.value && progress.text?.includes('整理完成')) {
+          refreshFlag.value = false
           get_transfer_queue()
         } else {
           refreshFlag.value = true
