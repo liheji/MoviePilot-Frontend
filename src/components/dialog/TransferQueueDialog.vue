@@ -94,14 +94,26 @@ function startLoadingProgress() {
   progressEventSource.value.onmessage = event => {
     const progress = JSON.parse(event.data)
     if (progress) {
-      if (!progress.enable) return
+      if (!progress.enable) {
+        progressText.value = '请稍候 ...'
+        progressValue.value = 0
+        if (refreshFlag.value) {
+          refreshFlag.value = false
+          get_transfer_queue()
+        }
+        return
+      }
       progressText.value = progress.text
       progressValue.value = progress.value
       if (progress.value === 100 && refreshFlag.value) {
         refreshFlag.value = false
         get_transfer_queue()
       } else {
-        refreshFlag.value = true
+        if (progress.text?.includes('整理完成')) {
+          get_transfer_queue()
+        } else {
+          refreshFlag.value = true
+        }
       }
     }
   }
