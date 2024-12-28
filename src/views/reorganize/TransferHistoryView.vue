@@ -10,7 +10,6 @@ import { useRoute } from 'vue-router'
 import router from '@/router'
 import { useDisplay } from 'vuetify'
 import { storageDict } from '@/api/constants'
-import { VIcon } from 'vuetify/lib/components/index.mjs'
 
 // APP
 const display = useDisplay()
@@ -21,6 +20,9 @@ const $toast = useToast()
 
 // 路由
 const route = useRoute()
+
+// 组合式输入法状态
+const isComposing = ref(false)
 
 // 重新整理对话框
 const redoDialog = ref(false)
@@ -149,7 +151,7 @@ const totalPage = computed(() => {
   return total
 })
 
-// 切换页签和搜索词
+// 切换页签
 watch(
   [() => currentPage.value, () => itemsPerPage.value],
   debounce(async () => {
@@ -157,12 +159,13 @@ watch(
   }, 1000),
 )
 
-watch(
-  [() => search.value],
-  debounce(async () => {
+// 搜索监听
+watch([() => search.value, () => isComposing.value], async () => {
+  if (!isComposing.value) {
+    console.log('search: ' + search.value)
     reloadPage(true)
-  }, 1000),
-)
+  }
+})
 
 // 获取订阅列表数据
 async function fetchData(page = currentPage.value, count = itemsPerPage.value) {
@@ -371,6 +374,8 @@ onMounted(fetchData)
               key="search_navbar"
               v-model="search"
               :items="searchHintList"
+              @compositionstart="isComposing = true"
+              @compositionend="isComposing = false"
               class="text-disabled"
               density="compact"
               label="搜索整理记录"
