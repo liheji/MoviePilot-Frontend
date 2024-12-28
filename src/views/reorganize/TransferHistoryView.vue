@@ -160,12 +160,14 @@ watch(
 )
 
 // 搜索监听
-watch([() => search.value, () => isComposing.value], async () => {
-  if (!isComposing.value) {
-    console.log('search: ' + search.value)
-    reloadPage(true)
-  }
-})
+watch([() => search.value, () => isComposing.value],
+  debounce(async () => {
+    if (!isComposing.value) {
+      console.log('search: ' + search.value)
+      reloadPage(true)
+    }
+  }, 1000),
+)
 
 // 获取订阅列表数据
 async function fetchData(page = currentPage.value, count = itemsPerPage.value) {
