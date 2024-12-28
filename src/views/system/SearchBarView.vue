@@ -20,9 +20,6 @@ const emit = defineEmits(['close'])
 // 搜索词
 const searchWord = ref<string | null>(null)
 
-// 合成式输入法状态
-const isComposing = ref(false)
-
 // ref
 const searchWordInput = ref<HTMLElement | null>(null)
 
