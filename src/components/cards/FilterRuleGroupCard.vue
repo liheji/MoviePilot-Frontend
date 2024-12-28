@@ -224,8 +224,8 @@ function onClose() {
       <VCard :title="`${props.group.name} - 配置`" class="rounded-t">
         <DialogCloseBtn v-model="groupInfoDialog" />
         <VDivider />
-        <VCardText>
-          <VRow>
+        <VCardItem class="pt-1">
+          <VRow class="mt-1">
             <VCol cols="12" md="6">
               <VTextField
                 v-model="groupInfo.name"
@@ -257,7 +257,7 @@ function onClose() {
               />
             </VCol>
           </VRow>
-        </VCardText>
+        </VCardItem>
         <VCardText>
           <draggable
             v-model="filterRuleCards"

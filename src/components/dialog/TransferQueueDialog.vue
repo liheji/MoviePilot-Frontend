@@ -3,7 +3,6 @@ import { formatFileSize } from '@/@core/utils/formatters'
 import api from '@/api'
 import { FileItem, TransferQueue } from '@/api/types'
 import { useDisplay } from 'vuetify'
-import { VChip, VDivider, VProgressLinear } from 'vuetify/lib/components/index.mjs'
 
 // 显示器宽度
 const display = useDisplay()
@@ -149,9 +148,9 @@ onUnmounted(() => {
         color="primary"
         indeterminate
       />
-      <VCardText v-if="dataList.length > 0 && progressValue > 0" class="text-center">
-        <span class="mt-2">{{ progressText }}</span>
-      </VCardText>
+      <VCardItem v-if="dataList.length > 0 && progressValue > 0" class="text-center pt-2">
+        <span class="text-sm">{{ progressText }}</span>
+      </VCardItem>
       <VCardText v-if="dataList.length === 0" class="text-center"> 没有正在整理的任务 </VCardText>
       <VCardText>
         <VTabs v-model="activeTab" show-arrows class="v-tabs-pill" stacked>
