@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
 import { useConfirm } from 'vuetify-use-dialog'
-import { VIcon } from 'vuetify/lib/components/index.mjs'
 import api from '@/api'
 import type { Plugin } from '@/api/types'
 import FormRender from '@/components/render/FormRender.vue'
@@ -48,6 +47,9 @@ const pluginConfigDialog = ref(false)
 
 // 插件配置表单数据
 const pluginConfigForm = ref({})
+
+// 菜单显示状态
+const menuVisible = ref(false)
 
 // 进度框
 const progressDialog = ref(false)
@@ -400,7 +402,7 @@ watch(
           :width="props.width"
           :height="props.height"
           @click="openPluginDetail"
-          class="flex flex-col h-full"
+          class="flex flex-col"
         >
           <div
             class="relative flex flex-row items-start pa-3 justify-between grow"
@@ -411,12 +413,15 @@ watch(
               :style="{ background: `${backgroundColor}`, filter: 'brightness(0.5)' }"
             />
             <div class="relative flex-1 min-w-0">
-              <VCardTitle class="text-white px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
+              <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
                 <VBadge v-if="props.plugin?.state" dot inline color="success" />
                 {{ props.plugin?.plugin_name }}
                 <span class="text-sm mt-1 text-gray-200">v{{ props.plugin?.plugin_version }}</span>
               </VCardTitle>
-              <VCardText class="px-2 py-1 text-white text-shadow line-clamp-3">
+              <VCardText
+                v-show="hover.isHovering || menuVisible"
+                class="px-2 py-1 text-white text-sm text-shadow line-clamp-3"
+              >
                 {{ props.plugin?.plugin_desc }}
               </VCardText>
             </div>
@@ -443,14 +448,14 @@ watch(
                 {{ props.plugin?.plugin_author }}
               </a>
             </span>
-            <span v-if="props.count" class="ms-3">
+            <span v-if="props.count" v-show="hover.isHovering" class="ms-3">
               <VIcon icon="mdi-download" />
               <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
             </span>
             <div class="me-n3 absolute bottom-1 right-3">
               <IconBtn>
                 <VIcon icon="mdi-dots-vertical" />
-                <VMenu activator="parent" close-on-content-click>
+                <VMenu v-model="menuVisible" activator="parent" close-on-content-click>
                   <VList>
                     <VListItem
                       v-for="(item, i) in dropdownItems"

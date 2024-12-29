@@ -43,11 +43,8 @@ const imageLoadError = ref(false)
 // 更新日志弹窗
 const releaseDialog = ref(false)
 
-// 计算插件标签
-const pluginLabels = computed(() => {
-  if (!props.plugin?.plugin_label) return []
-  return props.plugin.plugin_label.split(',')
-})
+// 插件详情弹窗
+const detailDialog = ref(false)
 
 // 图片加载完成
 async function imageLoaded() {
@@ -76,7 +73,7 @@ async function installPlugin() {
 
     if (result.success) {
       $toast.success(`插件 ${props.plugin?.plugin_name} 安装成功！`)
-
+      detailDialog.value = false
       // 通知父组件刷新
       emit('install')
     } else {
@@ -150,7 +147,7 @@ const dropdownItems = ref([
 
 <template>
   <div>
-    <VCard :width="props.width" :height="props.height" @click="installPlugin" class="flex flex-col h-full">
+    <VCard :width="props.width" :height="props.height" @click="detailDialog = true" class="flex flex-col h-full">
       <div
         class="relative flex flex-row items-start pa-3 justify-between grow"
         :style="{ background: `${backgroundColor}` }"
@@ -160,11 +157,11 @@ const dropdownItems = ref([
           :style="{ background: `${backgroundColor}`, filter: 'brightness(0.5)' }"
         ></div>
         <div class="relative flex-1 min-w-0">
-          <VCardTitle class="text-white px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
+          <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
             {{ props.plugin?.plugin_name }}
             <span class="text-sm text-gray-200">v{{ props.plugin?.plugin_version }}</span>
           </VCardTitle>
-          <VCardText class="text-white px-2 py-1 text-shadow line-clamp-3">
+          <VCardText class="text-white text-sm px-2 py-1 text-shadow line-clamp-3">
             {{ props.plugin?.plugin_desc }}
           </VCardText>
         </div>
@@ -224,6 +221,65 @@ const dropdownItems = ref([
         <DialogCloseBtn @click="releaseDialog = false" />
         <VDivider />
         <VersionHistory :history="props.plugin?.history" />
+      </VCard>
+    </VDialog>
+    <!-- 插件详情-->
+    <VDialog v-if="detailDialog" v-model="detailDialog" max-width="30rem">
+      <VCard>
+        <DialogCloseBtn @click="detailDialog = false" />
+        <VCardText>
+          <VCol>
+            <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
+              <div class="mx-auto mt-5">
+                <VAvatar size="64">
+                  <VImg
+                    ref="imageRef"
+                    :src="iconPath"
+                    aspect-ratio="4/3"
+                    cover
+                    :class="{ shadow: isImageLoaded }"
+                    @load="imageLoaded"
+                    @error="imageLoadError = true"
+                  />
+                </VAvatar>
+              </div>
+              <div class="flex-grow">
+                <VCardItem>
+                  <VCardTitle class="text-center text-md-left">
+                    {{ props.plugin?.plugin_name }}
+                  </VCardTitle>
+                  <VCardSubtitle
+                    class="text-center text-md-left break-words whitespace-break-spaces line-clamp-4 overflow-hidden text-ellipsis ..."
+                  >
+                    {{ props.plugin?.plugin_desc }}
+                  </VCardSubtitle>
+                  <VList lines="one">
+                    <VListItem class="ps-0">
+                      <VListItemTitle class="text-center text-md-left">
+                        <span class="font-weight-medium">版本：</span>
+                        <span class="text-body-1"> v{{ props.plugin?.plugin_version }}</span>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem class="ps-0">
+                      <VListItemTitle class="text-center text-md-left">
+                        <span class="font-weight-medium">作者：</span>
+                        <span class="text-body-1 cursor-pointer" @click="visitPluginPage">
+                          {{ props.plugin?.plugin_author }}
+                        </span>
+                      </VListItemTitle>
+                    </VListItem>
+                  </VList>
+                  <div class="text-center text-md-left">
+                    <VBtn color="primary" @click="installPlugin" prepend-icon="mdi-download"> 安装到本地 </VBtn>
+                    <div class="text-xs mt-2" v-if="props.count">
+                      <VIcon icon="mdi-fire" />共 {{ props.count?.toLocaleString() }} 次下载
+                    </div>
+                  </div>
+                </VCardItem>
+              </div>
+            </div>
+          </VCol>
+        </VCardText>
       </VCard>
     </VDialog>
   </div>
