@@ -418,12 +418,14 @@ watch(
                 {{ props.plugin?.plugin_name }}
                 <span class="text-sm mt-1 text-gray-200">v{{ props.plugin?.plugin_version }}</span>
               </VCardTitle>
-              <VCardText
-                v-show="hover.isHovering || menuVisible"
-                class="px-2 py-1 text-white text-sm text-shadow line-clamp-3"
-              >
-                {{ props.plugin?.plugin_desc }}
-              </VCardText>
+              <VSlideYTransition>
+                <VCardText
+                  v-show="hover.isHovering || menuVisible"
+                  class="px-2 py-0 text-white text-sm text-shadow overflow-hidden line-clamp-3 ..."
+                >
+                  {{ props.plugin?.plugin_desc }}
+                </VCardText>
+              </VSlideYTransition>
             </div>
             <div class="relative flex-shrink-0 self-center">
               <VAvatar size="64">

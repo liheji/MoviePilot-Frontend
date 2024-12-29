@@ -157,11 +157,11 @@ const dropdownItems = ref([
           :style="{ background: `${backgroundColor}`, filter: 'brightness(0.5)' }"
         ></div>
         <div class="relative flex-1 min-w-0">
-          <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
+          <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis ...">
             {{ props.plugin?.plugin_name }}
             <span class="text-sm text-gray-200">v{{ props.plugin?.plugin_version }}</span>
           </VCardTitle>
-          <VCardText class="text-white text-sm px-2 py-1 text-shadow line-clamp-3">
+          <VCardText class="text-white text-sm px-2 py-0 text-shadow overflow-hidden line-clamp-3 ...">
             {{ props.plugin?.plugin_desc }}
           </VCardText>
         </div>
