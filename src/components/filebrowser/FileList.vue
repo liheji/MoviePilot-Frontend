@@ -7,9 +7,9 @@ import ReorganizeDialog from '../dialog/ReorganizeDialog.vue'
 import { formatBytes } from '@core/utils/formatters'
 import type { Context, EndPoints, FileItem } from '@/api/types'
 import api from '@/api'
-import MediaInfoCard from '@/components/cards/MediaInfoCard.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useDisplay } from 'vuetify'
+import MediaInfoDialog from '../dialog/MediaInfoDialog.vue'
 
 // 显示器宽度
 const display = useDisplay()
@@ -735,14 +735,12 @@ onMounted(() => {
   <!-- 进度框 -->
   <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" :value="progressValue" />
   <!-- 识别结果对话框 -->
-  <VDialog v-if="nameTestDialog" v-model="nameTestDialog" width="50rem">
-    <VCard>
-      <DialogCloseBtn @click="nameTestDialog = false" />
-      <VCardItem>
-        <MediaInfoCard :context="nameTestResult" />
-      </VCardItem>
-    </VCard>
-  </VDialog>
+  <MediaInfoDialog
+    v-if="nameTestDialog"
+    v-model="nameTestDialog"
+    :context="nameTestResult"
+    @close="nameTestDialog = false"
+  />
 </template>
 
 <style lang="scss" scoped>

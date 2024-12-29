@@ -4,7 +4,7 @@ import type { Context } from '@/api/types'
 import { isNullOrEmptyObject } from '@/@core/utils'
 
 // 输入参数
-const props = defineProps({
+defineProps({
   context: Object as PropType<Context>,
 })
 
@@ -45,8 +45,7 @@ function openTmdbPage(type: string, tmdbId: number) {
             </template>
           </VImg>
         </div>
-
-        <div>
+        <div class="flex-grow">
           <VCardItem class="pb-1">
             <VCardTitle class="text-center text-md-left">
               {{ context?.media_info?.title || context?.meta_info?.name }}
