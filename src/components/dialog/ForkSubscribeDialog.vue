@@ -88,31 +88,31 @@ async function doFork() {
             </div>
             <div class="flex-grow">
               <VCardItem>
-                <VCardTitle>
+                <VCardTitle class="text-center text-md-left">
                   {{ props.media?.share_title }}
                 </VCardTitle>
                 <VCardSubtitle
-                  class="break-words whitespace-break-spaces line-clamp-2 overflow-hidden text-ellipsis ..."
+                  class="text-center text-md-left break-words whitespace-break-spaces line-clamp-2 overflow-hidden text-ellipsis ..."
                 >
                   {{ props.media?.share_comment }}
                 </VCardSubtitle>
                 <VList lines="one">
                   <VListItem class="ps-0">
-                    <VListItemTitle>
+                    <VListItemTitle class="text-center text-md-left">
                       <span class="font-weight-medium">分享人：</span>
                       <span class="text-body-1"> {{ media?.share_user }}</span>
                     </VListItemTitle>
                   </VListItem>
                   <VListItem class="ps-0" v-if="media?.custom_words">
                     <VListItemTitle
-                      class="break-words whitespace-break-spaces line-clamp-3 overflow-hidden text-ellipsis ..."
+                      class="text-center text-md-left break-words whitespace-break-spaces line-clamp-3 overflow-hidden text-ellipsis ..."
                     >
                       <span class="font-weight-medium">识别词：</span>
                       <span class="text-body-1"> {{ media?.custom_words }}</span>
                     </VListItemTitle>
                   </VListItem>
                 </VList>
-                <div>
+                <div class="text-center text-md-left">
                   <VBtn color="primary" @click="doFork" prepend-icon="mdi-heart">添加到我的订阅</VBtn>
                 </div>
               </VCardItem>
