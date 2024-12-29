@@ -416,7 +416,9 @@ watch(
               <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
                 <VBadge v-if="props.plugin?.state" dot inline color="success" />
                 {{ props.plugin?.plugin_name }}
-                <span class="text-sm mt-1 text-gray-200">v{{ props.plugin?.plugin_version }}</span>
+                <span v-show="hover.isHovering" class="text-sm mt-1 text-gray-200">
+                  v{{ props.plugin?.plugin_version }}
+                </span>
               </VCardTitle>
               <VSlideYTransition>
                 <VCardText
