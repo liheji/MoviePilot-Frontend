@@ -129,7 +129,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VDialog width="40rem" scrollable max-height="85vh">
+  <VDialog width="40rem" max-height="85vh">
     <VCard title="用户认证" class="rounded-t">
       <DialogCloseBtn @click="emit('close')" />
       <VCardText>
