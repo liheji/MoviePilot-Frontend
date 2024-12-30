@@ -416,18 +416,11 @@ watch(
               <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
                 <VBadge v-if="props.plugin?.state" dot inline color="success" />
                 {{ props.plugin?.plugin_name }}
-                <span v-show="hover.isHovering" class="text-sm mt-1 text-gray-200">
-                  v{{ props.plugin?.plugin_version }}
-                </span>
+                <span class="text-sm mt-1 text-gray-200"> v{{ props.plugin?.plugin_version }} </span>
               </VCardTitle>
-              <VSlideYTransition>
-                <VCardText
-                  v-show="hover.isHovering || menuVisible"
-                  class="px-2 py-0 text-white text-sm text-shadow overflow-hidden line-clamp-3 ..."
-                >
-                  {{ props.plugin?.plugin_desc }}
-                </VCardText>
-              </VSlideYTransition>
+              <VCardText class="px-2 py-0 text-white text-sm text-shadow overflow-hidden line-clamp-3 ...">
+                {{ props.plugin?.plugin_desc }}
+              </VCardText>
             </div>
             <div class="relative flex-shrink-0 self-center">
               <VAvatar size="64">
@@ -452,7 +445,7 @@ watch(
                 {{ props.plugin?.plugin_author }}
               </a>
             </span>
-            <span v-if="props.count" v-show="hover.isHovering" class="ms-3">
+            <span v-if="props.count" class="ms-3">
               <VIcon icon="mdi-download" />
               <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
             </span>
