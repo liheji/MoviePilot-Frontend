@@ -402,7 +402,7 @@ watch(
           :width="props.width"
           :height="props.height"
           @click="openPluginDetail"
-          class="flex flex-col"
+          class="flex flex-col h-full"
         >
           <div
             class="relative flex flex-row items-start pa-3 justify-between grow"
