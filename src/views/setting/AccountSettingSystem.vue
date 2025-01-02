@@ -26,18 +26,16 @@ const SystemSettings = ref<any>({
     // 全局
     AUXILIARY_AUTH_ENABLE: false,
     GLOBAL_IMAGE_CACHE: false,
+    SUBSCRIBE_STATISTIC_SHARE: true,
+    PLUGIN_STATISTIC_SHARE: true,
     BIG_MEMORY_MODE: false,
     DB_WAL_ENABLE: false,
-    ENCODING_DETECTION_PERFORMANCE_MODE: true,
-    TOKENIZED_SEARCH: false,
     // 媒体
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
     META_CACHE_EXPIRE: 0,
-    FANART_ENABLE: false,
     SCRAP_FOLLOW_TMDB: true,
-    SUBSCRIBE_STATISTIC_SHARE: true,
-    PLUGIN_STATISTIC_SHARE: true,
+    FANART_ENABLE: false,
     // 网络
     PROXY_HOST: null,
     GITHUB_PROXY: null,
@@ -45,9 +43,15 @@ const SystemSettings = ref<any>({
     DOH_ENABLE: false,
     DOH_RESOLVERS: null,
     DOH_DOMAINS: null,
-    // 开发
+    // 日志
     DEBUG: false,
+    LOG_LEVEL: 'INFO',
+    LOG_MAX_FILE_SIZE: '5',
+    LOG_BACKUP_COUNT: '3',
+    // 实验室
     PLUGIN_AUTO_RELOAD: false,
+    ENCODING_DETECTION_PERFORMANCE_MODE: true,
+    TOKENIZED_SEARCH: false,
   },
 })
 
@@ -237,6 +241,15 @@ const pipMirrorsItems = [
   'https://pypi.doubanio.com/simple', // 豆瓣
   'https://mirrors.hust.edu.cn/pypi/web/simple', // 华中理工大学
   'https://mirrors.bfsu.edu.cn/pypi/web/simple', // 北京外国语大学
+]
+
+// 日志等级
+const logLevelItems = [
+  { title: 'DEBUG - 调试 ', value: 'DEBUG' },
+  { title: 'INFO - 信息 ', value: 'INFO' },
+  { title: 'WARNING - 警告 ', value: 'WARNING' },
+  { title: 'ERROR - 错误 ', value: 'ERROR' },
+  { title: 'CRITICAL - 严重 ', value: 'CRITICAL' },
 ]
 
 // 创建随机字符串
@@ -536,6 +549,9 @@ onDeactivated(() => {
           <VTab value="network">
             <div>网络</div>
           </VTab>
+          <VTab value="log">
+            <div>日志</div>
+          </VTab>
           <VTab value="dev">
             <div>实验室</div>
           </VTab>
@@ -707,18 +723,56 @@ onDeactivated(() => {
               </VRow>
             </div>
           </VWindowItem>
-
-          <VWindowItem value="dev">
+          <VWindowItem value="log">
             <div>
               <VRow>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.DEBUG"
-                    label="DEBUG日志"
-                    hint="显示DEBUG级别日志，方便排查问题"
+                    label="全局DEBUG日志"
+                    hint="全局强制使用DEBUG级别日志，方便排查问题"
                     persistent-hint
                   />
                 </VCol>
+                <VCol cols="12" md="6">
+                  <VSelect
+                    v-if="!SystemSettings.Advanced.DEBUG"
+                    v-model="SystemSettings.Advanced.LOG_LEVEL"
+                    label="全局日志等级"
+                    hint="设置日志记录的级别，方便控制日志记录量"
+                    persistent-hint
+                    :items="logLevelItems"
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VTextField
+                    v-model="SystemSettings.Advanced.LOG_MAX_FILE_SIZE"
+                    label="日志文件最大容量(MB)"
+                    hint="限制单个日志文件最大保存容量，用于分割日志体积"
+                    persistent-hint
+                    min="1"
+                    type="number"
+                    suffix="MB"
+                    :rules="[(v: any) => v === 0 || !!v || '日志文件最大大小', (v: any) => v >= 1 || '日志文件最大容量必须大于等于1']"
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VTextField
+                    v-model="SystemSettings.Advanced.LOG_BACKUP_COUNT"
+                    label="日志文件最大备份数量"
+                    hint="每个模块的日志文件的最多储存的个数，用于控制日文件数量"
+                    persistent-hint
+                    min="1"
+                    type="number"
+                    :rules="[(v: any) => v === 0 || !!v || '请输入日志文件最大备份数量', (v: any) => v >= 1 || '日志文件最大备份数量必须大于等于1']"
+                  />
+                </VCol>
+              </VRow>
+            </div>
+          </VWindowItem>
+          <VWindowItem value="dev">
+            <div>
+              <VRow>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.PLUGIN_AUTO_RELOAD"
