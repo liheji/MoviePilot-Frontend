@@ -406,7 +406,7 @@ function setupIntersectionObserver() {
 }
 
 onMounted(() => {
-  // setupIntersectionObserver()
+  setupIntersectionObserver()
 })
 
 onBeforeUnmount(() => {
