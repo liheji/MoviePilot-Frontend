@@ -40,7 +40,6 @@ function getParams() {
 // 获取列表数据
 async function fetchData({ done }: { done: any }) {
   try {
-    console.log(1111)
     if (!props.apipath) return
 
     // 如果正在加载中，直接返回
