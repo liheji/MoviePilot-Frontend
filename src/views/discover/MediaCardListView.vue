@@ -27,7 +27,6 @@ const isRefreshed = ref(false)
 // 数据列表
 const dataList = ref<MediaInfo[]>([])
 const currData = ref<MediaInfo[]>([])
-
 // 拼装参数
 function getParams() {
   let params = {
@@ -41,6 +40,7 @@ function getParams() {
 // 获取列表数据
 async function fetchData({ done }: { done: any }) {
   try {
+    console.log(1111)
     if (!props.apipath) return
 
     // 如果正在加载中，直接返回
@@ -53,6 +53,7 @@ async function fetchData({ done }: { done: any }) {
     if (!hasScroll()) {
       // 加载多次
       while (!hasScroll()) {
+        console.log(hasScroll())
         // 设置加载中
         loading.value = true
         // 请求API
@@ -78,6 +79,8 @@ async function fetchData({ done }: { done: any }) {
     } else {
       // 加载一次
       // 设置加载中
+      console.log(hasScroll())
+
       loading.value = true
       // 请求API
       currData.value = await api.get(props.apipath, {
@@ -115,15 +118,7 @@ async function fetchData({ done }: { done: any }) {
     <div v-if="dataList.length > 0" class="grid gap-4 grid-media-card mx-3" tabindex="0">
       <MediaCard v-for="data in dataList" :key="data.tmdb_id || data.douban_id" :media="data" />
     </div>
-    <NoDataFound
-      v-if="dataList.length === 0 && isRefreshed"
-      error-code="404"
-      error-title="没有数据"
-      error-description="无法获取到媒体信息。"
-    />
+    <NoDataFound v-if="dataList.length === 0 && isRefreshed" error-code="404" error-title="没有数据"
+      error-description="无法获取到媒体信息。" />
   </VInfiniteScroll>
 </template>
-
-<style lang="scss">
-
-</style>
