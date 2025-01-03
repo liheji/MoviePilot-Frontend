@@ -189,7 +189,18 @@ const router = createRouter({
     },
   ],
 })
+const abortControllers = new Set<AbortController>()
 
+function registerAbortController(controller: AbortController) {
+  abortControllers.add(controller)
+}
+
+function abortAllControllers() {
+  for (const controller of abortControllers) {
+    controller.abort()
+  }
+  abortControllers.clear()
+}
 // 路由导航守卫
 router.beforeEach((to, from, next) => {
   // 总是记录非login路由
@@ -198,8 +209,11 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
   } else {
+    abortAllControllers() // 中止所有组件的任务
+
     next()
   }
 })
 
-export default router
+export default router // 导出默认对象
+export { registerAbortController } // 另行导出其他功能

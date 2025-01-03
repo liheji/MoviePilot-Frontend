@@ -6,7 +6,7 @@ import { formatSeason } from '@/@core/utils/formatters'
 import api from '@/api'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import type { MediaInfo, NotExistMediaInfo, Subscribe, TmdbSeason } from '@/api/types'
-import router from '@/router'
+import router, { registerAbortController } from '@/router'
 import noImage from '@images/no-image.jpeg'
 import tmdbImage from '@images/logos/tmdb.png'
 import doubanImage from '@images/logos/douban-black.png'
@@ -59,7 +59,11 @@ const seasonInfos = ref<TmdbSeason[]>([])
 
 // 选中的订阅季
 const seasonsSelected = ref<TmdbSeason[]>([])
+let abortController: AbortController | null = null;
 
+abortController = new AbortController();
+registerAbortController(abortController);
+const { signal } = abortController;
 // 来源角标字典
 const sourceIconDict: { [key: string]: any } = {
   themoviedb: tmdbImage,
@@ -215,6 +219,7 @@ async function removeSubscribe() {
 // 查询当前媒体是否已订阅
 async function handleCheckSubscribe() {
   try {
+
     const result = await checkSubscribe(props.media?.season)
     if (result) isSubscribed.value = true
   } catch (error) {
@@ -225,6 +230,7 @@ async function handleCheckSubscribe() {
 // 查询当前媒体是否已入库
 async function handleCheckExists() {
   try {
+
     const result: { [key: string]: any } = await api.get('mediaserver/exists', {
       params: {
         tmdbid: props.media?.tmdb_id,
@@ -233,6 +239,7 @@ async function handleCheckExists() {
         season: props.media?.season,
         mtype: props.media?.type,
       },
+      signal
     })
 
     if (result.success) isExists.value = true
@@ -244,6 +251,7 @@ async function handleCheckExists() {
 // 调用API检查是否已订阅，电视剧需要指定季
 async function checkSubscribe(season = 0) {
   try {
+
     const mediaid = getMediaId()
 
     const result: Subscribe = await api.get(`subscribe/media/${mediaid}`, {
@@ -251,6 +259,7 @@ async function checkSubscribe(season = 0) {
         season,
         title: props.media?.title,
       },
+      signal
     })
 
     return result.id || null
@@ -444,25 +453,13 @@ function onRemoveSubscribe() {
   <VHover>
     <template #default="hover">
       <div ref="mediaCardRef">
-        <VCard
-          v-bind="hover.props"
-          :height="props.height"
-          :width="props.width"
-          class="outline-none shadow ring-gray-500 rounded-lg"
-          :class="{
+        <VCard v-bind="hover.props" :height="props.height" :width="props.width"
+          class="outline-none shadow ring-gray-500 rounded-lg" :class="{
             'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
             'ring-1': isImageLoaded,
-          }"
-          @click.stop="goMediaDetail(hover.isHovering ?? false)"
-        >
-          <VImg
-            aspect-ratio="2/3"
-            :src="getImgUrl"
-            class="object-cover aspect-w-2 aspect-h-3"
-            cover
-            @load="isImageLoaded = true"
-            @error="imageLoadError = true"
-          >
+          }" @click.stop="goMediaDetail(hover.isHovering ?? false)">
+          <VImg aspect-ratio="2/3" :src="getImgUrl" class="object-cover aspect-w-2 aspect-h-3" cover
+            @load="isImageLoaded = true" @error="imageLoadError = true">
             <template #placeholder>
               <div class="w-full h-full">
                 <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
@@ -470,11 +467,9 @@ function onRemoveSubscribe() {
             </template>
           </VImg>
           <!-- 详情 -->
-          <VCardText
-            v-show="hover.isHovering || imageLoadError"
+          <VCardText v-show="hover.isHovering || imageLoadError"
             class="w-full h-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2"
-            style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
-          >
+            style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)">
             <span class="font-bold">{{ props.media?.year }}</span>
             <h1 class="mb-1 text-white font-extrabold text-xl line-clamp-2 overflow-hidden text-ellipsis ...">
               {{ props.media?.title }}
@@ -488,35 +483,21 @@ function onRemoveSubscribe() {
             </div>
           </VCardText>
           <!-- 类型角标 -->
-          <VChip
-            v-show="isImageLoaded"
-            variant="elevated"
-            size="small"
-            :class="getChipColor(props.media?.type || '')"
-            class="absolute left-2 top-2 bg-opacity-80 shadow-md text-white font-bold"
-          >
+          <VChip v-show="isImageLoaded" variant="elevated" size="small" :class="getChipColor(props.media?.type || '')"
+            class="absolute left-2 top-2 bg-opacity-80 shadow-md text-white font-bold">
             {{ props.media?.type }}
           </VChip>
           <!-- 本地存在标识 -->
           <ExistIcon v-if="isExists && !hover.isHovering" />
           <!-- 评分角标 -->
-          <VChip
-            v-if="isImageLoaded && props.media?.vote_average && !(isExists && !hover.isHovering)"
-            variant="elevated"
-            size="small"
-            :class="getChipColor('rating')"
-            class="absolute right-2 top-2 bg-opacity-80 shadow-md text-white font-bold"
-          >
+          <VChip v-if="isImageLoaded && props.media?.vote_average && !(isExists && !hover.isHovering)"
+            variant="elevated" size="small" :class="getChipColor('rating')"
+            class="absolute right-2 top-2 bg-opacity-80 shadow-md text-white font-bold">
             {{ props.media?.vote_average }}
           </VChip>
           <!--来源图标-->
-          <VAvatar
-            size="24"
-            density="compact"
-            class="absolute bottom-1 right-1"
-            tile
-            v-if="!hover.isHovering && isImageLoaded && props.media?.source"
-          >
+          <VAvatar size="24" density="compact" class="absolute bottom-1 right-1" tile
+            v-if="!hover.isHovering && isImageLoaded && props.media?.source">
             <VImg cover :src="sourceIconDict[props.media?.source]" class="shadow-lg" />
           </VAvatar>
         </VCard>
@@ -535,14 +516,8 @@ function onRemoveSubscribe() {
         <VList v-model:selected="seasonsSelected" lines="three" select-strategy="classic">
           <VListItem v-for="(item, i) in seasonInfos" :key="i" :value="item">
             <template #prepend>
-              <VImg
-                height="90"
-                width="60"
-                :src="getSeasonPoster(item.poster_path || '')"
-                aspect-ratio="2/3"
-                class="object-cover rounded shadow ring-gray-500 me-3"
-                cover
-              >
+              <VImg height="90" width="60" :src="getSeasonPoster(item.poster_path || '')" aspect-ratio="2/3"
+                class="object-cover rounded shadow ring-gray-500 me-3" cover>
                 <template #placeholder>
                   <div class="w-full h-full">
                     <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
@@ -581,12 +556,6 @@ function onRemoveSubscribe() {
     </VCard>
   </VBottomSheet>
   <!-- 订阅编辑弹窗 -->
-  <SubscribeEditDialog
-    v-if="subscribeEditDialog"
-    v-model="subscribeEditDialog"
-    :subid="subscribeId"
-    @close="subscribeEditDialog = false"
-    @save="subscribeEditDialog = false"
-    @remove="onRemoveSubscribe"
-  />
+  <SubscribeEditDialog v-if="subscribeEditDialog" v-model="subscribeEditDialog" :subid="subscribeId"
+    @close="subscribeEditDialog = false" @save="subscribeEditDialog = false" @remove="onRemoveSubscribe" />
 </template>

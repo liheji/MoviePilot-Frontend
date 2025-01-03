@@ -68,6 +68,7 @@ const viewList = reactive<{ apipath: string; linkurl: string; title: string }[]>
     title: '豆瓣全球剧集榜',
   },
 ])
+
 </script>
 
 <template>
