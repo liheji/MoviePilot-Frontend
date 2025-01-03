@@ -52,7 +52,6 @@ async function fetchData({ done }: { done: any }) {
     if (!hasScroll()) {
       // 加载多次
       while (!hasScroll()) {
-        console.log(hasScroll())
         // 设置加载中
         loading.value = true
         // 请求API
@@ -78,7 +77,6 @@ async function fetchData({ done }: { done: any }) {
     } else {
       // 加载一次
       // 设置加载中
-      console.log(hasScroll())
 
       loading.value = true
       // 请求API

@@ -40,12 +40,11 @@ async function fetchData() {
 
 // 加载时获取数据
 onMounted(() => {
-  fetchData(); // 异步操作，不阻塞导航
+  fetchData();
 });
 onActivated(() => {
-  console.log("组件被激活");
   if (dataList.value.length == 0) {
-    fetchData(); // 异步操作，不阻塞导航
+    fetchData();
 
   }
 });

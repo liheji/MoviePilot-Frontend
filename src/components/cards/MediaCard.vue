@@ -59,7 +59,11 @@ const seasonInfos = ref<TmdbSeason[]>([])
 
 // 选中的订阅季
 const seasonsSelected = ref<TmdbSeason[]>([])
+let abortController: AbortController | null = null;
 
+abortController = new AbortController();
+registerAbortController(abortController);
+const { signal } = abortController;
 // 来源角标字典
 const sourceIconDict: { [key: string]: any } = {
   themoviedb: tmdbImage,
@@ -226,11 +230,7 @@ async function handleCheckSubscribe() {
 // 查询当前媒体是否已入库
 async function handleCheckExists() {
   try {
-    let abortController: AbortController | null = null;
 
-    abortController = new AbortController();
-    registerAbortController(abortController);
-    const { signal } = abortController;
     const result: { [key: string]: any } = await api.get('mediaserver/exists', {
       params: {
         tmdbid: props.media?.tmdb_id,
@@ -251,11 +251,7 @@ async function handleCheckExists() {
 // 调用API检查是否已订阅，电视剧需要指定季
 async function checkSubscribe(season = 0) {
   try {
-    let abortController: AbortController | null = null;
 
-    abortController = new AbortController();
-    registerAbortController(abortController);
-    const { signal } = abortController;
     const mediaid = getMediaId()
 
     const result: Subscribe = await api.get(`subscribe/media/${mediaid}`, {
