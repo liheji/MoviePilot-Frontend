@@ -3,6 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html.v-overlay-scroll-blocked {
+  position: relative;
+}
+
 #nprogress .bar {
   background: rgb(var(--v-theme-primary)) !important;
   inset-block-start: env(safe-area-inset-top) !important;
@@ -23,18 +27,12 @@
   margin-block-start: env(safe-area-inset-top);
 }
 
-.v-overlay-container {
-  min-block-size: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));
-  overflow-y: overlay;
-}
-
 .v-dialog > .v-overlay__content {
   margin-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
 }
 
-.v-dialog--fullscreen > .v-overlay__content{
-  margin-block-start: env(safe-area-inset-top);
-  padding-block-end: env(safe-area-inset-bottom);
+.v-dialog--fullscreen > .v-overlay__content > .v-card {
+  padding-block-end: calc(env(safe-area-inset-top) + env(safe-area-inset-bottom));
 }
 
 /* router view transition fade-slide */
