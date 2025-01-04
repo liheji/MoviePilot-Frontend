@@ -621,7 +621,7 @@ onDeactivated(() => {
                     placeholder="api.themoviedb.org"
                     hint="自定义themoviedb API域名或代理地址"
                     persistent-hint
-                    :items="['api.themoviedb.org']"
+                    :items="['api.themoviedb.org', 'api.tmdb.org']"
                     :rules="[(v: string) => !!v || '请输入TMDB API域名']"
                   />
                 </VCol>
