@@ -23,6 +23,11 @@
   margin-block-start: env(safe-area-inset-top);
 }
 
+.v-overlay-container {
+  min-block-size: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));
+  overflow-y: overlay;
+}
+
 .v-dialog > .v-overlay__content {
   margin-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
 }
@@ -30,10 +35,6 @@
 .v-dialog--fullscreen > .v-overlay__content{
   margin-block-start: env(safe-area-inset-top);
   padding-block-end: env(safe-area-inset-bottom);
-}
-
-.v-overlay__scrim {
-  min-block-size: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));
 }
 
 /* router view transition fade-slide */
