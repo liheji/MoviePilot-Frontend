@@ -269,7 +269,7 @@ onMounted(() => {
     >
       <DialogCloseBtn @click="emit('close')" />
       <VDivider />
-      <VCardText class="d-flex">
+      <VCardItem class="d-flex">
         <!-- 👉 Avatar -->
         <VAvatar rounded="lg" size="100" class="me-6" :image="currentAvatar" />
 
@@ -301,7 +301,7 @@ onMounted(() => {
 
           <p class="text-body-1 mb-0">允许 JPG、PNG、GIF、WEBP 格式， 最大尺寸 800KB。</p>
         </form>
-      </VCardText>
+      </VCardItem>
       <VCardText>
         <VForm @submit.prevent="() => {}" class="mt-3">
           <VDivider class="my-10">
