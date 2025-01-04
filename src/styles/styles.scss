@@ -24,15 +24,13 @@
 }
 
 .v-dialog > .v-overlay__content {
-  inline-size: calc(100% - 1rem);
-  margin-block-start: calc(env(safe-area-inset-top) + 1rem);
-  max-block-size: calc(100% - env(safe-area-inset-top) - 1rem);
+  margin-block-start: env(safe-area-inset-top);
+  margin-block-end: env(safe-area-inset-bottom);
 }
 
 .v-dialog--fullscreen > .v-overlay__content{
-  inline-size: 100%;
   margin-block-start: env(safe-area-inset-top);
-  max-block-size: calc(100% - env(safe-area-inset-top));
+  padding-block-end: env(safe-area-inset-bottom);
 }
 
 /* router view transition fade-slide */
