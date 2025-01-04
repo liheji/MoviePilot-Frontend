@@ -271,7 +271,7 @@ onMounted(() => {
       <VDivider />
       <VCardItem class="d-flex">
         <!-- 👉 Avatar -->
-        <VAvatar rounded="lg" size="100" class="me-6" :image="currentAvatar" />
+        <VAvatar rounded="lg" size="100" class="me-3" :image="currentAvatar" />
 
         <!-- 👉 Upload Photo -->
         <form class="d-flex flex-column justify-center gap-5">
@@ -303,7 +303,7 @@ onMounted(() => {
         </form>
       </VCardItem>
       <VCardText>
-        <VForm @submit.prevent="() => {}" class="mt-3">
+        <VForm @submit.prevent="() => {}">
           <VDivider class="my-10">
             <span>用户基础设置</span>
           </VDivider>
