@@ -269,12 +269,12 @@ onMounted(() => {
     >
       <DialogCloseBtn @click="emit('close')" />
       <VDivider />
-      <VCardItem class="d-flex">
+      <VCardItem class="d-flex flex-column">
         <!-- 👉 Avatar -->
-        <VAvatar rounded="lg" size="100" class="me-3" :image="currentAvatar" />
+        <VAvatar rounded="lg" size="100" :image="currentAvatar" />
 
         <!-- 👉 Upload Photo -->
-        <form class="d-flex flex-column justify-center gap-5">
+        <form class="d-flex flex-column flex-nowrap justify-center gap-5">
           <div class="d-flex flex-wrap gap-2">
             <VBtn color="primary" @click="refInputEl?.click()">
               <VIcon icon="mdi-cloud-upload-outline" />
