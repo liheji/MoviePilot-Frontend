@@ -155,7 +155,7 @@ onMounted(() => {
   <div>
     <VCard
       :variant="cardProps.site?.is_active ? 'elevated' : 'outlined'"
-      class="overflow-hidden"
+      class="overflow-hidden h-full flex flex-col"
       @click="siteEditDialog = true"
     >
       <template #image>
@@ -171,7 +171,7 @@ onMounted(() => {
           <span @click.stop="openSitePage">{{ cardProps.site?.url }}</span>
         </VCardSubtitle>
       </VCardItem>
-      <VCardText class="py-1" style="block-size: 36px">
+      <VCardText class="py-1">
         <VTooltip v-if="cardProps.site?.limit_interval" text="流控">
           <template #activator="{ props }">
             <VIcon color="primary" class="me-2" v-bind="props" icon="mdi-speedometer" />
