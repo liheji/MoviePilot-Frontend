@@ -729,8 +729,8 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.DEBUG"
-                    label="全局DEBUG日志"
-                    hint="全局强制使用DEBUG级别日志，方便排查问题"
+                    label="调试模式"
+                    hint="启用调试模式后，日志将以DEBUG级别记录，以便排查问题"
                     persistent-hint
                   />
                 </VCol>
@@ -738,8 +738,8 @@ onDeactivated(() => {
                   <VSelect
                     v-if="!SystemSettings.Advanced.DEBUG"
                     v-model="SystemSettings.Advanced.LOG_LEVEL"
-                    label="全局日志等级"
-                    hint="设置日志记录的级别，方便控制日志记录量"
+                    label="日志等级"
+                    hint="设置日志记录的级别，用于控制日志输出量"
                     persistent-hint
                     :items="logLevelItems"
                   />
@@ -748,7 +748,7 @@ onDeactivated(() => {
                   <VTextField
                     v-model="SystemSettings.Advanced.LOG_MAX_FILE_SIZE"
                     label="日志文件最大容量(MB)"
-                    hint="限制单个日志文件最大保存容量，用于分割日志体积"
+                    hint="限制单个日志文件的最大容量，超出后将自动分割日志"
                     persistent-hint
                     min="1"
                     type="number"
@@ -760,7 +760,7 @@ onDeactivated(() => {
                   <VTextField
                     v-model="SystemSettings.Advanced.LOG_BACKUP_COUNT"
                     label="日志文件最大备份数量"
-                    hint="每个模块的日志文件的最多储存的个数，用于控制日文件数量"
+                    hint="设置每个模块日志文件的最大备份数量，超过后将覆盖旧日志"
                     persistent-hint
                     min="1"
                     type="number"
