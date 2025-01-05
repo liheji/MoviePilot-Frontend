@@ -48,6 +48,7 @@ const SystemSettings = ref<any>({
     LOG_LEVEL: 'INFO',
     LOG_MAX_FILE_SIZE: '5',
     LOG_BACKUP_COUNT: '3',
+    LOG_FILE_FORMAT: '【%(levelname)s】%(asctime)s - %(message)s',
     // 实验室
     PLUGIN_AUTO_RELOAD: false,
     ENCODING_DETECTION_PERFORMANCE_MODE: true,
@@ -193,8 +194,10 @@ async function saveBasicSettings() {
   }
 }
 
-// 高级设置变化，等待保存
+// 保存高级设置
 async function saveAdvancedSettings() {
+  cleanEmptyFields(SystemSettings.value.Advanced, ['LOG_FILE_FORMAT'])
+
   if (await saveSystemSetting(SystemSettings.value.Advanced)) {
     advancedDialog.value = false
     $toast.success('高级设置保存成功')
@@ -202,6 +205,15 @@ async function saveAdvancedSettings() {
   } else {
     $toast.error('高级设置保存失败！')
   }
+}
+
+// 当字段为空时，将其设置为 null 提交，以便后端恢复为默认值
+function cleanEmptyFields(settings: any, fields: string[]) {
+  fields.forEach(field => {
+    if (settings[field]?.trim?.() === '') {
+      settings[field] = null
+    }
+  })
 }
 
 // 快捷复制到剪贴板
@@ -765,6 +777,14 @@ onDeactivated(() => {
                     min="1"
                     type="number"
                     :rules="[(v: any) => v === 0 || !!v || '请输入日志文件最大备份数量', (v: any) => v >= 1 || '日志文件最大备份数量必须大于等于1']"
+                  />
+                </VCol>
+                <VCol cols="12">
+                  <VTextField
+                    v-model="SystemSettings.Advanced.LOG_FILE_FORMAT"
+                    label="日志文件格式"
+                    hint="设置日志文件的输出格式，用于自定义日志的显示内容"
+                    persistent-hint
                   />
                 </VCol>
               </VRow>
