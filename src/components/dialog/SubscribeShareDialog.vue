@@ -16,6 +16,9 @@ const props = defineProps({
 // 定义触发的自定义事件
 const emit = defineEmits(['close'])
 
+// 分享处理状态
+const shareDoing = ref(false)
+
 // 订阅编辑表单
 const shareForm = ref<SubscribeShare>({
   subscribe_id: props.sub?.id ?? 0,
@@ -25,7 +28,9 @@ const shareForm = ref<SubscribeShare>({
 async function doShare() {
   if (!shareForm.value.share_title || !shareForm.value.share_comment || !shareForm.value.share_user) return
   try {
+    shareDoing.value = true
     const result: { [key: string]: any } = await api.post('subscribe/share', shareForm.value)
+    shareDoing.value = false
     // 提示
     if (result.success) {
       $toast.success(`${props.sub?.name} 分享成功！`)
@@ -85,7 +90,7 @@ const $toast = useToast()
       </VCardText>
       <VCardActions class="pt-3">
         <VSpacer />
-        <VBtn variant="elevated" @click="doShare" prepend-icon="mdi-share" class="px-5"> 确认分享 </VBtn>
+        <VBtn variant="elevated" :disabled="shareDoing" @click="doShare" prepend-icon="mdi-share" class="px-5"> 确认分享 </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
