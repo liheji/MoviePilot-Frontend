@@ -177,6 +177,9 @@ async function saveSystemSetting(value: { [key: string]: any }) {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
       return true
+    } else {
+      $toast.error(`设置保存失败：${result?.message}！`)
+      return false
     }
   } catch (error) {
     console.log(error)
@@ -189,8 +192,6 @@ async function saveBasicSettings() {
   if (await saveSystemSetting(SystemSettings.value.Basic)) {
     $toast.success('基础设置保存成功')
     await reloadSystem()
-  } else {
-    $toast.error('基础设置保存失败！')
   }
 }
 
@@ -202,8 +203,6 @@ async function saveAdvancedSettings() {
     advancedDialog.value = false
     $toast.success('高级设置保存成功')
     await reloadSystem()
-  } else {
-    $toast.error('高级设置保存失败！')
   }
 }
 
