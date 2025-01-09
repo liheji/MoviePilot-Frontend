@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { isNullOrEmptyObject } from '@/@core/utils'
 import type { Message } from '@/api/types'
 import { formatDateDifference } from '@core/utils/formatters'
 
@@ -45,12 +46,13 @@ function replaceNewLine(value: string) {
 </script>
 
 <template>
-  <VCard variant="tonal" :width="props.width" :height="props.height" @click="openLink">
+  <VCard variant="tonal" :width="props.width" :height="props.height" @click="openLink" max-width="25rem">
     <div v-if="props.message?.image" class="relative text-center card-cover-blurred">
       <VImg
         :src="props.message?.image"
-        aspect-ratio="4/3"
+        aspect-ratio="3/2"
         cover
+        position="top"
         :class="{ shadow: isImageLoaded }"
         @load="imageLoaded"
         @error="imageLoadError = true"
@@ -72,7 +74,7 @@ function replaceNewLine(value: string) {
       <p class="mb-0">{{ props.message?.text }}</p>
     </div>
     <VCardText v-if="props.message?.text && props.message?.action === 1" v-html="replaceNewLine(props.message?.text)" />
-    <VCardText v-if="props.message?.note">
+    <VCardText v-if="!isNullOrEmptyObject(props.message?.note)">
       <VList>
         <VListItem v-for="(value, key) in noteToJson()" :key="key" two-line>
           <VListItemTitle v-if="value.title_year" class="font-bold">
