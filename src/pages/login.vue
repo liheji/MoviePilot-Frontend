@@ -240,7 +240,7 @@ onUnmounted(() => {
           <VCardTitle class="font-weight-bold text-2xl text-uppercase"> MoviePilot </VCardTitle>
         </VCardItem>
         <VCardText>
-          <VForm ref="refForm" @submit.prevent="() => {}">
+          <VForm ref="refForm" autocomplete="on" @submit.prevent="() => {}">
             <VRow>
               <!-- username -->
               <VCol cols="12">
@@ -249,6 +249,8 @@ onUnmounted(() => {
                   v-model="form.username"
                   label="用户名"
                   type="text"
+                  name="username"
+                  autocomplete="username"
                   :rules="[requiredValidator]"
                   @input="fetchOTP"
                 />
@@ -259,6 +261,8 @@ onUnmounted(() => {
                   v-model="form.password"
                   label="密码"
                   :type="isPasswordVisible ? 'text' : 'password'"
+                  name="current-password"
+                  autocomplete="current-password"
                   :append-inner-icon="isPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                   :rules="[requiredValidator]"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
