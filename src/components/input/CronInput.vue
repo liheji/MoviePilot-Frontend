@@ -11,7 +11,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const currentCron = ref(props.cron)
+const currentCron = ref(props.modelValue)
 
 watch(currentCron, newVal => {
   emit('update:modelValue', newVal)
