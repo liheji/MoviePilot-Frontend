@@ -3,6 +3,14 @@ import '@/@core/utils/compatibility'
 import '@/@iconify/icons-bundle'
 import '@/plugins/webfontloader'
 
+import { createApp } from 'vue'
+import { VAceEditor } from 'vue3-ace-editor'
+import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar'
+import { CronVuetify } from '@vue-js-cron/vuetify'
+import { removeEl } from './@core/utils/dom'
+import { fetchGlobalSettings } from './api'
+import { isPWA } from './@core/utils/navigator'
+
 import App from '@/App.vue'
 import vuetify from '@/plugins/vuetify'
 import router from '@/router'
@@ -18,16 +26,7 @@ import PersonCard from './components/cards/PersonCard.vue'
 import MediaInfoCard from './components/cards/MediaInfoCard.vue'
 import TorrentCard from './components/cards/TorrentCard.vue'
 import MediaIdSelector from './components/misc/MediaIdSelector.vue'
-import PathField from './components/input/PathField.vue'
-import CronInput from './components/input/CronInput.vue'
-
-import { createApp } from 'vue'
-import { VAceEditor } from 'vue3-ace-editor'
-import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar'
-import { CronVuetify } from '@vue-js-cron/vuetify'
-import { removeEl } from './@core/utils/dom'
-import { fetchGlobalSettings } from './api'
-import { isPWA } from './@core/utils/navigator'
+import CronField from './components/field/CronField.vue'
 
 import '@core/scss/template/index.scss'
 import '@layouts/styles/index.scss'
@@ -70,8 +69,7 @@ initializeApp().then(() => {
     .component('VMediaInfoCard', MediaInfoCard)
     .component('VTorrentCard', TorrentCard)
     .component('VMediaIdSelector', MediaIdSelector)
-    .component('VPathField', PathField)
-    .component('VCronInput', CronInput)
+    .component('VCronField', CronField)
 
   // 注册插件
   app

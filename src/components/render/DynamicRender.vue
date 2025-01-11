@@ -93,6 +93,7 @@ const renderComponent = (config: any, model: any, slotScope: any = {}) => {
 <template>
   <!-- 调用递归渲染函数 -->
   <div>
-    <component :is="renderComponent(config, model)" />
+    <Component v-if="config.html" :is="config.component" v-bind="config.props" v-html="config.html" />
+    <Component v-else :is="renderComponent(config, model)" />
   </div>
 </template>

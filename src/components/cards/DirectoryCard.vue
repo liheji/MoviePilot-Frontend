@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TransferDirectoryConf } from '@/api/types'
-import { VDivider, VSpacer, VTextField } from 'vuetify/lib/components/index.mjs'
+import PathInput from '@/components/input/PathInput.vue'
 import api from '@/api'
 import { nextTick } from 'vue'
 import { storageOptions } from '@/api/constants'
@@ -210,7 +210,7 @@ watch(
             />
           </VCol>
           <VCol cols="8">
-            <VPathField v-model="props.directory.download_path" :storage="props.directory.storage">
+            <PathInput v-model="props.directory.download_path" :storage="props.directory.storage">
               <template #activator="{ menuprops }">
                 <VTextField
                   :model-value="props.directory.download_path"
@@ -219,7 +219,7 @@ watch(
                   label="下载目录/源目录"
                 />
               </template>
-            </VPathField>
+            </PathInput>
           </VCol>
           <VCol cols="6" v-if="!props.directory.media_type || props.directory.media_type === ''">
             <VSwitch v-model="props.directory.download_type_folder" label="按类型分类"></VSwitch>
@@ -257,7 +257,7 @@ watch(
             />
           </VCol>
           <VCol cols="8">
-            <VPathField v-model="props.directory.library_path" :storage="props.directory.library_storage">
+            <PathInput v-model="props.directory.library_path" :storage="props.directory.library_storage">
               <template #activator="{ menuprops }">
                 <VTextField
                   :modelValue="props.directory.library_path"
@@ -266,7 +266,7 @@ watch(
                   label="媒体库目录"
                 />
               </template>
-            </VPathField>
+            </PathInput>
           </VCol>
           <VCol cols="4">
             <VSelect

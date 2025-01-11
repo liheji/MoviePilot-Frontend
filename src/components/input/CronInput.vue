@@ -3,7 +3,7 @@ import api from '@/api'
 import { FileItem } from '@/api/types'
 
 const props = defineProps({
-  cron: {
+  modelValue: {
     type: String,
     default: '* * * * *',
   },
@@ -14,8 +14,15 @@ const emit = defineEmits(['update:modelValue'])
 const currentCron = ref(props.cron)
 
 watch(currentCron, newVal => {
-  emit('update:modelValue', currentCron.value)
+  emit('update:modelValue', newVal)
 })
+
+watch(
+  () => props.modelValue,
+  value => {
+    currentCron.value = value
+  },
+)
 </script>
 
 <template>
@@ -24,7 +31,11 @@ watch(currentCron, newVal => {
       <template v-slot:activator="{ props }">
         <slot name="activator" :menuprops="props" />
       </template>
-      <VCronVuetify v-model="currentCron" locale="zh-CN" :chip-props="{ color: 'success' }" class="mt-1" />
+      <VList>
+        <VListItem>
+          <VCronVuetify v-model="currentCron" locale="zh-CN" :chip-props="{ color: 'success' }" class="mt-1" />
+        </VListItem>
+      </VList>
     </VMenu>
   </div>
 </template>
