@@ -56,16 +56,6 @@ watchEffect(() => {
 <template>
   <Component :is="config?.component" v-if="!config?.html" v-bind="config?.props" v-on="componentEvents">
     {{ config?.text }}
-    <template v-for="(content, name) in config?.slots || {}" :key="name" v-slot:[name]="{ _props }">
-      <slot :name="name" v-bind="_props">
-        <PageRender
-          v-for="(slotItem, slotIndex) in content || []"
-          :key="slotIndex"
-          :config="slotItem"
-          @action="emit('action')"
-        />
-      </slot>
-    </template>
     <PageRender
       v-for="(innerItem, innerIndex) in config?.content || []"
       :key="innerIndex"
