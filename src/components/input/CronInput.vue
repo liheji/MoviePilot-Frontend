@@ -27,7 +27,7 @@ watch(
 
 <template>
   <div>
-    <VMenu :close-on-content-click="false" content-class="cursor-default">
+    <VMenu :close-on-content-click="false" content-class="cursor-default" persistent>
       <template v-slot:activator="{ props }">
         <slot name="activator" :menuprops="props" />
       </template>
