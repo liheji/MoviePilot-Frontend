@@ -131,24 +131,6 @@ function onClose() {
   emit('close')
 }
 
-// 下载路径更新
-function updateDownloadPath(value: string) {
-  downloadPath.value = value
-  emit('update:modelValue', {
-    download: downloadPath.value,
-    library: libraryPath.value,
-  })
-}
-
-// 媒体库路径更新
-function updateLibraryPath(value: string) {
-  libraryPath.value = value
-  emit('update:modelValue', {
-    download: downloadPath.value,
-    library: libraryPath.value,
-  })
-}
-
 // 根据选中的媒体类型，获取对应的媒体类别
 const getCategories = computed(() => {
   const default_value = [{ title: '全部', value: '' }]
@@ -228,10 +210,10 @@ watch(
             />
           </VCol>
           <VCol cols="8">
-            <VPathField @update:modelValue="updateDownloadPath" :storage="props.directory.storage">
+            <VPathField v-model="props.directory.download_path" :storage="props.directory.storage">
               <template #activator="{ menuprops }">
                 <VTextField
-                  v-model="props.directory.download_path"
+                  :model-value="props.directory.download_path"
                   v-bind="menuprops"
                   variant="underlined"
                   label="下载目录/源目录"
@@ -275,10 +257,10 @@ watch(
             />
           </VCol>
           <VCol cols="8">
-            <VPathField @update:modelValue="updateLibraryPath" :storage="props.directory.library_storage">
+            <VPathField v-model="props.directory.library_path" :storage="props.directory.library_storage">
               <template #activator="{ menuprops }">
                 <VTextField
-                  v-model="props.directory.library_path"
+                  :modelValue="props.directory.library_path"
                   v-bind="menuprops"
                   variant="underlined"
                   label="媒体库目录"

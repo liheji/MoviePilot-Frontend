@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import VueApexCharts from 'vue3-apexcharts'
 import { useTheme } from 'vuetify'
 import { hexToRgb } from '@layouts/utils'
 import api from '@/api'
@@ -143,8 +142,7 @@ onUnmounted(() => {
           <VCardTitle>CPU</VCardTitle>
         </VCardItem>
         <VCardText>
-          <VueApexCharts type="line" :options="chartOptions" :series="series" :height="150" />
-
+          <VApexChart type="line" :options="chartOptions" :series="series" :height="150" />
           <p class="text-center font-weight-medium mb-0">当前：{{ current }}%</p>
         </VCardText>
       </VCard>

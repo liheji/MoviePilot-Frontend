@@ -78,25 +78,27 @@ function handleUserSelect() {
 </script>
 
 <template>
-  <VMenu :close-on-content-click="false" content-class="cursor-default">
-    <template v-slot:activator="{ props }">
-      <slot name="activator" :menuprops="props" />
-    </template>
-    <VTreeview
-      v-model:activated="activedDirs"
-      v-model:opened="openedDirs"
-      :items="treeItems"
-      :load-children="fetchDirs"
-      item-key="path"
-      item-title="name"
-      item-value="path"
-      item-type="unknown"
-      activatable
-      return-object
-      max-height="20rem"
-      expand-icon="mdi-folder"
-      collapse-icon="mdi-folder-open"
-      @update:activated="handleUserSelect"
-    />
-  </VMenu>
+  <div>
+    <VMenu :close-on-content-click="false" content-class="cursor-default">
+      <template v-slot:activator="{ props }">
+        <slot name="activator" :menuprops="props" />
+      </template>
+      <VTreeview
+        v-model:activated="activedDirs"
+        v-model:opened="openedDirs"
+        :items="treeItems"
+        :load-children="fetchDirs"
+        item-key="path"
+        item-title="name"
+        item-value="path"
+        item-type="unknown"
+        activatable
+        return-object
+        max-height="20rem"
+        expand-icon="mdi-folder"
+        collapse-icon="mdi-folder-open"
+        @update:activated="handleUserSelect"
+      />
+    </VMenu>
+  </div>
 </template>

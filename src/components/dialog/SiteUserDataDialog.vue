@@ -3,7 +3,6 @@ import type { Site, SiteUserData } from '@/api/types'
 import api from '@/api'
 import { useDisplay, useTheme } from 'vuetify'
 import { formatFileSize } from '@/@core/utils/formatters'
-import VueApexCharts from 'vue3-apexcharts'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 
 // 显示器宽度
@@ -440,7 +439,7 @@ onBeforeMount(async () => {
           <VCol>
             <VCard title="历史流量">
               <VCardText>
-                <VueApexCharts type="line" :options="historyChartOptions" :series="historySeries" :height="300" />
+                <VApexChart type="line" :options="historyChartOptions" :series="historySeries" :height="300" />
               </VCardText>
             </VCard>
           </VCol>
@@ -449,7 +448,7 @@ onBeforeMount(async () => {
           <VCol>
             <VCard title="做种分布">
               <VCardText>
-                <VueApexCharts type="scatter" :options="seedingChartOptions" :series="seedingSeries" :height="300" />
+                <VApexChart type="scatter" :options="seedingChartOptions" :series="seedingSeries" :height="300" />
               </VCardText>
             </VCard>
           </VCol>

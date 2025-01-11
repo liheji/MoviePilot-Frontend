@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import VueApexCharts from 'vue3-apexcharts'
 import { useTheme } from 'vuetify'
 import api from '@/api'
 import { hexToRgb } from '@layouts/utils'
@@ -127,8 +126,7 @@ onMounted(() => {
         </VCardItem>
 
         <VCardText>
-          <VueApexCharts type="bar" :options="options" :series="series" :height="160" />
-
+          <VApexChart type="bar" :options="options" :series="series" :height="160" />
           <div class="d-flex align-center mb-3">
             <h5 class="text-h5 me-4">
               {{ totalCount }}
