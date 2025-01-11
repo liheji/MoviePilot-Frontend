@@ -3,83 +3,74 @@ import { RenderProps } from '@/api/types'
 import { type PropType, ref } from 'vue'
 
 // 输入参数
-const elementProps = defineProps({
+defineProps({
   config: Object as PropType<RenderProps>,
   form: Object as PropType<any>,
 })
-
-// 配置元素
-const formItem = ref<RenderProps>(
-  elementProps.config ?? {
-    component: 'div',
-    text: '',
-    html: '',
-    props: {},
-    slots: [],
-    content: [],
-  },
-)
-
-// 配置数据
-const formData = ref<any>(elementProps.form || {})
 </script>
 
 <template>
   <!-- 使用modelvalue -->
   <Component
-    :is="formItem.component"
-    v-if="!formItem.html && !!formItem.props?.modelvalue"
-    v-bind="formItem.props"
-    v-model:value="formData[formItem.props?.modelvalue]"
+    :is="config.component"
+    v-if="!config.html && !!config.props?.modelvalue"
+    v-bind="config.props"
+    v-model:value="form[config.props?.modelvalue]"
   >
-    {{ formItem.text }}
+    {{ config.text }}
     <!-- slots -->
-    <template v-for="(content, name) in formItem.slots || []" :key="name" v-slot:[name]="{ _props }">
+    <template v-for="(slotContents, name) in config.slots || {}" :key="name" v-slot:[name]="{ _props }">
       <slot :name="name" v-bind="_props">
-        <PageRender
-          v-for="(slotItem, slotIndex) in content || []"
-          :key="slotIndex"
-          :config="slotItem"
-          @action="emit('action')"
-        />
+        <template v-for="(slotItem, slotIndex) in slotContents || []" :key="slotIndex">
+          <FormRender
+            v-if="!!slotItem.props?.modelvalue"
+            v-model:value="form[slotItem.props?.modelvalue]"
+            :config="slotItem"
+            :form="form"
+          />
+          <FormRender v-else v-model="form[slotItem.props?.model]" :config="slotItem" :form="form" />
+        </template>
       </slot>
     </template>
     <!-- content -->
-    <template v-for="(innerItem, innerIndex) in formItem.content || []" :key="innerIndex">
+    <template v-for="(innerItem, innerIndex) in config.content || []" :key="innerIndex">
       <FormRender
         v-if="!!innerItem.props?.modelvalue"
-        v-model:value="formData[innerItem.props?.modelvalue]"
+        v-model:value="form[innerItem.props?.modelvalue]"
         :config="innerItem"
-        :form="formData"
+        :form="form"
       />
-      <FormRender v-else v-model="formData[innerItem.props?.model]" :config="innerItem" :form="formData" />
+      <FormRender v-else v-model="form[innerItem.props?.model]" :config="innerItem" :form="form" />
     </template>
   </Component>
   <!-- 使用html -->
-  <Component :is="formItem.component" v-else-if="formItem.html" v-bind="formItem.props" v-html="formItem.html" />
+  <Component :is="config.component" v-else-if="config.html" v-bind="config.props" v-html="config.html" />
   <!-- 使用model -->
-  <Component :is="formItem.component" v-else v-bind="formItem.props" v-model="formData[formItem.props?.model]">
-    {{ formItem.text }}
+  <Component :is="config.component" v-else v-bind="config.props" v-model="form[config.props?.model]">
+    {{ config.text }}
     <!-- slots -->
-    <template v-for="(content, name) in formItem.slots || []" :key="name" v-slot:[name]="{ _props }">
+    <template v-for="(slotContents, name) in config.slots || {}" :key="name" v-slot:[name]="{ _props }">
       <slot :name="name" v-bind="_props">
-        <PageRender
-          v-for="(slotItem, slotIndex) in content || []"
-          :key="slotIndex"
-          :config="slotItem"
-          @action="emit('action')"
-        />
+        <template v-for="(slotItem, slotIndex) in slotContents || []" :key="slotIndex">
+          <FormRender
+            v-if="!!slotItem.props?.modelvalue"
+            v-model:value="form[slotItem.props?.modelvalue]"
+            :config="slotItem"
+            :form="form"
+          />
+          <FormRender v-else v-model="form[slotItem.props?.model]" :config="slotItem" :form="form" />
+        </template>
       </slot>
     </template>
     <!-- content -->
-    <template v-for="(innerItem, innerIndex) in formItem.content || []" :key="innerIndex">
+    <template v-for="(innerItem, innerIndex) in config.content || []" :key="innerIndex">
       <FormRender
         v-if="!!innerItem.props?.modelvalue"
-        v-model:value="formData[innerItem.props?.modelvalue]"
+        v-model:value="form[innerItem.props?.modelvalue]"
         :config="innerItem"
-        :form="formData"
+        :form="form"
       />
-      <FormRender v-else v-model="formData[innerItem.props?.model]" :config="innerItem" :form="formData" />
+      <FormRender v-else v-model="form[innerItem.props?.model]" :config="innerItem" :form="form" />
     </template>
   </Component>
 </template>

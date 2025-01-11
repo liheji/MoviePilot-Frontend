@@ -9,7 +9,7 @@ import { RenderProps } from '@/api/types'
 const emit = defineEmits(['action'])
 
 // 输入参数
-const elementProps = defineProps({
+const props = defineProps({
   config: Object as PropType<RenderProps>,
 })
 
@@ -41,9 +41,9 @@ async function commonAction(api_path: string, method: string, params = {}) {
 // 组装事件
 let componentEvents = reactive<{ [key: string]: any }>({})
 watchEffect(() => {
-  if (!isNullOrEmptyObject(elementProps.config?.events)) {
-    for (const key in elementProps.config?.events) {
-      const attr = elementProps.config?.events[key]
+  if (!isNullOrEmptyObject(props.config?.events)) {
+    for (const key in props.config?.events) {
+      const attr = props.config?.events[key]
       const func = async () => {
         await commonAction(attr['api'], attr['method'], attr['params'])
       }
@@ -54,14 +54,9 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Component
-    :is="elementProps.config?.component"
-    v-if="!elementProps.config?.html"
-    v-bind="elementProps.config?.props"
-    v-on="componentEvents"
-  >
-    {{ elementProps.config?.text }}
-    <template v-for="(content, name) in elementProps.config?.slots || []" :key="name" v-slot:[name]="{ _props }">
+  <Component :is="config?.component" v-if="!config?.html" v-bind="config?.props" v-on="componentEvents">
+    {{ config?.text }}
+    <template v-for="(content, name) in config?.slots || {}" :key="name" v-slot:[name]="{ _props }">
       <slot :name="name" v-bind="_props">
         <PageRender
           v-for="(slotItem, slotIndex) in content || []"
@@ -72,17 +67,17 @@ watchEffect(() => {
       </slot>
     </template>
     <PageRender
-      v-for="(innerItem, innerIndex) in elementProps.config?.content || []"
+      v-for="(innerItem, innerIndex) in config?.content || []"
       :key="innerIndex"
       :config="innerItem"
       @action="emit('action')"
     />
   </Component>
   <Component
-    :is="elementProps.config?.component"
-    v-if="elementProps.config?.html"
-    v-bind="elementProps.config?.props"
-    v-html="elementProps.config?.html"
+    :is="config?.component"
+    v-if="config?.html"
+    v-bind="config?.props"
+    v-html="config?.html"
     v-on="componentEvents"
   />
   <!-- 进度框 -->
