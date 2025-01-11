@@ -5,7 +5,6 @@ import type { ThemeSwitcherTheme } from '@layouts/types'
 import api from '@/api'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { useToast } from 'vue-toast-notification'
-import { VAceEditor } from 'vue3-ace-editor'
 
 // 显示器宽度
 const display = useDisplay()
