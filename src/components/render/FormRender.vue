@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { RenderProps } from '@/api/types'
 import { h, resolveComponent, defineProps } from 'vue'
 
 // 定义 props
-const props = defineProps<{
-  config: Record<string, any> // JSON 配置
+defineProps<{
+  config: RenderProps // JSON 配置
   model: Record<string, any> // 数据模型
 }>()
 
@@ -68,7 +69,7 @@ const renderSlotContent = (slotContent: any, model: any, slotScope: any) => {
  * @returns 渲染的组件 VNode
  */
 const renderComponent = (config: any, model: any, slotScope: any = {}) => {
-  const { component, props: componentProps = {}, content = [], slots = {} } = config
+  const { component, props: componentProps = {}, content = [], slots = {}, html, text } = config
 
   // 动态解析组件
   const Component = resolveComponent(component)
@@ -82,10 +83,30 @@ const renderComponent = (config: any, model: any, slotScope: any = {}) => {
     slotNodes[slotName] = (slotScopeData: any) => renderSlotContent(slotContent, model, slotScopeData)
   }
 
+  // 渲染组件内容
+  const renderContent = () => {
+    // 如果配置了 `html`，直接渲染为 HTML 内容
+    if (html) {
+      return h('div', { innerHTML: typeof html === 'string' ? html : model[html] })
+    }
+
+    // 如果配置了 `text`，直接渲染为文本内容
+    if (text) {
+      return typeof text === 'string' ? text : model[text]
+    }
+
+    // 如果配置了 `content`，递归渲染子组件
+    if (Array.isArray(content)) {
+      return content.map((childConfig: any) => renderComponent(childConfig, model))
+    }
+
+    return null
+  }
+
   // 渲染组件
   return h(Component, parsedProps, {
     ...slotNodes,
-    default: () => content.map((childConfig: any) => renderComponent(childConfig, model)),
+    default: renderContent, // 确保默认插槽只包含当前组件的内容
   })
 }
 </script>
@@ -93,10 +114,6 @@ const renderComponent = (config: any, model: any, slotScope: any = {}) => {
 <template>
   <!-- 调用递归渲染函数 -->
   <div>
-    <Component v-if="config.html" :is="config.component" v-bind="config.props" v-html="config.html" />
-    <Component v-else-if="config.text" :is="config.component" v-bind="config.props">
-      {{ config.text }}
-    </Component>
-    <Component v-else :is="renderComponent(config, model)" />
+    <Component :is="renderComponent(config, model)" />
   </div>
 </template>
