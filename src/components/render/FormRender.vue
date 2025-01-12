@@ -80,14 +80,15 @@ const renderComponent = (config: any, model: any, slotScope: any = {}) => {
   // 动态插槽解析
   const slotNodes: Record<string, any> = {}
   for (const [slotName, slotContent] of Object.entries(slots)) {
-    slotNodes[slotName] = (slotScopeData: any) => renderSlotContent(slotContent, model, slotScopeData)
+    slotNodes[slotName] = (slotScopeData: any) =>
+      renderSlotContent(slotContent, model, { ...slotScope, ...slotScopeData })
   }
 
   // 渲染组件内容
   const renderContent = () => {
     // 如果配置了 `html`，直接渲染为 HTML 内容
     if (html) {
-      return h('div', { innerHTML: typeof html === 'string' ? html : model[html] })
+      return h(Component, { innerHTML: typeof html === 'string' ? html : model[html] })
     }
 
     // 如果配置了 `text`，直接渲染为文本内容
@@ -97,7 +98,7 @@ const renderComponent = (config: any, model: any, slotScope: any = {}) => {
 
     // 如果配置了 `content`，递归渲染子组件
     if (Array.isArray(content)) {
-      return content.map((childConfig: any) => renderComponent(childConfig, model))
+      return content.map((childConfig: any) => renderComponent(childConfig, model, slotScope))
     }
 
     return null
@@ -106,14 +107,11 @@ const renderComponent = (config: any, model: any, slotScope: any = {}) => {
   // 渲染组件
   return h(Component, parsedProps, {
     ...slotNodes,
-    default: renderContent, // 确保默认插槽只包含当前组件的内容
+    default: renderContent,
   })
 }
 </script>
 
 <template>
-  <!-- 调用递归渲染函数 -->
-  <div>
-    <Component :is="renderComponent(config, model)" />
-  </div>
+  <Component :is="renderComponent(config, model)" />
 </template>
