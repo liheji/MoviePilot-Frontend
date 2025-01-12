@@ -63,7 +63,8 @@ function replaceNewLine(value: string) {
         props.message?.title &&
         !props.message?.text &&
         !props.message?.image &&
-        isNullOrEmptyObject(props.message?.note)
+        isNullOrEmptyObject(props.message?.note) &&
+        props.message?.action === 0
       "
       class="rounded-md text-body-1 py-2 px-4 elevation-2 bg-primary text-white chat-right mb-1"
     >
