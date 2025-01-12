@@ -20,6 +20,9 @@ const globalSettings: any = inject('globalSettings')
 // 提示框
 const $toast = useToast()
 
+// 处理中
+const processing = ref(false)
+
 // 计算海报图片地址
 const posterUrl = computed(() => {
   const url = props.media?.poster
@@ -45,9 +48,9 @@ async function doFork() {
   // 开始处理
   startNProgress()
   try {
+    processing.value = true
     // 请求API
     const result: { [key: string]: any } = await api.post('subscribe/fork', props.media)
-
     // 订阅状态
     if (result.success) {
       $toast.success(`${props.media?.share_title} 添加订阅成功！`)
@@ -59,6 +62,7 @@ async function doFork() {
   } catch (error) {
     console.error(error)
   } finally {
+    processing.value = false
     doneNProgress()
   }
 }
@@ -113,7 +117,15 @@ async function doFork() {
                   </VListItem>
                 </VList>
                 <div class="text-center text-md-left">
-                  <VBtn color="primary" @click="doFork" prepend-icon="mdi-heart">添加到我的订阅</VBtn>
+                  <VBtn
+                    color="primary"
+                    :disabled="processing"
+                    @click="doFork"
+                    prepend-icon="mdi-heart"
+                    :loading="processing"
+                  >
+                    添加到我的订阅
+                  </VBtn>
                 </div>
               </VCardItem>
             </div>

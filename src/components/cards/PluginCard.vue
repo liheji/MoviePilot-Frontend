@@ -3,7 +3,7 @@ import { useToast } from 'vue-toast-notification'
 import { useConfirm } from 'vuetify-use-dialog'
 import api from '@/api'
 import type { Plugin } from '@/api/types'
-import DynamicRender from '@/components/render/DynamicRender.vue'
+import FormRender from '@/components/render/FormRender.vue'
 import PageRender from '@/components/render/PageRender.vue'
 import VersionHistory from '@/components/misc/VersionHistory.vue'
 import { isNullOrEmptyObject } from '@core/utils'
@@ -490,12 +490,7 @@ watch(
         <DialogCloseBtn v-model="pluginConfigDialog" />
         <VDivider />
         <VCardText>
-          <DynamicRender
-            v-for="(item, index) in pluginFormItems"
-            :key="index"
-            :config="item"
-            :model="pluginConfigForm"
-          />
+          <FormRender v-for="(item, index) in pluginFormItems" :key="index" :config="item" :model="pluginConfigForm" />
         </VCardText>
         <VCardActions class="pt-3">
           <VBtn v-if="pluginPageItems.length > 0" @click="showPluginInfo" variant="outlined" color="info">
