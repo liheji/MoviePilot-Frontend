@@ -107,9 +107,15 @@ async function doFork() {
                       <span class="text-body-1"> {{ media?.share_user }}</span>
                     </VListItemTitle>
                   </VListItem>
+                  <VListItem class="ps-0" v-if="media?.keyword">
+                    <VListItemTitle class="text-center text-md-left">
+                      <span class="font-weight-medium">搜索词：</span>
+                      <span class="text-body-1"> {{ media?.keyword }}</span>
+                    </VListItemTitle>
+                  </VListItem>
                   <VListItem class="ps-0" v-if="media?.custom_words">
                     <VListItemTitle
-                      class="text-center text-md-left break-words whitespace-break-spaces line-clamp-3 overflow-hidden text-ellipsis ..."
+                      class="text-center text-md-left break-words whitespace-break-spaces line-clamp-10 overflow-hidden text-ellipsis ..."
                     >
                       <span class="font-weight-medium">识别词：</span>
                       <span class="text-body-1"> {{ media?.custom_words }}</span>
@@ -126,6 +132,9 @@ async function doFork() {
                   >
                     添加到我的订阅
                   </VBtn>
+                  <div class="text-xs mt-2" v-if="props.media?.count">
+                    <VIcon icon="mdi-fire" />共 {{ props.media?.count?.toLocaleString() }} 次复用
+                  </div>
                 </div>
               </VCardItem>
             </div>

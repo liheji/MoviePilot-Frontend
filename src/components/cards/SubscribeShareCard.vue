@@ -124,7 +124,7 @@ function finishForkSubscribe(subid: number) {
                 <div class="text-subtitle-2 me-4 text-white">
                   {{ props.media?.share_user }}
                 </div>
-                <IconBtn v-if="props.media?.count" icon="mdi-fire" color="error" class="me-1" />
+                <IconBtn v-if="props.media?.count" icon="mdi-fire" color="white" class="me-1" />
                 <span v-if="props.media?.count" class="text-subtitle-2 me-4 text-white">
                   {{ props.media?.count.toLocaleString() }}
                 </span>
