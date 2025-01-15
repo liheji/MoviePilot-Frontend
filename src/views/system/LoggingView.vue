@@ -44,6 +44,8 @@ function startSSELogging() {
       if (!timeoutId) {
         timeoutId = window.setTimeout(() => {
           logs.value.push(...buffer)
+          // 限制长度为1000
+          logs.value = logs.value.slice(-1000)
           buffer.length = 0
           timeoutId = null
         }, 100)
@@ -70,9 +72,7 @@ watch(
       .filter(Boolean)
 
     // 倒序后插入parsedLogs顶部
-    parsedLogs.value.unshift(...(newParsedLogs.reverse() as any[]))
-    // 只保留最新的1000条日志
-    parsedLogs.value = parsedLogs.value.slice(0, 1000)
+    parsedLogs.value = [...(newParsedLogs.reverse() as any[])]
   },
   { deep: true },
 )
@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
             <h6 class="text-sm font-weight-medium">{{ item.program }}</h6>
           </template>
           <template #item.content="{ item }">
-            <span class="text-sm">
+            <span class="text-sm" :class="`text-${getLogColor(item.level)}`">
               {{ item.content }}
             </span>
           </template>
