@@ -34,7 +34,30 @@ export default defineConfig({
       filename: 'service-worker.ts',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg}'],
-        navigateFallbackDenylist: [/.*\/api\/v\d+\/system\/logging.*/],
+        runtimeCaching: [
+          {
+            urlPattern: /\.(?:js|css|html)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+            },
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|ico)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'image-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 缓存 30 天
+              },
+            },
+          },
+        ],
+        navigateFallback: '/index.html', // 确保页面路由正确加载
+        navigateFallbackDenylist: [
+          /.*\/api\/v\d+\/system\/logging.*/,
+        ],
       },
       injectManifest: {
         rollupFormat: 'iife',
