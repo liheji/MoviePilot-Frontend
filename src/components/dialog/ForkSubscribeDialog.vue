@@ -12,7 +12,7 @@ const props = defineProps({
 })
 
 // 定义事件
-const emit = defineEmits(['close', 'done'])
+const emit = defineEmits(['fork', 'delete', 'close'])
 
 // 从 provide 中获取全局设置
 const globalSettings: any = inject('globalSettings')
@@ -22,6 +22,9 @@ const $toast = useToast()
 
 // 处理中
 const processing = ref(false)
+
+// 删除中
+const deleting = ref(false)
 
 // 计算海报图片地址
 const posterUrl = computed(() => {
@@ -55,7 +58,7 @@ async function doFork() {
     if (result.success) {
       $toast.success(`${props.media?.share_title} 添加订阅成功！`)
       // 完成
-      emit('done', result.data.id)
+      emit('fork', result.data.id)
     } else {
       $toast.error(`${props.media?.share_title} 添加订阅失败：${result.message}！`)
     }
@@ -63,6 +66,34 @@ async function doFork() {
     console.error(error)
   } finally {
     processing.value = false
+    doneNProgress()
+  }
+}
+
+// 删除订阅分享
+async function doDelete() {
+  // 开始处理
+  startNProgress()
+  try {
+    deleting.value = true
+    // 请求API
+    const result: { [key: string]: any } = await api.delete(`subscribe/share/${props.media?.id}`, {
+      params: {
+        share_uid: globalSettings.USER_UNIQUE_ID,
+      },
+    })
+    // 订阅状态
+    if (result.success) {
+      $toast.success(`${props.media?.share_title} 取消分享成功！`)
+      // 完成
+      emit('delete', result.data.id)
+    } else {
+      $toast.error(`${props.media?.share_title} 取消分享失败：${result.message}！`)
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {
+    deleting.value = false
     doneNProgress()
   }
 }
@@ -123,15 +154,28 @@ async function doFork() {
                   </VListItem>
                 </VList>
                 <div class="text-center text-md-left">
-                  <VBtn
-                    color="primary"
-                    :disabled="processing"
-                    @click="doFork"
-                    prepend-icon="mdi-heart"
-                    :loading="processing"
-                  >
-                    添加到我的订阅
-                  </VBtn>
+                  <div>
+                    <VBtn
+                      color="primary"
+                      :disabled="processing"
+                      @click="doFork"
+                      prepend-icon="mdi-heart"
+                      :loading="processing"
+                    >
+                      添加到我的订阅
+                    </VBtn>
+                    <VBtn
+                      v-if="props.media?.share_uid && props.media?.share_uid === globalSettings.USER_UNIQUE_ID"
+                      color="error"
+                      :disabled="deleting"
+                      @click="doDelete"
+                      prepend-icon="mdi-delete"
+                      :loading="deleting"
+                      class="ms-2"
+                    >
+                      取消分享
+                    </VBtn>
+                  </div>
                   <div class="text-xs mt-2" v-if="props.media?.count">
                     <VIcon icon="mdi-fire" />共 {{ props.media?.count?.toLocaleString() }} 次复用
                   </div>

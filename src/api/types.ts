@@ -88,6 +88,8 @@ export interface SubscribeShare {
   share_comment?: string
   // 分享人
   share_user?: string
+  // 分享人唯一ID
+  share_uid?: string
   // 订阅名称
   name?: string
   // 订阅年份

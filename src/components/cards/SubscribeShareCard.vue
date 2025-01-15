@@ -10,6 +10,9 @@ const props = defineProps({
   media: Object as PropType<SubscribeShare>,
 })
 
+// 定义删除事件
+const emit = defineEmits(['delete'])
+
 // 从 provide 中获取全局设置
 const globalSettings: any = inject('globalSettings')
 
@@ -70,8 +73,18 @@ function showForkSubscribe() {
 // 完成复用订阅
 function finishForkSubscribe(subid: number) {
   subscribeId.value = subid
+  forkSubscribeDialog.value=false
   subscribeEditDialog.value = true
 }
+
+// 删除订阅分享时处理
+function doDelete() {
+  forkSubscribeDialog.value=false
+  // 通知父组件刷新
+  emit('delete')
+}
+
+
 </script>
 
 <template>
@@ -153,7 +166,8 @@ function finishForkSubscribe(subid: number) {
       v-model="forkSubscribeDialog"
       :media="props.media"
       @close="forkSubscribeDialog = false"
-      @done="finishForkSubscribe"
+      @fork="finishForkSubscribe"
+      @delete="doDelete"
     />
   </div>
 </template>

@@ -97,6 +97,11 @@ async function fetchData({ done }: { done: any }) {
     done('error')
   }
 }
+
+// 将数据从列表中移除
+function removeData(id: number) {
+  dataList.value = dataList.value.filter(item => item.id !== id)
+}
 </script>
 
 <template>
@@ -106,7 +111,7 @@ async function fetchData({ done }: { done: any }) {
     <template #empty />
     <div v-if="dataList.length > 0" class="grid gap-4 grid-subscribe-card mx-3" tabindex="0">
       <div v-for="data in dataList" :key="data.id">
-        <SubscribeShareCard :media="data" />
+        <SubscribeShareCard :media="data" @delete="removeData(data.id || 0)" />
       </div>
     </div>
     <NoDataFound
