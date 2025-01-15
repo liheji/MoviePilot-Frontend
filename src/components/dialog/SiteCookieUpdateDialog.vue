@@ -67,17 +67,18 @@ async function updateSiteCookie() {
 }
 </script>
 <template>
-  <VDialog max-width="50rem">
+  <VDialog max-width="30rem">
     <!-- Dialog Content -->
     <VCard title="更新站点Cookie & UA">
       <DialogCloseBtn @click="emit('close')" />
+      <VDivider />
       <VCardText>
         <VForm @submit.prevent="() => {}">
           <VRow>
-            <VCol cols="12" md="4">
+            <VCol cols="12">
               <VTextField v-model="userPwForm.username" label="用户名" :rules="[requiredValidator]" />
             </VCol>
-            <VCol cols="12" md="4">
+            <VCol cols="12">
               <VTextField
                 v-model="userPwForm.password"
                 label="密码"
@@ -88,19 +89,19 @@ async function updateSiteCookie() {
                 @keydown.enter="updateSiteCookie"
               />
             </VCol>
-            <VCol cols="12" md="4">
+            <VCol cols="12">
               <VTextField v-model="userPwForm.code" label="两步验证" />
             </VCol>
           </VRow>
         </VForm>
       </VCardText>
-
-      <VCardActions>
-        <VSpacer />
+      <VCardActions class="mx-auto">
         <VBtn
+          size="large"
           variant="elevated"
           @click="updateSiteCookie"
           :disabled="updateButtonDisable"
+          :loading="updateButtonDisable"
           prepend-icon="mdi-refresh"
           class="px-5"
         >

@@ -23,6 +23,9 @@ const progressDialog = ref(false)
 // 站点认证对话框
 const siteAuthDialog = ref(false)
 
+// 重启确认对话框
+const restartDialog = ref(false)
+
 // 执行注销操作
 function logout() {
   // 清除登录状态信息
@@ -33,13 +36,8 @@ function logout() {
 
 // 执行重启操作
 async function restart() {
-  // 弹出提示
-  const confirmed = await createConfirm({
-    title: '确认',
-    content: '确认重启系统吗？',
-  })
-
-  if (confirmed) {
+  {
+    restartDialog.value = false
     // 调用API重启
     try {
       // 显示等待框
@@ -58,6 +56,11 @@ async function restart() {
     // 注销
     logout()
   }
+}
+
+// 显示重启确认对话框
+async function showRestartDialog() {
+  restartDialog.value = true
 }
 
 // 显示站点认证对话框
@@ -130,7 +133,7 @@ const userLevel = computed(() => store.state.auth.level)
         <VDivider v-if="superUser" class="my-2" />
 
         <!-- 👉 restart -->
-        <VListItem v-if="superUser" @click="restart">
+        <VListItem v-if="superUser" @click="showRestartDialog">
           <template #prepend>
             <VIcon class="me-2" icon="mdi-restart" size="22" />
           </template>
@@ -152,4 +155,22 @@ const userLevel = computed(() => store.state.auth.level)
   <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在重启 ..." />
   <!-- 用户认证对话框 -->
   <UserAuthDialog v-if="siteAuthDialog" v-model="siteAuthDialog" @done="siteAuthDone" @close="siteAuthDialog = false" />
+  <!-- 重启确认对话框 -->
+  <VDialog v-model="restartDialog" max-width="30rem">
+    <VCard>
+      <VCardItem>
+        <VAlert type="error" variant="text" icon="mdi-alert" prominent class="mt-5">
+          <p class="font-bold text-xl">确认重启系统吗？</p>
+          <p>重启后，您将被注销并需要重新登录。</p>
+        </VAlert>
+      </VCardItem>
+      <VCardActions class="mx-auto">
+        <VBtn variant="elevated" color="error" size="large" @click="restart" prepend-icon="mdi-restart" class="px-5">
+          确定
+        </VBtn>
+        <VBtn variant="tonal" color="secondary" size="large" class="px-5" @click="restartDialog = false">取消</VBtn>
+      </VCardActions>
+      <DialogCloseBtn @click="restartDialog = false" />
+    </VCard>
+  </VDialog>
 </template>
