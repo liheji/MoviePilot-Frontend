@@ -2,6 +2,9 @@
 // 日志列表
 const logs = ref<string[]>([])
 
+// 已解析的日志列表
+const parsedLogs = ref<{ level: string; time: string; program: string; content: string }[]>([])
+
 // 表头
 const headers = [
   { title: '级别', value: 'level' },
@@ -13,54 +16,60 @@ const headers = [
 // SSE消息对象
 let eventSource: EventSource | null = null
 
+// 日志颜色映射表
+const logColorMap: Record<string, string> = {
+  DEBUG: 'primary',
+  INFO: 'secondary',
+  WARNING: 'warning',
+  ERROR: 'error',
+}
+
+// 获取日志颜色
+function getLogColor(level: string): string {
+  return logColorMap[level] || 'secondary'
+}
+
 // SSE持续获取日志
 function startSSELogging() {
   eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/logging`)
+  const buffer: string[] = []
+  let timeoutId: number | null = null
+
   eventSource.addEventListener('message', event => {
     const message = event.data
-    if (message) logs.value.push(message)
+    if (message) {
+      buffer.push(message)
+      if (!timeoutId) {
+        timeoutId = window.setTimeout(() => {
+          logs.value.push(...buffer)
+          buffer.length = 0
+          timeoutId = null
+        }, 100) // 批量处理间隔，视需求调整
+      }
+    }
   })
 }
 
-// 从日志中提取日志详情
-function extractLogDetailsFromLogs(
-  logs: string[],
-): { level: string; time: string; program: string; content: string }[] {
-  const logDetails: { level: string; time: string; program: string; content: string }[] = []
-
-  const logPattern = /^【(.*?)】[0-9\-:]*\s(.*?)\s-\s(.*?)\s-\s(.*)$/
-
-  for (const log of logs) {
-    const matches = RegExp(logPattern).exec(log)
-    if (matches && matches.length === 5) {
-      const [_, level, time, program, content] = matches
-      logDetails.unshift({ level, time, program, content })
-    }
-  }
-
-  return logDetails
-}
-
-// 计算日志颜色
-function getLogColor(level: string): string {
-  switch (level) {
-    case 'DEBUG':
-      return 'primary'
-    case 'INFO':
-      return 'secondary'
-    case 'WARNING':
-      return 'warning'
-    case 'ERROR':
-      return 'error'
-    default:
-      return 'secondary'
-  }
-}
-
-// 拆分日志数据计算属性
-const extractLogDetails = computed(() => {
-  return extractLogDetailsFromLogs(logs.value)
-})
+// 解析日志
+watch(
+  logs,
+  newLogs => {
+    const newParsedLogs = newLogs
+      .slice(parsedLogs.value.length)
+      .map(log => {
+        const logPattern = /^【(.*?)】[0-9\-:]*\s(.*?)\s-\s(.*?)\s-\s(.*)$/
+        const matches = log.match(logPattern)
+        if (matches) {
+          const [, level, time, program, content] = matches
+          return { level, time, program, content }
+        }
+        return null
+      })
+      .filter(Boolean)
+    parsedLogs.value.push(...(newParsedLogs as any[]))
+  },
+  { deep: true },
+) // 添加 deep 监听，确保 Vue 响应式正确触发
 
 onMounted(() => {
   startSSELogging()
@@ -78,7 +87,7 @@ onBeforeUnmount(() => {
       <tbody>
         <VDataTableVirtual
           :headers="headers"
-          :items="extractLogDetails"
+          :items="parsedLogs"
           height="100%"
           density="compact"
           hover
