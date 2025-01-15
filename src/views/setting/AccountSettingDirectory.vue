@@ -52,6 +52,17 @@ async function loadSystemSettings() {
   }
 }
 
+// 重载系统生效配置
+async function reloadSystem() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/reload')
+    if (result.success) $toast.success('系统配置已生效')
+    else $toast.error('重载系统失败！')
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // 移动结束
 function orderDirectoryCards() {
   // 更新所有目录的优先级
@@ -109,6 +120,7 @@ async function saveDirectories() {
     const result: { [key: string]: any } = await api.post('system/setting/Directories', directories.value)
     if (result.success) {
       $toast.success('目录设置保存成功')
+      await reloadSystem()
     } else $toast.error('目录设置保存失败！')
   } catch (error) {
     console.log(error)
@@ -129,6 +141,7 @@ function addDirectory() {
     monitor_type: '',
     media_type: '',
     media_category: '',
+    transfer_type: ''
   })
   orderDirectoryCards()
 }
