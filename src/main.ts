@@ -1,23 +1,40 @@
+// 1. 配置与兼容性
 import './ace-config'
 import '@/@core/utils/compatibility'
 import '@/@iconify/icons-bundle'
 import '@/plugins/webfontloader'
 
+// 2. 核心插件和 UI 框架
 import { createApp } from 'vue'
+import vuetify from '@/plugins/vuetify'
+import router from '@/router'
+import store from '@/store'
+
+// 3. 样式文件
+import '@core/scss/template/index.scss'
+import '@layouts/styles/index.scss'
+import '@styles/styles.scss'
+import 'vue-toast-notification/dist/theme-bootstrap.css'
+import 'vue3-perfect-scrollbar/style.css'
+import '@vue-js-cron/vuetify/dist/vuetify.css'
+
+// 4. 全局组件
+import App from '@/App.vue'
 import { VAceEditor } from 'vue3-ace-editor'
 import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar'
 import { CronVuetify } from '@vue-js-cron/vuetify'
+
+// 5. 工具函数和其他辅助模块
 import { removeEl } from './@core/utils/dom'
 import { fetchGlobalSettings } from './api'
 import { isPWA } from './@core/utils/navigator'
 
-import App from '@/App.vue'
-import vuetify from '@/plugins/vuetify'
-import router from '@/router'
-import store from '@/store'
+// 6. 其他插件和功能模块
 import ToastPlugin from 'vue-toast-notification'
 import VuetifyUseDialog from 'vuetify-use-dialog'
 import VueApexCharts from 'vue3-apexcharts'
+
+// 7. 注册自定义组件
 import DialogCloseBtn from '@/@core/components/DialogCloseBtn.vue'
 import MediaCard from './components/cards/MediaCard.vue'
 import PosterCard from './components/cards/PosterCard.vue'
@@ -27,13 +44,6 @@ import MediaInfoCard from './components/cards/MediaInfoCard.vue'
 import TorrentCard from './components/cards/TorrentCard.vue'
 import MediaIdSelector from './components/misc/MediaIdSelector.vue'
 import CronField from './components/field/CronField.vue'
-
-import '@core/scss/template/index.scss'
-import '@layouts/styles/index.scss'
-import '@styles/styles.scss'
-import 'vue-toast-notification/dist/theme-bootstrap.css'
-import 'vue3-perfect-scrollbar/style.css'
-import '@vue-js-cron/vuetify/dist/vuetify.css'
 
 // 创建Vue实例
 const app = createApp(App)

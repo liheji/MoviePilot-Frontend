@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 html.v-overlay-scroll-blocked {
-  position: relative;
+  position: absolute;
 }
 
 #nprogress .bar {
