@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { parse } from 'path'
+
 // 日志列表
 const logs = ref<string[]>([])
 
@@ -18,8 +20,8 @@ let eventSource: EventSource | null = null
 
 // 日志颜色映射表
 const logColorMap: Record<string, string> = {
-  DEBUG: 'primary',
-  INFO: 'secondary',
+  DEBUG: 'secondary',
+  INFO: 'info',
   WARNING: 'warning',
   ERROR: 'error',
 }
@@ -44,18 +46,18 @@ function startSSELogging() {
           logs.value.push(...buffer)
           buffer.length = 0
           timeoutId = null
-        }, 100) // 批量处理间隔，视需求调整
+        }, 100)
       }
     }
   })
 }
 
-// 解析日志
+// 解析日志并倒序
 watch(
   logs,
   newLogs => {
+    // 解析新日志
     const newParsedLogs = newLogs
-      .slice(parsedLogs.value.length)
       .map(log => {
         const logPattern = /^【(.*?)】[0-9\-:]*\s(.*?)\s-\s(.*?)\s-\s(.*)$/
         const matches = log.match(logPattern)
@@ -66,10 +68,14 @@ watch(
         return null
       })
       .filter(Boolean)
-    parsedLogs.value.push(...(newParsedLogs as any[]))
+
+    // 倒序后插入parsedLogs顶部
+    parsedLogs.value.unshift(...(newParsedLogs.reverse() as any[]))
+    // 只保留最新的1000条日志
+    parsedLogs.value = parsedLogs.value.slice(0, 1000)
   },
   { deep: true },
-) // 添加 deep 监听，确保 Vue 响应式正确触发
+)
 
 onMounted(() => {
   startSSELogging()
