@@ -532,14 +532,14 @@ watch(
         <VDivider />
         <VersionHistory :history="props.plugin?.history" />
         <VDivider />
-        <VCardText>
+        <VCardItem>
           <VBtn @click="updatePlugin" block>
             <template #prepend>
               <VIcon icon="mdi-arrow-up-circle-outline" />
             </template>
             更新到最新版本
           </VBtn>
-        </VCardText>
+        </VCardItem>
       </VCard>
     </VDialog>
   </div>
