@@ -111,5 +111,5 @@ initializeApp().then(() => {
       },
     })
     .mount('#app')
-    .$nextTick(() => setTimeout(() => removeEl('#loading-bg'), 500))
+    .$nextTick(() => removeEl('#loading-bg'))
 })
