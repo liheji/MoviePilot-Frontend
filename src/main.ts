@@ -38,6 +38,7 @@ import MediaIdSelector from './components/misc/MediaIdSelector.vue'
 import CronField from './components/field/CronField.vue'
 
 // 7. 样式文件
+import '@core/scss/template/libs/vuetify/index.scss'
 import 'vuetify/styles'
 import '@core/scss/template/index.scss'
 import '@layouts/styles/index.scss'

@@ -16,9 +16,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const activedDirs = ref<string[]>([])
-const openedDirs = ref<string[]>([])
-const isUserAction = ref(false) // 标志：是否为用户主动操作
+const activedDirs = ref<Record<string, any>[]>([])
 
 const treeItems = ref<FileItem[]>([
   {
@@ -43,15 +41,14 @@ async function fetchDirs(item: any) {
 
 const selectedPath = computed(() => {
   if (activedDirs.value.length > 0) {
-    return activedDirs.value[0]
+    return activedDirs.value[0].path
   }
   return ''
 })
 
 watch(activedDirs, newVal => {
-  if (!newVal.length || !isUserAction.value) return
+  if (!newVal.length) return
   emit('update:modelValue', selectedPath.value)
-  isUserAction.value = false
 })
 
 watch(
@@ -67,14 +64,9 @@ watch(
         storage: newVal,
       },
     ]
-    openedDirs.value = []
     activedDirs.value = []
   },
 )
-
-function handleUserSelect() {
-  isUserAction.value = true
-}
 </script>
 
 <template>
@@ -85,19 +77,16 @@ function handleUserSelect() {
       </template>
       <VTreeview
         v-model:activated="activedDirs"
-        v-model:opened="openedDirs"
         :items="treeItems"
         :load-children="fetchDirs"
         item-key="path"
         item-title="name"
         item-value="path"
-        item-type="unknown"
         activatable
         return-object
         max-height="20rem"
         expand-icon="mdi-folder"
         collapse-icon="mdi-folder-open"
-        @update:activated="handleUserSelect"
       />
     </VMenu>
   </div>
