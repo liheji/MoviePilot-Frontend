@@ -4,19 +4,20 @@ import '@/@core/utils/compatibility'
 import '@/@iconify/icons-bundle'
 import '@/plugins/webfontloader'
 
-// 2. 核心插件和 UI 框架
+// 2. 样式文件
+import 'vuetify/styles'
+import '@core/scss/template/index.scss'
+import '@layouts/styles/index.scss'
+import 'vue-toast-notification/dist/theme-bootstrap.css'
+import 'vue3-perfect-scrollbar/style.css'
+import '@vue-js-cron/vuetify/dist/vuetify.css'
+import '@styles/styles.scss'
+
+// 3. 核心插件和 UI 框架
 import { createApp } from 'vue'
 import vuetify from '@/plugins/vuetify'
 import router from '@/router'
 import store from '@/store'
-
-// 3. 样式文件
-import '@core/scss/template/index.scss'
-import '@layouts/styles/index.scss'
-import '@styles/styles.scss'
-import 'vue-toast-notification/dist/theme-bootstrap.css'
-import 'vue3-perfect-scrollbar/style.css'
-import '@vue-js-cron/vuetify/dist/vuetify.css'
 
 // 4. 全局组件
 import App from '@/App.vue'
