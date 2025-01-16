@@ -138,14 +138,7 @@ const dropdownItems = ref([
         <VCardTitle>{{ props.type + '订阅历史' }}</VCardTitle>
       </VCardItem>
       <VDivider />
-      <DialogCloseBtn
-        @click="
-          () => {
-            emit('close')
-          }
-        "
-      />
-      <!-- <VList lines="two" v-if="historyList.length > 0"> -->
+      <DialogCloseBtn @click="emit('close')" />
       <VList lines="two">
         <VInfiniteScroll mode="intersect" side="end" :items="historyList" class="overflow-hidden" @load="loadHistory">
           <template #loading>
@@ -207,7 +200,7 @@ const dropdownItems = ref([
           </template>
         </VInfiniteScroll>
       </VList>
-      <VCardText v-if="historyList.length === 0" class="text-center"> 没有已完成的订阅 </VCardText>
+      <VCardText v-if="historyList.length === 0 && isRefreshed" class="text-center"> 没有已完成的订阅 </VCardText>
     </VCard>
     <!-- 进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
