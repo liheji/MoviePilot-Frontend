@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RenderProps } from '@/api/types'
-import { h, resolveComponent, defineProps } from 'vue'
 
 // 定义 props
 defineProps<{

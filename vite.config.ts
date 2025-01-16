@@ -55,12 +55,11 @@ export default defineConfig({
           },
         ],
         navigateFallback: '/index.html', // 确保页面路由正确加载
-        navigateFallbackDenylist: [
-          /.*\/api\/v\d+\/system\/logging.*/,
-        ],
+        navigateFallbackDenylist: [/.*\/api\/v\d+\/system\/logging.*/],
       },
       injectManifest: {
         rollupFormat: 'iife',
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
       devOptions: {
         enabled: true,
@@ -157,16 +156,14 @@ export default defineConfig({
       '@images': fileURLToPath(new URL('./src/assets/images/', import.meta.url)),
       '@styles': fileURLToPath(new URL('./src/styles/', import.meta.url)),
       '@configured-variables': fileURLToPath(new URL('./src/styles/variables/_template.scss', import.meta.url)),
-      'apexcharts': fileURLToPath(new URL('node_modules/apexcharts-clevision', import.meta.url)),
+      'apexcharts': fileURLToPath(new URL('node_modules/apexcharts', import.meta.url)),
     },
   },
   build: {
     minify: 'terser',
     terserOptions: {
       compress: {
-        // 控制console.log()是否被移除，生产环境建议移除，存在内存泄漏风险
         drop_console: true,
-        // 控制debugger是否被移除，酌情处理
         drop_debugger: false,
       },
     },
@@ -190,6 +187,13 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         cookieDomainRewrite: 'localhost',
+      },
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
       },
     },
   },
