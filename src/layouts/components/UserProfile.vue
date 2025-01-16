@@ -156,19 +156,22 @@ const userLevel = computed(() => store.state.auth.level)
   <!-- 用户认证对话框 -->
   <UserAuthDialog v-if="siteAuthDialog" v-model="siteAuthDialog" @done="siteAuthDone" @close="siteAuthDialog = false" />
   <!-- 重启确认对话框 -->
-  <VDialog v-model="restartDialog" max-width="30rem">
+  <VDialog v-model="restartDialog" max-width="25rem">
     <VCard>
       <VCardItem>
-        <VAlert type="error" variant="text" icon="mdi-alert" prominent class="mt-5">
-          <p class="font-bold text-xl">确认重启系统吗？</p>
-          <p>重启后，您将被注销并需要重新登录。</p>
-        </VAlert>
+        <div class="flex items-center justify-center mt-3">
+          <VAvatar color="warning" variant="text" size="x-large">
+            <VIcon size="x-large" icon="mdi-alert" />
+          </VAvatar>
+          <div class="ms-3">
+            <p class="font-bold text-xl text-high-emphasis">确认重启系统吗？</p>
+            <p>重启后，您将被注销并需要重新登录。</p>
+          </div>
+        </div>
       </VCardItem>
       <VCardActions class="mx-auto">
-        <VBtn variant="elevated" color="error" size="large" @click="restart" prepend-icon="mdi-restart" class="px-5">
-          确定
-        </VBtn>
-        <VBtn variant="tonal" color="secondary" size="large" class="px-5" @click="restartDialog = false">取消</VBtn>
+        <VBtn variant="elevated" color="error" @click="restart" prepend-icon="mdi-restart" class="px-5"> 确定 </VBtn>
+        <VBtn variant="tonal" color="secondary" class="px-5" @click="restartDialog = false">取消</VBtn>
       </VCardActions>
       <DialogCloseBtn @click="restartDialog = false" />
     </VCard>
