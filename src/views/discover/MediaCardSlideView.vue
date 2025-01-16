@@ -3,7 +3,7 @@ import api from '@/api'
 import type { MediaInfo } from '@/api/types'
 import MediaCard from '@/components/cards/MediaCard.vue'
 import SlideView from '@/components/slide/SlideView.vue'
-import { registerAbortController } from "@/router";
+import { registerAbortController } from '@/router'
 
 // 输入参数
 const props = defineProps({
@@ -11,8 +11,8 @@ const props = defineProps({
   linkurl: String,
   title: String,
 })
-let abortController: AbortController | null = null;
 
+// 提供给子组件的属性
 provide('rankingPropsKey', reactive({ ...props }))
 
 // 组件加载完成
@@ -24,30 +24,26 @@ const dataList = ref<MediaInfo[]>([])
 // 获取订阅列表数据
 async function fetchData() {
   try {
-    if (!props.apipath)
-      return
-    abortController = new AbortController();
-    registerAbortController(abortController);
-    const { signal } = abortController;
+    if (!props.apipath) return
+    const abortController = new AbortController()
+    registerAbortController(abortController)
+    const { signal } = abortController
     dataList.value = await api.get(props.apipath, { signal })
-    if (dataList.value.length > 0)
-      componentLoaded.value = true
-  }
-  catch (error) {
+    if (dataList.value.length > 0) componentLoaded.value = true
+  } catch (error) {
     console.error(error)
   }
 }
 
 // 加载时获取数据
 onMounted(() => {
-  fetchData();
-});
+  fetchData()
+})
 onActivated(() => {
   if (dataList.value.length == 0) {
-    fetchData();
-
+    fetchData()
   }
-});
+})
 </script>
 
 <template>

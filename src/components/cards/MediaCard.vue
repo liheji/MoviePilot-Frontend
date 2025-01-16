@@ -59,11 +59,7 @@ const seasonInfos = ref<TmdbSeason[]>([])
 
 // 选中的订阅季
 const seasonsSelected = ref<TmdbSeason[]>([])
-let abortController: AbortController | null = null
 
-abortController = new AbortController()
-registerAbortController(abortController)
-const { signal } = abortController
 // 来源角标字典
 const sourceIconDict: { [key: string]: any } = {
   themoviedb: tmdbImage,
@@ -100,7 +96,6 @@ function getChipColor(type: string) {
 }
 
 // 添加订阅处理
-
 async function handleAddSubscribe() {
   if (props.media?.type === '电视剧' && props.media?.tmdb_id) {
     // TMDB电视剧
@@ -229,6 +224,9 @@ async function handleCheckSubscribe() {
 // 查询当前媒体是否已入库
 async function handleCheckExists() {
   try {
+    const abortController = new AbortController()
+    registerAbortController(abortController)
+    const { signal } = abortController
     const result: { [key: string]: any } = await api.get('mediaserver/exists', {
       params: {
         tmdbid: props.media?.tmdb_id,
@@ -249,8 +247,10 @@ async function handleCheckExists() {
 // 调用API检查是否已订阅，电视剧需要指定季
 async function checkSubscribe(season = 0) {
   try {
+    const abortController = new AbortController()
+    registerAbortController(abortController)
+    const { signal } = abortController
     const mediaid = getMediaId()
-
     const result: Subscribe = await api.get(`subscribe/media/${mediaid}`, {
       params: {
         season,
@@ -279,7 +279,6 @@ async function checkSeasonsNotExists() {
         let state = 0
         if (item.episodes.length === 0) state = 2
         else if (item.episodes.length < item.total_episode) state = 1
-
         seasonsNotExisted.value[item.season] = state
       })
     }
@@ -502,7 +501,7 @@ function onRemoveSubscribe() {
             <p class="leading-4 line-clamp-4 overflow-hidden text-ellipsis ...">
               {{ props.media?.overview }}
             </p>
-            <div v-if="props.media?.collection_id" class="mb-3"></div>
+            <div v-if="props.media?.collection_id" class="mb-3" @click.stop=""></div>
             <div v-else class="flex align-center justify-between">
               <IconBtn icon="mdi-magnify" color="white" @click.stop="handleSearch" />
               <IconBtn icon="mdi-heart" :color="isSubscribed ? 'error' : 'white'" @click.stop="handleSubscribe" />

@@ -79,6 +79,7 @@ function goPlay(isHovering = false) {
         <VCardText
           v-show="hover.isHovering || imageLoadError"
           class="w-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2"
+          @click.stop=""
         >
           <span class="font-bold">{{ props.media?.subtitle }}</span>
           <h1 class="mb-1 text-white font-extrabold text-xl line-clamp-2 overflow-hidden text-ellipsis ...">

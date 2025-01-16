@@ -8,7 +8,7 @@ configureNProgress()
 // Router
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to: any, from: any, savedPosition: any) {
     // 如果页面有缓存那么恢复其位置, 否则始终滚动到顶部
     if (to.meta.keepAlive && savedPosition) return savedPosition
     return { top: 0 }
@@ -189,31 +189,36 @@ const router = createRouter({
     },
   ],
 })
+
 const abortControllers = new Set<AbortController>()
 
+// 注册中止控制器
 function registerAbortController(controller: AbortController) {
   abortControllers.add(controller)
 }
 
+// 中止所有组件的任务
 function abortAllControllers() {
   for (const controller of abortControllers) {
     controller.abort()
   }
   abortControllers.clear()
 }
+
 // 路由导航守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: any, from: any, next: any) => {
   // 总是记录非login路由
   if (to.fullPath != '/login') store.state.auth.originalPath = to.fullPath
   const isAuthenticated = store.state.auth.token !== null
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
   } else {
-    abortAllControllers() // 中止所有组件的任务
-
+    abortAllControllers()
     next()
   }
 })
 
-export default router // 导出默认对象
-export { registerAbortController } // 另行导出其他功能
+// 导出默认对象
+export default router
+// 另行导出其他功能
+export { registerAbortController }
