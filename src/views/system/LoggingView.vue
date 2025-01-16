@@ -1,9 +1,4 @@
 <script lang="ts" setup>
-import { parse } from 'path'
-
-// 日志列表
-const logs = ref<string[]>([])
-
 // 已解析的日志列表
 const parsedLogs = ref<{ level: string; time: string; program: string; content: string }[]>([])
 
@@ -43,9 +38,23 @@ function startSSELogging() {
       buffer.push(message)
       if (!timeoutId) {
         timeoutId = window.setTimeout(() => {
-          logs.value.push(...buffer)
-          // 限制长度为1000
-          logs.value = logs.value.slice(-1000)
+          // 解析新日志
+          const newParsedLogs = buffer
+            .map(log => {
+              const logPattern = /^【(.*?)】[0-9\-:]*\s(.*?)\s-\s(.*?)\s-\s(.*)$/
+              const matches = log.match(logPattern)
+              if (matches) {
+                const [, level, time, program, content] = matches
+                return { level, time, program, content }
+              }
+              return null
+            })
+            .filter(Boolean)
+          // 倒序后插入parsedLogs顶部
+          parsedLogs.value.unshift(...(newParsedLogs.reverse() as any[]))
+          // 保留最新的200条日志
+          parsedLogs.value = parsedLogs.value.slice(0, 200)
+          // 重置buffer
           buffer.length = 0
           timeoutId = null
         }, 100)
@@ -53,29 +62,6 @@ function startSSELogging() {
     }
   })
 }
-
-// 解析日志并倒序
-watch(
-  logs,
-  newLogs => {
-    // 解析新日志
-    const newParsedLogs = newLogs
-      .map(log => {
-        const logPattern = /^【(.*?)】[0-9\-:]*\s(.*?)\s-\s(.*?)\s-\s(.*)$/
-        const matches = log.match(logPattern)
-        if (matches) {
-          const [, level, time, program, content] = matches
-          return { level, time, program, content }
-        }
-        return null
-      })
-      .filter(Boolean)
-
-    // 倒序后插入parsedLogs顶部
-    parsedLogs.value = [...(newParsedLogs.reverse() as any[])]
-  },
-  { deep: true },
-)
 
 onMounted(() => {
   startSSELogging()
@@ -87,7 +73,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <LoadingBanner v-if="logs.length === 0" class="mt-12" text="正在刷新 ..." />
+  <LoadingBanner v-if="parsedLogs.length === 0" class="mt-12" text="正在刷新 ..." />
   <div v-else>
     <VTable class="table-rounded" hide-default-footer disable-sort>
       <tbody>
