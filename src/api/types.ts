@@ -186,7 +186,7 @@ export interface TransferHistory {
 export interface MediaInfo {
   // 来源：themoviedb、douban、bangumi
   source?: string
-  // 类型 电影、电视剧
+  // 类型 电影、电视剧、合集
   type?: string
   // 媒体标题
   title?: string
@@ -206,6 +206,8 @@ export interface MediaInfo {
   douban_id?: string
   // Bangumi ID
   bangumi_id?: string
+  // 合集ID
+  collection_id?: number
   // 媒体原语种
   original_language?: string
   // 媒体原发行标题

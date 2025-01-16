@@ -274,6 +274,24 @@ onMounted(() => {
           </VHover>
           <VHover>
             <template #default="hover">
+              <VListItem
+                prepend-icon="mdi-movie-filter"
+                density="compact"
+                link
+                v-bind="hover.props"
+                @click="searchMedia('collection')"
+              >
+                <VListItemTitle class="break-words whitespace-break-spaces">
+                  搜索 <span class="font-bold">{{ searchWord }} </span> 相关的【系列合集】 ...
+                </VListItemTitle>
+                <template #append>
+                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
+                </template>
+              </VListItem>
+            </template>
+          </VHover>
+          <VHover>
+            <template #default="hover">
               <VListItem prepend-icon="mdi-account-search" link v-bind="hover.props" @click="searchMedia('person')">
                 <VListItemTitle class="break-words whitespace-break-spaces">
                   搜索 <span class="font-bold">{{ searchWord }}</span> 相关的【演职人员】 ...
