@@ -5,6 +5,7 @@
 
 html.v-overlay-scroll-blocked {
   position: relative;
+  --v-body-scroll-y: 0px !important;
 }
 
 #nprogress .bar {
