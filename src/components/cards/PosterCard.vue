@@ -31,7 +31,7 @@ const getImgUrl = computed(() => {
 })
 
 // 跳转播放
-function goPlay(isHovering = false) {
+function goPlay(isHovering: boolean | null = false) {
   if (props.media?.link && isHovering) window.open(props.media?.link, '_blank')
 }
 </script>
@@ -54,7 +54,6 @@ function goPlay(isHovering = false) {
           aspect-ratio="2/3"
           :src="getImgUrl"
           class="object-cover aspect-w-2 aspect-h-3"
-          :class="hover.isHovering ? 'on-hover' : ''"
           cover
           @load="isImageLoaded = true"
           @error="imageLoadError = true"
@@ -78,7 +77,8 @@ function goPlay(isHovering = false) {
         <!-- 详情 -->
         <VCardText
           v-show="hover.isHovering || imageLoadError"
-          class="w-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2"
+          class="w-full h-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2 pb-5"
+          style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
           @click.stop=""
         >
           <span class="font-bold">{{ props.media?.subtitle }}</span>
@@ -90,9 +90,3 @@ function goPlay(isHovering = false) {
     </template>
   </VHover>
 </template>
-
-<style lang="scss">
-.on-hover img {
-  @apply brightness-50;
-}
-</style>
