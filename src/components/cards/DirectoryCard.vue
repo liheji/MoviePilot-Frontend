@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { TransferDirectoryConf } from '@/api/types'
-import PathInput from '@/components/input/PathInput.vue'
 import api from '@/api'
 import { nextTick } from 'vue'
 import { storageOptions } from '@/api/constants'
@@ -19,12 +18,6 @@ const props = defineProps({
   width: String,
   height: String,
 })
-
-// 下载路径
-const downloadPath = ref<string>('')
-
-// 媒体库路径
-const libraryPath = ref<string>('')
 
 // 卡版是否折叠状态
 const isCollapsed = ref(true)
@@ -210,16 +203,12 @@ watch(
             />
           </VCol>
           <VCol cols="8">
-            <PathInput v-model="props.directory.download_path" :storage="props.directory.storage">
-              <template #activator="{ menuprops }">
-                <VTextField
-                  :model-value="props.directory.download_path"
-                  v-bind="menuprops"
-                  variant="underlined"
-                  label="下载目录/源目录"
-                />
-              </template>
-            </PathInput>
+            <VPathField
+              v-model="props.directory.download_path"
+              :storage="props.directory.storage"
+              variant="underlined"
+              label="下载目录/源目录"
+            />
           </VCol>
           <VCol cols="6" v-if="!props.directory.media_type || props.directory.media_type === ''">
             <VSwitch v-model="props.directory.download_type_folder" label="按类型分类"></VSwitch>
@@ -257,16 +246,12 @@ watch(
             />
           </VCol>
           <VCol cols="8">
-            <PathInput v-model="props.directory.library_path" :storage="props.directory.library_storage">
-              <template #activator="{ menuprops }">
-                <VTextField
-                  :modelValue="props.directory.library_path"
-                  v-bind="menuprops"
-                  variant="underlined"
-                  label="媒体库目录"
-                />
-              </template>
-            </PathInput>
+            <VPathField
+              v-model="props.directory.library_path"
+              :storage="props.directory.library_storage"
+              variant="underlined"
+              label="媒体库目录"
+            />
           </VCol>
           <VCol cols="4">
             <VSelect
