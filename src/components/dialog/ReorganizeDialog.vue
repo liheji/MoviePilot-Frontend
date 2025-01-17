@@ -68,6 +68,7 @@ const dialogTitle = computed(() => {
 // 禁用指定集数
 const disableEpisodeDetail = computed(() => {
   if (props.items) {
+    if (transferForm.episode_format) return false
     return !(props.items.length === 1 && props.items[0].type !== 'dir')
   }
 })
