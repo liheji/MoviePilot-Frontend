@@ -23,6 +23,8 @@ const variableTheme = controlledComputed(
   () => vuetifyTheme.current.value.variables,
 )
 
+const chartKey = ref(0)
+
 // 定时器
 let refreshTimer: NodeJS.Timeout | null = null
 
@@ -129,6 +131,10 @@ onUnmounted(() => {
     refreshTimer = null
   }
 })
+
+onActivated(() => {
+  chartKey.value += 1
+})
 </script>
 
 <template>
@@ -142,7 +148,7 @@ onUnmounted(() => {
           <VCardTitle>CPU</VCardTitle>
         </VCardItem>
         <VCardText>
-          <VApexChart type="line" :options="chartOptions" :series="series" :height="150" />
+          <VApexChart :key="chartKey" type="line" :options="chartOptions" :series="series" :height="150" />
           <p class="text-center font-weight-medium mb-0">当前：{{ current }}%</p>
         </VCardText>
       </VCard>

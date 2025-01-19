@@ -30,17 +30,23 @@ function jumpTab(tab: string) {
     <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
       <VWindowItem value="mysub">
         <transition name="fade-slide" appear>
-          <SubscribeListView :type="subType" :subid="subId" />
+          <div>
+            <SubscribeListView :type="subType" :subid="subId" />
+          </div>
         </transition>
       </VWindowItem>
       <VWindowItem value="popular">
         <transition name="fade-slide" appear>
-          <SubscribePopularView :type="subType" />
+          <div>
+            <SubscribePopularView :type="subType" />
+          </div>
         </transition>
       </VWindowItem>
       <VWindowItem value="share">
         <transition name="fade-slide" appear>
-          <SubscribeShareView />
+          <div>
+            <SubscribeShareView />
+          </div>
         </transition>
       </VWindowItem>
     </VWindow>

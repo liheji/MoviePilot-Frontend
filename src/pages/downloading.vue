@@ -42,7 +42,9 @@ onMounted(async () => {
     <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
       <VWindowItem v-for="item in downloaders" :value="item.name">
         <transition name="fade-slide" appear>
-          <DownloadingListView :name="item.name" />
+          <div>
+            <DownloadingListView :name="item.name" />
+          </div>
         </transition>
       </VWindowItem>
     </VWindow>

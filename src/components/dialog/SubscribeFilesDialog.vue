@@ -132,59 +132,63 @@ onBeforeMount(() => {
           <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
             <VWindowItem value="download">
               <transition name="fade-slide" appear>
-                <VDataTable
-                  items-per-page="50"
-                  :headers="downloadHeaders"
-                  :items="downloadInfos"
-                  :items-length="totalCount"
-                  density="compact"
-                  item-value="title"
-                  return-object
-                  fixed-header
-                  hover
-                  items-per-page-text="每页条数"
-                  page-text="{0}-{1} 共 {2} 条"
-                  loading-text="加载中..."
-                >
-                  <template #item.episode_number="{ item }">
-                    <div class="text-high-emphasis pt-1">{{ item.episode_number }}. {{ item.title }}</div>
-                  </template>
-                  <template #item.torrent_title="{ item }">
-                    <div class="text-xs" v-for="file in item.download">
-                      【{{ file.site_name }}】{{ file.torrent_title }}
-                    </div>
-                  </template>
-                  <template #item.file_path="{ item }">
-                    <div class="text-xs" v-for="file in item.download">{{ file.file_path }}</div>
-                  </template>
-                  <template #no-data> 没有数据 </template>
-                </VDataTable>
+                <div>
+                  <VDataTable
+                    items-per-page="50"
+                    :headers="downloadHeaders"
+                    :items="downloadInfos"
+                    :items-length="totalCount"
+                    density="compact"
+                    item-value="title"
+                    return-object
+                    fixed-header
+                    hover
+                    items-per-page-text="每页条数"
+                    page-text="{0}-{1} 共 {2} 条"
+                    loading-text="加载中..."
+                  >
+                    <template #item.episode_number="{ item }">
+                      <div class="text-high-emphasis pt-1">{{ item.episode_number }}. {{ item.title }}</div>
+                    </template>
+                    <template #item.torrent_title="{ item }">
+                      <div class="text-xs" v-for="file in item.download">
+                        【{{ file.site_name }}】{{ file.torrent_title }}
+                      </div>
+                    </template>
+                    <template #item.file_path="{ item }">
+                      <div class="text-xs" v-for="file in item.download">{{ file.file_path }}</div>
+                    </template>
+                    <template #no-data> 没有数据 </template>
+                  </VDataTable>
+                </div>
               </transition>
             </VWindowItem>
             <VWindowItem value="library">
               <transition name="fade-slide" appear>
-                <VDataTable
-                  items-per-page="50"
-                  :headers="libraryHeaders"
-                  :items="libraryInfos"
-                  :items-length="totalCount"
-                  density="compact"
-                  item-value="title"
-                  return-object
-                  fixed-header
-                  hover
-                  items-per-page-text="每页条数"
-                  page-text="{0}-{1} 共 {2} 条"
-                  loading-text="加载中..."
-                >
-                  <template #item.episode_number="{ item }">
-                    <div class="text-high-emphasis pt-1">{{ item.episode_number }}. {{ item.title }}</div>
-                  </template>
-                  <template #item.file_path="{ item }">
-                    <div class="text-xs" v-for="file in item.library">{{ file.file_path }}</div>
-                  </template>
-                  <template #no-data> 没有数据 </template>
-                </VDataTable>
+                <div>
+                  <VDataTable
+                    items-per-page="50"
+                    :headers="libraryHeaders"
+                    :items="libraryInfos"
+                    :items-length="totalCount"
+                    density="compact"
+                    item-value="title"
+                    return-object
+                    fixed-header
+                    hover
+                    items-per-page-text="每页条数"
+                    page-text="{0}-{1} 共 {2} 条"
+                    loading-text="加载中..."
+                  >
+                    <template #item.episode_number="{ item }">
+                      <div class="text-high-emphasis pt-1">{{ item.episode_number }}. {{ item.title }}</div>
+                    </template>
+                    <template #item.file_path="{ item }">
+                      <div class="text-xs" v-for="file in item.library">{{ file.file_path }}</div>
+                    </template>
+                    <template #no-data> 没有数据 </template>
+                  </VDataTable>
+                </div>
               </transition>
             </VWindowItem>
           </VWindow>

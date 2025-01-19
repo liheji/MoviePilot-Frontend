@@ -70,7 +70,9 @@ function jumpTab(tab: string) {
       <!-- 规则 -->
       <VWindowItem value="rule">
         <transition name="fade-slide" appear>
-          <AccountSettingRule />
+          <div>
+            <AccountSettingRule />
+          </div>
         </transition>
       </VWindowItem>
 
