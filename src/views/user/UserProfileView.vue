@@ -334,7 +334,7 @@ watch(
               </VRow>
 
               <VDivider class="my-10">
-                <span>消息账号绑定</span>
+                <span>账号绑定</span>
               </VDivider>
 
               <VRow>
@@ -376,6 +376,14 @@ watch(
                     density="comfortable"
                     clearable
                     label="SynologyChat用户"
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VTextField
+                    v-model="accountInfo.settings.douban_userid"
+                    density="comfortable"
+                    clearable
+                    label="豆瓣用户"
                   />
                 </VCol>
               </VRow>
