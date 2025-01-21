@@ -99,7 +99,7 @@ async function doDelete() {
 }
 </script>
 <template>
-  <VDialog max-width="40rem">
+  <VDialog max-width="40rem" scrollable>
     <VCard>
       <DialogCloseBtn @click="emit('close')" />
       <VCardText>
