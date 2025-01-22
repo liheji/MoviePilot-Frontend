@@ -26,6 +26,58 @@ const processing = ref(false)
 // 删除中
 const deleting = ref(false)
 
+// 是否折叠
+const isExpanded = ref(false)
+
+// follow用户列表
+const followUsers = ref<string[]>([])
+
+// 当前用户是否已follow
+const isFollowed = computed(() => followUsers.value.includes(props.media?.share_uid || ''))
+
+// 折叠展开
+function toggleExpand() {
+  isExpanded.value = !isExpanded.value
+}
+
+// 加载follow用户列表
+async function queryFollowUsers() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/FollowSubscribers')
+    followUsers.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// follow用户
+async function followUser() {
+  try {
+    const result: { [key: string]: any } = await api.post(`subscribe/follow?share_uid=${props.media?.share_uid}`)
+    if (result.success) {
+      queryFollowUsers()
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// unfollow用户
+async function unfollowUser() {
+  try {
+    const result: { [key: string]: any } = await api.delete('subscribe/follow', {
+      params: {
+        share_uid: props.media?.share_uid,
+      },
+    })
+    if (result.success) {
+      queryFollowUsers()
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // 计算海报图片地址
 const posterUrl = computed(() => {
   const url = props.media?.poster
@@ -97,6 +149,10 @@ async function doDelete() {
     doneNProgress()
   }
 }
+
+onMounted(() => {
+  queryFollowUsers()
+})
 </script>
 <template>
   <VDialog max-width="40rem" scrollable>
@@ -144,9 +200,12 @@ async function doDelete() {
                       <span class="text-body-1"> {{ media?.keyword }}</span>
                     </VListItemTitle>
                   </VListItem>
-                  <VListItem class="ps-0" v-if="media?.custom_words">
+                  <VListItem class="ps-0" v-if="media?.custom_words" @click.stop="toggleExpand">
                     <VListItemTitle
-                      class="text-center text-md-left break-words whitespace-break-spaces line-clamp-10 overflow-hidden text-ellipsis ..."
+                      class="text-center text-md-left break-words whitespace-break-spaces"
+                      :class="{
+                        'line-clamp-4 overflow-hidden text-ellipsis': !isExpanded,
+                      }"
                     >
                       <span class="font-weight-medium">识别词：</span>
                       <span class="text-body-1"> {{ media?.custom_words }}</span>
@@ -162,7 +221,7 @@ async function doDelete() {
                       prepend-icon="mdi-heart"
                       :loading="processing"
                     >
-                      添加到我的订阅
+                      订阅
                     </VBtn>
                     <VBtn
                       v-if="props.media?.share_uid && props.media?.share_uid === globalSettings.USER_UNIQUE_ID"
@@ -174,6 +233,24 @@ async function doDelete() {
                       class="ms-2"
                     >
                       取消分享
+                    </VBtn>
+                    <VBtn
+                      v-else-if="isFollowed && props.media?.share_uid"
+                      color="warning"
+                      @click="unfollowUser"
+                      prepend-icon="mdi-account-remove"
+                      class="ms-2"
+                    >
+                      UnFollow
+                    </VBtn>
+                    <VBtn
+                      v-else-if="props.media?.share_uid"
+                      @click="followUser"
+                      color="info"
+                      prepend-icon="mdi-account-plus"
+                      class="ms-2"
+                    >
+                      follow
                     </VBtn>
                   </div>
                   <div class="text-xs mt-2" v-if="props.media?.count">

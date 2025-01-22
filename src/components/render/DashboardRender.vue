@@ -6,6 +6,12 @@ import { type PropType } from 'vue'
 const elementProps = defineProps({
   config: Object as PropType<RenderProps>,
 })
+// key
+const componentKey = ref(0)
+
+onActivated(() => {
+  componentKey.value++
+})
 </script>
 
 <template>
@@ -23,6 +29,7 @@ const elementProps = defineProps({
     />
   </Component>
   <Component
+    :key="componentKey"
     :is="elementProps.config?.component"
     v-if="elementProps.config?.html"
     v-bind="elementProps.config?.props"
