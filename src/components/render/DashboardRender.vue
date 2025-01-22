@@ -15,7 +15,12 @@ onActivated(() => {
 </script>
 
 <template>
-  <Component :is="elementProps.config?.component" v-if="!elementProps.config?.html" v-bind="elementProps.config?.props">
+  <Component
+    :key="componentKey"
+    :is="elementProps.config?.component"
+    v-if="!elementProps.config?.html"
+    v-bind="elementProps.config?.props"
+  >
     {{ elementProps.config?.text }}
     <template v-for="(content, name) in elementProps.config?.slots || []" :key="name" v-slot:[name]="{ _props }">
       <slot :name="name" v-bind="_props">
