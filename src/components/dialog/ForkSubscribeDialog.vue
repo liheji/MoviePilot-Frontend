@@ -241,7 +241,7 @@ onMounted(() => {
                       prepend-icon="mdi-account-remove"
                       class="ms-2"
                     >
-                      UnFollow
+                      取消关注
                     </VBtn>
                     <VBtn
                       v-else-if="props.media?.share_uid"
@@ -250,7 +250,7 @@ onMounted(() => {
                       prepend-icon="mdi-account-plus"
                       class="ms-2"
                     >
-                      follow
+                      关注
                     </VBtn>
                   </div>
                   <div class="text-xs mt-2" v-if="props.media?.count">
