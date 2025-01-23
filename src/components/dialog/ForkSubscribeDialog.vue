@@ -183,7 +183,7 @@ onMounted(() => {
                   {{ props.media?.share_title }}
                 </VCardTitle>
                 <VCardSubtitle
-                  class="text-center text-md-left break-words whitespace-break-spaces line-clamp-2 overflow-hidden text-ellipsis ..."
+                  class="text-center text-md-left break-words whitespace-break-spaces line-clamp-4 overflow-hidden text-ellipsis"
                 >
                   {{ props.media?.share_comment }}
                 </VCardSubtitle>
