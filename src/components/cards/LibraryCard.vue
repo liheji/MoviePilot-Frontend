@@ -91,7 +91,17 @@ async function drawImages(imageList: string[]) {
     const img = new Image()
     img.setAttribute('crossorigin', 'anonymous')
     img.src = imgSrc
-    await new Promise(resolve => (img.onload = resolve))
+    try {
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve()
+        img.onerror = () => reject(new Error(`Failed to load image: ${imgSrc}`))
+      })
+    } catch (error) {
+      console.error(error)
+      ctx.fillStyle = '#e5e7eb'
+      ctx.fillRect(MARGIN_WIDTH * index + POSTER_WIDTH * (index - 1), MARGIN_HEIGHT, POSTER_WIDTH, POSTER_HEIGHT)
+      return
+    }
 
     const x = MARGIN_WIDTH * index + POSTER_WIDTH * (index - 1)
     const y = MARGIN_HEIGHT
