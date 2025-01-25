@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
-import { VPullToRefresh } from 'vuetify/labs/VPullToRefresh'
 import api from '@/api'
 import type { Subscribe } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
@@ -138,27 +137,25 @@ onActivated(async () => {
 
 <template>
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-  <VPullToRefresh v-model="loading" @load="onRefresh">
-    <draggable
-      v-if="displayList.length > 0"
-      v-model="displayList"
-      @end="saveSubscribeOrder"
-      handle=".cursor-move"
-      item-key="id"
-      tag="div"
-      :component-data="{ class: 'mx-3 grid gap-4 grid-subscribe-card p-1' }"
-    >
-      <template #item="{ element }">
-        <SubscribeCard :key="element.id" :media="element" @remove="fetchData" @save="fetchData" />
-      </template>
-    </draggable>
-    <NoDataFound
-      v-if="displayList.length === 0 && isRefreshed"
-      error-code="404"
-      error-title="没有订阅"
-      error-description="请通过搜索添加电影、电视剧订阅。"
-    />
-  </VPullToRefresh>
+  <draggable
+    v-if="displayList.length > 0"
+    v-model="displayList"
+    @end="saveSubscribeOrder"
+    handle=".cursor-move"
+    item-key="id"
+    tag="div"
+    :component-data="{ class: 'mx-3 grid gap-4 grid-subscribe-card p-1' }"
+  >
+    <template #item="{ element }">
+      <SubscribeCard :key="element.id" :media="element" @remove="fetchData" @save="fetchData" />
+    </template>
+  </draggable>
+  <NoDataFound
+    v-if="displayList.length === 0 && isRefreshed"
+    error-code="404"
+    error-title="没有订阅"
+    error-description="请通过搜索添加电影、电视剧订阅。"
+  />
   <!-- 底部操作按钮 -->
   <div>
     <VFab
