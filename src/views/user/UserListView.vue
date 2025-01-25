@@ -68,6 +68,7 @@ onActivated(() => {
   />
 
   <VFab
+    v-if="isRefreshed"
     icon="mdi-plus"
     location="bottom"
     size="x-large"

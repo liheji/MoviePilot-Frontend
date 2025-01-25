@@ -113,6 +113,9 @@ const progressText = ref('请稍候 ...')
 // 进度值
 const progressValue = ref(0)
 
+// 是否已刷新
+const isRefreshed = ref(false)
+
 // 删除确认对话框
 const deleteConfirmDialog = ref(false)
 
@@ -160,7 +163,8 @@ watch(
 )
 
 // 搜索监听
-watch([() => search.value, () => isComposing.value],
+watch(
+  [() => search.value, () => isComposing.value],
   debounce(async () => {
     if (!isComposing.value) {
       console.log('search: ' + search.value)
@@ -181,7 +185,7 @@ async function fetchData(page = currentPage.value, count = itemsPerPage.value) {
         title: search.value,
       },
     })
-
+    isRefreshed.value = true
     dataList.value = result.data?.list
     totalItems.value = result.data?.total
     searchHintList.value = ['失败', '成功', ...new Set(dataList.value.map(item => item.title || ''))].filter(
@@ -502,7 +506,7 @@ onMounted(fetchData)
   </VCard>
 
   <!-- 底部操作按钮 -->
-  <div>
+  <div v-if="isRefreshed">
     <VFab
       v-if="selected.length > 0"
       icon="mdi-trash-can-outline"

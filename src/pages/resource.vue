@@ -139,27 +139,29 @@ onUnmounted(() => {
     <TorrentCardListView v-else :items="dataList" />
   </div>
   <!-- 视图切换 -->
-  <VFab
-    v-if="viewType === 'list'"
-    class="mb-12"
-    icon="mdi-view-grid"
-    location="bottom"
-    size="x-large"
-    absolute
-    app
-    appear
-    @click="setViewType('card')"
-    :class="{ 'mb-12': appMode }"
-  />
-  <VFab
-    v-else
-    icon="mdi-view-list"
-    location="bottom"
-    size="x-large"
-    fixed
-    app
-    appear
-    @click="setViewType('list')"
-    :class="{ 'mb-12': appMode }"
-  />
+  <div v-if="isRefreshed">
+    <VFab
+      v-if="viewType === 'list'"
+      class="mb-12"
+      icon="mdi-view-grid"
+      location="bottom"
+      size="x-large"
+      absolute
+      app
+      appear
+      @click="setViewType('card')"
+      :class="{ 'mb-12': appMode }"
+    />
+    <VFab
+      v-else
+      icon="mdi-view-list"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="setViewType('list')"
+      :class="{ 'mb-12': appMode }"
+    />
+  </div>
 </template>

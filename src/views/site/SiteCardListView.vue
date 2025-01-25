@@ -111,6 +111,7 @@ onActivated(() => {
   />
   <!-- 新增站点按钮 -->
   <VFab
+    v-if="isRefreshed"
     icon="mdi-plus"
     location="bottom"
     size="x-large"

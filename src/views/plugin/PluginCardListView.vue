@@ -507,7 +507,7 @@ onMounted(async () => {
     </VWindow>
   </div>
 
-  <div>
+  <div v-if="isRefreshed">
     <!-- 插件搜索图标 -->
     <VFab
       icon="mdi-magnify"

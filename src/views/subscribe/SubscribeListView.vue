@@ -109,12 +109,6 @@ async function fetchData() {
 // 刷新状态
 const loading = ref(false)
 
-// 下拉刷新
-async function onRefresh({ done }: { done: any }) {
-  await fetchData()
-  done('ok')
-}
-
 onMounted(async () => {
   await loadSubscribeOrderConfig()
   await fetchData()
@@ -157,7 +151,7 @@ onActivated(async () => {
     error-description="请通过搜索添加电影、电视剧订阅。"
   />
   <!-- 底部操作按钮 -->
-  <div>
+  <div v-if="isRefreshed">
     <VFab
       v-if="store.state.auth.superUser"
       icon="mdi-clipboard-edit"
