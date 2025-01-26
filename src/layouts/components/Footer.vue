@@ -64,4 +64,3 @@ const activeState = computed(() => {
   background-color: transparent !important;
 }
 </style>
-}
