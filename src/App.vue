@@ -42,15 +42,15 @@ if (window.Apex) {
   }
 }
 
-// 页面加载时，加载当前用户数据
-onBeforeMount(async () => {
-  setTheme()
-})
-
 onMounted(() => {
+  setTheme()
   ensureRenderComplete(() => {
-    nextTick(() => removeEl('#loading-bg'))
-  });
+    nextTick(() => {
+      setTimeout(() => {
+        removeEl('#loading-bg')
+      }, 1000)
+    })
+  })
 })
 </script>
 
