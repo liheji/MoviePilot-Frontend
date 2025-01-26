@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useTheme } from 'vuetify'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
+import { ensureRenderComplete, removeEl } from './@core/utils/dom'
 
 const { global: globalTheme } = useTheme()
 
@@ -44,6 +45,12 @@ if (window.Apex) {
 // 页面加载时，加载当前用户数据
 onBeforeMount(async () => {
   setTheme()
+})
+
+onMounted(() => {
+  ensureRenderComplete(() => {
+    nextTick(() => removeEl('#loading-bg'))
+  });
 })
 </script>
 

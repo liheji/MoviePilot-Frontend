@@ -17,7 +17,6 @@ import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar'
 import { CronVuetify } from '@vue-js-cron/vuetify'
 
 // 4. 工具函数和其他辅助模块
-import { removeEl } from './@core/utils/dom'
 import { fetchGlobalSettings } from './api'
 import { isPWA } from './@core/utils/navigator'
 
@@ -114,5 +113,4 @@ initializeApp().then(() => {
       },
     })
     .mount('#app')
-    .$nextTick(() => removeEl('#loading-bg'))
 })

@@ -10,12 +10,17 @@ export function useDefer(maxFrameCount = 1) {
   const refreshFrameCount = () => {
     requestAnimationFrame(() => {
       frameCount.value++
-      if (frameCount.value < maxFrameCount)
-        refreshFrameCount()
+      if (frameCount.value < maxFrameCount) refreshFrameCount()
     })
   }
   refreshFrameCount()
   return function (showInFrameCount: number) {
     return frameCount.value >= showInFrameCount
   }
+}
+
+export function ensureRenderComplete(callback: () => void) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(callback)
+  })
 }
