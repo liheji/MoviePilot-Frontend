@@ -48,7 +48,7 @@ onMounted(() => {
     nextTick(() => {
       setTimeout(() => {
         removeEl('#loading-bg')
-      }, 1000)
+      }, 1500)
     })
   })
 })
