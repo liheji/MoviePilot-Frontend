@@ -3,14 +3,11 @@ import { useTheme } from 'vuetify'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { ensureRenderComplete, removeEl } from './@core/utils/dom'
 
-const { global: globalTheme } = useTheme()
-
 // 生效主题
-async function setTheme() {
-  let themeValue = localStorage.getItem('theme') || 'light'
-  const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
-  globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
-}
+const { global: globalTheme } = useTheme()
+let themeValue = localStorage.getItem('theme') || 'light'
+const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
+globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
 
 // ApexCharts 全局配置
 declare global {
@@ -43,7 +40,6 @@ if (window.Apex) {
 }
 
 onMounted(() => {
-  setTheme()
   ensureRenderComplete(() => {
     nextTick(() => {
       setTimeout(() => {
