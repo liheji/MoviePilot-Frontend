@@ -9,6 +9,13 @@ export const SystemNavMenus = [
     footer: true,
   },
   {
+    title: '搜索结果',
+    icon: 'mdi-magnify',
+    to: '/resource',
+    header: '开始',
+    admin: false,
+  },
+  {
     title: '推荐',
     icon: 'mdi-star-outline',
     to: '/ranking',
@@ -23,13 +30,6 @@ export const SystemNavMenus = [
     header: '发现',
     admin: false,
     footer: false,
-  },
-  {
-    title: '搜索结果',
-    icon: 'mdi-magnify',
-    to: '/resource',
-    header: '发现',
-    admin: false,
   },
   {
     title: '电影',
