@@ -22,7 +22,7 @@ export const SystemNavMenus = [
     to: '/discover',
     header: '发现',
     admin: false,
-    footer: true,
+    footer: false,
   },
   {
     title: '资源搜索',
