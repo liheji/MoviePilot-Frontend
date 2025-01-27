@@ -5,20 +5,147 @@ import MediaCardListView from '@/views/discover/MediaCardListView.vue'
 const type = ref('movies')
 
 // 过滤参数
-const filterParams = ref({
-  'sort_by': 'popularity.desc',
-  'with_genres': '',
-  'with_original_language': '',
-  'with_keywords': '',
-  'with_watch_providers': '',
-  'vote_average.gte': 0,
-  'vote_count.gte': 0,
-  'release_date.gte': '',
-  })
+const filterParams = reactive({
+  sort_by: 'popularity.desc',
+  with_genres: '',
+  with_original_language: '',
+  with_keywords: '',
+  with_watch_providers: '',
+  vote_average: 0,
+  vote_count: 0,
+  release_date: '',
+})
+
+// TMDB排序字典
+const tmdbSortDict = {
+  'popularity.desc': '热度降序',
+  'popularity.asc': '热度升序',
+  'release_date.desc': '上映日期降序',
+  'release_date.asc': '上映日期升序',
+  'vote_average.desc': '评分降序',
+  'vote_average.asc': '评分升序',
+}
+
+// TMDB风格字典
+const tmdbGenreDict = {
+  '28': '动作',
+  '12': '冒险',
+  '16': '动画',
+  '35': '喜剧',
+  '80': '犯罪',
+  '99': '纪录片',
+  '18': '剧情',
+  '10751': '家庭',
+  '14': '奇幻',
+  '36': '历史',
+  '27': '恐怖',
+  '10402': '音乐',
+  '9648': '悬疑',
+  '10749': '爱情',
+  '878': '科幻',
+  '10770': '电视电影',
+  '53': '惊悚',
+  '10752': '战争',
+  '37': '西部',
+}
+
+// TMDB原始语言字典（主要语言）
+const tmdbLanguageDict = {
+  'zh': '中文',
+  'en': '英语',
+  'ja': '日语',
+  'ko': '韩语',
+  'fr': '法语',
+  'de': '德语',
+  'es': '西班牙语',
+  'it': '意大利语',
+  'ru': '俄语',
+  'pt': '葡萄牙语',
+  'ar': '阿拉伯语',
+  'hi': '印地语',
+  'th': '泰语',
+}
+
+// 当前Key
+const currentKey = ref(0)
+
+// 类型和过滤参数变化后重新刷新列表
+watch([type, filterParams], () => {
+  if (!type.value) {
+    type.value = 'movies'
+  }
+  if (!filterParams.sort_by) {
+    filterParams.sort_by = 'popularity.desc'
+  }
+  currentKey.value++
+})
 </script>
 
 <template>
+  <div class="px-3">
+    <div class="flex justify-start align-center">
+      <div class="mr-5">
+        <VLabel>类型</VLabel>
+      </div>
+      <VChipGroup column v-model="type">
+        <VChip :color="type == 'movies' ? 'primary' : ''" filter tile value="movies">电影</VChip>
+        <VChip :color="type == 'tvs' ? 'primary' : ''" filter tile value="tvs">电视剧</VChip>
+      </VChipGroup>
+    </div>
+    <div class="flex justify-start align-center">
+      <div class="mr-5">
+        <VLabel>排序</VLabel>
+      </div>
+      <VChipGroup column v-model="filterParams.sort_by">
+        <VChip
+          :color="filterParams.sort_by == key ? 'primary' : ''"
+          filter
+          tile
+          :value="key"
+          v-for="(value, key) in tmdbSortDict"
+          :key="key"
+        >
+          {{ value }}
+        </VChip>
+      </VChipGroup>
+    </div>
+    <div class="flex justify-start align-center">
+      <div class="mr-5">
+        <VLabel>风格</VLabel>
+      </div>
+      <VChipGroup column v-model="filterParams.with_genres">
+        <VChip
+          :color="filterParams.with_genres == key ? 'primary' : ''"
+          filter
+          tile
+          :value="key"
+          v-for="(value, key) in tmdbGenreDict"
+          :key="key"
+        >
+          {{ value }}
+        </VChip>
+      </VChipGroup>
+    </div>
+    <div class="flex justify-start align-center">
+      <div class="mr-5">
+        <VLabel>语言</VLabel>
+      </div>
+      <VChipGroup column v-model="filterParams.with_original_language">
+        <VChip
+          :color="filterParams.with_original_language == key ? 'primary' : ''"
+          filter
+          tile
+          :value="key"
+          v-for="(value, key) in tmdbLanguageDict"
+          :key="key"
+        >
+          {{ value }}
+        </VChip>
+      </VChipGroup>
+    </div>
+  </div>
+
   <div>
-    <MediaCardListView :apipath="`tmdb/${type}`" :params="filterParams" />
+    <MediaCardListView :key="currentKey" :apipath="`tmdb/${type}`" :params="filterParams" />
   </div>
 </template>

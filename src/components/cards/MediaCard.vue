@@ -535,7 +535,7 @@ function onRemoveSubscribe() {
             density="compact"
             class="absolute bottom-1 right-1"
             tile
-            v-if="!hover.isHovering && isImageLoaded && props.media?.source"
+            v-if="!hover.isHovering && isImageLoaded && props.media?.source && !imageLoadError"
           >
             <VImg cover :src="sourceIconDict[props.media?.source]" class="shadow-lg" />
           </VAvatar>
