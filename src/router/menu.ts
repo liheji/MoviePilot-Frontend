@@ -224,16 +224,16 @@ export const DiscoverTabs = [
   {
     title: 'TheMovieDb',
     tab: 'themoviedb',
-    icon: '',
+    icon: 'themoviedb',
   },
   {
     title: '豆瓣',
     tab: 'douban',
-    icon: '',
+    icon: 'douban',
   },
   {
     title: 'Bangumi',
     tab: 'bangumi',
-    icon: '',
+    icon: 'bangumi',
   },
 ]
