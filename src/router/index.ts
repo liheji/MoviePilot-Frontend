@@ -36,6 +36,14 @@ const router = createRouter({
           },
         },
         {
+          path: '/discover',
+          component: () => import('../pages/discover.vue'),
+          meta: {
+            keepAlive: true,
+            requiresAuth: true,
+          },
+        },
+        {
           path: '/resource',
           component: () => import('../pages/resource.vue'),
           meta: {

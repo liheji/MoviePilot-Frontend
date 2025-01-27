@@ -142,7 +142,6 @@ onUnmounted(() => {
   <div v-if="isRefreshed">
     <VFab
       v-if="viewType === 'list'"
-      class="mb-12"
       icon="mdi-view-grid"
       location="bottom"
       size="x-large"

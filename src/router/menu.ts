@@ -17,6 +17,14 @@ export const SystemNavMenus = [
     footer: true,
   },
   {
+    title: '探索',
+    icon: 'mdi-apple-safari',
+    to: '/discover',
+    header: '发现',
+    admin: false,
+    footer: true,
+  },
+  {
     title: '资源搜索',
     icon: 'mdi-magnify',
     to: '/resource',
@@ -169,12 +177,12 @@ export const SubscribeMovieTabs = [
   {
     title: '我的订阅',
     tab: 'mysub',
-    icon: 'mdi-movie-open-outline',
+    icon: 'mdi-heart',
   },
   {
     title: '热门订阅',
     tab: 'popular',
-    icon: 'mdi-movie-open-outline',
+    icon: 'mdi-fire',
   },
 ]
 
@@ -183,17 +191,17 @@ export const SubscribeTvTabs = [
   {
     title: '我的订阅',
     tab: 'mysub',
-    icon: 'mdi-television',
+    icon: 'mdi-heart',
   },
   {
     title: '热门订阅',
     tab: 'popular',
-    icon: 'mdi-television',
+    icon: 'mdi-fire',
   },
   {
     title: '订阅分享',
     tab: 'share',
-    icon: 'mdi-television',
+    icon: 'mdi-share-variant',
   },
 ]
 
@@ -208,5 +216,24 @@ export const PluginTabs = [
     title: '插件市场',
     tab: 'market',
     icon: 'mdi-store',
+  },
+]
+
+// 发现标签页
+export const DiscoverTabs = [
+  {
+    title: 'TheMovieDb',
+    tab: 'themoviedb',
+    icon: '',
+  },
+  {
+    title: '豆瓣',
+    tab: 'douban',
+    icon: '',
+  },
+  {
+    title: 'Bangumi',
+    tab: 'bangumi',
+    icon: '',
   },
 ]
