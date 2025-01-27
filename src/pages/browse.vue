@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import api from '@/api'
 import MediaCardListView from '@/views/discover/MediaCardListView.vue'
 import PersonCardListView from '@/views/discover/PersonCardListView.vue'
 

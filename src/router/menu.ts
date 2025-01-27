@@ -25,7 +25,7 @@ export const SystemNavMenus = [
     footer: false,
   },
   {
-    title: '资源搜索',
+    title: '搜索结果',
     icon: 'mdi-magnify',
     to: '/resource',
     header: '发现',

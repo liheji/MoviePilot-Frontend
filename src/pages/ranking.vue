@@ -18,16 +18,6 @@ const viewList = reactive<{ apipath: string; linkurl: string; title: string }[]>
     title: 'Bangumi每日放送',
   },
   {
-    apipath: 'tmdb/movies',
-    linkurl: '/browse/tmdb/movies?title=TMDB热门电影',
-    title: 'TMDB热门电影',
-  },
-  {
-    apipath: 'tmdb/tvs?with_original_language=zh|en|ja|ko',
-    linkurl: '/browse/tmdb/tvs??with_original_language=zh|en|ja|ko&title=TMDB热门电视剧',
-    title: 'TMDB热门电视剧',
-  },
-  {
     apipath: 'douban/movie_hot',
     linkurl: '/browse/douban/movie_hot?title=豆瓣热门电影',
     title: '豆瓣热门电影',
@@ -41,16 +31,6 @@ const viewList = reactive<{ apipath: string; linkurl: string; title: string }[]>
     apipath: 'douban/tv_animation',
     linkurl: '/browse/douban/tv_animation?title=豆瓣热门动漫',
     title: '豆瓣热门动漫',
-  },
-  {
-    apipath: 'douban/movies',
-    linkurl: '/browse/douban/movies?title=豆瓣最新电影',
-    title: '豆瓣最新电影',
-  },
-  {
-    apipath: 'douban/tvs',
-    linkurl: '/browse/douban/tvs?title=豆瓣最新电视剧',
-    title: '豆瓣最新电视剧',
   },
   {
     apipath: 'douban/movie_top250',
