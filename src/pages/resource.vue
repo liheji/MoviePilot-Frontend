@@ -2,8 +2,8 @@
 import NoDataFound from '@/components/NoDataFound.vue'
 import api from '@/api'
 import type { Context } from '@/api/types'
-import TorrentCardListView from '@/views/discover/TorrentCardListView.vue'
-import TorrentRowListView from '@/views/discover/TorrentRowListView.vue'
+import TorrentCardListView from '@/views/torrent/TorrentCardListView.vue'
+import TorrentRowListView from '@/views/torrent/TorrentRowListView.vue'
 import { useDisplay } from 'vuetify'
 
 // APP
