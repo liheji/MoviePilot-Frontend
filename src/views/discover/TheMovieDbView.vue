@@ -12,7 +12,7 @@ const filterParams = reactive({
   with_keywords: '',
   with_watch_providers: '',
   vote_average: 0,
-  vote_count: 0,
+  vote_count: 10,
   release_date: '',
 })
 
@@ -87,7 +87,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>类型</VLabel>
       </div>
-      <VChipGroup column v-model="type">
+      <VChipGroup v-model="type">
         <VChip :color="type == 'movies' ? 'primary' : ''" filter tile value="movies">电影</VChip>
         <VChip :color="type == 'tvs' ? 'primary' : ''" filter tile value="tvs">电视剧</VChip>
       </VChipGroup>
@@ -96,7 +96,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>排序</VLabel>
       </div>
-      <VChipGroup column v-model="filterParams.sort_by">
+      <VChipGroup v-model="filterParams.sort_by">
         <VChip
           :color="filterParams.sort_by == key ? 'primary' : ''"
           filter
@@ -113,7 +113,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>风格</VLabel>
       </div>
-      <VChipGroup column v-model="filterParams.with_genres">
+      <VChipGroup v-model="filterParams.with_genres">
         <VChip
           :color="filterParams.with_genres == key ? 'primary' : ''"
           filter
@@ -130,7 +130,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>语言</VLabel>
       </div>
-      <VChipGroup column v-model="filterParams.with_original_language">
+      <VChipGroup v-model="filterParams.with_original_language">
         <VChip
           :color="filterParams.with_original_language == key ? 'primary' : ''"
           filter
@@ -142,6 +142,23 @@ watch([type, filterParams], () => {
           {{ value }}
         </VChip>
       </VChipGroup>
+    </div>
+    <div class="flex justify-start align-center">
+      <div class="mr-5">
+        <VLabel>评分</VLabel>
+      </div>
+      <VSlider v-model="filterParams.vote_average" thumb-label max="10" min="0" class="align-center" hide-details>
+        <template v-slot:append>
+          <VTextField
+            width="5rem"
+            v-model="filterParams.vote_count"
+            density="compact"
+            type="number"
+            hide-details
+            single-line
+          />
+        </template>
+      </VSlider>
     </div>
   </div>
 

@@ -72,7 +72,7 @@ const zoneDict = {
 }
 
 // 年代字典
-const yearDict = {
+const yearDict: Record<string, string> = {
   '2020年代': '2020年代',
   '2010年代': '2010年代',
   '2000年代': '2000年代',
@@ -80,6 +80,12 @@ const yearDict = {
   '80年代': '80年代',
   '70年代': '70年代',
   '60年代': '60年代',
+}
+
+// 往年代字典中追加当前年份及往前5年的字典
+const currentYear = new Date().getFullYear()
+for (let i = 0; i < 6; i++) {
+  yearDict[`${currentYear - i}`] = `${currentYear - i}`
 }
 
 // 豆瓣过滤参数
@@ -113,7 +119,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>类型</VLabel>
       </div>
-      <VChipGroup column v-model="type">
+      <VChipGroup v-model="type">
         <VChip :color="type == 'movies' ? 'primary' : ''" filter tile value="movies">电影</VChip>
         <VChip :color="type == 'tvs' ? 'primary' : ''" filter tile value="tvs">电视剧</VChip>
       </VChipGroup>
@@ -122,7 +128,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>排序</VLabel>
       </div>
-      <VChipGroup column v-model="filterParams.sort">
+      <VChipGroup v-model="filterParams.sort">
         <VChip
           :color="filterParams.sort == key ? 'primary' : ''"
           filter
@@ -139,7 +145,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>风格</VLabel>
       </div>
-      <VChipGroup column v-model="doubanCategory">
+      <VChipGroup v-model="doubanCategory">
         <VChip
           :color="doubanCategory == key ? 'primary' : ''"
           filter
@@ -156,7 +162,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>地区</VLabel>
       </div>
-      <VChipGroup column v-model="doubanZone">
+      <VChipGroup v-model="doubanZone">
         <VChip
           :color="doubanZone == key ? 'primary' : ''"
           filter
@@ -173,7 +179,7 @@ watch([type, filterParams], () => {
       <div class="mr-5">
         <VLabel>年代</VLabel>
       </div>
-      <VChipGroup column v-model="doubanYear">
+      <VChipGroup v-model="doubanYear">
         <VChip
           :color="doubanYear == key ? 'primary' : ''"
           filter

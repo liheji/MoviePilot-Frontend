@@ -46,7 +46,7 @@ watch([filterParams], () => {
       <div class="mr-5">
         <VLabel>类别</VLabel>
       </div>
-      <VChipGroup column v-model="filterParams.cat">
+      <VChipGroup v-model="filterParams.cat">
         <VChip
           :color="filterParams.cat == key ? 'primary' : ''"
           filter
@@ -63,7 +63,7 @@ watch([filterParams], () => {
       <div class="mr-5">
         <VLabel>排序</VLabel>
       </div>
-      <VChipGroup column v-model="filterParams.sort">
+      <VChipGroup v-model="filterParams.sort">
         <VChip
           :color="filterParams.sort == key ? 'primary' : ''"
           filter
