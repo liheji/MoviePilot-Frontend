@@ -31,6 +31,13 @@ const bangumiSortDict = {
   'date': '日期',
 }
 
+// 年份字典，自动生成最近10年
+const yearDict: Record<number, number> = {}
+const currentYear = new Date().getFullYear()
+for (let i = 0; i < 10; i++) {
+  yearDict[currentYear - i] = currentYear - i
+}
+
 // 当前Key
 const currentKey = ref(0)
 
@@ -70,6 +77,23 @@ watch([filterParams], () => {
           tile
           :value="key"
           v-for="(value, key) in bangumiSortDict"
+          :key="key"
+        >
+          {{ value }}
+        </VChip>
+      </VChipGroup>
+    </div>
+    <div class="flex justify-start align-center">
+      <div class="mr-5">
+        <VLabel>年份</VLabel>
+      </div>
+      <VChipGroup v-model="filterParams.year">
+        <VChip
+          :color="filterParams.year == key ? 'primary' : ''"
+          filter
+          tile
+          :value="key"
+          v-for="(value, key) in yearDict"
           :key="key"
         >
           {{ value }}
