@@ -35,7 +35,7 @@ onMounted(async () => {
   <div v-if="downloaders.length > 0">
     <VTabs v-model="activeTab">
       <VTab v-for="item in downloaders" :value="item.name" @to="jumpTab(item.name)">
-        <span class="mx-5">{{ item.name }}</span>
+        <span class="min-w-24">{{ item.name }}</span>
       </VTab>
     </VTabs>
 

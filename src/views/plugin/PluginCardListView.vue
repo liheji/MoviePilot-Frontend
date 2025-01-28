@@ -399,7 +399,7 @@ onMounted(async () => {
   <div>
     <VTabs v-model="activeTab" show-arrows>
       <VTab v-for="item in PluginTabs" :value="item.tab">
-        <div class="flex align-center mx-5">
+        <div class="flex align-center min-w-24">
           <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </div>

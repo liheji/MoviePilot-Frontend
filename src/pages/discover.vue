@@ -17,7 +17,7 @@ function jumpTab(tab: string) {
   <div>
     <VTabs v-model="activeTab" show-arrows>
       <VTab v-for="item in DiscoverTabs" :value="item.tab" @to="jumpTab(item.tab)">
-        <div class="mx-5">
+        <div class="min-w-24">
           {{ item.title }}
         </div>
       </VTab>

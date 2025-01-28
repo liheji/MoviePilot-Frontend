@@ -20,13 +20,13 @@ function jumpTab(tab: string) {
   <div>
     <VTabs v-model="activeTab" show-arrows>
       <VTab v-if="subType == '电影'" v-for="item in SubscribeMovieTabs" :value="item.tab" @to="jumpTab(item.tab)">
-        <div class="flex align-center mx-5">
+        <div class="flex align-center min-w-24">
           <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </div>
       </VTab>
       <VTab v-if="subType == '电视剧'" v-for="item in SubscribeTvTabs" :value="item.tab" @to="jumpTab(item.tab)">
-        <div class="flex align-center mx-5">
+        <div class="flex align-center min-w-24">
           <VIcon size="20" start :icon="item.icon" />
           {{ item.title }}
         </div>
