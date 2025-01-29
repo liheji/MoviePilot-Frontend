@@ -48,7 +48,6 @@ function goPlay(isHovering: boolean | null = false) {
           'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
           'ring-1': isImageLoaded,
         }"
-        @click.stop="goPlay(hover.isHovering)"
       >
         <VImg
           aspect-ratio="2/3"
@@ -79,7 +78,7 @@ function goPlay(isHovering: boolean | null = false) {
           v-show="hover.isHovering || imageLoadError"
           class="w-full h-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2 pb-5"
           style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
-          @click.stop=""
+          @click.stop="goPlay(hover.isHovering)"
         >
           <span class="font-bold">{{ props.media?.subtitle }}</span>
           <h1 class="mb-1 text-white font-extrabold text-xl line-clamp-2 overflow-hidden text-ellipsis ...">
