@@ -16,12 +16,22 @@ const filterParams = reactive({
   release_date: '',
 })
 
-// TMDB排序字典
+// TMDB 电影排序字典
 const tmdbSortDict = {
   'popularity.desc': '热度降序',
   'popularity.asc': '热度升序',
   'release_date.desc': '上映日期降序',
   'release_date.asc': '上映日期升序',
+  'vote_average.desc': '评分降序',
+  'vote_average.asc': '评分升序',
+}
+
+// TMDB 电视剧排序字典
+const tmdbTvSortDict = {
+  'popularity.desc': '热度降序',
+  'popularity.asc': '热度升序',
+  'first_air_date.desc': '首播日期降序',
+  'first_air_date.asc': '首播日期升序',
   'vote_average.desc': '评分降序',
   'vote_average.asc': '评分升序',
 }
@@ -102,7 +112,7 @@ watch([type, filterParams], () => {
           filter
           tile
           :value="key"
-          v-for="(value, key) in tmdbSortDict"
+          v-for="(value, key) in type == 'movies' ? tmdbSortDict : tmdbTvSortDict"
           :key="key"
         >
           {{ value }}
