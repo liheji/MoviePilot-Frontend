@@ -179,7 +179,9 @@ onMounted(() => {
             </div>
             <div class="flex-grow">
               <VCardItem>
-                <VCardTitle class="text-center text-md-left">
+                <VCardTitle
+                  class="text-center text-md-left break-words whitespace-break-spaces line-clamp-2 overflow-hidden text-ellipsis"
+                >
                   {{ props.media?.share_title }}
                 </VCardTitle>
                 <VCardSubtitle

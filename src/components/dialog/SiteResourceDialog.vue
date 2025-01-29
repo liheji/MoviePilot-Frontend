@@ -99,7 +99,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VDialog max-width="80rem" scrollable z-index="1010" :fullscreen="!display.mdAndUp.value">
+  <VDialog max-width="80rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard :title="`浏览 - ${props.site?.name}`">
       <DialogCloseBtn @click="emit('close')" />
       <VDivider />
