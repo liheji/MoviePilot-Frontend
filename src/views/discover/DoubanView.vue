@@ -109,6 +109,9 @@ watch([type, filterParams], () => {
   if (!type.value) {
     type.value = 'movies'
   }
+  if (!filterParams.sort) {
+    filterParams.sort = 'U'
+  }
   currentKey.value++
 })
 </script>
