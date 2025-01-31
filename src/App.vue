@@ -9,6 +9,9 @@ let themeValue = localStorage.getItem('theme') || 'light'
 const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
 globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
 
+// 显示状态
+const show = ref(false)
+
 // ApexCharts 全局配置
 declare global {
   interface Window {
@@ -44,6 +47,7 @@ onMounted(() => {
     nextTick(() => {
       setTimeout(() => {
         removeEl('#loading-bg')
+        show.value = true
       }, 1500)
     })
   })
@@ -51,7 +55,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VApp>
+  <VApp v-show="show">
     <RouterView />
   </VApp>
 </template>
