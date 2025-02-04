@@ -22,6 +22,10 @@ const props = defineProps({
 // 是否刷新过
 let isRefreshed = ref(false)
 
+// 顺序存储键值
+const localOrderKey = props.type === '电影' ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'
+const orderRequestKey = props.type === '电影' ? 'SubscribeMovieOrder' : 'SubscribeTvOrder'
+
 // 数据列表
 const dataList = ref<Subscribe[]>([])
 
@@ -44,19 +48,21 @@ watch(dataList, () => {
   const userName = store.state.auth.userName
   if (superUser) displayList.value = dataList.value.filter(data => data.type === props.type)
   else displayList.value = dataList.value.filter(data => data.type === props.type && data.username === userName)
+  // 排序
+  sortSubscribeOrder()
 })
 
 // 加载顺序
 async function loadSubscribeOrderConfig() {
   // 顺序配置
-  const local_order = localStorage.getItem('MP_SUBSCRIBE_ORDER')
+  const local_order = localStorage.getItem(localOrderKey)
   if (local_order) {
     orderConfig.value = JSON.parse(local_order)
   } else {
-    const response2 = await api.get('/user/config/SubscribeOrder')
-    if (response2 && response2.data && response2.data.value) {
-      orderConfig.value = response2.data.value
-      localStorage.setItem('MP_SUBSCRIBE_ORDER', JSON.stringify(orderConfig.value))
+    const response = await api.get(`/user/config/${orderRequestKey}`)
+    if (response && response.data && response.data.value) {
+      orderConfig.value = response.data.value
+      localStorage.setItem(localOrderKey, JSON.stringify(orderConfig.value))
     }
   }
 }
@@ -66,10 +72,10 @@ function sortSubscribeOrder() {
   if (!orderConfig.value) {
     return
   }
-  if (dataList.value.length === 0) {
+  if (displayList.value.length === 0) {
     return
   }
-  dataList.value.sort((a, b) => {
+  displayList.value.sort((a, b) => {
     const aIndex = orderConfig.value.findIndex((item: { id: number }) => item.id === a.id)
     const bIndex = orderConfig.value.findIndex((item: { id: number }) => item.id === b.id)
     return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
@@ -82,11 +88,11 @@ async function saveSubscribeOrder() {
   const orderObj = displayList.value.map(item => ({ id: item.id }))
   orderConfig.value = orderObj
   const orderString = JSON.stringify(orderObj)
-  localStorage.setItem('MP_SUBSCRIBE_ORDER', orderString)
+  localStorage.setItem(localOrderKey, orderString)
 
   // 保存到服务端
   try {
-    await api.post('/user/config/SubscribeOrder', orderObj)
+    await api.post(`/user/config/${orderRequestKey}`, orderObj)
   } catch (error) {
     console.error(error)
   }
@@ -97,8 +103,6 @@ async function fetchData() {
   try {
     loading.value = true
     dataList.value = await api.get('subscribe/')
-    // 排序
-    sortSubscribeOrder()
     loading.value = false
     isRefreshed.value = true
   } catch (error) {
