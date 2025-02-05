@@ -403,7 +403,7 @@ watch(
     </VRow>
 
     <!-- 双重验证弹窗 -->
-    <VDialog v-model="otpDialog" max-width="45rem" persistent scrollable>
+    <VDialog v-if="otpDialog" v-model="otpDialog" max-width="45rem" persistent scrollable>
       <!-- 开启双重验证弹窗内容 -->
       <VCard>
         <DialogCloseBtn @click="otpDialog = false" />

@@ -156,7 +156,7 @@ const userLevel = computed(() => store.state.auth.level)
   <!-- 用户认证对话框 -->
   <UserAuthDialog v-if="siteAuthDialog" v-model="siteAuthDialog" @done="siteAuthDone" @close="siteAuthDialog = false" />
   <!-- 重启确认对话框 -->
-  <VDialog v-model="restartDialog" max-width="25rem">
+  <VDialog v-if="restartDialog" v-model="restartDialog" max-width="25rem">
     <VCard>
       <VCardItem>
         <div class="flex items-center justify-center mt-3">

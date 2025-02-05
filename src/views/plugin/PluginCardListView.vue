@@ -607,7 +607,7 @@ onMounted(async () => {
     </VCard>
   </VDialog>
   <!-- 安装插件进度框 -->
-  <VDialog v-model="progressDialog" :scrim="false" width="25rem">
+  <VDialog v-if="progressDialog" v-model="progressDialog" :scrim="false" width="25rem">
     <VCard color="primary">
       <VCardText class="text-center">
         {{ progressText }}

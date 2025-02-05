@@ -485,7 +485,13 @@ watch(
     </VHover>
 
     <!-- 插件配置页面 -->
-    <VDialog v-model="pluginConfigDialog" scrollable max-width="60rem" :fullscreen="!display.mdAndUp.value">
+    <VDialog
+      v-if="pluginConfigDialog"
+      v-model="pluginConfigDialog"
+      scrollable
+      max-width="60rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard :title="`${props.plugin?.plugin_name} - 配置`" class="rounded-t">
         <DialogCloseBtn v-model="pluginConfigDialog" />
         <VDivider />
@@ -503,7 +509,13 @@ watch(
     </VDialog>
 
     <!-- 插件数据页面 -->
-    <VDialog v-model="pluginInfoDialog" scrollable max-width="80rem" :fullscreen="!display.mdAndUp.value">
+    <VDialog
+      v-if="pluginInfoDialog"
+      v-model="pluginInfoDialog"
+      scrollable
+      max-width="80rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard :title="`${props.plugin?.plugin_name}`" class="rounded-t">
         <DialogCloseBtn v-model="pluginInfoDialog" />
         <VCardText class="min-h-40">

@@ -7,7 +7,7 @@ import synologychat_image from '@images/logos/synologychat.png'
 import slack_image from '@images/logos/slack.webp'
 import chrome_image from '@images/logos/chrome.png'
 import { useToast } from 'vue-toast-notification'
-import { cloneDeep } from "lodash"
+import { cloneDeep } from 'lodash'
 
 // 定义输入
 const props = defineProps({
@@ -132,7 +132,7 @@ function onClose() {
         <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog v-model="notificationInfoDialog" scrollable max-width="40rem" persistent>
+    <VDialog v-if="notificationInfoDialog" v-model="notificationInfoDialog" scrollable max-width="40rem" persistent>
       <VCard :title="`${props.notification.name} - 配置`" class="rounded-t">
         <DialogCloseBtn v-model="notificationInfoDialog" />
         <VDivider />

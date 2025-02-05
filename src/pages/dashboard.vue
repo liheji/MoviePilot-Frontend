@@ -340,7 +340,7 @@ onDeactivated(() => {
   />
 
   <!-- 弹窗，根据配置生成选项 -->
-  <VDialog v-model="dialog" max-width="35rem" scrollable>
+  <VDialog v-if="dialog" v-model="dialog" max-width="35rem" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>设置仪表板</VCardTitle>
