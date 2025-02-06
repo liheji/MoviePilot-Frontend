@@ -1204,3 +1204,17 @@ export interface TransferQueue {
     state: string
   }[]
 }
+
+// 探索的数据源
+export interface DiscoverSource {
+  // 数据源名称
+  name: string
+  // 媒体ID的前缀，不含:
+  mediaid_prefix: string
+  // 媒体数据源API地址
+  api_path: string
+  // 过滤参数
+  filter_params: { [key: string]: any }
+  // 过滤参数UI配置
+  filter_ui: RenderProps[]
+}
