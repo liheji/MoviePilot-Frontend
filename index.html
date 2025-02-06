@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-  style="overflow: hidden auto; min-block-size: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));">
+  style="overflow: hidden auto; min-block-size: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));background: var(--initial-loader-bg, #fff);">
 
 <head>
   <meta http-equiv="pragma" content="no-cache">
@@ -37,7 +37,6 @@
     const primaryColor = localStorage.getItem('materio-initial-loader-color') || '#9155FD'
     if (primaryColor)
       document.documentElement.style.setProperty('--initial-loader-color', primaryColor)
-    document.documentElement.style.setProperty('background', 'var(--initial-loader-bg, #fff)')
   </script>
 </head>
 
