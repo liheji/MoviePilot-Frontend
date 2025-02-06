@@ -1,3 +1,7 @@
+html {
+  background: var(--initial-loader-bg, #fff);
+}
+
 #loading-bg {
   position: fixed;
   z-index: 9999;
