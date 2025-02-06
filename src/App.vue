@@ -46,7 +46,11 @@ onMounted(() => {
   ensureRenderComplete(() => {
     nextTick(() => {
       setTimeout(() => {
+        // 移除加载动画
         removeEl('#loading-bg')
+        // 将background属性从html的style中移除
+        document.documentElement.style.removeProperty('background')
+        // 显示页面
         show.value = true
       }, 1500)
     })

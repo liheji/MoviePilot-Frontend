@@ -9,6 +9,7 @@ import logo from '@images/logo.png'
 import { useTheme } from 'vuetify'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { urlBase64ToUint8Array } from '@/@core/utils/navigator'
+import { saveLocalTheme } from '@/@core/utils/theme'
 
 const { global: globalTheme } = useTheme()
 
@@ -85,8 +86,7 @@ async function setTheme() {
   const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
   globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
   // 存储主题到本地
-  localStorage.setItem('theme', themeValue)
-  localStorage.setItem('materio-initial-loader-bg', globalTheme.current.value.colors.background)
+  saveLocalTheme(themeValue, globalTheme)
 }
 
 // 订阅推送通知

@@ -30,6 +30,15 @@
   <meta name="HandheldFriendly" content="True" />
   <meta name="MobileOptimized" content="320" />
   <link rel="stylesheet" type="text/css" href="/loader.css" />
+  <script>
+    const loaderColor = localStorage.getItem('materio-initial-loader-bg') || '#FFFFFF'
+    if (loaderColor)
+      document.documentElement.style.setProperty('--initial-loader-bg', loaderColor)
+    const primaryColor = localStorage.getItem('materio-initial-loader-color') || '#9155FD'
+    if (primaryColor)
+      document.documentElement.style.setProperty('--initial-loader-color', primaryColor)
+    document.documentElement.style.setProperty('background', 'var(--initial-loader-bg, #fff)')
+  </script>
 </head>
 
 <body style="margin: 0;">
@@ -146,14 +155,6 @@
     </div>
   </div>
   <div id="app"></div>
-  <script>
-    const loaderColor = localStorage.getItem('materio-initial-loader-bg') || '#FFFFFF'
-    const primaryColor = localStorage.getItem('materio-initial-loader-color') || '#9155FD'
-    if (loaderColor)
-      document.documentElement.style.setProperty('--initial-loader-bg', loaderColor)
-    if (primaryColor)
-      document.documentElement.style.setProperty('--initial-loader-color', primaryColor)
-  </script>
   <script type="module" src="/src/main.ts"></script>
 </body>
 

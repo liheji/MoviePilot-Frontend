@@ -5,6 +5,7 @@ import type { ThemeSwitcherTheme } from '@layouts/types'
 import api from '@/api'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { useToast } from 'vue-toast-notification'
+import { saveLocalTheme } from '../utils/theme'
 
 // 显示器宽度
 const display = useDisplay()
@@ -102,8 +103,7 @@ function updateTheme() {
   savedTheme.value = theme
   themeTransition()
   // 保存主题到本地
-  localStorage.setItem('theme', theme)
-  localStorage.setItem('materio-initial-loader-bg', globalTheme.current.value.colors.background)
+  saveLocalTheme(theme, globalTheme)
 }
 
 // 切换主题
