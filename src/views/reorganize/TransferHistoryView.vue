@@ -48,7 +48,41 @@ const headers = [
     sortable: true,
   },
   {
-    title: '目录',
+    title: '路径',
+    key: 'src',
+    sortable: true,
+  },
+  {
+    title: '转移方式',
+    key: 'mode',
+    sortable: true,
+  },
+  {
+    title: '时间',
+    key: 'date',
+    sortable: true,
+  },
+  {
+    title: '状态',
+    key: 'status',
+    sortable: true,
+  },
+  {
+    title: '',
+    key: 'actions',
+    sortable: false,
+  },
+]
+
+// 分组表头
+const groupHeaders = [
+  {
+    title: '季集/类别',
+    key: 'title',
+    sortable: true,
+  },
+  {
+    title: '路径',
     key: 'src',
     sortable: true,
   },
@@ -97,6 +131,16 @@ const loading = ref(false)
 
 // 总条数
 const totalItems = ref(0)
+
+// 是否要分组
+const group = ref(false)
+
+// 分组条件
+const groupBy = ref<any>([
+  {
+    key: 'title',
+  },
+])
 
 // 每页条数
 const itemsPerPage = ref<number>(ensureNumber(route.query.itemsPerPage, 50))
@@ -407,7 +451,107 @@ onMounted(fetchData)
         </VRow>
       </VCardTitle>
     </VCardItem>
+    <!-- 分组模式 -->
     <VDataTableVirtual
+      v-if="group"
+      v-model="selected"
+      :groupBy="groupBy"
+      :headers="groupHeaders"
+      :items="dataList"
+      :loading="loading"
+      density="compact"
+      return-object
+      fixed-header
+      show-select
+      loading-text="加载中..."
+      hover
+      :style="tableStyle"
+    >
+      <template #header.data-table-group>
+        <span>标题</span>
+      </template>
+      <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
+        <tr>
+          <td :colspan="columns.length">
+            <VBtn
+              :icon="isGroupOpen(item) ? '$expand' : '$next'"
+              size="small"
+              variant="text"
+              @click="toggleGroup(item)"
+            />
+            {{ item.value }}
+          </td>
+        </tr>
+      </template>
+      <template #item.title="{ item }">
+        <div class="d-flex align-center">
+          <VAvatar>
+            <VIcon :icon="getIcon(item.type || '')" />
+          </VAvatar>
+          <div class="d-flex flex-column ms-1">
+            <span v-if="item.type === '电视剧'" class="d-block text-high-emphasis min-w-20">
+              {{ item?.seasons }}{{ item?.episodes }}
+            </span>
+            <small>{{ item?.category }}</small>
+          </div>
+        </div>
+      </template>
+      <template #item.src="{ item }">
+        <div>
+          <span>
+            <VChip variant="tonal" size="small" label class="my-1"> {{ storageDict[item?.src_storage || ''] }}</VChip>
+            <small>{{ item?.src }}</small>
+          </span>
+          <span class="text-high-emphasis text-bold"> => </span>
+          <br />
+          <span v-if="item?.dest">
+            <VChip variant="tonal" size="small" label class="my-1"> {{ storageDict[item?.dest_storage || ''] }}</VChip>
+            <small>{{ item?.dest }}</small>
+          </span>
+        </div>
+      </template>
+      <template #item.mode="{ item }">
+        <VChip variant="outlined" color="primary" size="small">
+          {{ TransferDict[item?.mode ?? ''] || '未知' }}
+        </VChip>
+      </template>
+      <template #item.status="{ item }">
+        <VChip v-if="item?.status" color="success" size="small"> 成功 </VChip>
+        <VTooltip v-else :text="item?.errmsg">
+          <template #activator="{ props }">
+            <VChip v-bind="props" color="error" size="small"> 失败 </VChip>
+          </template>
+        </VTooltip>
+      </template>
+      <template #item.date="{ item }">
+        <small>{{ item?.date }}</small>
+      </template>
+      <template #item.actions="{ item }">
+        <IconBtn>
+          <VIcon icon="mdi-dots-vertical" />
+          <VMenu activator="parent" close-on-content-click>
+            <VList>
+              <VListItem
+                v-for="(menu, i) in dropdownItems"
+                :key="i"
+                variant="plain"
+                :base-color="menu.props.color"
+                @click="menu.props.click(item)"
+              >
+                <template #prepend>
+                  <VIcon :icon="menu.props.prependIcon" />
+                </template>
+                <VListItemTitle v-text="menu.title" />
+              </VListItem>
+            </VList>
+          </VMenu>
+        </IconBtn>
+      </template>
+      <template #no-data> 没有数据 </template>
+    </VDataTableVirtual>
+    <!-- 列表模式 -->
+    <VDataTableVirtual
+      v-else
       v-model="selected"
       :headers="headers"
       :items="dataList"
@@ -489,7 +633,7 @@ onMounted(fetchData)
       </template>
       <template #no-data> 没有数据 </template>
     </VDataTableVirtual>
-    <div class="flex items-center justify-end">
+    <div class="flex items-center justify-center">
       <div class="w-auto">
         <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" variant="solo" flat />
       </div>
@@ -506,9 +650,8 @@ onMounted(fetchData)
   </VCard>
 
   <!-- 底部操作按钮 -->
-  <div v-if="isRefreshed">
+  <div v-if="isRefreshed && selected.length > 0">
     <VFab
-      v-if="selected.length > 0"
       icon="mdi-trash-can-outline"
       color="error"
       location="bottom"
@@ -520,7 +663,6 @@ onMounted(fetchData)
       :class="{ 'mb-12': appMode }"
     />
     <VFab
-      v-if="selected.length > 0"
       :class="appMode ? 'mb-28' : 'mb-16'"
       icon="mdi-redo-variant"
       location="bottom"
@@ -529,6 +671,19 @@ onMounted(fetchData)
       app
       appear
       @click="retransferBatch"
+    />
+  </div>
+  <div v-else-if="isRefreshed">
+    <VFab
+      :icon="group ? 'mdi-format-list-bulleted' : 'mdi-format-list-group'"
+      color="primary"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="group = !group"
+      :class="{ 'mb-12': appMode }"
     />
   </div>
   <!-- 底部弹窗 -->
