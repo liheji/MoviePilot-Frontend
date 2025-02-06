@@ -14,7 +14,7 @@ const props = defineProps({
 })
 
 // 过滤表单
-const filterForm = reactive({
+const filterForm: Record<string, string[]> = reactive({
   // 站点
   site: [] as string[],
   // 季
@@ -31,20 +31,36 @@ const filterForm = reactive({
   resolution: [] as string[],
 })
 
-// 获取站点过滤选项
-const siteFilterOptions = ref<Array<string>>([])
-// 获取季过滤选项
-const seasonFilterOptions = ref<Array<string>>([])
-// 获取制作组过滤选项
-const releaseGroupFilterOptions = ref<Array<string>>([])
-// 获取视频编码过滤选项
-const videoCodeFilterOptions = ref<Array<string>>([])
-// 获取促销状态过滤选项
-const freeStateFilterOptions = ref<Array<string>>([])
-// 获取质量过滤选项
-const editionFilterOptions = ref<Array<string>>([])
-// 获取分辨率过滤选项
-const resolutionFilterOptions = ref<Array<string>>([])
+// 过滤项映射（保持中文标题）
+const filterTitles: Record<string, string> = {
+  site: '站点',
+  season: '季集',
+  freeState: '促销状态',
+  videoCode: '视频编码',
+  edition: '质量',
+  resolution: '分辨率',
+  releaseGroup: '制作组',
+}
+
+// 统一存储过滤选项
+const filterOptions: Record<string, string[]> = reactive({
+  site: [] as string[],
+  season: [] as string[],
+  freeState: [] as string[],
+  edition: [] as string[],
+  resolution: [] as string[],
+  videoCode: [] as string[],
+  releaseGroup: [] as string[],
+})
+
+// 非空值的过滤选项
+const filterOptionsNotEmpty = computed(() => {
+  const options: Record<string, string[]> = {}
+  for (const key in filterOptions) {
+    if (filterOptions[key].length > 0) options[key] = filterOptions[key]
+  }
+  return options
+})
 
 // 完整的数据列表
 let dataList: SearchTorrent[]
@@ -60,19 +76,19 @@ function initOptions(data: Context) {
   const optionValue = (options: Array<string>, value: string | undefined) => {
     value && !options.includes(value) && options.push(value)
   }
-  optionValue(siteFilterOptions.value, torrent_info?.site_name)
-  optionValue(seasonFilterOptions.value, meta_info?.season_episode)
-  optionValue(releaseGroupFilterOptions.value, meta_info?.resource_team)
-  optionValue(videoCodeFilterOptions.value, meta_info?.video_encode)
-  optionValue(freeStateFilterOptions.value, torrent_info?.volume_factor)
-  optionValue(editionFilterOptions.value, meta_info?.edition)
-  optionValue(resolutionFilterOptions.value, meta_info?.resource_pix)
+  optionValue(filterOptions.site, torrent_info?.site_name)
+  optionValue(filterOptions.season, meta_info?.season_episode)
+  optionValue(filterOptions.releaseGroup, meta_info?.resource_team)
+  optionValue(filterOptions.videoCode, meta_info?.video_encode)
+  optionValue(filterOptions.freeState, torrent_info?.volume_factor)
+  optionValue(filterOptions.edition, meta_info?.edition)
+  optionValue(filterOptions.resolution, meta_info?.resource_pix)
 }
 
 // 对季过滤选项进行排序
 const sortSeasonFilterOptions = computed(() => {
   // 预解析所有选项
-  const parsedOptions = seasonFilterOptions.value.map((option, index) => {
+  const parsedOptions = filterOptions.season.map((option, index) => {
     const parseSeasonEpisode = (str: string) => {
       const match = str.match(/^S(\d+)(?:-S(\d+))?(?:\s*E(\d+)(?:-E(\d+))?)?$/)
 
@@ -268,86 +284,26 @@ function loadMore({ done }: { done: any }) {
 <template>
   <VCard class="bg-transparent mb-3 pt-2 shadow-none">
     <VRow>
-      <VCol v-if="siteFilterOptions.length > 0" cols="6" md="">
+      <VCol v-for="(options, key) in filterOptionsNotEmpty" :key="key" cols="6" md="">
         <VSelect
-          v-model="filterForm.site"
-          :items="siteFilterOptions"
-          size="small"
-          density="compact"
-          chips
-          label="站点"
-          multiple
-          clearable
-        />
-      </VCol>
-      <VCol v-if="seasonFilterOptions.length > 0" cols="6" md="">
-        <VSelect
-          v-model="filterForm.season"
+          v-if="key === 'season'"
+          v-model="filterForm[key]"
           :items="sortSeasonFilterOptions"
           size="small"
           density="compact"
           chips
-          label="季集"
+          :label="filterTitles[key]"
           multiple
           clearable
         />
-      </VCol>
-      <VCol v-if="releaseGroupFilterOptions.length > 0" cols="6" md="">
         <VSelect
-          v-model="filterForm.releaseGroup"
-          :items="releaseGroupFilterOptions"
+          v-else
+          v-model="filterForm[key]"
+          :items="options"
           size="small"
           density="compact"
           chips
-          label="制作组"
-          multiple
-          clearable
-        />
-      </VCol>
-      <VCol v-if="editionFilterOptions.length > 0" cols="6" md="">
-        <VSelect
-          v-model="filterForm.edition"
-          :items="editionFilterOptions"
-          size="small"
-          density="compact"
-          chips
-          label="质量"
-          multiple
-          clearable
-        />
-      </VCol>
-      <VCol v-if="resolutionFilterOptions.length > 0" cols="6" md="">
-        <VSelect
-          v-model="filterForm.resolution"
-          :items="resolutionFilterOptions"
-          size="small"
-          density="compact"
-          chips
-          label="分辨率"
-          multiple
-          clearable
-        />
-      </VCol>
-      <VCol v-if="videoCodeFilterOptions.length > 0" cols="6" md="">
-        <VSelect
-          v-model="filterForm.videoCode"
-          :items="videoCodeFilterOptions"
-          size="small"
-          density="compact"
-          chips
-          label="视频编码"
-          multiple
-          clearable
-        />
-      </VCol>
-      <VCol v-if="freeStateFilterOptions.length > 0" cols="6" md="">
-        <VSelect
-          v-model="filterForm.freeState"
-          :items="freeStateFilterOptions"
-          size="small"
-          density="compact"
-          chips
-          label="促销状态"
+          :label="filterTitles[key]"
           multiple
           clearable
         />
