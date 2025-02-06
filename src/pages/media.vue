@@ -9,13 +9,16 @@ const mediaid = route.query?.mediaid?.toString()
 
 // 类型
 const type = route.query?.type?.toString()
+
+// 标题
+const title = route.query?.title?.toString()
+
+// 年份
+const year = route.query?.year?.toString()
 </script>
 
 <template>
   <div>
-    <MediaDetailView
-      :mediaid="mediaid"
-      :type="type"
-    />
+    <MediaDetailView :mediaid="mediaid" :type="type" :title="title" :year="year" />
   </div>
 </template>

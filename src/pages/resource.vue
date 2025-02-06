@@ -22,6 +22,12 @@ const type = route.query?.type?.toString() ?? ''
 // 搜索字段
 const area = route.query?.area?.toString() ?? ''
 
+// 搜索标题
+const title = route.query?.title?.toString() ?? ''
+
+// 搜索年份
+const year = route.query?.year
+
 // 搜索季
 const season = route.query?.season?.toString() ?? ''
 
@@ -82,12 +88,14 @@ async function fetchData() {
     } else {
       startLoadingProgress()
       let result: { [key: string]: any }
-      // 优先按TMDBID精确查询
-      if (keyword?.startsWith('tmdb:') || keyword?.startsWith('douban:') || keyword?.startsWith('bangumi:')) {
+      // 如果keyword的格式是 xxxx:xxxxx 且:前面的xxxx为字符，则按照媒体ID格式搜索
+      if (/^[a-zA-Z]+:/.test(keyword)) {
         result = await api.get(`search/media/${keyword}`, {
           params: {
             mtype: type,
             area,
+            title,
+            year,
             season,
           },
         })

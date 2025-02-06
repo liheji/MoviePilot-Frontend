@@ -363,6 +363,8 @@ function goMediaDetail(isHovering = false) {
         path: '/media',
         query: {
           mediaid: getMediaId(),
+          title: props.media?.title,
+          year: props.media?.year,
           type: props.media?.type,
         },
       })
@@ -378,6 +380,8 @@ function handleSearch() {
       keyword: getMediaId(),
       type: props.media?.type,
       area: 'title',
+      title: props.media?.title,
+      year: props.media?.year,
       season: props.media?.season,
     },
   })

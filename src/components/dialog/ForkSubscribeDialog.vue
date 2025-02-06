@@ -87,12 +87,20 @@ const posterUrl = computed(() => {
   return url
 })
 
+// 获得mediaid
+function getMediaId() {
+  if (props.media?.tmdbid) return `tmdb:${props.media?.tmdbid}`
+  else if (props.media?.doubanid) return `douban:${props.media?.doubanid}`
+}
+
 // 查看媒体详情
 async function viewMediaDetail() {
   router.push({
     path: '/media',
     query: {
-      mediaid: `${props.media?.tmdbid ? `tmdb:${props.media?.tmdbid}` : `douban:${props.media?.doubanid}`}`,
+      mediaid: getMediaId(),
+      title: props.media?.name,
+      year: props.media?.year,
       type: props.media?.type,
     },
   })

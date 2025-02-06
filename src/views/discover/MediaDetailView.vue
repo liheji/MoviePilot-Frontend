@@ -14,6 +14,8 @@ import { isNullOrEmptyObject } from '@/@core/utils'
 // 输入参数
 const mediaProps = defineProps({
   mediaid: String,
+  title: String,
+  year: String,
   type: String,
 })
 
@@ -68,6 +70,8 @@ async function getMediaDetail() {
   if (mediaProps.mediaid && mediaProps.type) {
     mediaDetail.value = await api.get(`media/${mediaProps.mediaid}`, {
       params: {
+        title: mediaProps.title,
+        year: mediaProps.year,
         type_name: mediaProps.type,
       },
     })
@@ -402,6 +406,8 @@ function handleSearch(area: string) {
       keyword,
       type: mediaDetail.value.type,
       area,
+      title: mediaDetail.value.title,
+      year: mediaDetail.value.year,
       season: mediaDetail.value.season,
     },
   })
