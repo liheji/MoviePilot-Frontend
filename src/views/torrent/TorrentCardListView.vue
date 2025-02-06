@@ -209,11 +209,11 @@ onMounted(() => {
   const groupMap = new Map<string, Context[]>()
   // 遍历数据
   props.items?.forEach(item => {
-    const { torrent_info } = item
+    const { torrent_info, meta_info } = item
     // init options
     initOptions(item)
     // group data
-    const key = `${torrent_info.title}_${torrent_info.size}`
+    const key = `${meta_info.name}_${meta_info.resource_pix}_${meta_info.edition}_${meta_info.resource_team}_${meta_info.season_episode}_${torrent_info.size}`
     if (groupMap.has(key)) {
       // 已入库相同标题和大小的分组，将当前上下文信息添加到分组中
       const group = groupMap.get(key)
