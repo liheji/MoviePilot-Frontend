@@ -57,11 +57,10 @@ const subscribeId = ref<number>()
 
 // 获得mediaid
 function getMediaId() {
-  return mediaDetail.value?.tmdb_id
-    ? `tmdb:${mediaDetail.value?.tmdb_id}`
-    : mediaDetail.value?.douban_id
-    ? `douban:${mediaDetail.value?.douban_id}`
-    : `bangumi:${mediaDetail.value?.bangumi_id}`
+  if (mediaDetail.value?.tmdb_id) return `tmdb:${mediaDetail.value?.tmdb_id}`
+  else if (mediaDetail.value?.douban_id) return `douban:${mediaDetail.value?.douban_id}`
+  else if (mediaDetail.value?.bangumi_id) return `bangumi:${mediaDetail.value?.bangumi_id}`
+  else return `${mediaDetail.value?.mediaid_prefix}:${mediaDetail.value?.media_id}`
 }
 
 // 调用API查询详情

@@ -77,7 +77,8 @@ const observer = ref<IntersectionObserver | null>(null)
 function getMediaId() {
   if (props.media?.tmdb_id) return `tmdb:${props.media?.tmdb_id}`
   else if (props.media?.douban_id) return `douban:${props.media?.douban_id}`
-  else return `bangumi:${props.media?.bangumi_id}`
+  else if (props.media?.bangumi_id) return `bangumi:${props.media?.bangumi_id}`
+  else return `${props.media?.mediaid_prefix}:${props.media?.media_id}`
 }
 
 // 订阅弹窗选择的多季
@@ -146,6 +147,7 @@ async function addSubscribe(season = 0) {
       tmdbid: props.media?.tmdb_id,
       doubanid: props.media?.douban_id,
       bangumiid: props.media?.bangumi_id,
+      mediaid: props.media?.media_id ? `${props.media?.mediaid_prefix}:${props.media?.media_id}` : '',
       season,
       best_version,
     })

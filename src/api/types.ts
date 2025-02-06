@@ -208,6 +208,10 @@ export interface MediaInfo {
   bangumi_id?: string
   // 合集ID
   collection_id?: number
+  // 其它媒体ID前缀
+  mediaid_prefix?: string
+  // 其它媒体ID值
+  media_id?: string
   // 媒体原语种
   original_language?: string
   // 媒体原发行标题
