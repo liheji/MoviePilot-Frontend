@@ -28,3 +28,9 @@ watch([filterParams], () => {
     <MediaCardListView :key="currentKey" :apipath="source.api_path" :params="filterParams" />
   </div>
 </template>
+
+<style>
+.v-chip--selected {
+  color: rgb(var(--v-theme-primary)) !important;
+}
+</style>
