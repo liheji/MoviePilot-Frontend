@@ -153,3 +153,12 @@ export function formatDateDifference(dateString: string): string {
   if (!dateString) return ''
   return dayjs(dateString).fromNow()
 }
+
+// 格式化评份，如为10及以下的数按原值显示，否则格式化为xxM、xxK显示
+export function formatRating(rating: number): string {
+  if (!rating) return ''
+  if (rating <= 10) return rating.toString()
+  if (rating < 1000) return rating.toLocaleString()
+  if (rating < 1000 * 1000) return `${(rating / 1000).toFixed(1)}K`
+  return `${(rating / 1000 / 1000).toFixed(1)}M`
+}

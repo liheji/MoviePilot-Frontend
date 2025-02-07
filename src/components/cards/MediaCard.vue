@@ -2,7 +2,7 @@
 import type { PropType, Ref } from 'vue'
 import { useToast } from 'vue-toast-notification'
 import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
-import { formatSeason } from '@/@core/utils/formatters'
+import { formatSeason, formatRating } from '@/@core/utils/formatters'
 import api from '@/api'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import type { MediaInfo, NotExistMediaInfo, Subscribe, TmdbSeason } from '@/api/types'
@@ -533,7 +533,7 @@ function onRemoveSubscribe() {
             :class="getChipColor('rating')"
             class="absolute right-2 top-2 bg-opacity-80 shadow-md text-white font-bold"
           >
-            {{ props.media?.vote_average }}
+            {{ formatRating(props.media?.vote_average) }}
           </VChip>
           <!--来源图标-->
           <VAvatar
