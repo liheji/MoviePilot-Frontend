@@ -101,7 +101,7 @@ export default defineConfig({
         'shortcuts': [
           {
             'name': '推荐',
-            'url': './ranking',
+            'url': './recommend',
             'icons': [
               {
                 'src': './sparkles-icon-192x192.png',

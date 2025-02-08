@@ -173,6 +173,6 @@ watch([type, filterParams], () => {
   </div>
 
   <div>
-    <MediaCardListView :key="currentKey" :apipath="`tmdb/${type}`" :params="filterParams" />
+    <MediaCardListView :key="currentKey" :apipath="`discover/tmdb_${type}`" :params="filterParams" />
   </div>
 </template>

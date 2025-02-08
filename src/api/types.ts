@@ -1244,3 +1244,11 @@ export interface DiscoverSource {
   // 过滤参数UI配置
   filter_ui: RenderProps[]
 }
+
+// 推荐的数据源
+export interface RecommendSource {
+  // 数据源名称
+  name: string
+  // 媒体数据源API地址
+  api_path: string
+}

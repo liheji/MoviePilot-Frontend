@@ -28,8 +28,8 @@ const router = createRouter({
           },
         },
         {
-          path: '/ranking',
-          component: () => import('../pages/ranking.vue'),
+          path: '/recommend',
+          component: () => import('../pages/recommend.vue'),
           meta: {
             keepAlive: true,
             requiresAuth: true,

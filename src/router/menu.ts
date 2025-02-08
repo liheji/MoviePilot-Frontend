@@ -18,7 +18,7 @@ export const SystemNavMenus = [
   {
     title: '推荐',
     icon: 'mdi-star-outline',
-    to: '/ranking',
+    to: '/recommend',
     header: '发现',
     admin: false,
     footer: true,

@@ -10,7 +10,7 @@ const route = useRoute()
 const activeState = computed(() => {
   return {
     home: route.path === '/dashboard',
-    ranking: route.path === '/ranking',
+    recommend: route.path === '/recommend',
     movie: route.path === '/subscribe/movie',
     tv: route.path === '/subscribe/tv',
     apps: route.path === '/apps',
@@ -31,8 +31,8 @@ const activeState = computed(() => {
         <VIcon v-if="activeState.home" size="28">mdi-home</VIcon>
         <VIcon v-else size="28">mdi-home-outline</VIcon>
       </VBtn>
-      <VBtn to="/ranking" :ripple="false">
-        <VIcon v-if="activeState.ranking" size="28">mdi-star</VIcon>
+      <VBtn to="/recommend" :ripple="false">
+        <VIcon v-if="activeState.recommend" size="28">mdi-star</VIcon>
         <VIcon v-else size="28">mdi-star-outline</VIcon>
       </VBtn>
       <VBtn to="/subscribe/movie" :ripple="false">

@@ -102,6 +102,6 @@ watch([filterParams], () => {
     </div>
   </div>
   <div>
-    <MediaCardListView :key="currentKey" apipath="bangumi/subjects" :params="filterParams" />
+    <MediaCardListView :key="currentKey" apipath="discover/bangumi" :params="filterParams" />
   </div>
 </template>
