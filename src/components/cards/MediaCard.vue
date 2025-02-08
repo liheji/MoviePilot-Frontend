@@ -5,7 +5,7 @@ import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
 import { formatSeason, formatRating } from '@/@core/utils/formatters'
 import api from '@/api'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
-import type { MediaInfo, NotExistMediaInfo, Subscribe, TmdbSeason } from '@/api/types'
+import type { MediaInfo, NotExistMediaInfo, Subscribe, MediaSeason } from '@/api/types'
 import router, { registerAbortController } from '@/router'
 import noImage from '@images/no-image.jpeg'
 import tmdbImage from '@images/logos/tmdb.png'
@@ -55,10 +55,10 @@ const subscribeEditDialog = ref(false)
 const subscribeId = ref<number>()
 
 // 季详情
-const seasonInfos = ref<TmdbSeason[]>([])
+const seasonInfos = ref<MediaSeason[]>([])
 
 // 选中的订阅季
-const seasonsSelected = ref<TmdbSeason[]>([])
+const seasonsSelected = ref<MediaSeason[]>([])
 
 // 来源角标字典
 const sourceIconDict: { [key: string]: any } = {
@@ -98,11 +98,10 @@ function getChipColor(type: string) {
 
 // 添加订阅处理
 async function handleAddSubscribe() {
-  if (props.media?.type === '电视剧' && props.media?.tmdb_id) {
-    // TMDB电视剧
-    // 查询TMDB所有季信息
+  if (props.media?.type === '电视剧') {
+    // 查询所有季信息
     await getMediaSeasons()
-    if (!seasonInfos.value) {
+    if (!seasonInfos.value || seasonInfos.value.length === 0) {
       $toast.error(`${props.media?.title} 查询剧集信息失败！`)
       return
     }
@@ -118,11 +117,6 @@ async function handleAddSubscribe() {
       seasonsSelected.value = []
       subscribeSeasonDialog.value = true
     }
-  } else if (props.media?.type === '电视剧') {
-    // 豆瓣电视剧，只会有一季
-    const season = props.media?.season ?? 1
-    // 添加订阅
-    addSubscribe(season)
   } else {
     // 电影
     addSubscribe()
@@ -295,11 +289,20 @@ async function checkSeasonsNotExists() {
 
 // 查询TMDB的所有季信息
 async function getMediaSeasons() {
+  startNProgress()
   try {
-    seasonInfos.value = await api.get(`tmdb/seasons/${props.media?.tmdb_id}`)
+    seasonInfos.value = await api.get('media/seasons', {
+      params: {
+        mediaid: getMediaId(),
+        title: props.media?.title,
+        year: props.media?.year,
+        season: props.media?.season,
+      },
+    })
   } catch (error) {
     console.error(error)
   }
+  doneNProgress()
 }
 
 // 查询订阅弹窗规则

@@ -288,6 +288,24 @@ export interface MediaInfo {
   names?: string[]
 }
 
+// 季信息
+export interface MediaSeason {
+  // 上映日期
+  air_date?: string
+  // 总集数
+  episode_count?: number
+  // 季名称
+  name?: string
+  // 描述
+  overview?: string
+  // 海报
+  poster_path?: string
+  // 季号
+  season_number?: number
+  // 评分
+  vote_average?: number
+}
+
 // TMDB季信息
 export interface TmdbSeason {
   // 上映日期
