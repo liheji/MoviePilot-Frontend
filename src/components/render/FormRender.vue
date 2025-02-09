@@ -16,6 +16,9 @@ defineProps<{
 const parseProps = (rawProps: Record<string, any>, model: Record<string, any>) => {
   const parsedProps: Record<string, any> = {}
 
+  const isExpression = (value: string) => value.startsWith('{{') && value.endsWith('}}')
+  const extractExpression = (value: string) => value.slice(2, -2).trim()
+
   for (const [key, value] of Object.entries(rawProps)) {
     if (key === 'modelvalue') {
       // 将 modelvalue 转换为 v-model:value 的形式
@@ -31,7 +34,7 @@ const parseProps = (rawProps: Record<string, any>, model: Record<string, any>) =
       }
     } else if (['show', 'v-show'].includes(key)) {
       // 处理 v-show，实现显示隐藏
-      const expression = value.startsWith('{{') && value.endsWith('}}') ? value.slice(2, -2).trim() : value
+      const expression = isExpression(value) ? extractExpression(value) : value
       const isVisible = new Function('model', `with(model) { return ${expression} }`)(model)
       // 动态设置 style.display
       if (!parsedProps.style) {
@@ -51,8 +54,8 @@ const parseProps = (rawProps: Record<string, any>, model: Record<string, any>) =
       parsedProps[eventName] = new Function('model', `with(model) { return ${value} }`)(model)
     } else {
       // 如果是表达式，需要绑定
-      if (typeof value === 'string' && value.startsWith('{{') && value.endsWith('}}')) {
-        const expression = value.slice(2, -2).trim()
+      if (typeof value === 'string' && isExpression(value)) {
+        const expression = extractExpression(value)
         parsedProps[key] = new Function('model', `with(model) { return ${expression} }`)(model)
       } else if (typeof value === 'string' && value in model) {
         // 如果是数据模型的属性，直接绑定
