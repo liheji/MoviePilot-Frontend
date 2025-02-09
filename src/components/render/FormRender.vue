@@ -23,22 +23,44 @@ const parseProps = (rawProps: Record<string, any>, model: Record<string, any>) =
       parsedProps['onUpdate:value'] = (newValue: any) => {
         model[value] = newValue
       }
-    } else if (key === 'model') {
+    } else if (['model', 'v-model'].includes(key)) {
       // 处理 v-model
       parsedProps['modelValue'] = model[value]
       parsedProps['onUpdate:modelValue'] = (newValue: any) => {
         model[value] = newValue
       }
-    } else if (key.startsWith('model:')) {
+    } else if (['show', 'v-show'].includes(key)) {
+      // 处理 v-show，实现显示隐藏
+      const expression = value.startsWith('{{') && value.endsWith('}}') ? value.slice(2, -2).trim() : value
+      const isVisible = new Function('model', `with(model) { return ${expression} }`)(model)
+      // 动态设置 style.display
+      if (!parsedProps.style) {
+        parsedProps.style = {}
+      }
+      parsedProps.style.display = isVisible ? '' : 'none'
+    } else if (key.startsWith('model:') || key.startsWith('v-model:')) {
       // 处理 v-model:<prop>
-      const propName = key.replace('model:', '')
+      const propName = key.split(':')[1]
       parsedProps[propName] = model[value]
       parsedProps[`onUpdate:${propName}`] = (newValue: any) => {
         model[value] = newValue
       }
+    } else if (key.startsWith('on')) {
+      // 处理事件监听
+      const eventName = key.replace('on', '').toLowerCase()
+      parsedProps[eventName] = (event: any) => model[value](event)
     } else {
-      // 普通属性直接赋值
-      parsedProps[key] = typeof value === 'string' && value in model ? model[value] : value
+      // 如果是表达式，需要绑定
+      if (typeof value === 'string' && value.startsWith('{{') && value.endsWith('}}')) {
+        const expression = value.slice(2, -2).trim()
+        parsedProps[key] = new Function('model', `with(model) { return ${expression} }`)(model)
+      } else if (typeof value === 'string' && value in model) {
+        // 如果是数据模型的属性，直接绑定
+        parsedProps[key] = model[value]
+      } else {
+        // 其他情况直接赋值
+        parsedProps[key] = value
+      }
     }
   }
 
