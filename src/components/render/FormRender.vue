@@ -46,9 +46,9 @@ const parseProps = (rawProps: Record<string, any>, model: Record<string, any>) =
         model[value] = newValue
       }
     } else if (key.startsWith('on')) {
-      // 处理事件监听
+      // 处理事件监听，值是函数的代码
       const eventName = key.replace('on', '').toLowerCase()
-      parsedProps[eventName] = (event: any) => model[value](event)
+      parsedProps[eventName] = new Function('model', `with(model) { return ${value} }`)(model)
     } else {
       // 如果是表达式，需要绑定
       if (typeof value === 'string' && value.startsWith('{{') && value.endsWith('}}')) {
