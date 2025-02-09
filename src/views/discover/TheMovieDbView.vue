@@ -17,7 +17,7 @@ const filterParams = reactive({
 })
 
 // TMDB 电影排序字典
-const tmdbSortDict = {
+const tmdbSortDict: Record<string, string> = {
   'popularity.desc': '热度降序',
   'popularity.asc': '热度升序',
   'release_date.desc': '上映日期降序',
@@ -27,7 +27,7 @@ const tmdbSortDict = {
 }
 
 // TMDB 电视剧排序字典
-const tmdbTvSortDict = {
+const tmdbTvSortDict: Record<string, string> = {
   'popularity.desc': '热度降序',
   'popularity.asc': '热度升序',
   'first_air_date.desc': '首播日期降序',
@@ -37,7 +37,7 @@ const tmdbTvSortDict = {
 }
 
 // TMDB电影风格字典
-const tmdbMovieGenreDict = {
+const tmdbMovieGenreDict: Record<string, string> = {
   '28': '动作',
   '12': '冒险',
   '16': '动画',
@@ -60,7 +60,7 @@ const tmdbMovieGenreDict = {
 }
 
 // TMDB电视剧风格字典
-const tmdbTvGenreDict = {
+const tmdbTvGenreDict: Record<string, string> = {
   '10759': '动作冒险',
   '16': '动画',
   '35': '喜剧',
@@ -104,9 +104,30 @@ watch(type, () => {
   if (!type.value) {
     type.value = 'movies'
   }
-  filterParams.with_genres = ''
-  filterParams.sort_by = 'popularity.desc'
-  currentKey.value++
+  let refresh = true
+  if (type.value === 'movies') {
+    if (!tmdbSortDict[filterParams.sort_by]) {
+      filterParams.sort_by = 'popularity.desc'
+      refresh = false
+    }
+    if (!tmdbMovieGenreDict[filterParams.with_genres]) {
+      filterParams.with_genres = ''
+      refresh = false
+    }
+  }
+  if (type.value === 'tvs') {
+    if (!tmdbTvSortDict[filterParams.sort_by]) {
+      filterParams.sort_by = 'popularity.desc'
+      refresh = false
+    }
+    if (!tmdbTvGenreDict[filterParams.with_genres]) {
+      filterParams.with_genres = ''
+      refresh = false
+    }
+  }
+  if (refresh) {
+    currentKey.value++
+  }
 })
 
 // 过滤参数变化
