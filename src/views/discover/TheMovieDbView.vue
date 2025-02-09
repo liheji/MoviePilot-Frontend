@@ -99,11 +99,18 @@ const tmdbLanguageDict = {
 // 当前Key
 const currentKey = ref(0)
 
-// 类型和过滤参数变化后重新刷新列表
-watch([type, filterParams], () => {
+// 类型变化
+watch(type, () => {
   if (!type.value) {
     type.value = 'movies'
   }
+  filterParams.with_genres = ''
+  filterParams.sort_by = 'popularity.desc'
+  currentKey.value++
+})
+
+// 过滤参数变化
+watch(filterParams, () => {
   if (!filterParams.sort_by) {
     filterParams.sort_by = 'popularity.desc'
   }
