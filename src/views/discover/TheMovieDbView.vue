@@ -36,12 +36,11 @@ const tmdbTvSortDict = {
   'vote_average.asc': '评分升序',
 }
 
-// TMDB风格字典
-const tmdbGenreDict = {
+// TMDB电影风格字典
+const tmdbMovieGenreDict = {
   '28': '动作',
   '12': '冒险',
   '16': '动画',
-  '10762': '儿童',
   '35': '喜剧',
   '80': '犯罪',
   '99': '纪录片',
@@ -57,6 +56,26 @@ const tmdbGenreDict = {
   '10770': '电视电影',
   '53': '惊悚',
   '10752': '战争',
+  '37': '西部',
+}
+
+// TMDB电视剧风格字典
+const tmdbTvGenreDict = {
+  '10759': '动作冒险',
+  '16': '动画',
+  '35': '喜剧',
+  '80': '犯罪',
+  '99': '纪录片',
+  '18': '剧情',
+  '10751': '家庭',
+  '10762': '儿童',
+  '9648': '悬疑',
+  '10763': '新闻',
+  '10764': '真人秀',
+  '10765': '科幻奇幻',
+  '10766': '肥皂剧',
+  '10767': '戏剧',
+  '10768': '战争政治',
   '37': '西部',
 }
 
@@ -130,7 +149,7 @@ watch([type, filterParams], () => {
           filter
           tile
           :value="key"
-          v-for="(value, key) in tmdbGenreDict"
+          v-for="(value, key) in type == 'movies' ? tmdbMovieGenreDict : tmdbTvGenreDict"
           :key="key"
         >
           {{ value }}
