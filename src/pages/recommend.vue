@@ -149,7 +149,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <MediaCardSlideView v-for="(item, index) in enabledViews" :key="index" v-bind="item" />
+    <MediaCardSlideView v-for="item in enabledViews" :key="item.title" v-bind="item" />
     <!-- 弹窗，根据配置生成选项 -->
     <VDialog v-if="dialog" v-model="dialog" max-width="35rem" scrollable>
       <VCard>
