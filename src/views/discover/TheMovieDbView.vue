@@ -104,30 +104,23 @@ watch(type, () => {
   if (!type.value) {
     type.value = 'movies'
   }
-  let refresh = true
   if (type.value === 'movies') {
     if (!tmdbSortDict[filterParams.sort_by]) {
       filterParams.sort_by = 'popularity.desc'
-      refresh = false
     }
     if (!tmdbMovieGenreDict[filterParams.with_genres]) {
       filterParams.with_genres = ''
-      refresh = false
     }
   }
   if (type.value === 'tvs') {
     if (!tmdbTvSortDict[filterParams.sort_by]) {
       filterParams.sort_by = 'popularity.desc'
-      refresh = false
     }
     if (!tmdbTvGenreDict[filterParams.with_genres]) {
       filterParams.with_genres = ''
-      refresh = false
     }
   }
-  if (refresh) {
-    currentKey.value++
-  }
+  currentKey.value++
 })
 
 // 过滤参数变化
