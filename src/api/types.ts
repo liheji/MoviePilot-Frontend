@@ -1243,6 +1243,8 @@ export interface DiscoverSource {
   filter_params: { [key: string]: any }
   // 过滤参数UI配置
   filter_ui: RenderProps[]
+  // UI依赖关系字典
+  depends?: { [key: string]: string[] }
 }
 
 // 推荐的数据源
