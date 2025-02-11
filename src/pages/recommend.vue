@@ -145,6 +145,10 @@ onBeforeMount(async () => {
 onMounted(async () => {
   await loadExtraRecommendSources()
 })
+
+onActivated(async () => {
+  loadExtraRecommendSources()
+})
 </script>
 
 <template>

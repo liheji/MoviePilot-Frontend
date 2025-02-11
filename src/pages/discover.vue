@@ -30,6 +30,10 @@ async function loadExtraDiscoverSources() {
 onMounted(async () => {
   await loadExtraDiscoverSources()
 })
+
+onActivated(async () => {
+  loadExtraDiscoverSources()
+})
 </script>
 
 <template>

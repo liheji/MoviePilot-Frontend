@@ -29,6 +29,10 @@ function jumpTab(tab: string) {
 onMounted(async () => {
   await loadDownloaderSetting()
 })
+
+onActivated(async () => {
+  loadDownloaderSetting()
+})
 </script>
 
 <template>

@@ -128,7 +128,7 @@ onMounted(async () => {
 
 onActivated(async () => {
   if (!loading.value) {
-    await fetchData()
+    fetchData()
   }
 })
 </script>
