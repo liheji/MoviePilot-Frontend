@@ -69,7 +69,6 @@ const toggleMoreMenu = () => {
       :scrim="false"
       style="margin-bottom: calc(3.5rem + env(safe-area-inset-bottom))"
       content-class="elevation-1"
-      active
     >
       <VDivider />
       <VList class="font-bold" lines="one">
