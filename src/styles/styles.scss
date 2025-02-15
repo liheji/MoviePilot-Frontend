@@ -33,6 +33,10 @@ html.v-overlay-scroll-blocked {
   margin-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
 }
 
+.v-bottom-sheet > .v-bottom-sheet__content.v-overlay__content > .v-card {
+  padding-block-end: env(safe-area-inset-bottom);
+}
+
 .v-dialog--fullscreen > .v-overlay__content > .v-card {
   padding-block-end: calc(env(safe-area-inset-top) + env(safe-area-inset-bottom));
 }

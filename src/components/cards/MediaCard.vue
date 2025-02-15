@@ -603,7 +603,7 @@ function onRemoveSubscribe() {
         </VList>
       </VCardText>
       <div class="my-2 text-center">
-        <VBtn :disabled="seasonsSelected.length === 0" width="30%" @click="subscribeSeasons">
+        <VBtn size="large" :disabled="seasonsSelected.length === 0" width="30%" @click="subscribeSeasons">
           {{ seasonsSelected.length === 0 ? '请选择订阅季' : '提交订阅' }}
         </VBtn>
       </div>
