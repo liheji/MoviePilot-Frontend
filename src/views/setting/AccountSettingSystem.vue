@@ -236,9 +236,9 @@ const wallpaperItems = [
 ]
 
 // 预设部分Github加速站
-const githubMirrorsItems = [
-  'https://mirror.ghproxy.com/', // GitHub Proxy
-  'https://ghp.ci/', // GitHub Proxy 子站
+const githubMirrorsItems: string[] = [
+  // str: 'https://mirror.ghproxy.com/', // GitHub Proxy
+  // str: 'https://ghp.ci/', // GitHub Proxy 子站
 ]
 
 // 预设部分PIP镜像站
@@ -687,7 +687,7 @@ onDeactivated(() => {
                   <VCombobox
                     v-model="SystemSettings.Advanced.GITHUB_PROXY"
                     label="Github加速代理"
-                    placeholder="https://mirror.ghproxy.com/"
+                    placeholder="http(s)://host/"
                     hint="使用代理加速Github访问速度"
                     persistent-hint
                     :items="githubMirrorsItems"
@@ -697,7 +697,7 @@ onDeactivated(() => {
                   <VCombobox
                     v-model="SystemSettings.Advanced.PIP_PROXY"
                     label="PIP加速代理"
-                    placeholder="https://pypi.tuna.tsinghua.edu.cn/simple"
+                    placeholder="http(s)://host"
                     hint="使用代理加速插件等pip库安装速度"
                     persistent-hint
                     :items="pipMirrorsItems"
