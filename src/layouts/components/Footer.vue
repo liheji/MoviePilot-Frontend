@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { SystemNavMenus } from '@/router/menu'
 import { useDisplay } from 'vuetify'
 
 const display = useDisplay()
@@ -6,16 +7,24 @@ const appMode = inject('pwaMode') && display.mdAndDown.value
 
 const route = useRoute()
 
-// 各按钮活动状态
+const moreMenuDialog = ref(false)
+
+const moreMemus = computed(() => SystemNavMenus.filter(menu => !menu.footer))
+
 const activeState = computed(() => {
   return {
     home: route.path === '/dashboard',
     recommend: route.path === '/recommend',
     movie: route.path === '/subscribe/movie',
     tv: route.path === '/subscribe/tv',
-    apps: route.path === '/apps',
   }
 })
+
+const currentPath = computed(() => route.path)
+
+const toggleMoreMenu = () => {
+  moreMenuDialog.value = !moreMenuDialog.value
+}
 </script>
 
 <template>
@@ -26,6 +35,7 @@ const activeState = computed(() => {
       color="primary"
       class="footer-nav border-t"
       style="block-size: calc(3.5rem + env(safe-area-inset-bottom))"
+      :z-index="9998"
     >
       <VBtn to="/dashboard" :ripple="false">
         <VIcon v-if="activeState.home" size="28">mdi-home</VIcon>
@@ -43,11 +53,41 @@ const activeState = computed(() => {
         <VIcon v-if="activeState.tv" size="28">mdi-television-play</VIcon>
         <VIcon v-else size="28">mdi-television</VIcon>
       </VBtn>
-      <VBtn to="/apps" :ripple="false">
-        <VIcon v-if="activeState.apps" size="28">mdi-dots-horizontal-circle</VIcon>
-        <VIcon v-else size="28">mdi-dots-horizontal</VIcon>
+      <VBtn @click="toggleMoreMenu" :ripple="false">
+        <VIcon
+          size="28"
+          :icon="moreMenuDialog ? 'mdi-close' : 'mdi-dots-horizontal'"
+          :color="moreMenuDialog ? 'primary' : ''"
+        />
       </VBtn>
     </VBottomNavigation>
+    <VBottomSheet
+      v-if="moreMenuDialog"
+      v-model="moreMenuDialog"
+      inset
+      close-on-content-click
+      :scrim="false"
+      style="margin-bottom: calc(3.5rem + env(safe-area-inset-bottom))"
+      content-class="elevation-1"
+      active
+    >
+      <VDivider />
+      <VList class="font-bold" lines="one">
+        <VListSubheader class="bg-transparent"> 更多 </VListSubheader>
+        <VListItem
+          v-for="(menu, index) in moreMemus"
+          :key="index"
+          :prepend-icon="menu.icon"
+          nav
+          :to="menu.to"
+          :base-color="currentPath === menu.to ? 'primary' : undefined"
+        >
+          <VListItemTitle>
+            <span class="text-lg">{{ menu.title }}</span>
+          </VListItemTitle>
+        </VListItem>
+      </VList>
+    </VBottomSheet>
   </div>
 </template>
 

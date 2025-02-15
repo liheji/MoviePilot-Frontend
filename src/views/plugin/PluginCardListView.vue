@@ -549,7 +549,6 @@ onMounted(async () => {
     v-if="SearchDialog"
     v-model="SearchDialog"
     scrollable
-    :z-index="1010"
     max-width="40rem"
     :max-height="!display.mdAndUp.value ? '' : '85vh'"
     :fullscreen="!display.mdAndUp.value"
