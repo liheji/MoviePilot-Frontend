@@ -94,13 +94,13 @@ function doDelete() {
 </script>
 
 <template>
-  <div>
+  <div class="h-full">
     <VHover>
       <template #default="hover">
         <VCard
           v-bind="hover.props"
           :key="props.media?.id"
-          class="flex flex-col rounded-lg"
+          class="flex flex-col rounded-lg h-full"
           :class="{
             'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
           }"
@@ -117,8 +117,8 @@ function doDelete() {
               <div class="absolute inset-0 subscribe-card-background"></div>
             </VImg>
           </template>
-          <div>
-            <VCardText class="flex items-center pb-1">
+          <div class="h-full flex flex-col">
+            <VCardText class="flex items-center pb-1 grow">
               <div class="h-auto w-12 flex-shrink-0 overflow-hidden rounded-md shadow-lg" v-if="imageLoaded">
                 <VImg :src="posterUrl" aspect-ratio="2/3" cover @click.stop="viewMediaDetail">
                   <template #placeholder>
