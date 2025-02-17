@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { SystemNavMenus } from '@/router/menu'
 import { useDisplay } from 'vuetify'
+import { VMenu } from 'vuetify/lib/components/index.mjs'
 
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
@@ -53,40 +54,33 @@ const toggleMoreMenu = () => {
         <VIcon v-if="activeState.tv" size="28">mdi-television-play</VIcon>
         <VIcon v-else size="28">mdi-television</VIcon>
       </VBtn>
-      <VBtn @click="toggleMoreMenu" :ripple="false">
+      <VBtn :ripple="false">
         <VIcon
           size="28"
           :icon="moreMenuDialog ? 'mdi-close' : 'mdi-dots-horizontal'"
           :color="moreMenuDialog ? 'primary' : ''"
         />
+        <VMenu v-model="moreMenuDialog" close-on-content-click activator="parent">
+          <VDivider />
+          <VList class="font-bold" lines="one">
+            <VListSubheader class="bg-transparent"> 更多 </VListSubheader>
+            <VListItem
+              class="pe-20"
+              v-for="(menu, index) in moreMemus"
+              :key="index"
+              :prepend-icon="menu.icon"
+              nav
+              :to="menu.to"
+              :base-color="currentPath === menu.to ? 'primary' : undefined"
+            >
+              <VListItemTitle>
+                <span class="text-lg">{{ menu.title }}</span>
+              </VListItemTitle>
+            </VListItem>
+          </VList>
+        </VMenu>
       </VBtn>
     </VBottomNavigation>
-    <VBottomSheet
-      v-if="moreMenuDialog"
-      v-model="moreMenuDialog"
-      inset
-      close-on-content-click
-      :scrim="false"
-      style="margin-bottom: calc(3.5rem + env(safe-area-inset-bottom))"
-      content-class="elevation-0"
-    >
-      <VDivider />
-      <VList class="font-bold" lines="one">
-        <VListSubheader class="bg-transparent"> 更多 </VListSubheader>
-        <VListItem
-          v-for="(menu, index) in moreMemus"
-          :key="index"
-          :prepend-icon="menu.icon"
-          nav
-          :to="menu.to"
-          :base-color="currentPath === menu.to ? 'primary' : undefined"
-        >
-          <VListItemTitle>
-            <span class="text-lg">{{ menu.title }}</span>
-          </VListItemTitle>
-        </VListItem>
-      </VList>
-    </VBottomSheet>
   </div>
 </template>
 
