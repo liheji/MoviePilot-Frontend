@@ -4,8 +4,14 @@
 @tailwind utilities;
 
 html.v-overlay-scroll-blocked {
-  position: relative;
+  position: fixed;
   --v-body-scroll-y: 0px !important;
+}
+
+@media (max-width: 768px){
+  html.v-overlay-scroll-blocked {
+    position: relative;
+  }
 }
 
 #nprogress .bar {

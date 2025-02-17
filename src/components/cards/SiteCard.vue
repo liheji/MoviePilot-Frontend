@@ -26,7 +26,7 @@ const siteIcon = ref<string>('')
 const $toast = useToast()
 
 // 测试按钮文字
-const testButtonText = ref('连通性测试')
+const testButtonText = ref('测试连通性')
 
 // 测试按钮可用性
 const testButtonDisable = ref(false)
@@ -65,7 +65,7 @@ async function testSite() {
     if (result.success) $toast.success(`${cardProps.site?.name} 连通性测试成功，可正常使用！`)
     else $toast.error(`${cardProps.site?.name} 连通性测试失败：${result.message}`)
 
-    testButtonText.value = '连通性测试'
+    testButtonText.value = '测试连通性'
     testButtonDisable.value = false
 
     getSiteStats()
@@ -153,7 +153,7 @@ onMounted(() => {
     <VCard
       :variant="cardProps.site?.is_active ? 'elevated' : 'outlined'"
       class="overflow-hidden h-full flex flex-col"
-      @click="siteEditDialog = true"
+      @click="handleResourceBrowse"
     >
       <template #image>
         <VAvatar class="absolute right-2 bottom-2 rounded" variant="flat" rounded="0">
@@ -162,10 +162,10 @@ onMounted(() => {
       </template>
       <VCardItem style="padding-block-end: 0">
         <VCardTitle class="font-bold">
-          <span @click.stop="openSitePage">{{ cardProps.site?.name }}</span>
+          {{ cardProps.site?.name }}
         </VCardTitle>
         <VCardSubtitle>
-          <span @click.stop="openSitePage">{{ cardProps.site?.url }}</span>
+          {{ cardProps.site?.url }}
         </VCardSubtitle>
       </VCardItem>
       <VCardText class="py-1">
@@ -195,6 +195,12 @@ onMounted(() => {
           <VIcon icon="mdi-chevron-down" color="primary" />
           <VMenu activator="parent" close-on-content-click>
             <VList>
+              <VListItem variant="plain" @click="siteEditDialog = true">
+                <template #prepend>
+                  <VIcon icon="mdi-file-edit-outline" />
+                </template>
+                <VListItemTitle>编辑站点</VListItemTitle>
+              </VListItem>
               <VListItem variant="plain" v-if="!cardProps.site?.public" @click="handleSiteUpdate">
                 <template #prepend>
                   <VIcon icon="mdi-refresh" />
@@ -207,17 +213,17 @@ onMounted(() => {
                 </template>
                 <VListItemTitle>{{ testButtonText }}</VListItemTitle>
               </VListItem>
-              <VListItem variant="plain" @click="handleResourceBrowse">
-                <template #prepend>
-                  <VIcon icon="mdi-web" />
-                </template>
-                <VListItemTitle>资源预览</VListItemTitle>
-              </VListItem>
               <VListItem variant="plain" @click="handleSiteUserData">
                 <template #prepend>
                   <VIcon icon="mdi-chart-bell-curve" />
                 </template>
-                <VListItemTitle>站点数据</VListItemTitle>
+                <VListItemTitle>查看站点数据</VListItemTitle>
+              </VListItem>
+              <VListItem variant="plain" @click="openSitePage">
+                <template #prepend>
+                  <VIcon icon="mdi-open-in-new" />
+                </template>
+                <VListItemTitle>访问站点</VListItemTitle>
               </VListItem>
             </VList>
           </VMenu>

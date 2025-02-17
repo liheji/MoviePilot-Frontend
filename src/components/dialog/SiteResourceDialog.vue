@@ -99,11 +99,21 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VDialog max-width="80rem" scrollable :fullscreen="!display.mdAndUp.value">
-    <VCard :title="`浏览 - ${props.site?.name}`">
-      <DialogCloseBtn @click="emit('close')" />
-      <VDivider />
-      <VCardText class="pt-2">
+  <VDialog scrollable fullscreen :scrim="false" transition="dialog-bottom-transition">
+    <VCard>
+      <!-- Toolbar -->
+      <div>
+        <VToolbar color="primary">
+          <VToolbarTitle>{{ `浏览 - ${props.site?.name}` }}</VToolbarTitle>
+          <VSpacer />
+          <VToolbarItems>
+            <VBtn icon variant="plain" @click="emit('close')" class="me-3">
+              <VIcon size="large" color="white" icon="ri-close-line" />
+            </VBtn>
+          </VToolbarItems>
+        </VToolbar>
+      </div>
+      <VCardText class="pt-2 px-0">
         <VDataTable
           v-model:items-per-page="resourceItemsPerPage"
           :headers="resourceHeaders"
@@ -119,6 +129,7 @@ onMounted(() => {
           items-per-page-text="每页条数"
           page-text="{0}-{1} 共 {2} 条"
           loading-text="加载中..."
+          class="h-full"
         >
           <template #item.title="{ item }">
             <a href="javascript:void(0)" @click.stop="addDownload(item)">
