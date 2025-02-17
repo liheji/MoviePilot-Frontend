@@ -68,7 +68,7 @@ const toggleMoreMenu = () => {
       close-on-content-click
       :scrim="false"
       style="margin-bottom: calc(3.5rem + env(safe-area-inset-bottom))"
-      content-class="elevation-1"
+      content-class="elevation-0"
     >
       <VDivider />
       <VList class="font-bold" lines="one">
