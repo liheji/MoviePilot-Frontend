@@ -113,6 +113,13 @@ const userLevel = computed(() => store.state.auth.level)
           <VListItemTitle>个人信息</VListItemTitle>
         </VListItem>
 
+        <VListItem link @click="router.push('/apps')">
+          <template #prepend>
+            <VIcon class="me-2" icon="mdi-view-grid-outline" size="22" />
+          </template>
+          <VListItemTitle>功能视图</VListItemTitle>
+        </VListItem>
+
         <!-- 👉 Site Auth -->
         <VListItem v-if="userLevel < 2 && superUser" link @click="showSiteAuthDialog">
           <template #prepend>
