@@ -21,15 +21,15 @@ const activeState = computed(() => {
   }
 })
 
-const currentPath = computed(() => route.path)
+const moreActiveState = computed(() => {
+  return !Object.values(activeState.value).some(v => v)
+})
 
-const toggleMoreMenu = () => {
-  moreMenuDialog.value = !moreMenuDialog.value
-}
+const currentPath = computed(() => route.path)
 </script>
 
 <template>
-  <div v-if="appMode" class="w-100" style="block-size: calc(3.5rem + env(safe-area-inset-bottom))">
+  <div v-if="appMode" class="w-100">
     <VBottomNavigation
       grow
       horizontal
@@ -58,7 +58,7 @@ const toggleMoreMenu = () => {
         <VIcon
           size="28"
           :icon="moreMenuDialog ? 'mdi-close' : 'mdi-dots-horizontal'"
-          :color="moreMenuDialog ? 'primary' : ''"
+          :color="moreActiveState ? 'primary' : ''"
         />
         <VMenu v-model="moreMenuDialog" close-on-content-click activator="parent">
           <VDivider />

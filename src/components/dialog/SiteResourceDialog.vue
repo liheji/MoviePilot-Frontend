@@ -113,7 +113,7 @@ onMounted(() => {
           </VToolbarItems>
         </VToolbar>
       </div>
-      <VCardText class="pt-2 px-0">
+      <VCardText class="px-0 py-0 my-0">
         <VDataTable
           v-model:items-per-page="resourceItemsPerPage"
           :headers="resourceHeaders"
