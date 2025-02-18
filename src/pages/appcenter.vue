@@ -12,7 +12,7 @@ const appOrder = ref<string[]>([])
 
 // 根据分类获取菜单列表
 const getMenuList = () => {
-  return SystemNavMenus.filter((item: NavMenu) => (!item.admin || superUser) && !item.footer)
+  return SystemNavMenus.filter((item: NavMenu) => !item.admin || superUser)
 }
 
 // APP列表
