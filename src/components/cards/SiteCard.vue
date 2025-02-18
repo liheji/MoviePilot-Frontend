@@ -153,7 +153,7 @@ onMounted(() => {
     <VCard
       :variant="cardProps.site?.is_active ? 'elevated' : 'outlined'"
       class="overflow-hidden h-full flex flex-col"
-      @click="siteEditDialog = true"
+      @click="handleResourceBrowse"
     >
       <template #image>
         <VAvatar class="absolute right-2 bottom-2 rounded" variant="flat" rounded="0">
@@ -195,11 +195,11 @@ onMounted(() => {
           <VIcon icon="mdi-chevron-down" color="primary" />
           <VMenu activator="parent" close-on-content-click>
             <VList>
-              <VListItem variant="plain" @click="handleResourceBrowse">
+              <VListItem variant="plain" @click="siteEditDialog = true" base-color="info">
                 <template #prepend>
-                  <VIcon icon="mdi-search-web" />
+                  <VIcon icon="mdi-file-edit-outline" />
                 </template>
-                <VListItemTitle>浏览站点资源</VListItemTitle>
+                <VListItemTitle>编辑站点</VListItemTitle>
               </VListItem>
               <VListItem variant="plain" @click="handleSiteUserData">
                 <template #prepend>

@@ -1,17 +1,29 @@
 <script setup lang="ts">
 import { Site } from '@/api/types'
-import { useDisplay } from 'vuetify'
 import api from '@/api'
-import type { TorrentInfo } from '@/api/types'
+import type { TorrentInfo, SiteCategory } from '@/api/types'
 import { formatFileSize } from '@core/utils/formatters'
 import AddDownloadDialog from '../dialog/AddDownloadDialog.vue'
-
-// 显示器宽度
-const display = useDisplay()
 
 // 输入参数
 const props = defineProps({
   site: Object as PropType<Site>,
+})
+
+// 关键字
+const keyword = ref<string>()
+
+// 选择分类
+const selectCategory = ref<number[]>([])
+
+// 全部分类
+const siteCategoryList = ref<SiteCategory[]>()
+
+// 分类选项
+const categoryOptions = computed(() => {
+  return siteCategoryList.value?.map(item => {
+    return { title: item.desc, value: item.id }
+  })
 })
 
 // 注册事件
@@ -55,17 +67,6 @@ async function downloadTorrentFile(enclosure: string) {
   window.open(enclosure, '_blank')
 }
 
-// 调用API，查询站点资源
-async function getResourceList() {
-  resourceLoading.value = true
-  try {
-    resourceDataList.value = await api.get(`site/resource/${props.site?.id}`)
-    resourceLoading.value = false
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 // 促销Chip类
 function getVolumeFactorClass(downloadVolume: number, uploadVolume: number) {
   if (downloadVolume === 0) return 'text-white bg-lime-500'
@@ -93,8 +94,34 @@ function addDownloadError(error: string) {
   addDownloadDialog.value = false
 }
 
+// 调用API，查询站点资源
+async function getResourceList() {
+  resourceLoading.value = true
+  try {
+    resourceDataList.value = await api.get(`site/resource/${props.site?.id}`, {
+      params: {
+        keyword: keyword.value,
+        cat: selectCategory.value?.join(','),
+      },
+    })
+  } catch (error) {
+    console.error(error)
+  }
+  resourceLoading.value = false
+}
+
+// 加载站点分类
+async function getSiteCategoryList() {
+  try {
+    siteCategoryList.value = await api.get(`site/category/${props.site?.id}`)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 // 装载时查询站点图标
 onMounted(() => {
+  getSiteCategoryList()
   getResourceList()
 })
 </script>
@@ -112,6 +139,28 @@ onMounted(() => {
             </VBtn>
           </VToolbarItems>
         </VToolbar>
+      </div>
+      <div class="p-3">
+        <VRow>
+          <VCol cols="6" md="5">
+            <VTextField v-model="keyword" size="small" density="compact" label="搜索关键字" clearable />
+          </VCol>
+          <VCol cols="6" md="5">
+            <VSelect
+              v-model="selectCategory"
+              :items="categoryOptions"
+              size="small"
+              density="compact"
+              chips
+              label="资源分类"
+              multiple
+              clearable
+            />
+          </VCol>
+          <VCol cols="12" md="2" class="text-center">
+            <VBtn block prepend-icon="mdi-magnify" @click="getResourceList">搜索</VBtn>
+          </VCol>
+        </VRow>
       </div>
       <VCardText class="px-0 py-0 my-0">
         <VDataTable

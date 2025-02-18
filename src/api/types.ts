@@ -1254,3 +1254,10 @@ export interface RecommendSource {
   // 媒体数据源API地址
   api_path: string
 }
+
+// 站点资源分类
+export interface SiteCategory {
+  id: number
+  cat: string
+  desc: string
+}
