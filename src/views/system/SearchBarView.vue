@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import api from '@/api'
-import type { Plugin, Subscribe } from '@/api/types'
+import type { Plugin, Site, Subscribe } from '@/api/types'
 import { SystemNavMenus, SettingTabs } from '@/router/menu'
 import { NavMenu } from '@/@layouts/types'
 import store from '@/store'
@@ -123,12 +123,41 @@ const matchedPluginItems = computed(() => {
 // 所有订阅数据
 const SubscribeItems = ref<Subscribe[]>([])
 
+// 所有站点
+const allSites = ref<Site[]>([])
+
+// 选中的站点
+const selectedSites = ref<number[]>([])
+
 // 获取订阅列表数据
 async function fetchSubscribes() {
   try {
     SubscribeItems.value = await api.get('subscribe/')
   } catch (error) {
     console.error(error)
+  }
+}
+
+// 查询所有站点
+async function querySites() {
+  try {
+    const data: Site[] = await api.get('site/')
+
+    // 过滤站点，只有启用的站点才显示
+    allSites.value = data.filter(item => item.is_active)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 查询用户选中的站点
+async function querySelectedSites() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/IndexerSites')
+
+    selectedSites.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -165,6 +194,7 @@ function searchTorrent() {
     query: {
       keyword: searchWord.value,
       area: 'title',
+      sites: selectedSites.value.join(','),
     },
   })
   emit('close')
@@ -228,6 +258,8 @@ onMounted(() => {
   fetchInstalledPlugins()
   fetchSubscribes()
   loadRecentSearches()
+  querySites()
+  querySelectedSites()
 })
 </script>
 <template>
@@ -304,10 +336,28 @@ onMounted(() => {
           </VHover>
           <VHover>
             <template #default="hover">
-              <VListItem prepend-icon="mdi-search-web" link v-bind="hover.props" @click="searchTorrent">
+              <VListItem
+                prepend-icon="mdi-file-search"
+                link
+                v-bind="hover.props"
+                @click="searchTorrent"
+                :ripple="false"
+              >
                 <VListItemTitle class="break-words whitespace-break-spaces">
                   搜索 <span class="font-bold">{{ searchWord }}</span> 相关的【站点资源】 ...
                 </VListItemTitle>
+                <VChipGroup v-if="hover.isHovering" v-model="selectedSites" column multiple @click.stop>
+                  <VChip
+                    v-for="site in allSites"
+                    :key="site.id"
+                    :color="selectedSites.includes(site.id) ? 'primary' : ''"
+                    filter
+                    variant="outlined"
+                    :value="site.id"
+                  >
+                    {{ site.name }}
+                  </VChip>
+                </VChipGroup>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
                 </template>

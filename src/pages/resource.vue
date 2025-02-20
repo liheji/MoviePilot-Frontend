@@ -31,6 +31,9 @@ const year = route.query?.year
 // 搜索季
 const season = route.query?.season?.toString() ?? ''
 
+// 搜索站点，以,分离多个
+const sites = route.query?.sites?.toString() ?? ''
+
 // 视图类型，从localStorage中读取
 const viewType = ref<string>(localStorage.getItem('MPTorrentsViewType') ?? 'card')
 
@@ -97,6 +100,7 @@ async function fetchData() {
             title,
             year,
             season,
+            sites,
           },
         })
       } else {
@@ -104,6 +108,7 @@ async function fetchData() {
         result = await api.get(`search/title`, {
           params: {
             keyword,
+            sites,
           },
         })
       }
