@@ -26,6 +26,9 @@ let isRefreshed = ref(false)
 const localOrderKey = props.type === '电影' ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'
 const orderRequestKey = props.type === '电影' ? 'SubscribeMovieOrder' : 'SubscribeTvOrder'
 
+// 刷新状态
+const loading = ref(false)
+
 // 数据列表
 const dataList = ref<Subscribe[]>([])
 
@@ -110,8 +113,11 @@ async function fetchData() {
   }
 }
 
-// 刷新状态
-const loading = ref(false)
+// 历史记录窗口完成
+function historyDone() {
+  historyDialog.value = false
+  fetchData()
+}
 
 onMounted(async () => {
   await loadSubscribeOrderConfig()
@@ -195,11 +201,6 @@ onActivated(async () => {
     v-model="historyDialog"
     :type="props.type"
     @close="historyDialog = false"
-    @save="
-      () => {
-        historyDialog = false
-        fetchData()
-      }
-    "
+    @save="historyDone"
   />
 </template>
