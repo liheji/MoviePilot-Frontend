@@ -16,7 +16,7 @@ const customRules = ref<CustomRule[]>([])
 const filterRuleGroups = ref<FilterRuleGroup[]>([])
 
 // 种子优先规则
-const selectedTorrentPriority = ref<string>('seeder')
+const selectedTorrentPriority = ref<string[]>(['seeder'])
 
 // 二级分类策略
 const mediaCategories = ref<{ [key: string]: any }>({})
@@ -240,38 +240,52 @@ function extractFilterRuleGroups(value: any) {
 // 根据ID简单区分规则与规则组
 function checkValueValidity(values: any, type: string): boolean {
   try {
-    // 允许空值存在，不影响最终的导入
     if (!values) return true
     if (!type) return false
-    for (const value of values) {
-      const keys = Object.keys(value)
-      const uniqueKeys = new Set(keys)
 
-      const hasName = keys.includes('name')
-      const hasId = keys.includes('id')
-      const noDuplicates = keys.length === uniqueKeys.size
-      if (type == 'custom') {
-        if (!hasName || !hasId || !noDuplicates) {
-          if (!noDuplicates) $toast.warning(`存在重名值`)
-          if (!hasId) $toast.error(`导入失败！发现有规则不存在ID，可能属于优先级规则组！`)
-          return false
-        }
-      } else if (type == 'group') {
-        if (!hasName || hasId || !noDuplicates) {
-          if (!noDuplicates) $toast.warning(`存在重名值`)
-          if (hasId) $toast.error(`导入失败！发现有规则存在ID，可能属于自定义规则！`)
-          return false
-        }
-      } else {
-        console.error(`传入了不合法的类型！`)
-        return false
-      }
+    for (const value of values) {
+      if (!isValidValue(value, type)) return false
     }
     return true
   } catch (e) {
     console.error(e)
     return false
   }
+}
+
+function isValidValue(value: any, type: string): boolean {
+  const keys = Object.keys(value)
+  const uniqueKeys = new Set(keys)
+  const hasName = keys.includes('name')
+  const hasId = keys.includes('id')
+  const noDuplicates = keys.length === uniqueKeys.size
+
+  if (type === 'custom') {
+    return validateCustomRule(hasName, hasId, noDuplicates)
+  } else if (type === 'group') {
+    return validateGroupRule(hasName, hasId, noDuplicates)
+  } else {
+    console.error(`传入了不合法的类型！`)
+    return false
+  }
+}
+
+function validateCustomRule(hasName: boolean, hasId: boolean, noDuplicates: boolean): boolean {
+  if (!hasName || !hasId || !noDuplicates) {
+    if (!noDuplicates) $toast.warning(`存在重名值`)
+    if (!hasId) $toast.error(`导入失败！发现有规则不存在ID，可能属于优先级规则组！`)
+    return false
+  }
+  return true
+}
+
+function validateGroupRule(hasName: boolean, hasId: boolean, noDuplicates: boolean): boolean {
+  if (!hasName || hasId || !noDuplicates) {
+    if (!noDuplicates) $toast.warning(`存在重名值`)
+    if (hasId) $toast.error(`导入失败！发现有规则存在相同ID，可能属于自定义规则！`)
+    return false
+  }
+  return true
 }
 
 // 清空规则（组）
