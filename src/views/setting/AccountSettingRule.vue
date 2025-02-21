@@ -403,7 +403,7 @@ onMounted(() => {
                   <VIcon icon="mdi-share" />
                 </VBtn>
                 <VBtn color="error" variant="tonal" @click="deleteAllRules('custom')">
-                  <VIcon icon="mdi-delete" />
+                  <VIcon icon="mdi-delete-empty-outline" />
                 </VBtn>
               </VBtnGroup>
             </div>
@@ -454,7 +454,7 @@ onMounted(() => {
                   <VIcon icon="mdi-share" />
                 </VBtn>
                 <VBtn color="error" variant="tonal" @click="deleteAllRules('group')">
-                  <VIcon icon="mdi-delete" />
+                  <VIcon icon="mdi-delete-empty-outline" />
                 </VBtn>
               </VBtnGroup>
             </div>
