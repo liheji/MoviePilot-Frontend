@@ -3,8 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
 html.v-overlay-scroll-blocked {
   position: fixed;
+}
+
+html.v-overlay-scroll-blocked body {
   --v-body-scroll-y: 0px !important;
 }
 
