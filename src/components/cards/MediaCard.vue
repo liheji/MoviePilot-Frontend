@@ -5,7 +5,7 @@ import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
 import { formatSeason, formatRating } from '@/@core/utils/formatters'
 import api from '@/api'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
-import type { MediaInfo, NotExistMediaInfo, Subscribe, MediaSeason } from '@/api/types'
+import type { MediaInfo, NotExistMediaInfo, Subscribe, MediaSeason, Site } from '@/api/types'
 import router, { registerAbortController } from '@/router'
 import noImage from '@images/no-image.jpeg'
 import tmdbImage from '@images/logos/tmdb.png'
@@ -72,6 +72,38 @@ const mediaCardRef = ref<HTMLElement | null>(null)
 
 // 创建Intersection Observer实例
 const observer = ref<IntersectionObserver | null>(null)
+
+// 所有站点
+const allSites = ref<Site[]>([])
+
+// 选中的站点
+const selectedSites = ref<number[]>([])
+
+// 搜索菜单显示状态
+const searchMenuShow = ref(false)
+
+// 查询所有站点
+async function querySites() {
+  try {
+    const data: Site[] = await api.get('site/')
+
+    // 过滤站点，只有启用的站点才显示
+    allSites.value = data.filter(item => item.is_active)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 查询用户选中的站点
+async function querySelectedSites() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/IndexerSites')
+
+    selectedSites.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 // 获得mediaid
 function getMediaId() {
@@ -375,6 +407,13 @@ function goMediaDetail(isHovering = false) {
   }
 }
 
+// 点击搜索
+async function clickSearch() {
+  if (allSites.value?.length > 0) return
+  querySites()
+  querySelectedSites()
+}
+
 // 开始搜索
 function handleSearch() {
   router.push({
@@ -386,6 +425,7 @@ function handleSearch() {
       title: props.media?.title,
       year: props.media?.year,
       season: props.media?.season,
+      sites: selectedSites.value.join(','),
     },
   })
 }
@@ -499,7 +539,7 @@ function onRemoveSubscribe() {
           </VImg>
           <!-- 详情 -->
           <VCardText
-            v-show="hover.isHovering || imageLoadError"
+            v-show="hover.isHovering || imageLoadError || searchMenuShow"
             class="w-full h-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2"
             style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
           >
@@ -512,7 +552,31 @@ function onRemoveSubscribe() {
             </p>
             <div v-if="props.media?.collection_id" class="mb-3" @click.stop=""></div>
             <div v-else class="flex align-center justify-between">
-              <IconBtn icon="mdi-magnify" color="white" @click.stop="handleSearch" />
+              <VMenu close-on-content-click v-model="searchMenuShow" max-width="450">
+                <template v-slot:activator="{ props }">
+                  <IconBtn v-bind="props" icon="mdi-magnify" color="white" @click.stop="clickSearch" />
+                </template>
+                <VList>
+                  <VListItem>
+                    <VChipGroup v-model="selectedSites" column multiple @click.stop>
+                      <VChip
+                        v-for="site in allSites"
+                        :key="site.id"
+                        :color="selectedSites.includes(site.id) ? 'primary' : ''"
+                        filter
+                        variant="outlined"
+                        :value="site.id"
+                        size="small"
+                      >
+                        {{ site.name }}
+                      </VChip>
+                    </VChipGroup>
+                  </VListItem>
+                  <VListItem>
+                    <VBtn @click="handleSearch" block>搜索</VBtn>
+                  </VListItem>
+                </VList>
+              </VMenu>
               <IconBtn icon="mdi-heart" :color="isSubscribed ? 'error' : 'white'" @click.stop="handleSubscribe" />
             </div>
           </VCardText>

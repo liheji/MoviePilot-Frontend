@@ -346,7 +346,7 @@ onMounted(() => {
                 <VListItemTitle class="break-words whitespace-break-spaces">
                   搜索 <span class="font-bold">{{ searchWord }}</span> 相关的【站点资源】 ...
                 </VListItemTitle>
-                <VChipGroup v-if="hover.isHovering" v-model="selectedSites" column multiple @click.stop>
+                <VChipGroup v-if="hover.isHovering" v-model="selectedSites" column multiple>
                   <VChip
                     v-for="site in allSites"
                     :key="site.id"
@@ -354,6 +354,8 @@ onMounted(() => {
                     filter
                     variant="outlined"
                     :value="site.id"
+                    size="small"
+                    @click.stop
                   >
                     {{ site.name }}
                   </VChip>

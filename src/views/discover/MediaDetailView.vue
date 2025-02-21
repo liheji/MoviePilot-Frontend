@@ -3,7 +3,7 @@ import { useToast } from 'vue-toast-notification'
 import PersonCardSlideView from './PersonCardSlideView.vue'
 import MediaCardSlideView from './MediaCardSlideView.vue'
 import api from '@/api'
-import type { MediaInfo, NotExistMediaInfo, Subscribe, TmdbEpisode } from '@/api/types'
+import type { MediaInfo, NotExistMediaInfo, Site, Subscribe, TmdbEpisode } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { formatSeason } from '@/@core/utils/formatters'
@@ -56,6 +56,38 @@ const seasonsSubscribed = ref<{ [key: number]: boolean }>({})
 
 // 订阅编号
 const subscribeId = ref<number>()
+
+// 所有站点
+const allSites = ref<Site[]>([])
+
+// 选中的站点
+const selectedSites = ref<number[]>([])
+
+// 搜索方式 title/imdbid
+const searchType = ref('title')
+
+// 查询所有站点
+async function querySites() {
+  try {
+    const data: Site[] = await api.get('site/')
+
+    // 过滤站点，只有启用的站点才显示
+    allSites.value = data.filter(item => item.is_active)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 查询用户选中的站点
+async function querySelectedSites() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/IndexerSites')
+
+    selectedSites.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 // 获得mediaid
 function getMediaId() {
@@ -398,17 +430,18 @@ function joinArray(arr: string[]) {
 }
 
 // 开始搜索
-function handleSearch(area: string) {
+function handleSearch() {
   const keyword = getMediaId()
   router.push({
     path: '/resource',
     query: {
       keyword,
       type: mediaDetail.value.type,
-      area,
+      area: searchType.value,
       title: mediaDetail.value.title,
       year: mediaDetail.value.year,
       season: mediaDetail.value.season,
+      sites: selectedSites.value.join(','),
     },
   })
 }
@@ -453,6 +486,13 @@ function onSubscribeEditRemove() {
   subscribeEditDialog.value = false
   if (mediaDetail.value.type === '电影') checkMovieSubscribed()
   else checkSeasonsSubscribed()
+}
+
+// 点击搜索
+async function clickSearch() {
+  if (allSites.value?.length > 0) return
+  querySites()
+  querySelectedSites()
 }
 
 onBeforeMount(() => {
@@ -512,37 +552,44 @@ onBeforeMount(() => {
         </div>
         <div class="media-actions">
           <VBtn
-            v-if="(mediaDetail.tmdb_id || mediaDetail.douban_id || mediaDetail.bangumi_id) && mediaDetail.imdb_id"
+            v-if="mediaDetail.tmdb_id || mediaDetail.douban_id || mediaDetail.bangumi_id"
             variant="tonal"
             color="info"
             class="mb-2"
+            @click="clickSearch"
           >
             <template #prepend>
               <VIcon icon="mdi-magnify" />
             </template>
             搜索资源
-            <VMenu activator="parent" close-on-content-click>
+            <VMenu activator="parent" close-on-content-click max-width="450">
               <VList>
-                <VListItem variant="plain" @click="handleSearch('title')">
-                  <VListItemTitle>标题</VListItemTitle>
+                <VListItem>
+                  <VBtnToggle v-model="searchType" color="primary" @click.stop>
+                    <VBtn value="title">标题</VBtn>
+                    <VBtn value="imdbid" v-show="mediaDetail.imdb_id">IMDB链接</VBtn>
+                  </VBtnToggle>
                 </VListItem>
-                <VListItem v-show="mediaDetail.imdb_id" variant="plain" @click="handleSearch('imdbid')">
-                  <VListItemTitle>IMDB链接</VListItemTitle>
+                <VListItem>
+                  <VChipGroup v-model="selectedSites" column multiple @click.stop>
+                    <VChip
+                      v-for="site in allSites"
+                      :key="site.id"
+                      :color="selectedSites.includes(site.id) ? 'primary' : ''"
+                      filter
+                      variant="outlined"
+                      :value="site.id"
+                      size="small"
+                    >
+                      {{ site.name }}
+                    </VChip>
+                  </VChipGroup>
+                </VListItem>
+                <VListItem>
+                  <VBtn @click="handleSearch" block>搜索</VBtn>
                 </VListItem>
               </VList>
             </VMenu>
-          </VBtn>
-          <VBtn
-            v-if="(mediaDetail.tmdb_id || mediaDetail.douban_id || mediaDetail.bangumi_id) && !mediaDetail.imdb_id"
-            variant="tonal"
-            color="info"
-            class="mb-2"
-            @click="handleSearch('title')"
-          >
-            <template #prepend>
-              <VIcon icon="mdi-magnify" />
-            </template>
-            搜索资源
           </VBtn>
           <VBtn
             v-if="mediaDetail.type === '电影' || mediaDetail.douban_id || mediaDetail.bangumi_id"
