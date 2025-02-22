@@ -191,6 +191,9 @@ onMounted(() => {
         </VTooltip>
       </VCardText>
       <VCardActions>
+        <div class="text-sm">
+          ↑ {{ formatFileSize(cardProps.data?.upload || 0) }} / ↓ {{ formatFileSize(cardProps.data?.download || 0) }}
+        </div>
         <IconBtn>
           <VIcon icon="mdi-chevron-down" color="primary" />
           <VMenu activator="parent" close-on-content-click>
@@ -228,9 +231,6 @@ onMounted(() => {
             </VList>
           </VMenu>
         </IconBtn>
-        <span class="text-sm">
-          ↑ {{ formatFileSize(cardProps.data?.upload || 0) }} / ↓ {{ formatFileSize(cardProps.data?.download || 0) }}
-        </span>
         <VSpacer />
       </VCardActions>
       <StatIcon v-if="cardProps.site?.is_active" :color="statColor" />
