@@ -49,6 +49,16 @@ export const SystemNavMenus = [
     admin: false,
     footer: true,
   },
+  
+  {
+    title: '工作流',
+    full_title: '自定义工作流',
+    icon: 'mdi-state-machine',
+    to: '/workflow',
+    header: '订阅',
+    admin: false,
+    footer: false,
+  },
   {
     title: '日历',
     full_title: '订阅日历',

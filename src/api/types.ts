@@ -1261,3 +1261,45 @@ export interface SiteCategory {
   cat: string
   desc: string
 }
+
+// 动作
+export interface Action {
+  // 动作ID (类名)
+  id?: string;
+  // 动作名称
+  name?: string;
+  // 动作描述
+  description?: string;
+  // 是否需要循环
+  loop?: boolean;
+  // 循环间隔 (秒)
+  loop_interval?: number;
+  // 参数
+  params?: { [key: string]: any };
+}
+
+// 工作流
+export interface Workflow {
+  // 工作流ID
+  id?: string;
+  // 工作流名称
+  name?: string;
+  // 工作流描述
+  description?: string;
+  // 定时器
+  timer?: string;
+  // 状态
+  state?: string;
+  // 当前执行动作
+  current_action?: string;
+  // 任务执行结果
+  result?: string;
+  // 已执行次数
+  run_count?: number;
+  // 动作列表
+  actions?: Action[];
+  // 创建时间
+  add_time?: string;
+  // 最后执行时间
+  last_time?: string;
+}

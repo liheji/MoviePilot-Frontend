@@ -69,6 +69,14 @@ const router = createRouter({
           },
         },
         {
+          path: '/workflow',
+          component: () => import('../pages/workflow.vue'),
+          meta: {
+            keepAlive: true,
+            requiresAuth: true,
+          },
+        },
+        {
           path: '/calendar',
           component: () => import('../pages/calendar.vue'),
           meta: {
