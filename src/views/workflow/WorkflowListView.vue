@@ -2,6 +2,7 @@
 import api from '@/api'
 import { Workflow } from '@/api/types'
 import { useDisplay } from 'vuetify'
+import WorkflowEditDialog from '@/components/dialog/WorkflowEditDialog.vue'
 
 // APP
 const display = useDisplay()

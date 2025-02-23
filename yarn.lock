@@ -2082,6 +2082,16 @@
     path-browserify "^1.0.1"
     vscode-uri "^3.0.8"
 
+"@vue-flow/background@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@vue-flow/background/-/background-1.3.2.tgz#0c90cd05e5d60da017bbaf5a1c3eb6af7ed9b778"
+  integrity sha512-eJPhDcLj1wEo45bBoqTXw1uhl0yK2RaQGnEINqvvBsAFKh/camHJd5NPmOdS1w+M9lggc9igUewxaEd3iCQX2w==
+
+"@vue-flow/controls@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@vue-flow/controls/-/controls-1.1.2.tgz#d71899ed793f741400d043efdd49765a3a94c75f"
+  integrity sha512-6dtl/JnwDBNau5h3pDBdOCK6tdxiVAOL3cyruRL61gItwq5E97Hmjmj2BIIqX2p7gU1ENg3z80Z4zlu58fGlsg==
+
 "@vue-flow/core@^1.42.1":
   version "1.42.1"
   resolved "https://registry.yarnpkg.com/@vue-flow/core/-/core-1.42.1.tgz#d4274c7452766f05e642317af197be85d4c6188e"
@@ -2091,6 +2101,27 @@
     d3-drag "^3.0.0"
     d3-selection "^3.0.0"
     d3-zoom "^3.0.0"
+
+"@vue-flow/minimap@^1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@vue-flow/minimap/-/minimap-1.5.2.tgz#8d036800c52ec77bfe1586c74d51c66e017f5ef6"
+  integrity sha512-XNSpWwwXfCWqJilc2eCW+3ry3r9vhF8HmUw5wrAsUTHiss4R9k5uZLABo7c3T3VdcVRJ8pTfUJ9vjpzb8H+FKg==
+  dependencies:
+    d3-selection "^3.0.0"
+    d3-zoom "^3.0.0"
+
+"@vue-flow/node-resizer@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/node-resizer/-/node-resizer-1.4.0.tgz#a1603d4fff73c6282096d34e57243de6e719b151"
+  integrity sha512-S52MRcSpd6asza8Cl0bKM2sHGrbq7vBydKHDuPdoTD+cvjNX6XF4LSiPZOuzExePI6b+O6dg2EZ1378oOLGFpA==
+  dependencies:
+    d3-drag "^3.0.0"
+    d3-selection "^3.0.0"
+
+"@vue-flow/node-toolbar@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@vue-flow/node-toolbar/-/node-toolbar-1.1.0.tgz#d28c554789be533ca2bd9ef5cbc342e6016332ea"
+  integrity sha512-6RVDHgY+x8m1cXPaEkqPa/RMR90AC1hPHYBK/QVh8k6lJnFPgwJ9PSiYoC4amsUiDK0mF0Py+PlztLJY1ty+4A==
 
 "@vue-js-cron/core@5.4.1":
   version "5.4.1"
