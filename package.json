@@ -26,6 +26,7 @@
     "@fullcalendar/timegrid": "^6.1.15",
     "@fullcalendar/vue3": "^6.1.15",
     "@iconify/utils": "^2.2.1",
+    "@vue-flow/core": "^1.42.1",
     "@vue-js-cron/vuetify": "^5.0.9",
     "@vueuse/core": "^12.4.0",
     "@vueuse/math": "^12.4.0",
