@@ -6,12 +6,15 @@ import NoDataFound from '@/components/NoDataFound.vue'
 import SubscribeCard from '@/components/cards/SubscribeCard.vue'
 import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
 import SubscribeHistoryDialog from '@/components/dialog/SubscribeHistoryDialog.vue'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 import { useDisplay } from 'vuetify'
 
 // APP
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
+
+// 用户 Store
+const userStore = useUserStore()
 
 // 输入参数
 const props = defineProps({
@@ -46,9 +49,9 @@ const displayList = ref<Subscribe[]>([])
 
 // 监听dataList变化，同步更新displayList
 watch(dataList, () => {
-  // 从Vuex Store中获取用户信息
-  const superUser = store.state.auth.superUser
-  const userName = store.state.auth.userName
+  // 从 Store 中获取用户信息
+  const superUser = userStore.superUser
+  const userName = userStore.userName
   if (superUser) displayList.value = dataList.value.filter(data => data.type === props.type)
   else displayList.value = dataList.value.filter(data => data.type === props.type && data.username === userName)
   // 排序
@@ -163,7 +166,7 @@ onActivated(async () => {
   <!-- 底部操作按钮 -->
   <div v-if="isRefreshed">
     <VFab
-      v-if="store.state.auth.superUser"
+      v-if="userStore.superUser"
       icon="mdi-clipboard-edit"
       location="bottom"
       size="x-large"
@@ -174,7 +177,7 @@ onActivated(async () => {
       :class="{ 'mb-12': appMode }"
     />
     <VFab
-      v-if="store.state.auth.superUser"
+      v-if="userStore.superUser"
       icon="mdi-history"
       color="info"
       location="bottom"

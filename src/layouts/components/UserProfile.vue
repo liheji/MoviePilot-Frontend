@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { useConfirm } from 'vuetify-use-dialog'
 import { useToast } from 'vue-toast-notification'
 import router from '@/router'
@@ -7,9 +6,12 @@ import avatar1 from '@images/avatars/avatar-1.png'
 import api from '@/api'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import UserAuthDialog from '@/components/dialog/UserAuthDialog.vue'
+import { useAuthStore, useUserStore } from '@/stores'
 
-// Vuex Store
-const store = useStore()
+// 认证 Store
+const authStore = useAuthStore()
+// 用户 Store
+const userStore = useUserStore()
 
 // 确认框
 const createConfirm = useConfirm()
@@ -29,7 +31,7 @@ const restartDialog = ref(false)
 // 执行注销操作
 function logout() {
   // 清除登录状态信息
-  store.dispatch('auth/logout')
+  authStore.logout()
   // 重定向到登录页面或其他适当的页面
   router.push('/login')
 }
@@ -74,11 +76,11 @@ function siteAuthDone() {
   logout()
 }
 
-// 从Vuex Store中获取信息
-const superUser = computed(() => store.state.auth.superUser)
-const userName = computed(() => store.state.auth.userName)
-const avatar = computed(() => store.state.auth.avatar || avatar1)
-const userLevel = computed(() => store.state.auth.level)
+// 从用户 Store中获取信息
+const superUser = computed(() => userStore.superUser)
+const userName = computed(() => userStore.userName)
+const avatar = computed(() => userStore.avatar || avatar1)
+const userLevel = computed(() => userStore.level)
 </script>
 
 <template>

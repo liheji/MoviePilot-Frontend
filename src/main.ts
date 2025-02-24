@@ -8,7 +8,7 @@ import '@/plugins/webfontloader'
 import { createApp } from 'vue'
 import vuetify from '@/plugins/vuetify'
 import router from '@/router'
-import store from '@/store'
+import pinia from '@/stores/index'
 
 // 3. 全局组件
 import App from '@/App.vue'
@@ -65,10 +65,13 @@ async function initializeApp() {
 
 // 注册全局组件
 initializeApp().then(() => {
-  // 优先注册框架
+  // 1. 注册 UI 框架
   app.use(vuetify)
 
-  // 注册全局组件
+  // 2. 注册状态管理与路由
+  app.use(pinia).use(router)
+
+  // 3. 注册全局组件
   app
     .component('VAceEditor', VAceEditor)
     .component('VApexChart', VueApexCharts)
@@ -84,10 +87,8 @@ initializeApp().then(() => {
     .component('VCronField', CronField)
     .component('VPathField', PathField)
 
-  // 注册插件
+  // 4. 注册其他插件
   app
-    .use(router)
-    .use(store)
     .use(PerfectScrollbarPlugin)
     .use(ToastPlugin, {
       position: 'bottom-right',

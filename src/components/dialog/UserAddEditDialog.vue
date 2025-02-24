@@ -5,7 +5,7 @@ import { doneNProgress, startNProgress } from '@/api/nprogress'
 import api from '@/api'
 import { useDisplay } from 'vuetify'
 import avatar1 from '@images/avatars/avatar-1.png'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 
 // 显示器宽度
 const display = useDisplay()
@@ -23,8 +23,11 @@ const props = defineProps({
   oper: String,
 })
 
+// 用户 Store
+const userStore = useUserStore()
+
 // 当前登录用户名称
-const currentLoginUser = store.state.auth.userName
+const currentLoginUser = userStore.userName
 
 // 用户名
 const userName = ref('')
@@ -199,13 +202,15 @@ async function updateUser() {
       if (oldUserName !== currentUserName.value) {
         $toast.success(`【${oldUserName}】更名【${currentUserName.value}】， 更新成功！`)
         // 如果是当前登录用户，更新当前用户名称显示
-        if (isCurrentUser.value) store.commit('auth/setUserName', currentUserName.value)
+        if (isCurrentUser.value) {
+          userStore.setUserName(currentUserName.value)
+        }
       } else {
         $toast.success(`【${userForm.value?.name}】更新成功！`)
       }
       // 更新本地头像显示
       if (oldAvatar !== currentAvatar.value && isCurrentUser.value) {
-        store.commit('auth/setAvatar', currentAvatar.value)
+        userStore.setAvatar(currentAvatar.value)
       }
       emit('save')
     } else {

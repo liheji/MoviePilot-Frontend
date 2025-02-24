@@ -11,6 +11,7 @@ import noImage from '@images/no-image.jpeg'
 import tmdbImage from '@images/logos/tmdb.png'
 import doubanImage from '@images/logos/douban-black.png'
 import bangumiImage from '@images/logos/bangumi.png'
+import { useUserStore } from '@/stores'
 
 // 输入参数
 const props = defineProps({
@@ -22,7 +23,8 @@ const props = defineProps({
 // 从 provide 中获取全局设置
 const globalSettings: any = inject('globalSettings')
 
-const store = useStore()
+// 用户 Store
+const userStore = useUserStore()
 
 // 提示框
 const $toast = useToast()
@@ -340,7 +342,7 @@ async function getMediaSeasons() {
 // 查询订阅弹窗规则
 async function queryDefaultSubscribeConfig() {
   // 非管理员不显示
-  if (!store.state.auth.superUser) return false
+  if (!userStore.superUser) return false
   try {
     let subscribe_config_url = ''
     if (props.media?.type === '电影') subscribe_config_url = 'system/setting/DefaultMovieSubscribeConfig'

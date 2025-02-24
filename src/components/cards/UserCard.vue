@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import api from '@/api'
 import { Subscribe, User } from '@/api/types'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 import avatar1 from '@images/avatars/avatar-1.png'
 import { useToast } from 'vue-toast-notification'
 import { useConfirm } from 'vuetify-use-dialog'
@@ -22,10 +22,10 @@ const props = defineProps({
 })
 
 // 当前用户的ID
-const currentLoginUserId = computed(() => store.state.auth.userID)
+const currentLoginUserId = computed(() => useUserStore().userID)
 
 // 当前用户是否是管理员
-const currentUserIsSuperuser = computed(() => store.state.auth.superUser)
+const currentUserIsSuperuser = computed(() => useUserStore().superUser)
 
 // 定义触发的自定义事件
 const emit = defineEmits(['remove', 'save'])
@@ -161,14 +161,7 @@ onMounted(() => {
       </VList>
     </VCardText>
     <VCardText class="flex flex-row justify-center">
-      <VBtn
-        v-if="currentUserIsSuperuser"
-        color="primary"
-        class="me-4"
-        @click="editUser"
-      >
-        编辑
-      </VBtn>
+      <VBtn v-if="currentUserIsSuperuser" color="primary" class="me-4" @click="editUser"> 编辑 </VBtn>
       <VBtn
         v-if="currentUserIsSuperuser && props.user.id != currentLoginUserId"
         color="error"

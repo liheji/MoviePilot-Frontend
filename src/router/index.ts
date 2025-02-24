@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { configureNProgress } from '@/api/nprogress'
-import store from '@/store'
+import { useAuthStore } from '@/stores'
 
 // Nprogress
 configureNProgress()
@@ -215,9 +215,11 @@ function abortAllControllers() {
 
 // 路由导航守卫
 router.beforeEach((to: any, from: any, next: any) => {
+  // 认证 Store
+  const authStore = useAuthStore()
   // 总是记录非login路由
-  if (to.fullPath != '/login') store.state.auth.originalPath = to.fullPath
-  const isAuthenticated = store.state.auth.token !== null
+  if (to.fullPath != '/login') authStore.originalPath = to.fullPath
+  const isAuthenticated = authStore.token !== null
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
   } else {

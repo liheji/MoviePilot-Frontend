@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { debounce } from 'lodash'
 import { VForm } from 'vuetify/components/VForm'
-import { useStore } from 'vuex'
+import { useAuthStore, useUserStore } from '@/stores'
+import { authState, userState } from '@/stores/types'
 import { requiredValidator } from '@/@validators'
 import api from '@/api'
 import router from '@/router'
@@ -11,10 +12,12 @@ import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { urlBase64ToUint8Array } from '@/@core/utils/navigator'
 import { saveLocalTheme } from '@/@core/utils/theme'
 
+// 主题
 const { global: globalTheme } = useTheme()
-
-// Vuex Store
-const store = useStore()
+// 认证 Store
+const authStore = useAuthStore()
+//用户 Store
+const userStore = useUserStore()
 
 // 表单
 const form = ref({
@@ -119,7 +122,7 @@ async function afterLogin(superuser: boolean) {
   // 生效主题配置
   await setTheme()
   // 跳转到首页或回原始页面
-  router.push(store.state.auth.originalPath ?? '/')
+  router.push(authStore.originalPath ?? '/')
   // 订阅推送通知
   if (superuser) await subscribeForPushNotifications()
 }
@@ -147,30 +150,25 @@ function login() {
       },
     })
     .then((response: any) => {
-      // 获取token
-      const token = response.access_token
-      const superUser = response.super_user
-      const userID = response.user_id
-      const userName = response.user_name
-      const avatar = response.avatar
-      const level = response.level
-      const remember = form.value.remember
-      const permissions = response.permissions
+      const authPayLoad: authState = {
+        token: response.access_token,
+        remember: form.value.remember,
+      }
 
-      // 更新token和remember状态到Vuex Store
-      store.dispatch('auth/login', {
-        token,
-        remember,
-        superUser,
-        userID,
-        userName,
-        avatar,
-        level,
-        permissions,
-      })
+      const userPayload: userState = {
+        superUser: response.super_user,
+        userID: response.user_id,
+        userName: response.user_name,
+        avatar: response.avatar,
+        level: response.level,
+        permissions: response.permissions,
+      }
+
+      authStore.login(authPayLoad)
+      userStore.loginUser(userPayload)
 
       // 登录后处理
-      afterLogin(superUser)
+      afterLogin(userPayload.superUser)
     })
     .catch((error: any) => {
       // 登录失败，显示错误提示
@@ -191,9 +189,9 @@ function startBackgroundRotation() {
 
 // 自动登录
 onMounted(async () => {
-  // 从Vuex Store中获取token和remember状态
-  const token = store.state.auth.token
-  const remember = store.state.auth.remember
+  // 获取token和remember状态
+  const token = authStore.token
+  const remember = authStore.remember
 
   // 如果token存在，且保持登录状态为true，则跳转到首页
   if (token && remember) {

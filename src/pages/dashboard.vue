@@ -3,7 +3,7 @@ import draggable from 'vuedraggable'
 import api from '@/api'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { DashboardItem } from '@/api/types'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 import DashboardElement from '@/components/misc/DashboardElement.vue'
 import { useDisplay } from 'vuetify'
 
@@ -11,8 +11,8 @@ import { useDisplay } from 'vuetify'
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
 
-// 从Vuex Store中获取superuser信息
-const superUser = store.state.auth.superUser
+// 从用户 Store 中获取superuser信息
+const superUser = useUserStore().superUser
 
 // 是否拉升高度
 const isElevated = ref(true)

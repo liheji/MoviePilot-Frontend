@@ -6,7 +6,7 @@ import api from '@/api'
 import type { User } from '@/api/types'
 import avatar1 from '@images/avatars/avatar-1.png'
 import { useDisplay } from 'vuetify'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 
 // 显示器宽度
 const display = useDisplay()
@@ -15,6 +15,9 @@ const isNewPasswordVisible = ref(false)
 const isConfirmPasswordVisible = ref(false)
 const newPassword = ref('')
 const confirmPassword = ref('')
+
+// 用户 Store
+const userStore = useUserStore()
 
 // 提示框
 const $toast = useToast()
@@ -53,13 +56,7 @@ const accountInfo = ref<User>({
   avatar: '',
   is_otp: false,
   permissions: {},
-  settings: {
-    wechat_userid: null,
-    telegram_userid: null,
-    slack_userid: null,
-    vocechat_userid: null,
-    synologychat_userid: null,
-  },
+  settings: {},
 })
 
 // 二维码信息
@@ -149,13 +146,13 @@ async function saveAccountInfo() {
       if (oldUserName !== currentUserName.value) {
         $toast.success(`【${oldUserName}】更名【${currentUserName.value}】，用户信息保存成功！`)
         // 更新本地用户名显示
-        store.commit('auth/setUserName', currentUserName.value)
+        userStore.setUserName(currentUserName.value)
       } else {
         $toast.success('用户信息保存成功！')
       }
       // 更新本地头像显示
       if (oldAvatar !== currentAvatar.value) {
-        store.commit('auth/setAvatar', currentAvatar.value)
+        userStore.setAvatar(currentAvatar.value)
       }
     } else {
       if (oldAvatar !== currentAvatar.value) {
@@ -238,9 +235,9 @@ onMounted(() => {
 
 // 监听 localStorage 中的用户头像变化
 watch(
-  () => store.state.auth.avatar,
+  () => userStore.avatar,
   () => {
-    currentAvatar.value = store.state.auth.avatar
+    currentAvatar.value = userStore.avatar
   },
 )
 </script>

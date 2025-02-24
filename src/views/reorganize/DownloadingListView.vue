@@ -4,12 +4,15 @@ import api from '@/api'
 import type { DownloadingInfo } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import DownloadingCard from '@/components/cards/DownloadingCard.vue'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 
 // 定义输入参数
 const props = defineProps<{
   name: string
 }>()
+
+// 用户 Store
+const userStore = useUserStore()
 
 // 定时器
 let refreshTimer: NodeJS.Timeout | null = null
@@ -42,9 +45,9 @@ function onRefresh() {
 
 // 过滤数据，管理员用户显示全部，非管理员只显示自己的订阅
 const filteredDataList = computed(() => {
-  // 从Vuex Store中获取用户信息
-  const superUser = store.state.auth.superUser
-  const userName = store.state.auth.userName
+  // 从 Store 中获取用户信息
+  const superUser = userStore.superUser
+  const userName = userStore.userName
   if (superUser) return dataList.value
   else return dataList.value.filter(data => data.userid === userName || data.username === userName)
 })

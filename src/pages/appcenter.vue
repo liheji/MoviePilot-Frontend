@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { NavMenu } from '@/@layouts/types'
 import { SystemNavMenus } from '@/router/menu'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 import draggable from 'vuedraggable'
 
-// 从Vuex Store中获取superuser信息
-const superUser = store.state.auth.superUser
+// 从 Store 中获取superuser信息
+const superUser = useUserStore().superUser
 
 // APP图标顺序
 const appOrder = ref<string[]>([])
