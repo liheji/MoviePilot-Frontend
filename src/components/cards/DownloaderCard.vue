@@ -6,7 +6,7 @@ import { useToast } from 'vue-toast-notification'
 import type { DownloaderInfo } from '@/api/types'
 import qbittorrent_image from '@images/logos/qbittorrent.png'
 import transmission_image from '@images/logos/transmission.png'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 // 定义输入
 const props = defineProps({
@@ -104,7 +104,7 @@ function saveDownloaderInfo() {
     props.downloaders.forEach(item => {
       if (item.default && item !== props.downloader) {
         item.default = false
-        $toast.info(`【${item.name}】存在默认下载器，已替换成【${downloaderInfo.value.name}】`)
+        $toast.info(`存在默认下载器【${item.name}】，已替换成【${downloaderInfo.value.name}】`)
       }
     })
   }

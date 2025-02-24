@@ -6,7 +6,7 @@ import FilterRuleCard from '@/components/cards/FilterRuleCard.vue'
 import { useToast } from 'vue-toast-notification'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
 import filter_group_svg from '@images/svg/filter-group.svg'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 // 输入参数
 const props = defineProps({

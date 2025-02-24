@@ -23,7 +23,7 @@ export default defineConfig({
       dts: true,
     }),
     AutoImport({
-      imports: ['vue', 'vue-router', '@vueuse/core', '@vueuse/math', 'vuex'],
+      imports: ['vue', 'vue-router', '@vueuse/core', '@vueuse/math', 'pinia'],
       vueTemplate: true,
     }),
     VitePWA({

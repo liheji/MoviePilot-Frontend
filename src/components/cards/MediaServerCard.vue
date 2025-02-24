@@ -5,7 +5,7 @@ import emby_image from '@images/logos/emby.png'
 import jellyfin_image from '@images/logos/jellyfin.png'
 import plex_image from '@images/logos/plex.png'
 import api from '@/api'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 // 定义输入
 const props = defineProps({

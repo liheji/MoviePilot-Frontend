@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { innerFilterRules } from '@/api/constants'
 import { CustomRule } from '@/api/types'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 // 输入参数
 const props = defineProps({

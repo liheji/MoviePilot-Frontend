@@ -10,6 +10,7 @@ import { formatSeason } from '@/@core/utils/formatters'
 import router from '@/router'
 import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
+import { useUserStore } from '@/stores'
 
 // 输入参数
 const mediaProps = defineProps({
@@ -22,7 +23,8 @@ const mediaProps = defineProps({
 // 从 provide 中获取全局设置
 const globalSettings: any = inject('globalSettings')
 
-const store = useStore()
+// 用户 Store
+const userStore = useUserStore()
 
 // 提示框
 const $toast = useToast()
@@ -466,7 +468,7 @@ async function handlePlay() {
 
 async function queryDefaultSubscribeConfig() {
   // 非管理员不显示
-  if (!store.state.auth.superUser) return false
+  if (!userStore.superUser) return false
   try {
     let subscribe_config_url = ''
     if (mediaProps.type === '电影') subscribe_config_url = 'system/setting/DefaultMovieSubscribeConfig'

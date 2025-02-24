@@ -2,7 +2,7 @@
 import { DiscoverSource } from '@/api/types'
 import MediaCardListView from '@/views/discover/MediaCardListView.vue'
 import FormRender from '@/components/render/FormRender.vue'
-import { cloneDeep, isNull } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 // 输入参数
 const props = defineProps<{

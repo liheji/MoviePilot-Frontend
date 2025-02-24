@@ -7,7 +7,7 @@ import synologychat_image from '@images/logos/synologychat.png'
 import slack_image from '@images/logos/slack.webp'
 import chrome_image from '@images/logos/chrome.png'
 import { useToast } from 'vue-toast-notification'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 // 定义输入
 const props = defineProps({

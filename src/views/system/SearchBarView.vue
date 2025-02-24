@@ -3,16 +3,19 @@ import api from '@/api'
 import type { Plugin, Site, Subscribe } from '@/api/types'
 import { SystemNavMenus, SettingTabs } from '@/router/menu'
 import { NavMenu } from '@/@layouts/types'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 
 // 路由
 const router = useRouter()
 
+// 用户 Store
+const userStore = useUserStore()
+
 // 超级用户
-const superUser = store.state.auth.superUser
+const superUser = userStore.superUser
 
 // 当前用户名
-const userName = store.state.auth.userName
+const userName = userStore.userName
 
 // 定义事件
 const emit = defineEmits(['close'])

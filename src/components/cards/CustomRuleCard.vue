@@ -2,7 +2,7 @@
 import { CustomRule } from '@/api/types'
 import { useToast } from 'vue-toast-notification'
 import filter_svg from '@images/svg/filter.svg'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import { innerFilterRules } from '@/api/constants'
 
 // 输入参数

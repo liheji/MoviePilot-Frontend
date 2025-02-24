@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { debounce } from 'lodash'
+import { debounce } from 'lodash-es'
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { TransferHistory } from '@/api/types'

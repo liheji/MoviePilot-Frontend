@@ -2,12 +2,13 @@
 import { useTheme } from 'vuetify'
 import api from '@/api'
 import { hexToRgb } from '@layouts/utils'
+import { useUserStore } from '@/stores'
 
 const vuetifyTheme = useTheme()
 
-// 从Vuex Store中获取信息
-const store = useStore()
-const superUser = store.state.auth.superUser
+// 用户 Store
+const userStore = useUserStore()
+const superUser = userStore.superUser
 
 const options = controlledComputed(
   () => vuetifyTheme.name.value,

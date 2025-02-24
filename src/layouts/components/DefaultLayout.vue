@@ -8,7 +8,7 @@ import UserNofification from '@/layouts/components/UserNotification.vue'
 import SearchBar from '@/layouts/components/SearchBar.vue'
 import ShortcutBar from '@/layouts/components/ShortcutBar.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
-import store from '@/store'
+import { useUserStore } from '@/stores'
 import { SystemNavMenus } from '@/router/menu'
 import { NavMenu } from '@/@layouts/types'
 import { useDisplay } from 'vuetify'
@@ -16,8 +16,11 @@ import { useDisplay } from 'vuetify'
 const display = useDisplay()
 const appMode = inject('pwaMode')
 
+// 用户 Store
+const userStore = useUserStore()
+
 // 是否超级用户
-let superUser = store.state.auth.superUser
+let superUser = userStore.superUser
 
 // 开始菜单项
 const startMenus = ref<NavMenu[]>([])
