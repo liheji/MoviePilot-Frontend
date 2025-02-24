@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { debounce } from 'lodash'
+import { debounce } from 'lodash-es'
 import { VForm } from 'vuetify/components/VForm'
 import { useAuthStore, useUserStore } from '@/stores'
 import { authState, userState } from '@/stores/types'

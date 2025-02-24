@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import _ from 'lodash'
+import { cloneDeepWith } from 'lodash-es'
 import type { Context } from '@/api/types'
 import TorrentCard from '@/components/cards/TorrentCard.vue'
 
@@ -259,7 +259,7 @@ function filterData() {
         )
       })
       if (matchData.length > 0) {
-        const firstData = _.cloneDeepWith(matchData[0]) as SearchTorrent
+        const firstData = cloneDeepWith(matchData[0]) as SearchTorrent
         if (matchData.length > 1) firstData.more = matchData.slice(1)
 
         // 显示前20个，4行左右。
