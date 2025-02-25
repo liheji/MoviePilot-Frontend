@@ -639,7 +639,7 @@ onMounted(fetchData)
       <div class="w-auto">
         <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" variant="solo" flat />
       </div>
-      <div class="w-auto text-sm">{{ pageTip.begin }}-{{ pageTip.end }} / {{ totalItems }}</div>
+      <div class="w-auto text-sm">{{ pageTip.begin }} - {{ pageTip.end }} / {{ totalItems }}</div>
       <VPagination
         v-model="currentPage"
         show-first-last-page

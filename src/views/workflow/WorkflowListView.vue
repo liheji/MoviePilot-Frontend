@@ -17,6 +17,9 @@ const isRefreshed = ref(false)
 // 过滤关键字
 const filter = ref('')
 
+// 加载中
+const loading = ref(false)
+
 // 新增对话框
 const addDialog = ref(false)
 
@@ -91,6 +94,7 @@ async function handleDelete(item: Workflow) {
 
 // 开始任务
 async function handleEnable(item: Workflow) {
+  loading.value = true
   try {
     const result: { [key: string]: string } = await api.post(`workflow/${item.id}/start`)
     if (result.success) {
@@ -102,10 +106,12 @@ async function handleEnable(item: Workflow) {
   } catch (error) {
     console.error(error)
   }
+  loading.value = false
 }
 
 // 停用任务
 async function handlePause(item: Workflow) {
+  loading.value = true
   try {
     const result: { [key: string]: string } = await api.post(`workflow/${item.id}/pause`)
     if (result.success) {
@@ -117,10 +123,12 @@ async function handlePause(item: Workflow) {
   } catch (error) {
     console.error(error)
   }
+  loading.value = false
 }
 
 // 立即执行任务
 async function handleRun(item: Workflow) {
+  loading.value = true
   try {
     const result: { [key: string]: string } = await api.post(`workflow/${item.id}/run`)
     if (result.success) {
@@ -132,6 +140,7 @@ async function handleRun(item: Workflow) {
   } catch (error) {
     console.error(error)
   }
+  loading.value = false
 }
 
 // 计算状态颜色
