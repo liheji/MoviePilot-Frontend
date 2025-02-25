@@ -55,9 +55,6 @@ async function initializeApp() {
     // 是否为PWA
     const pwaMode = await isPWA()
     app.provide('pwaMode', pwaMode)
-    // 全局设置
-    const globalSettings = await fetchGlobalSettings()
-    app.provide('globalSettings', globalSettings)
   } catch (error) {
     console.error('Failed to initialize app', error)
   }
@@ -71,7 +68,10 @@ initializeApp().then(() => {
   // 2. 注册状态管理与路由
   app.use(pinia).use(router)
 
-  // 3. 注册全局组件
+  // 3. 全局设置
+  app.provide('globalSettings', fetchGlobalSettings())
+
+  // 4. 注册全局组件
   app
     .component('VAceEditor', VAceEditor)
     .component('VApexChart', VueApexCharts)
@@ -87,7 +87,7 @@ initializeApp().then(() => {
     .component('VCronField', CronField)
     .component('VPathField', PathField)
 
-  // 4. 注册其他插件
+  // 5. 注册其他插件
   app
     .use(PerfectScrollbarPlugin)
     .use(ToastPlugin, {
