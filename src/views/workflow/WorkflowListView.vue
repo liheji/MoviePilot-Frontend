@@ -3,6 +3,9 @@ import api from '@/api'
 import { Workflow } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import WorkflowEditDialog from '@/components/dialog/WorkflowEditDialog.vue'
+import WorkflowAddDialog from '@/components/dialog/WorkflowAddDialog.vue'
+import { useToast } from 'vue-toast-notification'
+import { useConfirm } from 'vuetify-use-dialog'
 
 // APP
 const display = useDisplay()
@@ -11,8 +14,17 @@ const appMode = inject('pwaMode') && display.mdAndDown.value
 // 是否刷新
 const isRefreshed = ref(false)
 
+// 新增对话框
+const addDialog = ref(false)
+
+// 流程编辑对话框
+const editDialog = ref(false)
+
 // 所有工作流
 const workflowList = ref<Workflow[]>([])
+
+// 当前编辑工作流
+const currentWorkflow = ref<Workflow>()
 
 const options = ref({ page: 1, itemsPerPage: 25, sortBy: [''], sortDesc: [false] })
 
@@ -23,14 +35,93 @@ const headers = [
   { title: '当前任务', key: 'current_action' },
   { title: '状态', key: 'state' },
   { title: '进度', key: 'progress' },
-  { title: '创建时间', key: 'add_time' },
+  { title: '', key: 'action' },
 ]
+
+// 提示框
+const $toast = useToast()
+
+// 确认框
+const createConfirm = useConfirm()
 
 // 加载数据
 async function fetchData() {
   try {
     workflowList.value = await api.get('workflow/')
     isRefreshed.value = true
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// 编辑工作流
+function handleEdit(item: Workflow) {
+  currentWorkflow.value = item
+  editDialog.value = true
+}
+
+// 删除工作流
+async function handleDelete(item: Workflow) {
+  const isConfirmed = await createConfirm({
+    title: '确认',
+    content: `是否确认删除工作流 ${item.name} ?`,
+  })
+
+  if (!isConfirmed) return
+
+  try {
+    const result: { [key: string]: string } = await api.delete(`workflow/${item.id}`)
+    if (result.success) {
+      $toast.success('删除工作流成功！')
+      fetchData()
+    } else {
+      $toast.error(`删除工作流失败：${result.message}`)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// 开始工作流
+async function handleEnable(item: Workflow) {
+  try {
+    const result: { [key: string]: string } = await api.post(`workflow/${item.id}/start`)
+    if (result.success) {
+      $toast.success('启用工作流成功！')
+      fetchData()
+    } else {
+      $toast.error(`启用工作流失败：${result.message}`)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// 停用工作流
+async function handlePause(item: Workflow) {
+  try {
+    const result: { [key: string]: string } = await api.post(`workflow/${item.id}/pause`)
+    if (result.success) {
+      $toast.success('停用工作流成功！')
+      fetchData()
+    } else {
+      $toast.error(`停用工作流失败：${result.message}`)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// 立即执行工作流
+async function handleRun(item: Workflow) {
+  try {
+    const result: { [key: string]: string } = await api.post(`workflow/${item.id}/run`)
+    if (result.success) {
+      $toast.success('立即执行工作流成功！')
+      fetchData()
+    } else {
+      $toast.error(`立即执行工作流失败：${result.message}`)
+    }
   } catch (error) {
     console.error(error)
   }
@@ -51,7 +142,23 @@ const resolveProgress = (item: Workflow) => {
   return item.actions?.length ? Math.round((current_action_index / item.actions.length) * 100) : 0
 }
 
+// 新增工作流成功
+const addDone = () => {
+  addDialog.value = false
+  fetchData()
+}
+
+// 修改工作流成功
+const editDone = () => {
+  editDialog.value = false
+  fetchData()
+}
+
 onMounted(() => {
+  fetchData()
+})
+
+onActivated(() => {
   fetchData()
 })
 </script>
@@ -110,10 +217,28 @@ onMounted(() => {
       <template #item.progress="{ item }">
         <div class="d-flex align-center gap-x-4">
           <div class="w-100">
-            <VProgressLinear rounded :value="resolveProgress" color="primary" height="8" />
+            <VProgressLinear rounded :value="resolveProgress(item)" color="primary" height="8" />
           </div>
-          <div>{{ resolveProgress }}%</div>
+          <div>{{ resolveProgress(item) }}%</div>
         </div>
+      </template>
+      <!-- action -->
+      <template #item.action="{ item }">
+        <IconBtn v-if="item.state === 'P'">
+          <VIcon color="success" icon="mdi-play" @click="handleEnable(item)" />
+        </IconBtn>
+        <IconBtn v-else>
+          <VIcon color="warning" icon="mdi-pause" @click="handlePause(item)" />
+        </IconBtn>
+        <IconBtn>
+          <VIcon color="primary" icon="mdi-pencil" @click="handleEdit(item)" />
+        </IconBtn>
+        <IconBtn>
+          <VIcon color="info" icon="mdi-run" @click="handleRun(item)" />
+        </IconBtn>
+        <IconBtn>
+          <VIcon color="error" icon="mdi-delete" @click="handleDelete(item)" />
+        </IconBtn>
       </template>
       <template #bottom>
         <VCardText class="pt-2">
@@ -121,9 +246,9 @@ onMounted(() => {
             <VSelect
               v-model="options.itemsPerPage"
               :items="[10, 25, 50, 100]"
-              label="每页记录数:"
+              label="每页条数:"
               variant="underlined"
-              style="max-inline-size: 8rem; min-inline-size: 5rem"
+              max-width="5rem"
             />
 
             <VPagination
@@ -147,5 +272,16 @@ onMounted(() => {
     app
     appear
     :class="{ 'mb-12': appMode }"
+    @click="addDialog = true"
   />
+  <!-- 编辑对话框 -->
+  <WorkflowEditDialog
+    v-if="editDialog && currentWorkflow"
+    v-model="editDialog"
+    @close="editDialog = false"
+    @save="editDone"
+    :workflow="currentWorkflow"
+  />
+  <!-- 新增对话框 -->
+  <WorkflowAddDialog v-if="addDialog" v-model="addDialog" @close="addDialog = false" @save="addDone" />
 </template>

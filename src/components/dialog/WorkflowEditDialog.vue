@@ -4,6 +4,7 @@ import { VueFlow, useVueFlow } from '@vue-flow/core'
 import Sidebar from '../workflow/Sidebar.vue'
 import DropzoneBackground from '../workflow/DropzoneBackground.vue'
 import useDragAndDrop from '@core/utils/workflow'
+import { Workflow } from '@/api/types'
 
 const { onConnect, addEdges } = useVueFlow()
 
@@ -12,23 +13,48 @@ const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
 const nodes = ref([])
 
 onConnect(addEdges)
+
+// 定义输入参数
+const props = defineProps({
+  workflow: Object as PropType<Workflow>,
+})
+
+// 定义事件
+const emit = defineEmits(['close', 'save'])
 </script>
 
 <template>
-  <div class="dnd-flow" @drop="onDrop">
-    <VueFlow :nodes="nodes" @dragover="onDragOver" @dragleave="onDragLeave">
-      <DropzoneBackground
-        :style="{
-          backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
-          transition: 'background-color 0.2s ease',
-        }"
-      >
-        <p v-if="isDragOver">Drop here</p>
-      </DropzoneBackground>
-    </VueFlow>
+  <VDialog scrollable fullscreen :scrim="false" transition="dialog-bottom-transition">
+    <VCard>
+      <!-- Toolbar -->
+      <div>
+        <VToolbar color="primary">
+          <VToolbarTitle>编辑工作流 - {{ workflow?.name }}</VToolbarTitle>
+          <VSpacer />
+          <VToolbarItems>
+            <VBtn icon variant="plain" @click="emit('close')" class="me-3">
+              <VIcon size="large" color="white" icon="ri-close-line" />
+            </VBtn>
+          </VToolbarItems>
+        </VToolbar>
+      </div>
+      <VCardText>
+        <div class="dnd-flow" @drop="onDrop">
+          <VueFlow :nodes="nodes" @dragover="onDragOver" @dragleave="onDragLeave">
+            <DropzoneBackground
+              :style="{
+                backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
+                transition: 'background-color 0.2s ease',
+              }"
+            >
+              <p v-if="isDragOver">Drop here</p>
+            </DropzoneBackground>
+          </VueFlow>
 
-    <Sidebar />
-  </div>
+          <Sidebar />
+        </div> </VCardText
+    ></VCard>
+  </VDialog>
 </template>
 <style>
 @import '@vue-flow/core/dist/style.css';
