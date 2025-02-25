@@ -633,7 +633,9 @@ onMounted(fetchData)
       </template>
       <template #no-data> 没有数据 </template>
     </VDataTableVirtual>
-    <div class="flex items-center justify-center">
+    <!-- 分页 -->
+    <VDivider />
+    <div class="flex items-center justify-between">
       <div class="w-auto">
         <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" variant="solo" flat />
       </div>
@@ -642,6 +644,7 @@ onMounted(fetchData)
         v-model="currentPage"
         show-first-last-page
         :length="totalPage"
+        :total-visible="display.mdAndUp.value ? 7 : 0"
         @next="currentPage + 1"
         @prev="currentPage - 1"
       >

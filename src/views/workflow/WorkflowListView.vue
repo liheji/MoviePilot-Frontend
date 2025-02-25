@@ -14,29 +14,36 @@ const appMode = inject('pwaMode') && display.mdAndDown.value
 // 是否刷新
 const isRefreshed = ref(false)
 
+// 过滤关键字
+const filter = ref('')
+
 // 新增对话框
 const addDialog = ref(false)
 
 // 流程编辑对话框
 const editDialog = ref(false)
 
-// 所有工作流
+// 所有任务
 const workflowList = ref<Workflow[]>([])
 
-// 当前编辑工作流
+// 当前编辑任务
 const currentWorkflow = ref<Workflow>()
-
-const options = ref({ page: 1, itemsPerPage: 25, sortBy: [''], sortDesc: [false] })
 
 // headers
 const headers = [
-  { title: '名称', key: 'name' },
+  { title: '任务', key: 'name' },
   { title: '定时', key: 'timer' },
-  { title: '当前任务', key: 'current_action' },
   { title: '状态', key: 'state' },
   { title: '进度', key: 'progress' },
-  { title: '', key: 'action' },
+  { title: '操作', key: 'action' },
 ]
+
+// 表格样式
+const tableStyle = computed(() => {
+  return appMode
+    ? 'height: calc(100vh - 12.5rem - env(safe-area-inset-bottom)'
+    : 'height: calc(100vh - 11.5rem - env(safe-area-inset-bottom)'
+})
 
 // 提示框
 const $toast = useToast()
@@ -54,17 +61,17 @@ async function fetchData() {
   }
 }
 
-// 编辑工作流
+// 编辑任务
 function handleEdit(item: Workflow) {
   currentWorkflow.value = item
   editDialog.value = true
 }
 
-// 删除工作流
+// 删除任务
 async function handleDelete(item: Workflow) {
   const isConfirmed = await createConfirm({
     title: '确认',
-    content: `是否确认删除工作流 ${item.name} ?`,
+    content: `是否确认删除任务 ${item.name} ?`,
   })
 
   if (!isConfirmed) return
@@ -72,55 +79,55 @@ async function handleDelete(item: Workflow) {
   try {
     const result: { [key: string]: string } = await api.delete(`workflow/${item.id}`)
     if (result.success) {
-      $toast.success('删除工作流成功！')
+      $toast.success('删除任务成功！')
       fetchData()
     } else {
-      $toast.error(`删除工作流失败：${result.message}`)
+      $toast.error(`删除任务失败：${result.message}`)
     }
   } catch (error) {
     console.error(error)
   }
 }
 
-// 开始工作流
+// 开始任务
 async function handleEnable(item: Workflow) {
   try {
     const result: { [key: string]: string } = await api.post(`workflow/${item.id}/start`)
     if (result.success) {
-      $toast.success('启用工作流成功！')
+      $toast.success('启用任务成功！')
       fetchData()
     } else {
-      $toast.error(`启用工作流失败：${result.message}`)
+      $toast.error(`启用任务失败：${result.message}`)
     }
   } catch (error) {
     console.error(error)
   }
 }
 
-// 停用工作流
+// 停用任务
 async function handlePause(item: Workflow) {
   try {
     const result: { [key: string]: string } = await api.post(`workflow/${item.id}/pause`)
     if (result.success) {
-      $toast.success('停用工作流成功！')
+      $toast.success('停用任务成功！')
       fetchData()
     } else {
-      $toast.error(`停用工作流失败：${result.message}`)
+      $toast.error(`停用任务失败：${result.message}`)
     }
   } catch (error) {
     console.error(error)
   }
 }
 
-// 立即执行工作流
+// 立即执行任务
 async function handleRun(item: Workflow) {
   try {
     const result: { [key: string]: string } = await api.post(`workflow/${item.id}/run`)
     if (result.success) {
-      $toast.success('立即执行工作流成功！')
+      $toast.success('任务执行成功！')
       fetchData()
     } else {
-      $toast.error(`立即执行工作流失败：${result.message}`)
+      $toast.error(`任务执行失败：${result.message}`)
     }
   } catch (error) {
     console.error(error)
@@ -142,13 +149,13 @@ const resolveProgress = (item: Workflow) => {
   return item.actions?.length ? Math.round((current_action_index / item.actions.length) * 100) : 0
 }
 
-// 新增工作流成功
+// 新增任务成功
 const addDone = () => {
   addDialog.value = false
   fetchData()
 }
 
-// 修改工作流成功
+// 修改任务成功
 const editDone = () => {
   editDialog.value = false
   fetchData()
@@ -170,6 +177,7 @@ onActivated(() => {
         <VCardTitle> 工作流 </VCardTitle>
         <VSpacer />
         <VCombobox
+          v-model="filter"
           max-width="300"
           key="search_navbar"
           class="text-disabled"
@@ -188,22 +196,24 @@ onActivated(() => {
     <VDataTable
       :headers="headers"
       :items="workflowList"
-      :items-per-page="options.itemsPerPage"
-      :page="options.page"
-      :options="options"
+      :items-per-page="1000"
       loading-text="加载中..."
       class="text-no-wrap"
       hover
+      fixed-header
+      hide-default-footer
+      :style="tableStyle"
+      :search="filter"
     >
       <!-- name -->
       <template #item.name="{ item }">
         <div class="d-flex align-center">
-          <VAvatar size="32" color="primary" class="v-avatar-light-bg primary--text" variant="tonal">
+          <VAvatar size="32" color="primary" variant="tonal">
             <span class="text-sm">{{ item.actions?.length }}</span>
           </VAvatar>
           <div class="d-flex flex-column ms-3">
-            <span class="d-block font-weight-medium text-high-emphasis text-truncate">{{ item.name }}</span>
-            <small>{{ item.description }}</small>
+            <span class="d-block text-base text-high-emphasis text-truncate">{{ item.name }}</span>
+            <span class="text-sm">{{ item.description }}</span>
           </div>
         </div>
       </template>
@@ -240,25 +250,6 @@ onActivated(() => {
           <VIcon color="error" icon="mdi-delete" @click="handleDelete(item)" />
         </IconBtn>
       </template>
-      <template #bottom>
-        <VCardText class="pt-2">
-          <div class="d-flex flex-wrap justify-space-between gap-y-2 mt-2">
-            <VSelect
-              v-model="options.itemsPerPage"
-              :items="[10, 25, 50, 100]"
-              label="每页条数:"
-              variant="underlined"
-              max-width="5rem"
-            />
-
-            <VPagination
-              v-model="options.page"
-              :total-visible="$vuetify.display.smAndDown ? 2 : 3"
-              :length="Math.ceil(workflowList.length / options.itemsPerPage)"
-            />
-          </div>
-        </VCardText>
-      </template>
       <template #no-data> 没有数据 </template>
     </VDataTable>
   </VCard>
@@ -285,3 +276,8 @@ onActivated(() => {
   <!-- 新增对话框 -->
   <WorkflowAddDialog v-if="addDialog" v-model="addDialog" @close="addDialog = false" @save="addDone" />
 </template>
+<style lang="scss">
+.v-table th {
+  white-space: nowrap;
+}
+</style>

@@ -24,7 +24,7 @@ const workflowForm = ref<Workflow>({
 // 提示框
 const $toast = useToast()
 
-// 调用API 新增工作流
+// 调用API 新增任务
 async function addWorkflow() {
   if (!workflowForm.value.name || !workflowForm.value.timer) {
     $toast.error('请填写完整信息！')
@@ -34,10 +34,10 @@ async function addWorkflow() {
   try {
     const result: { [key: string]: string } = await api.post('workflow/', workflowForm.value)
     if (result.success) {
-      $toast.success('新增工作流成功，请编辑流程！')
+      $toast.success('新增任务成功，请编辑流程！')
       emit('save')
     } else {
-      $toast.error(`新增工作流失败：${result.message}`)
+      $toast.error(`新增任务失败：${result.message}`)
     }
   } catch (error) {
     console.error(error)
@@ -48,7 +48,7 @@ async function addWorkflow() {
 
 <template>
   <VDialog scrollable :close-on-back="false" persistent eager max-width="30rem" :fullscreen="!display.mdAndUp.value">
-    <VCard title="新增工作流" class="rounded-t">
+    <VCard title="新建任务" class="rounded-t">
       <DialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>
@@ -60,7 +60,7 @@ async function addWorkflow() {
                 label="别名"
                 :rules="[requiredValidator]"
                 persistent-hint
-                hint="工作流名称"
+                hint="任务名称"
               />
             </VCol>
             <VCol cols="12">
@@ -70,11 +70,11 @@ async function addWorkflow() {
                 :rules="[requiredValidator]"
                 placeholder="5位cron表达式"
                 persistent-hint
-                hint="工作流执行周期"
+                hint="任务执行周期"
               />
             </VCol>
             <VCol cols="12">
-              <VTextarea v-model="workflowForm.description" label="工作流描述" />
+              <VTextarea v-model="workflowForm.description" label="任务描述" />
             </VCol>
           </VRow>
         </VForm>

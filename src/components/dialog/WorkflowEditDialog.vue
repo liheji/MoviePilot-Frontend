@@ -29,11 +29,16 @@ const emit = defineEmits(['close', 'save'])
       <!-- Toolbar -->
       <div>
         <VToolbar color="primary">
-          <VToolbarTitle>编辑工作流 - {{ workflow?.name }}</VToolbarTitle>
+          <VToolbarItems>
+            <VBtn icon @click="emit('close')" class="ms-3">
+              <VIcon size="large" color="white" icon="mdi-close" />
+            </VBtn>
+          </VToolbarItems>
+          <VToolbarTitle> 编辑流程 - {{ workflow?.name }} </VToolbarTitle>
           <VSpacer />
           <VToolbarItems>
-            <VBtn icon variant="plain" @click="emit('close')" class="me-3">
-              <VIcon size="large" color="white" icon="ri-close-line" />
+            <VBtn icon @click="emit('save')" class="me-5">
+              <VIcon size="large" color="white" icon="mdi-content-save" />
             </VBtn>
           </VToolbarItems>
         </VToolbar>
@@ -50,10 +55,10 @@ const emit = defineEmits(['close', 'save'])
               <p v-if="isDragOver">Drop here</p>
             </DropzoneBackground>
           </VueFlow>
-
           <Sidebar />
-        </div> </VCardText
-    ></VCard>
+        </div>
+      </VCardText>
+    </VCard>
   </VDialog>
 </template>
 <style>

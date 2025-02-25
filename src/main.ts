@@ -96,7 +96,7 @@ initializeApp().then(() => {
     .use(VuetifyUseDialog, {
       confirmDialog: {
         dialogProps: {
-          maxWidth: '40rem',
+          maxWidth: '30rem',
         },
         confirmationButtonProps: {
           variant: 'elevated',
