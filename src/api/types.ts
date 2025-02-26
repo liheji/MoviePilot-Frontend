@@ -1262,34 +1262,6 @@ export interface SiteCategory {
   desc: string
 }
 
-// 动作
-export interface Action {
-  // 动作ID (类名)
-  id?: string
-  // 动作名称
-  name?: string
-  // 动作描述
-  description?: string
-  // 是否需要循环
-  loop?: boolean
-  // 循环间隔 (秒)
-  loop_interval?: number
-  // 参数
-  params?: { [key: string]: any }
-}
-
-// 工作流
-export interface ActionFlow {
-  // ID
-  id?: string
-  // 源动作
-  source?: string
-  // 目标动作
-  target?: string
-  // 是否动画流程
-  animated?: boolean
-}
-
 // 工作流
 export interface Workflow {
   // 工作流ID
@@ -1309,9 +1281,9 @@ export interface Workflow {
   // 已执行次数
   run_count?: number
   // 动作列表
-  actions?: Action[]
+  actions?: any[]
   // 动作流
-  flows?: ActionFlow[]
+  flows?: any[]
   // 创建时间
   add_time?: string
   // 最后执行时间

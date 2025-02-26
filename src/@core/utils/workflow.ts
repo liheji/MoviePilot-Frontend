@@ -7,24 +7,24 @@ let id = 0
  * @returns {string} - A unique id.
  */
 function getId() {
-  return `dndnode_${id++}`
+  return `act_${id++}`
 }
 
 /**
  * In a real world scenario you'd want to avoid creating refs in a global scope like this as they might not be cleaned up properly.
- * @type {{draggedType: Ref<string|null>, isDragOver: Ref<boolean>, isDragging: Ref<boolean>}}
+ * @type {{draggedData: Ref<object|null>, isDragOver: Ref<boolean>, isDragging: Ref<boolean>}}
  */
 const state = {
   /**
    * The type of the node being dragged.
    */
-  draggedType: ref(null),
+  draggedData: ref(null),
   isDragOver: ref(false),
   isDragging: ref(false),
 }
 
 export default function useDragAndDrop() {
-  const { draggedType, isDragOver, isDragging } = state
+  const { draggedData, isDragOver, isDragging } = state
 
   const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow()
 
@@ -32,13 +32,13 @@ export default function useDragAndDrop() {
     document.body.style.userSelect = dragging ? 'none' : ''
   })
 
-  function onDragStart(event: any, type: any) {
+  function onDragStart(event: any, data: any) {
     if (event.dataTransfer) {
-      event.dataTransfer.setData('application/vueflow', type)
+      event.dataTransfer.setData('application/vueflow', data)
       event.dataTransfer.effectAllowed = 'move'
     }
 
-    draggedType.value = type
+    draggedData.value = data
     isDragging.value = true
 
     document.addEventListener('drop', onDragEnd)
@@ -52,7 +52,7 @@ export default function useDragAndDrop() {
   function onDragOver(event: any) {
     event.preventDefault()
 
-    if (draggedType.value) {
+    if (draggedData.value) {
       isDragOver.value = true
 
       if (event.dataTransfer) {
@@ -68,7 +68,7 @@ export default function useDragAndDrop() {
   function onDragEnd() {
     isDragging.value = false
     isDragOver.value = false
-    draggedType.value = null
+    draggedData.value = null
     document.removeEventListener('drop', onDragEnd)
   }
 
@@ -87,9 +87,9 @@ export default function useDragAndDrop() {
 
     const newNode = {
       id: nodeId,
-      type: draggedType.value || undefined,
+      type: undefined,
       position,
-      data: { label: nodeId },
+      data: draggedData.value,
     }
 
     /**
@@ -109,7 +109,7 @@ export default function useDragAndDrop() {
   }
 
   return {
-    draggedType,
+    draggedData,
     isDragOver,
     isDragging,
     onDragStart,
