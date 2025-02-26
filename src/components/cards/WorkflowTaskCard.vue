@@ -33,6 +33,11 @@ function handleEdit(item: Workflow) {
   editDialog.value = true
 }
 
+// 计算已完成的动作数
+function resolveDoneActions(item: Workflow) {
+  return item.current_action?.split(',').length || 0
+}
+
 // 编辑完成
 function editDone() {
   editDialog.value = false
@@ -117,8 +122,8 @@ const resolveStatusVariant = (status: string | undefined) => {
   if (status === 'S') return { color: 'success', text: '成功' }
   else if (status === 'R') return { color: 'primary', text: '运行中' }
   else if (status === 'F') return { color: 'error', text: '失败' }
-  else if (status === 'P') return { color: 'warning', text: '暂停' }
-  else return { color: 'secondary', text: '等待' }
+  else if (status === 'P') return { color: 'secondary', text: '暂停' }
+  else return { color: 'info', text: '等待' }
 }
 
 // 计算当前动作占比
@@ -129,39 +134,35 @@ const resolveProgress = (item: Workflow) => {
 </script>
 <template>
   <div>
-    <VCard class="mx-auto" @click="handleEdit(props.workflow)">
-      <VCardItem class="py-3">
+    <VCard class="mx-auto" @click="handleEdit(workflow)">
+      <VCardItem class="py-3" :class="`bg-${resolveStatusVariant(workflow?.state).color}`">
         <template #prepend>
-          <VBadge v-if="props.workflow?.state" dot inline :color="resolveStatusVariant(props.workflow?.state).color" />
-        </template>
-        <VCardTitle>
-          {{ props.workflow?.name }}
-        </VCardTitle>
-        <VCardSubtitle>{{ props.workflow?.description }}</VCardSubtitle>
-        <template #append>
-          <IconBtn v-if="props.workflow?.state === 'P'">
-            <VIcon color="success" icon="mdi-play" @click.stop="handleEnable(props.workflow)" />
+          <IconBtn v-if="workflow?.state === 'P'">
+            <VIcon color="success" icon="mdi-play" @click.stop="handleEnable(workflow)" />
           </IconBtn>
           <IconBtn v-else>
-            <VIcon color="warning" icon="mdi-pause" @click.stop="handlePause(props.workflow)" />
+            <VIcon color="warning" icon="mdi-pause" @click.stop="handlePause(workflow)" />
+          </IconBtn>
+        </template>
+        <VCardTitle>
+          {{ workflow?.name }}
+        </VCardTitle>
+        <VCardSubtitle>{{ workflow?.description }}</VCardSubtitle>
+        <template #append>
+          <IconBtn>
+            <VIcon icon="mdi-edit" @click.stop="handleEdit(workflow)" />
           </IconBtn>
           <IconBtn>
             <VIcon icon="mdi-dots-vertical" />
             <VMenu activator="parent" close-on-content-click>
               <VList>
-                <VListItem variant="plain" base-color="primary" @click="handleEdit(props.workflow)">
-                  <template #prepend>
-                    <VIcon icon="mdi-pencil" />
-                  </template>
-                  <VListItemTitle>编辑流程</VListItemTitle>
-                </VListItem>
-                <VListItem variant="plain" base-color="info" @click="handleRun(props.workflow)">
+                <VListItem variant="plain" base-color="primary" @click="handleRun(workflow)">
                   <template #prepend>
                     <VIcon icon="mdi-run" />
                   </template>
                   <VListItemTitle>立即执行</VListItemTitle>
                 </VListItem>
-                <VListItem variant="plain" base-color="error" @click="handleDelete(props.workflow)">
+                <VListItem variant="plain" base-color="error" @click="handleDelete(workflow)">
                   <template #prepend>
                     <VIcon icon="mdi-delete" />
                   </template>
@@ -174,38 +175,48 @@ const resolveProgress = (item: Workflow) => {
       </VCardItem>
       <VDivider />
       <VCardText>
-        <div class="d-flex flex-column gap-y-6">
-          <div class="d-flex flex-wrap gap-y-4">
+        <div class="d-flex flex-column gap-y-4">
+          <div class="d-flex flex-wrap gap-x-6">
             <div class="flex-1">
               <div class="mb-1">定时</div>
-              <h5 class="text-h6">{{ props.workflow?.timer }}</h5>
+              <h5 class="text-h6">{{ workflow?.timer }}</h5>
             </div>
             <div class="flex-1">
               <div class="mb-1">状态</div>
-              <h5 class="text-h6" :class="`text-${resolveStatusVariant(props.workflow?.state).color}`">
-                {{ resolveStatusVariant(props.workflow?.state).text }}
+              <h5 class="text-h6" :class="`text-${resolveStatusVariant(workflow?.state).color}`">
+                {{ resolveStatusVariant(workflow?.state).text }}
               </h5>
             </div>
           </div>
-          <div class="d-flex flex-wrap gap-y-4">
+          <div class="d-flex flex-wrap gap-x-6">
             <div class="flex-1">
-              <div class="mb-1">执行结果</div>
-              <h5 class="text-h6">{{ props.workflow?.result || '无' }}</h5>
+              <div class="mb-1">动作数</div>
+              <div>
+                <VAvatar size="32" color="primary" variant="tonal">
+                  <span class="text-sm">{{ workflow?.actions?.length }}</span>
+                </VAvatar>
+              </div>
             </div>
             <div class="flex-1">
               <div class="mb-1">已执行次数</div>
-              <h5 class="text-h6">{{ props.workflow?.run_count }}</h5>
+              <h5 class="text-h6">{{ workflow?.run_count }}</h5>
             </div>
           </div>
-          <div class="d-flex flex-wrap gap-y-4">
-            <div class="w-full">
+          <div class="d-flex flex-wrap gap-x-6">
+            <div class="flex-1">
               <div class="mb-1">进度</div>
               <div class="d-flex align-center gap-5">
                 <div class="flex-grow-1">
-                  <VProgressLinear rounded :value="resolveProgress(props.workflow)" color="primary" height="10" />
+                  <VProgressLinear rounded :value="resolveProgress(workflow)" height="10" />
                 </div>
-                <span>75%</span>
+                <span> {{ (resolveDoneActions(workflow) * 100) / (workflow.actions?.length || 1) }}% </span>
               </div>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-x-6" v-if="workflow?.result">
+            <div class="flex-1">
+              <div class="mb-1">错误信息</div>
+              <div class="text-error">{{ workflow?.result }}</div>
             </div>
           </div>
         </div>
@@ -217,7 +228,7 @@ const resolveProgress = (item: Workflow) => {
       v-model="editDialog"
       @close="editDialog = false"
       @save="editDone"
-      :workflow="props.workflow"
+      :workflow="workflow"
     />
   </div>
 </template>

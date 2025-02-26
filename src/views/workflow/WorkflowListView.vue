@@ -29,6 +29,12 @@ async function fetchData() {
   }
 }
 
+// 新增完成
+function addDone() {
+  addDialog.value = false
+  fetchData()
+}
+
 onMounted(() => {
   fetchData()
 })
@@ -42,7 +48,7 @@ onActivated(() => {
   <div>
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <VRow v-if="workflowList.length > 0">
-      <VCol cols="12" md="6" v-for="item in workflowList" :key="item.id">
+      <VCol cols="12" md="6" lg="4" v-for="item in workflowList" :key="item.id">
         <WorkflowTaskCard :workflow="item" @refresh="fetchData" />
       </VCol>
     </VRow>
@@ -67,5 +73,5 @@ onActivated(() => {
     @click="addDialog = true"
   />
   <!-- 新增对话框 -->
-  <WorkflowAddDialog v-if="addDialog" v-model="addDialog" @close="addDialog = false" @save="fetchData" />
+  <WorkflowAddDialog v-if="addDialog" v-model="addDialog" @close="addDialog = false" @save="addDone" />
 </template>
