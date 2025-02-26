@@ -6,6 +6,15 @@ import { requiredValidator } from '@/@validators'
 import api from '@/api'
 import { useDisplay } from 'vuetify'
 
+// 输入参数
+const props = defineProps({
+  // 任务信息
+  workflow: Object as PropType<Workflow>,
+})
+
+// 新增或修改字样
+const title = computed(() => (props.workflow ? '编辑' : '创建'))
+
 // 显示器宽度
 const display = useDisplay()
 
@@ -13,13 +22,15 @@ const display = useDisplay()
 const emit = defineEmits(['save', 'remove', 'close'])
 
 // 站点编辑表单数据
-const workflowForm = ref<Workflow>({
-  name: undefined,
-  timer: undefined,
-  description: undefined,
-  state: 'P',
-  run_count: 0,
-})
+const workflowForm = ref<Workflow>(
+  props.workflow || {
+    name: undefined,
+    timer: undefined,
+    description: undefined,
+    state: 'P',
+    run_count: 0,
+  },
+)
 
 // 提示框
 const $toast = useToast()
@@ -34,10 +45,31 @@ async function addWorkflow() {
   try {
     const result: { [key: string]: string } = await api.post('workflow/', workflowForm.value)
     if (result.success) {
-      $toast.success('新增任务成功，请编辑流程！')
+      $toast.success(`创建任务成功，请编辑流程！`)
       emit('save')
     } else {
-      $toast.error(`新增任务失败：${result.message}`)
+      $toast.error(`创建任务失败：${result.message}`)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+  doneNProgress()
+}
+
+// 调用API 编辑任务
+async function editWorkflow() {
+  if (!workflowForm.value.name || !workflowForm.value.timer) {
+    $toast.error('请填写完整信息！')
+    return
+  }
+  startNProgress()
+  try {
+    const result: { [key: string]: string } = await api.put(`workflow/${workflowForm.value.id}`, workflowForm.value)
+    if (result.success) {
+      $toast.success(`修改任务成功！`)
+      emit('save')
+    } else {
+      $toast.error(`修改任务失败：${result.message}`)
     }
   } catch (error) {
     console.error(error)
@@ -48,7 +80,7 @@ async function addWorkflow() {
 
 <template>
   <VDialog scrollable :close-on-back="false" persistent eager max-width="30rem" :fullscreen="!display.mdAndUp.value">
-    <VCard title="新建任务" class="rounded-t">
+    <VCard :title="`${title}任务`" class="rounded-t">
       <DialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>
@@ -81,8 +113,19 @@ async function addWorkflow() {
       </VCardText>
       <VCardActions class="pt-3">
         <VSpacer />
-        <VBtn block color="primary" variant="elevated" @click="addWorkflow" prepend-icon="mdi-plus" class="px-5">
-          新增
+        <VBtn
+          v-if="workflow"
+          block
+          color="primary"
+          variant="elevated"
+          @click="editWorkflow"
+          prepend-icon="mdi-content-save"
+          class="px-5"
+        >
+          保存
+        </VBtn>
+        <VBtn v-else block color="primary" variant="elevated" @click="addWorkflow" prepend-icon="mdi-plus" class="px-5">
+          创建
         </VBtn>
       </VCardActions>
     </VCard>

@@ -2,7 +2,7 @@
 import api from '@/api'
 import { Workflow } from '@/api/types'
 import { useDisplay } from 'vuetify'
-import WorkflowAddDialog from '@/components/dialog/WorkflowAddDialog.vue'
+import WorkflowAddEditDialog from '@/components/dialog/WorkflowAddEditDialog.vue'
 import WorkflowTaskCard from '@/components/cards/WorkflowTaskCard.vue'
 import NoDataFound from '@/components/NoDataFound.vue'
 
@@ -83,5 +83,5 @@ onActivated(() => {
     @click="addDialog = true"
   />
   <!-- 新增对话框 -->
-  <WorkflowAddDialog v-if="addDialog" v-model="addDialog" @close="addDialog = false" @save="addDone" />
+  <WorkflowAddEditDialog v-if="addDialog" v-model="addDialog" @close="addDialog = false" @save="addDone" />
 </template>

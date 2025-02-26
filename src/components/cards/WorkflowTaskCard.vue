@@ -2,7 +2,8 @@
 import { Workflow } from '@/api/types'
 import { useToast } from 'vue-toast-notification'
 import { useConfirm } from 'vuetify-use-dialog'
-import WorkflowEditDialog from '@/components/dialog/WorkflowEditDialog.vue'
+import WorkflowAddEditDialog from '@/components/dialog/WorkflowAddEditDialog.vue'
+import WorkflowActionsDialog from '@/components/dialog/WorkflowActionsDialog.vue'
 import api from '@/api'
 
 // 定义输入参数
@@ -22,8 +23,11 @@ const $toast = useToast()
 // 确认框
 const createConfirm = useConfirm()
 
-// 流程编辑对话框
+// 编辑对话框
 const editDialog = ref(false)
+
+// 流程对话框
+const flowDialog = ref(false)
 
 // 加载中
 const loading = ref(false)
@@ -31,6 +35,11 @@ const loading = ref(false)
 // 编辑任务
 function handleEdit(item: Workflow) {
   editDialog.value = true
+}
+
+// 编辑流程
+function handleFlow(item: Workflow) {
+  flowDialog.value = true
 }
 
 // 计算已完成的动作数
@@ -41,6 +50,7 @@ function resolveDoneActions(item: Workflow) {
 // 编辑完成
 function editDone() {
   editDialog.value = false
+  flowDialog.value = false
   emit('refresh')
 }
 
@@ -134,7 +144,7 @@ const resolveProgress = (item: Workflow) => {
 </script>
 <template>
   <div>
-    <VCard class="mx-auto" @click="handleEdit(workflow)">
+    <VCard class="mx-auto" @click="handleFlow(workflow)">
       <VCardItem class="py-3" :class="`bg-${resolveStatusVariant(workflow?.state).color}`">
         <template #prepend>
           <IconBtn v-if="workflow?.state === 'P'">
@@ -150,13 +160,19 @@ const resolveProgress = (item: Workflow) => {
         <VCardSubtitle>{{ workflow?.description }}</VCardSubtitle>
         <template #append>
           <IconBtn>
-            <VIcon icon="mdi-edit" @click.stop="handleEdit(workflow)" />
+            <VIcon icon="mdi-vector-polyline-edit" @click.stop="handleFlow(workflow)" />
           </IconBtn>
           <IconBtn>
             <VIcon icon="mdi-dots-vertical" />
             <VMenu activator="parent" close-on-content-click>
               <VList>
-                <VListItem variant="plain" base-color="primary" @click="handleRun(workflow)">
+                <VListItem variant="plain" base-color="primary" @click="handleEdit(workflow)">
+                  <template #prepend>
+                    <VIcon icon="mdi-note-edit" />
+                  </template>
+                  <VListItemTitle>编辑任务</VListItemTitle>
+                </VListItem>
+                <VListItem variant="plain" base-color="info" @click="handleRun(workflow)">
                   <template #prepend>
                     <VIcon icon="mdi-run" />
                   </template>
@@ -222,8 +238,16 @@ const resolveProgress = (item: Workflow) => {
         </div>
       </VCardText>
     </VCard>
+    <!-- 流程对话框 -->
+    <WorkflowActionsDialog
+      v-if="flowDialog"
+      v-model="flowDialog"
+      @close="flowDialog = false"
+      @save="editDone"
+      :workflow="workflow"
+    />
     <!-- 编辑对话框 -->
-    <WorkflowEditDialog
+    <WorkflowAddEditDialog
       v-if="editDialog"
       v-model="editDialog"
       @close="editDialog = false"
