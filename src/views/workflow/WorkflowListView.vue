@@ -13,6 +13,9 @@ const appMode = inject('pwaMode') && display.mdAndDown.value
 // 是否刷新
 const isRefreshed = ref(false)
 
+// 自动刷新定时器
+const autoRefresh = ref<NodeJS.Timeout | null>(null)
+
 // 新增对话框
 const addDialog = ref(false)
 
@@ -37,6 +40,13 @@ function addDone() {
 
 onMounted(() => {
   fetchData()
+  autoRefresh.value = setInterval(fetchData, 30000)
+})
+
+onUnmounted(() => {
+  if (autoRefresh.value) {
+    clearInterval(autoRefresh.value)
+  }
 })
 
 onActivated(() => {
