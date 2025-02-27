@@ -144,20 +144,24 @@ const resolveProgress = (item: Workflow) => {
 </script>
 <template>
   <div>
-    <VCard class="mx-auto" @click="handleFlow(workflow)">
+    <VCard class="mx-auto" @click="handleFlow(workflow)" :ripple="false">
       <VCardItem class="py-3" :class="`bg-${resolveStatusVariant(workflow?.state).color}`">
         <template #prepend>
-          <IconBtn v-if="workflow?.state === 'P'">
-            <VIcon color="success" icon="mdi-play" @click.stop="handleEnable(workflow)" />
-          </IconBtn>
-          <IconBtn v-else>
-            <VIcon color="warning" icon="mdi-pause" @click.stop="handlePause(workflow)" />
-          </IconBtn>
+          <VAvatar variant="text" class="me-2">
+            <VIcon
+              v-if="workflow?.state === 'P'"
+              color="success"
+              size="x-large"
+              icon="mdi-play"
+              @click.stop="handleEnable(workflow)"
+            />
+            <VIcon v-else color="warning" icon="mdi-pause" size="x-large" @click.stop="handlePause(workflow)" />
+          </VAvatar>
         </template>
-        <VCardTitle>
+        <VCardTitle class="text-white">
           {{ workflow?.name }}
         </VCardTitle>
-        <VCardSubtitle>{{ workflow?.description }}</VCardSubtitle>
+        <VCardSubtitle class="text-white">{{ workflow?.description }}</VCardSubtitle>
         <template #append>
           <IconBtn>
             <VIcon icon="mdi-vector-polyline-edit" @click.stop="handleFlow(workflow)" />
