@@ -6,14 +6,40 @@ import useDragAndDrop from '@core/utils/workflow'
 import { Workflow } from '@/api/types'
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
-import Sidebar from '../workflow/Sidebar.vue'
-import DropzoneBackground from '../workflow/DropzoneBackground.vue'
+import WorkflowSidebar from '@/layouts/components/WorkflowSidebar.vue'
+import DropzoneBackground from '@/layouts/components/DropzoneBackground.vue'
 
 const { onConnect, addEdges, nodes, edges } = useVueFlow()
 
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
 
 onConnect(addEdges)
+
+// 自定义节点类型
+const nodeTypes: Record<string, any> = ref({})
+
+// 自动扫描目录下所有的 .vue 文件
+const components = import.meta.glob('../workflow/*Action.vue')
+
+// 动态加载某个组件
+const loadComponent = async (componentName: string) => {
+  const component = components[`../workflow/${componentName}.vue`]
+  if (component) {
+    return ((await component()) as any).default
+  }
+  throw new Error(`组件 ${componentName} 未找到`)
+}
+
+// 将所有components中的组件加载到nodeTypes中
+for (const path in components) {
+  const componentName = path.match(/\.\/workflow\/(.*).vue$/)?.[1]
+  if (!componentName) {
+    continue
+  }
+  loadComponent(componentName).then(component => {
+    nodeTypes.value[componentName] = markRaw(component)
+  })
+}
 
 // 定义输入参数
 const props = defineProps({
@@ -80,6 +106,7 @@ onMounted(() => {
           <VueFlow
             :nodes="nodes"
             :edges="edges"
+            :nodeTypes="nodeTypes"
             :default-edge-options="{ type: 'animation', animated: true }"
             @dragover="onDragOver"
             @dragleave="onDragLeave"
@@ -93,7 +120,7 @@ onMounted(() => {
             >
             </DropzoneBackground>
           </VueFlow>
-          <Sidebar />
+          <WorkflowSidebar />
         </div>
       </VCardText>
     </VCard>

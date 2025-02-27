@@ -1,13 +1,12 @@
 import { useVueFlow } from '@vue-flow/core'
 import { ref, watch } from 'vue'
 
-let id = 0
-
 /**
  * @returns {string} - A unique id.
  */
 function getId() {
-  return `act_${id++}`
+  // 生成以act_开头的唯一id
+  return 'act_' + Math.random().toString(36).substr(2, 9)
 }
 
 /**
