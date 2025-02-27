@@ -120,6 +120,7 @@ async function handleRun(item: Workflow) {
       emit('refresh')
     } else {
       $toast.error(`任务执行失败：${result.message}`)
+      emit('refresh')
     }
   } catch (error) {
     console.error(error)
@@ -138,13 +139,13 @@ const resolveStatusVariant = (status: string | undefined) => {
 
 // 计算当前动作占比
 const resolveProgress = (item: Workflow) => {
-  const current_action_index = item.actions?.findIndex(action => action.id === item.current_action) ?? 0
-  return item.actions?.length ? Math.round((current_action_index / item.actions.length) * 100) : 0
+  const current_action_length = item.current_action?.split(',').length || 0
+  return item.actions?.length ? Math.round((current_action_length / (item.actions.length || 1)) * 100) : 0
 }
 </script>
 <template>
   <div>
-    <VCard class="mx-auto" @click="handleFlow(workflow)" :ripple="false">
+    <VCard class="mx-auto" @click="handleFlow(workflow)" :ripple="false" :loading="loading" :disabled="loading">
       <VCardItem class="py-3" :class="`bg-${resolveStatusVariant(workflow?.state).color}`">
         <template #prepend>
           <VAvatar variant="text" class="me-2">
@@ -227,9 +228,9 @@ const resolveProgress = (item: Workflow) => {
               <div class="mb-1">进度</div>
               <div class="d-flex align-center gap-5">
                 <div class="flex-grow-1">
-                  <VProgressLinear rounded :value="resolveProgress(workflow)" height="10" />
+                  <VProgressLinear color="info" rounded :model-value="resolveProgress(workflow)" />
                 </div>
-                <span> {{ (resolveDoneActions(workflow) * 100) / (workflow.actions?.length || 1) }}% </span>
+                <span> {{ resolveProgress(workflow) }}% </span>
               </div>
             </div>
           </div>
