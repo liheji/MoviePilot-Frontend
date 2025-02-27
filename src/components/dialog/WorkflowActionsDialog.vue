@@ -208,4 +208,22 @@ onMounted(() => {
   z-index: 1;
   pointer-events: none;
 }
+
+.vue-flow__handle {
+  height: 24px;
+  width: 8px;
+  border-radius: 4px;
+}
+
+.vue-flow__edges {
+  filter: invert(100%);
+}
+
+.vue-flow__handle-left {
+  background-color: rgb(var(--v-theme-info));
+}
+
+.vue-flow__handle-right {
+  background-color: rgb(var(--v-theme-error));
+}
 </style>
