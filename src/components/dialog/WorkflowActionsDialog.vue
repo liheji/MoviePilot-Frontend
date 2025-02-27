@@ -6,53 +6,14 @@ import useDragAndDrop from '@core/utils/workflow'
 import { Workflow } from '@/api/types'
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
-import { useConfirm } from 'vuetify-use-dialog'
 import Sidebar from '../workflow/Sidebar.vue'
 import DropzoneBackground from '../workflow/DropzoneBackground.vue'
 
-const { onConnect, addEdges, nodes, edges, onNodesChange, applyNodeChanges, onEdgesChange, applyEdgeChanges } =
-  useVueFlow()
+const { onConnect, addEdges, nodes, edges } = useVueFlow()
 
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
 
 onConnect(addEdges)
-
-onNodesChange(async (changes: any) => {
-  const nextChanges = []
-  for (const change of changes) {
-    if (change.type === 'remove') {
-      const isConfirmed = await createConfirm({
-        title: '确认',
-        content: `确定要删除该节点吗？`,
-      })
-      if (!isConfirmed) {
-        nextChanges.push(change)
-      }
-    } else {
-      nextChanges.push(change)
-    }
-  }
-  applyNodeChanges(nextChanges)
-})
-
-onEdgesChange(async (changes: any) => {
-  const nextChanges = []
-  for (const change of changes) {
-    if (change.type === 'remove') {
-      const isConfirmed = await createConfirm({
-        title: '确认',
-        content: `确定要删除该节点吗？`,
-      })
-      if (isConfirmed) {
-        nextChanges.push(change)
-      }
-    } else {
-      nextChanges.push(change)
-    }
-  }
-
-  applyEdgeChanges(nextChanges)
-})
 
 // 定义输入参数
 const props = defineProps({
@@ -67,9 +28,6 @@ const workflowForm = ref<any>(props.workflow || {})
 
 // 提示框
 const $toast = useToast()
-
-// 确认框
-const createConfirm = useConfirm()
 
 // 调用API 编辑任务
 async function updateWorkflow() {
@@ -119,7 +77,13 @@ onMounted(() => {
       </div>
       <VCardText class="px-0 py-0">
         <div class="dnd-flow" @drop="onDrop">
-          <VueFlow :nodes="nodes" :edges="edges" @dragover="onDragOver" @dragleave="onDragLeave">
+          <VueFlow
+            :nodes="nodes"
+            :edges="edges"
+            :default-edge-options="{ type: 'animation', animated: true }"
+            @dragover="onDragOver"
+            @dragleave="onDragLeave"
+          >
             <MiniMap />
             <DropzoneBackground
               :style="{

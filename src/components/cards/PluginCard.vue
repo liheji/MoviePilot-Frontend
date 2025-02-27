@@ -3,19 +3,13 @@ import { useToast } from 'vue-toast-notification'
 import { useConfirm } from 'vuetify-use-dialog'
 import api from '@/api'
 import type { Plugin } from '@/api/types'
-import FormRender from '@/components/render/FormRender.vue'
-import PageRender from '@/components/render/PageRender.vue'
-import VersionHistory from '@/components/misc/VersionHistory.vue'
 import { isNullOrEmptyObject } from '@core/utils'
 import noImage from '@images/logos/plugin.png'
 import { getDominantColor } from '@/@core/utils/image'
-import { useDisplay } from 'vuetify'
+import VersionHistory from '@/components/misc/VersionHistory.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
-
-// 显示器宽度
-const display = useDisplay()
-// APP
-const appMode = inject('pwaMode') && display.mdAndDown.value
+import PluginConfigDialog from '../dialog/PluginConfigDialog.vue'
+import PluginDataDialog from '../dialog/PluginDataDialog.vue'
 
 // 输入参数
 const props = defineProps({
@@ -47,17 +41,11 @@ const isVisible = ref(true)
 // 插件配置页面
 const pluginConfigDialog = ref(false)
 
-// 插件配置表单数据
-const pluginConfigForm = ref({})
-
 // 菜单显示状态
 const menuVisible = ref(false)
 
 // 进度框
 const progressDialog = ref(false)
-
-// 插件表单配置项
-let pluginFormItems = reactive([])
 
 // 插件数据页面
 const pluginInfoDialog = ref(false)
@@ -67,9 +55,6 @@ const progressText = ref('正在更新插件...')
 
 // 用户头像是否加载完成
 const isAvatarLoaded = ref(false)
-
-// 插件数据页面配置项
-let pluginPageItems = ref([])
 
 // 图片是否加载完成
 const isImageLoaded = ref(false)
@@ -138,75 +123,14 @@ async function uninstallPlugin() {
   }
 }
 
-// 调用API读取表单页面
-async function loadPluginForm() {
-  try {
-    const result: { [key: string]: any } = await api.get(`plugin/form/${props.plugin?.id}`)
-    if (result) {
-      pluginFormItems = result.conf
-      if (result.model) pluginConfigForm.value = result.model
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-// 调用API读取数据页面
-async function loadPluginPage() {
-  try {
-    const result: [] = await api.get(`plugin/page/${props.plugin?.id}`)
-    if (result) pluginPageItems.value = result
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-// 调用API读取配置数据
-async function loadPluginConf() {
-  try {
-    const result: { [key: string]: any } = await api.get(`plugin/${props.plugin?.id}`)
-    if (!isNullOrEmptyObject(result)) pluginConfigForm.value = result
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-// 调用API保存配置数据
-async function savePluginConf() {
-  // 显示等待提示框
-  progressDialog.value = true
-  progressText.value = `正在保存 ${props.plugin?.plugin_name} 配置...`
-  try {
-    const result: { [key: string]: any } = await api.put(`plugin/${props.plugin?.id}`, pluginConfigForm.value)
-    if (result.success) {
-      progressDialog.value = false
-      pluginConfigDialog.value = false
-      $toast.success(`插件 ${props.plugin?.plugin_name} 配置已保存`)
-      // 通知父组件刷新
-      emit('save')
-    } else {
-      progressDialog.value = false
-      $toast.error(`插件 ${props.plugin?.plugin_name} 配置保存失败：${result.message}}`)
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 // 显示插件数据
 async function showPluginInfo() {
-  // 加载数据
-  await loadPluginPage()
   pluginConfigDialog.value = false
   pluginInfoDialog.value = true
 }
 
 // 显示插件配置
 async function showPluginConfig() {
-  // 加载表单
-  await loadPluginForm()
-  // 加载配置
-  await loadPluginConf()
   // 显示对话框
   pluginInfoDialog.value = false
   pluginConfigDialog.value = true
@@ -301,6 +225,12 @@ function openLoggerWindow() {
 function openPluginDetail() {
   if (props.plugin?.has_page) showPluginInfo()
   else showPluginConfig()
+}
+
+// 配置完成
+function configDone() {
+  pluginConfigDialog.value = false
+  emit('save')
 }
 
 // 弹出菜单
@@ -485,54 +415,23 @@ watch(
     </VHover>
 
     <!-- 插件配置页面 -->
-    <VDialog
+    <PluginConfigDialog
       v-if="pluginConfigDialog"
       v-model="pluginConfigDialog"
-      scrollable
-      max-width="60rem"
-      :fullscreen="!display.mdAndUp.value"
-    >
-      <VCard :title="`${props.plugin?.plugin_name} - 配置`" class="rounded-t">
-        <DialogCloseBtn v-model="pluginConfigDialog" />
-        <VDivider />
-        <VCardText>
-          <FormRender v-for="(item, index) in pluginFormItems" :key="index" :config="item" :model="pluginConfigForm" />
-        </VCardText>
-        <VCardActions class="pt-3">
-          <VBtn v-if="pluginPageItems.length > 0" @click="showPluginInfo" variant="outlined" color="info">
-            查看数据
-          </VBtn>
-          <VSpacer />
-          <VBtn @click="savePluginConf" variant="elevated" prepend-icon="mdi-content-save" class="px-5"> 保存 </VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
+      :plugin="props.plugin"
+      @save="configDone"
+      @close="pluginConfigDialog = false"
+      @switch="showPluginInfo"
+    />
 
     <!-- 插件数据页面 -->
-    <VDialog
+    <PluginDataDialog
       v-if="pluginInfoDialog"
       v-model="pluginInfoDialog"
-      scrollable
-      max-width="80rem"
-      :fullscreen="!display.mdAndUp.value"
-    >
-      <VCard :title="`${props.plugin?.plugin_name}`" class="rounded-t">
-        <DialogCloseBtn v-model="pluginInfoDialog" />
-        <VCardText class="min-h-40">
-          <PageRender @action="loadPluginPage" v-for="(item, index) in pluginPageItems" :key="index" :config="item" />
-        </VCardText>
-        <VFab
-          icon="mdi-cog"
-          location="bottom"
-          size="x-large"
-          fixed
-          app
-          appear
-          @click="showPluginConfig"
-          :class="{ 'mb-10': appMode }"
-        />
-      </VCard>
-    </VDialog>
+      :plugin="props.plugin"
+      @close="pluginInfoDialog = false"
+      @switch="showPluginConfig"
+    />
 
     <!-- 进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />

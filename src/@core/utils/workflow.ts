@@ -12,13 +12,13 @@ function getId() {
 
 /**
  * In a real world scenario you'd want to avoid creating refs in a global scope like this as they might not be cleaned up properly.
- * @type {{draggedData: Ref<object|null>, isDragOver: Ref<boolean>, isDragging: Ref<boolean>}}
+ * @type {{draggedData: Ref<any>, isDragOver: Ref<boolean>, isDragging: Ref<boolean>}}
  */
 const state = {
   /**
    * The type of the node being dragged.
    */
-  draggedData: ref(null),
+  draggedData: ref<any | null>({}),
   isDragOver: ref(false),
   isDragging: ref(false),
 }
@@ -87,9 +87,11 @@ export default function useDragAndDrop() {
 
     const newNode = {
       id: nodeId,
-      type: undefined,
+      type: draggedData.value?.type,
+      name: draggedData.value?.name,
+      description: draggedData.value?.description,
       position,
-      data: draggedData.value,
+      data: draggedData.value?.data,
     }
 
     /**
