@@ -25,9 +25,9 @@ onMounted(() => {
   <aside>
     <div class="mb-3"><VLabel>可选动作组件：</VLabel></div>
 
-    <div class="nodes">
+    <div class="nodes flex flex-wrap justify-center">
       <div
-        class="vue-flow__node-default"
+        class="vue-flow__node-default cursor-grab mx-1"
         v-for="action in actions"
         :draggable="true"
         @dragstart="onDragStart($event, action)"

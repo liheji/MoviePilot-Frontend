@@ -22,10 +22,8 @@ defineProps({
         </VAvatar>
       </template>
       <VCardTitle>发送事件</VCardTitle>
-      <VCardSubtitle>发送特定事件</VCardSubtitle>
+      <VCardSubtitle>发送队列中的所有事件</VCardSubtitle>
     </VCardItem>
-    <VDivider />
-    <VCardText></VCardText>
     <Handle id="edge_out" type="source" :position="Position.Right" />
   </VCard>
 </template>

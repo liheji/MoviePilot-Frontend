@@ -22,10 +22,8 @@ defineProps({
         </VAvatar>
       </template>
       <VCardTitle>整理文件</VCardTitle>
-      <VCardSubtitle>转移和重命名文件</VCardSubtitle>
+      <VCardSubtitle>整理下载队列中的文件</VCardSubtitle>
     </VCardItem>
-    <VDivider />
-    <VCardText></VCardText>
     <Handle id="edge_out" type="source" :position="Position.Right" />
   </VCard>
 </template>

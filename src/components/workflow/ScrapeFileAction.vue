@@ -24,8 +24,6 @@ defineProps({
       <VCardTitle>刮削文件</VCardTitle>
       <VCardSubtitle>刮削媒体信息和图片</VCardSubtitle>
     </VCardItem>
-    <VDivider />
-    <VCardText></VCardText>
     <Handle id="edge_out" type="source" :position="Position.Right" />
   </VCard>
 </template>

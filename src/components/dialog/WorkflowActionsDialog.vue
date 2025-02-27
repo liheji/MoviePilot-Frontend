@@ -178,7 +178,7 @@ onMounted(() => {
   }
 
   .dnd-flow aside {
-    min-width: 25%;
+    max-width: 25%;
   }
 }
 
