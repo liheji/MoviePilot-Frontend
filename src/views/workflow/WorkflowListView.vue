@@ -47,7 +47,7 @@ onActivated(() => {
 <template>
   <div>
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-    <VRow v-if="workflowList.length > 0">
+    <VRow v-if="workflowList.length > 0" class="match-height">
       <VCol cols="12" md="6" lg="4" v-for="item in workflowList" :key="item.id">
         <WorkflowTaskCard :workflow="item" @refresh="fetchData" />
       </VCol>
