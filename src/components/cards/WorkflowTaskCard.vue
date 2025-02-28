@@ -145,7 +145,7 @@ const resolveProgress = (item: Workflow) => {
 </script>
 <template>
   <div class="h-full">
-    <VCard class="mx-auto h-full" @click="handleFlow(workflow)" :ripple="false" :loading="loading" :disabled="loading">
+    <VCard class="mx-auto h-full" @click="handleFlow(workflow)" :ripple="false" :loading="loading">
       <VCardItem class="py-3" :class="`bg-${resolveStatusVariant(workflow?.state).color}`">
         <template #prepend>
           <VAvatar variant="text" class="me-2">
