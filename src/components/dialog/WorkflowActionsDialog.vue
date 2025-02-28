@@ -82,9 +82,10 @@ async function updateWorkflow() {
 function saveCodeString(type: string, code: any) {
   try {
     if (code) {
+      const codeObject = JSON.parse(code.value)
       if (type === 'workflow') {
-        nodes.value = code.actions
-        edges.value = code.flows
+        nodes.value = codeObject.actions || []
+        edges.value = codeObject.flows || []
       }
       importCodeDialog.value = false
       $toast.success('导入成功！')
