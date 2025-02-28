@@ -28,7 +28,8 @@ onMounted(() => {
     <div class="nodes flex flex-wrap justify-center">
       <div
         class="vue-flow__node-default cursor-grab mx-1"
-        v-for="action in actions"
+        v-for="(action, index) in actions"
+        :key="index"
         :draggable="true"
         @dragstart="onDragStart($event, action)"
       >

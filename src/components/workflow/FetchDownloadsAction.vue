@@ -22,7 +22,7 @@ defineProps({
         </VAvatar>
       </template>
       <VCardTitle>获取下载任务</VCardTitle>
-      <VCardSubtitle>获取下载任务，更新任务状态</VCardSubtitle>
+      <VCardSubtitle>获取下载队列中的任务状态</VCardSubtitle>
     </VCardItem>
     <VDivider />
     <VCardText>

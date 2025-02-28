@@ -77,7 +77,7 @@ onMounted(() => {
         </VAvatar>
       </template>
       <VCardTitle>搜索站点资源</VCardTitle>
-      <VCardSubtitle>根据关键字搜索站点种子资源</VCardSubtitle>
+      <VCardSubtitle>搜索站点种子资源列表</VCardSubtitle>
     </VCardItem>
     <VDivider />
     <VCardText>

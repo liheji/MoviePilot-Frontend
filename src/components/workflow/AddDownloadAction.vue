@@ -56,7 +56,7 @@ onMounted(() => {
           <VSelect v-model="data.downloader" :items="downloaderOptions" label="下载器" outlined dense />
         </VCol>
         <VCol cols="12">
-          <VTextField v-model="data.save_path" label="保存路径" outlined dense clearable placeholder="留空自动" />
+          <VPathField v-model="data.save_path" storage="local" label="保存路径" clearable placeholder="留空自动" />
         </VCol>
         <VCol cols="12">
           <VSwitch v-model="data.only_lack" label="仅下载缺失的资源" />

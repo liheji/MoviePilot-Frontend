@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Handle, Position } from '@vue-flow/core'
+import { storageOptions } from '@/api/constants'
 
 defineProps({
   id: {
@@ -11,18 +12,6 @@ defineProps({
     required: true,
   },
 })
-
-// 来源下拉框
-const sourceOptions = ref([
-  {
-    title: '文件列表',
-    value: 'files',
-  },
-  {
-    title: '下载任务',
-    value: 'downloads',
-  },
-])
 </script>
 <template>
   <VCard max-width="20rem">
@@ -33,14 +22,17 @@ const sourceOptions = ref([
           <VIcon icon="mdi-file-move" size="x-large"></VIcon>
         </VAvatar>
       </template>
-      <VCardTitle>整理文件</VCardTitle>
-      <VCardSubtitle>整理重命名队列中的文件</VCardSubtitle>
+      <VCardTitle>扫描目录</VCardTitle>
+      <VCardSubtitle>扫描目录文件到队列</VCardSubtitle>
     </VCardItem>
     <VDivider />
     <VCardText>
       <VRow>
         <VCol cols="12">
-          <VSelect v-model="data.source" label="来源" :items="sourceOptions" outlined dense />
+          <VSelect v-model="data.storage" label="存储" :items="storageOptions" outlined dense />
+        </VCol>
+        <VCol cols="12">
+          <VPathField v-model="data.directory" :storage="data.storage" label="目录" clearable />
         </VCol>
       </VRow>
     </VCardText>
