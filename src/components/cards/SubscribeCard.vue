@@ -303,6 +303,7 @@ function onSubscribeEditRemove() {
           }"
           min-height="170"
           @click="editSubscribeDialog"
+          :ripple="false"
         >
           <div class="me-n3 absolute top-1 right-2">
             <IconBtn>

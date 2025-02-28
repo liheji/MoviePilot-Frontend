@@ -154,6 +154,7 @@ onMounted(() => {
       :variant="cardProps.site?.is_active ? 'elevated' : 'outlined'"
       class="overflow-hidden h-full flex flex-col"
       @click="handleResourceBrowse"
+      :ripple="false"
     >
       <template #image>
         <VAvatar class="absolute right-2 bottom-2 rounded" variant="flat" rounded="0">
