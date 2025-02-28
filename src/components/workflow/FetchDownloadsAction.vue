@@ -24,6 +24,7 @@ defineProps({
       <VCardTitle>获取下载任务</VCardTitle>
       <VCardSubtitle>获取下载任务，更新任务状态</VCardSubtitle>
     </VCardItem>
+    <VDivider />
     <VCardText>
       <VRow>
         <VCol cols="12">

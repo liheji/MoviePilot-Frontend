@@ -26,6 +26,18 @@ const typeOptions = ref([
   },
 ])
 
+// 搜索方式下拉框
+const searchOptions = ref([
+  {
+    title: '名称',
+    value: 'keyword',
+  },
+  {
+    title: '媒体列表',
+    value: 'media',
+  },
+])
+
 // 站点数据列表
 const siteList = ref<Site[]>([])
 
@@ -70,6 +82,11 @@ onMounted(() => {
     <VDivider />
     <VCardText>
       <VRow>
+        <VCol cols="12">
+          <VSelect v-model="data.search_type" label="搜索方式" :items="searchOptions" outlined dense />
+        </VCol>
+      </VRow>
+      <VRow v-if="data.search_type === 'keyword'">
         <VCol cols="6">
           <VTextField v-model="data.name" label="名称" outlined dense />
         </VCol>
@@ -82,6 +99,8 @@ onMounted(() => {
         <VCol cols="6">
           <VTextField v-model="data.season" type="number" label="季" outlined dense />
         </VCol>
+      </VRow>
+      <VRow>
         <VCol cols="12">
           <VSelect v-model="data.sites" label="站点" :items="siteOptions" chips multiple outlined dense />
         </VCol>

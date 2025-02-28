@@ -101,6 +101,7 @@ onMounted(() => {
           </VToolbarItems>
         </VToolbar>
       </div>
+      <VDivider />
       <VCardText class="px-0 py-0">
         <div class="dnd-flow" @drop="onDrop">
           <VueFlow
@@ -166,7 +167,6 @@ onMounted(() => {
 .dnd-flow aside .description {
   margin-bottom: 10px;
 }
-
 .dnd-flow .vue-flow-wrapper {
   flex-grow: 1;
   height: 100%;
