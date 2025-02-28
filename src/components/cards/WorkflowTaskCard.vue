@@ -114,9 +114,12 @@ async function handlePause(item: Workflow) {
 async function handleRun(item: Workflow) {
   loading.value = true
   try {
+    setTimeout(() => {
+      emit('refresh')
+    }, 500)
     const result: { [key: string]: string } = await api.post(`workflow/${item.id}/run`)
     if (result.success) {
-      $toast.success('任务执行成功！')
+      $toast.success('任务执行完成！')
       emit('refresh')
     } else {
       $toast.error(`任务执行失败：${result.message}`)
