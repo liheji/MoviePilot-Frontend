@@ -98,25 +98,36 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VCard max-width="20rem">
-    <Handle id="edge_in" type="target" :position="Position.Left" />
-    <VCardItem>
-      <template v-slot:prepend>
-        <VAvatar>
-          <VIcon icon="mdi-multimedia" size="x-large"></VIcon>
-        </VAvatar>
-      </template>
-      <VCardTitle>获取媒体数据</VCardTitle>
-      <VCardSubtitle>获取榜单等媒体数据列表</VCardSubtitle>
-    </VCardItem>
-    <VDivider />
-    <VCardText>
-      <VRow>
-        <VCol cols="12">
-          <VSelect v-model="data.sources" :items="sourceOptions" label="榜单" chips multiple outlined dense clearable />
-        </VCol>
-      </VRow>
-    </VCardText>
-    <Handle id="edge_out" type="source" :position="Position.Right" />
-  </VCard>
+  <div>
+    <VCard max-width="20rem">
+      <Handle id="edge_in" type="target" :position="Position.Left" />
+      <VCardItem>
+        <template v-slot:prepend>
+          <VAvatar>
+            <VIcon icon="mdi-multimedia" size="x-large"></VIcon>
+          </VAvatar>
+        </template>
+        <VCardTitle>获取媒体数据</VCardTitle>
+        <VCardSubtitle>获取榜单等媒体数据列表</VCardSubtitle>
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <VRow>
+          <VCol cols="12">
+            <VSelect
+              v-model="data.sources"
+              :items="sourceOptions"
+              label="榜单"
+              chips
+              multiple
+              outlined
+              dense
+              clearable
+            />
+          </VCol>
+        </VRow>
+      </VCardText>
+      <Handle id="edge_out" type="source" :position="Position.Right" />
+    </VCard>
+  </div>
 </template>

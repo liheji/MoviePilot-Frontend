@@ -49,34 +49,36 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VCard max-width="20rem">
-    <Handle id="edge_in" type="target" :position="Position.Left" />
-    <VCardItem>
-      <template v-slot:prepend>
-        <VAvatar>
-          <VIcon icon="mdi-filter-check" size="x-large"></VIcon>
-        </VAvatar>
-      </template>
-      <VCardTitle>过滤媒体数据</VCardTitle>
-      <VCardSubtitle>对媒体数据列表进行过滤</VCardSubtitle>
-    </VCardItem>
-    <VDivider />
-    <VCardText>
-      <VRow>
-        <VCol cols="12">
-          <VSelect v-model="data.type" label="类型" :items="typeOptions" outlined dense />
-        </VCol>
-        <VCol cols="12">
-          <VSelect v-model="data.category" label="类别" :items="getCategories" outlined dense />
-        </VCol>
-        <VCol cols="6">
-          <VTextField v-model="data.year" label="年份" outlined dense />
-        </VCol>
-        <VCol cols="6">
-          <VTextField v-model="data.vote" type="number" label="评分" outlined dense />
-        </VCol>
-      </VRow>
-    </VCardText>
-    <Handle id="edge_out" type="source" :position="Position.Right" />
-  </VCard>
+  <div>
+    <VCard max-width="20rem">
+      <Handle id="edge_in" type="target" :position="Position.Left" />
+      <VCardItem>
+        <template v-slot:prepend>
+          <VAvatar>
+            <VIcon icon="mdi-filter-check" size="x-large"></VIcon>
+          </VAvatar>
+        </template>
+        <VCardTitle>过滤媒体数据</VCardTitle>
+        <VCardSubtitle>对媒体数据列表进行过滤</VCardSubtitle>
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <VRow>
+          <VCol cols="12">
+            <VSelect v-model="data.type" label="类型" :items="typeOptions" outlined dense />
+          </VCol>
+          <VCol cols="12">
+            <VSelect v-model="data.category" label="类别" :items="getCategories" outlined dense />
+          </VCol>
+          <VCol cols="6">
+            <VTextField v-model="data.year" label="年份" outlined dense />
+          </VCol>
+          <VCol cols="6">
+            <VTextField v-model="data.vote" type="number" label="评分" outlined dense />
+          </VCol>
+        </VRow>
+      </VCardText>
+      <Handle id="edge_out" type="source" :position="Position.Right" />
+    </VCard>
+  </div>
 </template>

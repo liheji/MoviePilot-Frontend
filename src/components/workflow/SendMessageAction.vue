@@ -42,37 +42,39 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VCard max-width="20rem">
-    <Handle id="edge_in" type="target" :position="Position.Left" />
-    <VCardItem>
-      <template v-slot:prepend>
-        <VAvatar>
-          <VIcon icon="mdi-message-arrow-right" size="x-large"></VIcon>
-        </VAvatar>
-      </template>
-      <VCardTitle>发送消息</VCardTitle>
-      <VCardSubtitle>发送队列中的所有消息</VCardSubtitle>
-    </VCardItem>
-    <VDivider />
-    <VCardText>
-      <VRow>
-        <VCol cols="12">
-          <VSelect
-            v-model="data.client"
-            :items="sourceOptions"
-            label="消息渠道"
-            chips
-            multiple
-            outlined
-            dense
-            clearable
-          />
-        </VCol>
-        <VCol cols="12">
-          <VTextField v-model="data.userid" label="用户ID" chips multiple outlined dense clearable />
-        </VCol>
-      </VRow>
-    </VCardText>
-    <Handle id="edge_out" type="source" :position="Position.Right" />
-  </VCard>
+  <div>
+    <VCard max-width="20rem">
+      <Handle id="edge_in" type="target" :position="Position.Left" />
+      <VCardItem>
+        <template v-slot:prepend>
+          <VAvatar>
+            <VIcon icon="mdi-message-arrow-right" size="x-large"></VIcon>
+          </VAvatar>
+        </template>
+        <VCardTitle>发送消息</VCardTitle>
+        <VCardSubtitle>发送队列中的所有消息</VCardSubtitle>
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <VRow>
+          <VCol cols="12">
+            <VSelect
+              v-model="data.client"
+              :items="sourceOptions"
+              label="消息渠道"
+              chips
+              multiple
+              outlined
+              dense
+              clearable
+            />
+          </VCol>
+          <VCol cols="12">
+            <VTextField v-model="data.userid" label="用户ID" chips multiple outlined dense clearable />
+          </VCol>
+        </VRow>
+      </VCardText>
+      <Handle id="edge_out" type="source" :position="Position.Right" />
+    </VCard>
+  </div>
 </template>

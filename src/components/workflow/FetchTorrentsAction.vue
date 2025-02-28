@@ -68,44 +68,46 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VCard max-width="20rem">
-    <Handle id="edge_in" type="target" :position="Position.Left" />
-    <VCardItem>
-      <template v-slot:prepend>
-        <VAvatar>
-          <VIcon icon="mdi-search-web" size="x-large"></VIcon>
-        </VAvatar>
-      </template>
-      <VCardTitle>搜索站点资源</VCardTitle>
-      <VCardSubtitle>搜索站点种子资源列表</VCardSubtitle>
-    </VCardItem>
-    <VDivider />
-    <VCardText>
-      <VRow>
-        <VCol cols="12">
-          <VSelect v-model="data.search_type" label="搜索方式" :items="searchOptions" outlined dense />
-        </VCol>
-      </VRow>
-      <VRow v-if="data.search_type === 'keyword'">
-        <VCol cols="6">
-          <VTextField v-model="data.name" label="名称" outlined dense />
-        </VCol>
-        <VCol cols="6">
-          <VTextField v-model="data.year" label="年份" outlined dense />
-        </VCol>
-        <VCol cols="6">
-          <VSelect v-model="data.type" label="类型" :items="typeOptions" outlined dense />
-        </VCol>
-        <VCol cols="6">
-          <VTextField v-model="data.season" type="number" label="季" outlined dense />
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol cols="12">
-          <VSelect v-model="data.sites" label="站点" :items="siteOptions" chips multiple outlined dense />
-        </VCol>
-      </VRow>
-    </VCardText>
-    <Handle id="edge_out" type="source" :position="Position.Right" />
-  </VCard>
+  <div>
+    <VCard max-width="20rem">
+      <Handle id="edge_in" type="target" :position="Position.Left" />
+      <VCardItem>
+        <template v-slot:prepend>
+          <VAvatar>
+            <VIcon icon="mdi-search-web" size="x-large"></VIcon>
+          </VAvatar>
+        </template>
+        <VCardTitle>搜索站点资源</VCardTitle>
+        <VCardSubtitle>搜索站点种子资源列表</VCardSubtitle>
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <VRow>
+          <VCol cols="12">
+            <VSelect v-model="data.search_type" label="搜索方式" :items="searchOptions" outlined dense />
+          </VCol>
+        </VRow>
+        <VRow v-if="data.search_type === 'keyword'">
+          <VCol cols="6">
+            <VTextField v-model="data.name" label="名称" outlined dense />
+          </VCol>
+          <VCol cols="6">
+            <VTextField v-model="data.year" label="年份" outlined dense />
+          </VCol>
+          <VCol cols="6">
+            <VSelect v-model="data.type" label="类型" :items="typeOptions" outlined dense />
+          </VCol>
+          <VCol cols="6">
+            <VTextField v-model="data.season" type="number" label="季" outlined dense />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol cols="12">
+            <VSelect v-model="data.sites" label="站点" :items="siteOptions" chips multiple outlined dense />
+          </VCol>
+        </VRow>
+      </VCardText>
+      <Handle id="edge_out" type="source" :position="Position.Right" />
+    </VCard>
+  </div>
 </template>

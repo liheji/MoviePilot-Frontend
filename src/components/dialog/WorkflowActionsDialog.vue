@@ -8,6 +8,7 @@ import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import WorkflowSidebar from '@/layouts/components/WorkflowSidebar.vue'
 import DropzoneBackground from '@/layouts/components/DropzoneBackground.vue'
+import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
 
 const { onConnect, addEdges, nodes, edges } = useVueFlow()
 
@@ -55,6 +56,9 @@ const workflowForm = ref<any>(props.workflow || {})
 // 提示框
 const $toast = useToast()
 
+// 导入代码对话框
+const importCodeDialog = ref(false)
+
 // 调用API 编辑任务
 async function updateWorkflow() {
   // 更新节点和流程
@@ -71,6 +75,57 @@ async function updateWorkflow() {
     }
   } catch (error) {
     console.error(error)
+  }
+}
+
+// 保存导入的代码，直接覆盖原有值
+function saveCodeString(type: string, code: any) {
+  try {
+    if (code) {
+      if (type === 'workflow') {
+        nodes.value = code.actions
+        edges.value = code.flows
+      }
+      importCodeDialog.value = false
+      $toast.success('导入成功！')
+    }
+  } catch (error) {
+    $toast.error('导入失败！')
+    console.error(error)
+  }
+}
+
+// 分享工作流程
+function shareWorkflow() {
+  const codeString = JSON.stringify({ actions: nodes.value, flows: edges.value })
+  navigator.clipboard.writeText(codeString)
+  $toast.success('任务流程代码已复制到剪贴板！')
+}
+
+// 删除选中节点或连接线
+const deleteSelectedNodeOrEdge = () => {
+  // 删除选中的节点
+  const selectedNode = nodes.value.find((node: { selected: any }) => node.selected)
+  if (selectedNode) {
+    // 删除节点
+    nodes.value = nodes.value.filter((node: { id: any }) => node.id !== selectedNode.id)
+    // 删除与该节点相关的 edges
+    edges.value = edges.value.filter(
+      (edge: { source: any; target: any }) => edge.source !== selectedNode.id && edge.target !== selectedNode.id,
+    )
+  }
+  // 删除选中的连接线
+  const selectedEdge = edges.value.find((edge: { selected: any }) => edge.selected)
+  if (selectedEdge) {
+    // 删除连接线
+    edges.value = edges.value.filter((edge: { id: any }) => edge.id !== selectedEdge.id)
+  }
+}
+
+// 键盘按键事件处理
+const handleKeyDown = (event: { key: string }) => {
+  if (event.key === 'Delete' || event.key === 'Backspace') {
+    deleteSelectedNodeOrEdge()
   }
 }
 
@@ -95,6 +150,12 @@ onMounted(() => {
           </VToolbarItems>
           <VToolbarTitle> 编辑流程 - {{ workflow?.name }} </VToolbarTitle>
           <VToolbarItems>
+            <VBtn icon @click="importCodeDialog = true">
+              <VIcon size="large" color="white" icon="mdi-import" />
+            </VBtn>
+            <VBtn icon @click="shareWorkflow">
+              <VIcon size="large" color="white" icon="mdi-share" />
+            </VBtn>
             <VBtn icon @click="updateWorkflow" class="me-5">
               <VIcon size="large" color="white" icon="mdi-content-save" />
             </VBtn>
@@ -111,6 +172,7 @@ onMounted(() => {
             :default-edge-options="{ type: 'animation', animated: true }"
             @dragover="onDragOver"
             @dragleave="onDragLeave"
+            @keydown="handleKeyDown"
           >
             <MiniMap />
             <DropzoneBackground
@@ -125,6 +187,14 @@ onMounted(() => {
         </div>
       </VCardText>
     </VCard>
+    <ImportCodeDialog
+      v-if="importCodeDialog"
+      v-model="importCodeDialog"
+      title="导入任务流程"
+      dataType="workflow"
+      @close="importCodeDialog = false"
+      @save="saveCodeString"
+    />
   </VDialog>
 </template>
 <style>

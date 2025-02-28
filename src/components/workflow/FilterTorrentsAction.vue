@@ -124,51 +124,53 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VCard max-width="20rem">
-    <Handle id="edge_in" type="target" :position="Position.Left" />
-    <VCardItem>
-      <template v-slot:prepend>
-        <VAvatar>
-          <VIcon icon="mdi-filter-multiple" size="x-large"></VIcon>
-        </VAvatar>
-      </template>
-      <VCardTitle>过滤资源</VCardTitle>
-      <VCardSubtitle>对资源列表数据进行过滤</VCardSubtitle>
-    </VCardItem>
-    <VDivider />
-    <VCardText>
-      <VRow>
-        <VCol cols="6">
-          <VSelect v-model="data.quality" label="质量" :items="qualityOptions" outlined dense />
-        </VCol>
-        <VCol cols="6">
-          <VSelect v-model="data.resolution" label="分辨率" :items="resolutionOptions" outlined dense />
-        </VCol>
-        <VCol cols="6">
-          <VSelect v-model="data.effect" label="特效" :items="effectOptions" outlined dense />
-        </VCol>
-        <VCol cols="6">
-          <VTextField v-model="data.size" label="大小范围" placeholder="MB" outlined dense />
-        </VCol>
-        <VCol cols="12">
-          <VTextField v-model="data.include" label="包含（关键字、正则式）" outlined dense />
-        </VCol>
-        <VCol cols="12">
-          <VTextField v-model="data.exclude" label="排除（关键字、正则式）" outlined dense />
-        </VCol>
-        <VCol cols="12">
-          <VSelect
-            v-model="data.rule_groups"
-            chips
-            multiple
-            label="过滤规则组"
-            :items="ruleGroupsOptions"
-            outlined
-            dense
-          />
-        </VCol>
-      </VRow>
-    </VCardText>
-    <Handle id="edge_out" type="source" :position="Position.Right" />
-  </VCard>
+  <div>
+    <VCard max-width="20rem">
+      <Handle id="edge_in" type="target" :position="Position.Left" />
+      <VCardItem>
+        <template v-slot:prepend>
+          <VAvatar>
+            <VIcon icon="mdi-filter-multiple" size="x-large"></VIcon>
+          </VAvatar>
+        </template>
+        <VCardTitle>过滤资源</VCardTitle>
+        <VCardSubtitle>对资源列表数据进行过滤</VCardSubtitle>
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <VRow>
+          <VCol cols="6">
+            <VSelect v-model="data.quality" label="质量" :items="qualityOptions" outlined dense />
+          </VCol>
+          <VCol cols="6">
+            <VSelect v-model="data.resolution" label="分辨率" :items="resolutionOptions" outlined dense />
+          </VCol>
+          <VCol cols="6">
+            <VSelect v-model="data.effect" label="特效" :items="effectOptions" outlined dense />
+          </VCol>
+          <VCol cols="6">
+            <VTextField v-model="data.size" label="大小范围" placeholder="MB" outlined dense />
+          </VCol>
+          <VCol cols="12">
+            <VTextField v-model="data.include" label="包含（关键字、正则式）" outlined dense />
+          </VCol>
+          <VCol cols="12">
+            <VTextField v-model="data.exclude" label="排除（关键字、正则式）" outlined dense />
+          </VCol>
+          <VCol cols="12">
+            <VSelect
+              v-model="data.rule_groups"
+              chips
+              multiple
+              label="过滤规则组"
+              :items="ruleGroupsOptions"
+              outlined
+              dense
+            />
+          </VCol>
+        </VRow>
+      </VCardText>
+      <Handle id="edge_out" type="source" :position="Position.Right" />
+    </VCard>
+  </div>
 </template>

@@ -38,31 +38,33 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VCard max-width="20rem">
-    <Handle id="edge_in" type="target" :position="Position.Left" />
-    <VCardItem>
-      <template v-slot:prepend>
-        <VAvatar>
-          <VIcon icon="mdi-download-box-outline" size="x-large"></VIcon>
-        </VAvatar>
-      </template>
-      <VCardTitle>添加下载</VCardTitle>
-      <VCardSubtitle>根据资源列表添加下载任务</VCardSubtitle>
-    </VCardItem>
-    <VDivider />
-    <VCardText>
-      <VRow>
-        <VCol cols="12">
-          <VSelect v-model="data.downloader" :items="downloaderOptions" label="下载器" outlined dense />
-        </VCol>
-        <VCol cols="12">
-          <VPathField v-model="data.save_path" storage="local" label="保存路径" clearable placeholder="留空自动" />
-        </VCol>
-        <VCol cols="12">
-          <VSwitch v-model="data.only_lack" label="仅下载缺失的资源" />
-        </VCol>
-      </VRow>
-    </VCardText>
-    <Handle id="edge_out" type="source" :position="Position.Right" />
-  </VCard>
+  <div>
+    <VCard max-width="20rem">
+      <Handle id="edge_in" type="target" :position="Position.Left" />
+      <VCardItem>
+        <template v-slot:prepend>
+          <VAvatar>
+            <VIcon icon="mdi-download-box-outline" size="x-large"></VIcon>
+          </VAvatar>
+        </template>
+        <VCardTitle>添加下载</VCardTitle>
+        <VCardSubtitle>根据资源列表添加下载任务</VCardSubtitle>
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <VRow>
+          <VCol cols="12">
+            <VSelect v-model="data.downloader" :items="downloaderOptions" label="下载器" outlined dense />
+          </VCol>
+          <VCol cols="12">
+            <VPathField v-model="data.save_path" storage="local" label="保存路径" clearable placeholder="留空自动" />
+          </VCol>
+          <VCol cols="12">
+            <VSwitch v-model="data.only_lack" label="仅下载缺失的资源" />
+          </VCol>
+        </VRow>
+      </VCardText>
+      <Handle id="edge_out" type="source" :position="Position.Right" />
+    </VCard>
+  </div>
 </template>
