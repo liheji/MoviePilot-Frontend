@@ -52,7 +52,7 @@ onMounted(() => {
           </VAvatar>
         </template>
         <VCardTitle>发送消息</VCardTitle>
-        <VCardSubtitle>发送队列中的所有消息</VCardSubtitle>
+        <VCardSubtitle>发送任务执行消息</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
