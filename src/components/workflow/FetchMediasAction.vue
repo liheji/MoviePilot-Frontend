@@ -90,6 +90,12 @@ async function loadExtraRecommendSources() {
   }
 }
 
+// 来源类型下拉框
+const sourceTypeOptions = [
+  { value: 'ranking', title: '推荐榜单' },
+  { value: 'api', title: 'API' },
+]
+
 // 计算下拉框
 const sourceOptions = computed(() => innerList.map(item => item.name))
 
@@ -114,12 +120,29 @@ onMounted(() => {
       <VCardText>
         <VRow>
           <VCol cols="12">
+            <VSelect v-model="data.source_type" :items="sourceTypeOptions" label="来源" outlined dense />
+          </VCol>
+        </VRow>
+        <VRow v-if="data.source_type === 'ranking'">
+          <VCol cols="12">
             <VSelect
               v-model="data.sources"
               :items="sourceOptions"
-              label="榜单"
+              label="选择榜单"
               chips
               multiple
+              outlined
+              dense
+              clearable
+            />
+          </VCol>
+        </VRow>
+        <VRow v-else>
+          <VCol cols="12">
+            <VTextField
+              v-model="data.api_path"
+              label="API地址"
+              placeholder="/api/v1/plugin/xxx/xxxx"
               outlined
               dense
               clearable

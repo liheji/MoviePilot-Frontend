@@ -157,7 +157,7 @@ onMounted(() => {
             <VBtn icon @click="shareWorkflow">
               <VIcon size="large" color="white" icon="mdi-share" />
             </VBtn>
-            <VBtn icon @click="updateWorkflow" class="me-5">
+            <VBtn icon @click="updateWorkflow" class="mx-5">
               <VIcon size="large" color="white" icon="mdi-content-save" />
             </VBtn>
           </VToolbarItems>
@@ -171,9 +171,11 @@ onMounted(() => {
             :edges="edges"
             :nodeTypes="nodeTypes"
             :default-edge-options="{ type: 'animation', animated: true }"
+            :edge-updater-radius="10"
             @dragover="onDragOver"
             @dragleave="onDragLeave"
             @keydown="handleKeyDown"
+            auto-connect
           >
             <MiniMap />
             <DropzoneBackground
@@ -286,8 +288,9 @@ onMounted(() => {
   border-radius: 4px;
 }
 
-.vue-flow__edges {
-  filter: invert(100%);
+.vue-flow__edge-path,
+.vue-flow__connection-path {
+  stroke-width: 3;
 }
 
 .vue-flow__handle-left {
