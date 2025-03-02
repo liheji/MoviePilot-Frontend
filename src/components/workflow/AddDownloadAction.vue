@@ -57,6 +57,9 @@ onMounted(() => {
             <VSelect v-model="data.downloader" :items="downloaderOptions" label="下载器" outlined dense />
           </VCol>
           <VCol cols="12">
+            <VTextField v-model="data.labels" label="标签" placeholder="多个使用,分隔" outlined dense />
+          </VCol>
+          <VCol cols="12">
             <VPathField v-model="data.save_path" storage="local" label="保存路径" clearable placeholder="留空自动" />
           </VCol>
           <VCol cols="12">

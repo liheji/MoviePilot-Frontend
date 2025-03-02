@@ -106,6 +106,11 @@ onMounted(() => {
             <VSelect v-model="data.sites" label="站点" :items="siteOptions" chips multiple outlined dense />
           </VCol>
         </VRow>
+        <VRow v-if="data.search_type === 'keyword'">
+          <VCol cols="12">
+            <VSwitch v-model="data.match_media" label="匹配媒体信息" />
+          </VCol>
+        </VRow>
       </VCardText>
       <Handle id="edge_out" type="source" :position="Position.Right" />
     </VCard>

@@ -37,7 +37,10 @@ defineProps({
           <VCol cols="12">
             <VTextField v-model="data.timeout" type="number" label="超时时间" outlined dense clearable />
           </VCol>
-          <VCol cols="12">
+          <VCol cols="6">
+            <VSwitch v-model="data.match_media" label="匹配媒体信息" />
+          </VCol>
+          <VCol cols="6">
             <VSwitch v-model="data.proxy" label="使用代理" />
           </VCol>
         </VRow>
