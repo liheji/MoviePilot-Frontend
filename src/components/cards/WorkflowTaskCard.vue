@@ -133,6 +133,28 @@ async function handleRun(item: Workflow, from_begin: boolean) {
   loading.value = false
 }
 
+// 重置任务
+async function handleReset(item: Workflow) {
+  const isConfirmed = await createConfirm({
+    title: '确认',
+    content: `是否确认重置任务 ${item.name} ?`,
+  })
+
+  if (!isConfirmed) return
+
+  try {
+    const result: { [key: string]: string } = await api.post(`workflow/${item.id}/reset`)
+    if (result.success) {
+      $toast.success('重置任务成功！')
+      emit('refresh')
+    } else {
+      $toast.error(`重置任务失败：${result.message}`)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 // 计算状态颜色
 const resolveStatusVariant = (status: string | undefined) => {
   if (status === 'S') return { color: 'success', text: '成功' }
@@ -196,19 +218,25 @@ const resolveProgress = (item: Workflow) => {
                 <VListItem
                   v-if="workflow.current_action"
                   variant="plain"
-                  base-color="warning"
+                  base-color="info"
                   @click="handleRun(workflow, true)"
                 >
                   <template #prepend>
                     <VIcon icon="mdi-replay" />
                   </template>
-                  <VListItemTitle>重新开始</VListItemTitle>
+                  <VListItemTitle>重新执行</VListItemTitle>
                 </VListItem>
                 <VListItem v-else variant="plain" base-color="info" @click="handleRun(workflow, true)">
                   <template #prepend>
                     <VIcon icon="mdi-run" />
                   </template>
                   <VListItemTitle>立即执行</VListItemTitle>
+                </VListItem>
+                <VListItem variant="plain" base-color="warning" @click="handleReset(workflow)">
+                  <template #prepend>
+                    <VIcon icon="mdi-restore-alert" />
+                  </template>
+                  <VListItemTitle>重置任务</VListItemTitle>
                 </VListItem>
                 <VListItem variant="plain" base-color="error" @click="handleDelete(workflow)">
                   <template #prepend>
