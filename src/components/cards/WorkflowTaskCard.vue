@@ -111,13 +111,15 @@ async function handlePause(item: Workflow) {
 }
 
 // 立即执行任务
-async function handleRun(item: Workflow) {
+async function handleRun(item: Workflow, from_begin: boolean) {
   loading.value = true
   try {
     setTimeout(() => {
       emit('refresh')
     }, 500)
-    const result: { [key: string]: string } = await api.post(`workflow/${item.id}/run`)
+    const result: { [key: string]: string } = await api.post(`workflow/${item.id}/run?from_begin=${from_begin}`, {
+      from_begin,
+    })
     if (result.success) {
       $toast.success('任务执行完成！')
       emit('refresh')
@@ -180,7 +182,29 @@ const resolveProgress = (item: Workflow) => {
                   </template>
                   <VListItemTitle>编辑任务</VListItemTitle>
                 </VListItem>
-                <VListItem variant="plain" base-color="info" @click="handleRun(workflow)">
+                <VListItem
+                  v-if="workflow.current_action"
+                  variant="plain"
+                  base-color="info"
+                  @click="handleRun(workflow, false)"
+                >
+                  <template #prepend>
+                    <VIcon icon="mdi-play-speed" />
+                  </template>
+                  <VListItemTitle>继续执行</VListItemTitle>
+                </VListItem>
+                <VListItem
+                  v-if="workflow.current_action"
+                  variant="plain"
+                  base-color="warning"
+                  @click="handleRun(workflow, true)"
+                >
+                  <template #prepend>
+                    <VIcon icon="mdi-replay" />
+                  </template>
+                  <VListItemTitle>重新开始</VListItemTitle>
+                </VListItem>
+                <VListItem v-else variant="plain" base-color="info" @click="handleRun(workflow, true)">
                   <template #prepend>
                     <VIcon icon="mdi-run" />
                   </template>

@@ -67,9 +67,6 @@ onMounted(() => {
           <VCol cols="12">
             <VSelect v-model="data.type" label="类型" :items="typeOptions" outlined dense />
           </VCol>
-          <VCol cols="12">
-            <VSelect v-model="data.category" label="类别" :items="getCategories" outlined dense />
-          </VCol>
           <VCol cols="6">
             <VTextField v-model="data.year" label="年份" outlined dense />
           </VCol>
