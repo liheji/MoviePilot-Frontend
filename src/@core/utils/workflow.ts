@@ -1,5 +1,6 @@
 import { useVueFlow } from '@vue-flow/core'
 import { ref, watch } from 'vue'
+import { cloneDeep } from 'lodash-es'
 
 /**
  * @returns {string} - A unique id.
@@ -90,7 +91,7 @@ export default function useDragAndDrop() {
       name: draggedData.value?.name,
       description: draggedData.value?.description,
       position,
-      data: draggedData.value?.data,
+      data: draggedData.value?.data ? cloneDeep(draggedData.value.data) : {},
     }
 
     /**
