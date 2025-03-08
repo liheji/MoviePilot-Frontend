@@ -232,17 +232,17 @@ export const PluginTabs = [
 // 发现标签页
 export const DiscoverTabs = [
   {
-    title: 'TheMovieDb',
+    name: 'TheMovieDb',
     tab: 'themoviedb',
     icon: 'themoviedb',
   },
   {
-    title: '豆瓣',
+    name: '豆瓣',
     tab: 'douban',
     icon: 'douban',
   },
   {
-    title: 'Bangumi',
+    name: 'Bangumi',
     tab: 'bangumi',
     icon: 'bangumi',
   },
