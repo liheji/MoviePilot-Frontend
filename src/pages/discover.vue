@@ -126,15 +126,16 @@ onActivated(async () => {
             v-if="element.api_path"
             :key="element.mediaid_prefix"
             :value="element.name"
+            prepend-icon="mdi-drag"
             @to="jumpTab(element.mediaid_prefix)"
           >
-            <div><VIcon class="cursor-move" size="20" start icon="mdi-drag" /></div>
+            <div><VIcon class="cursor-move" start icon="mdi-drag" /></div>
             <div class="min-w-24">
               <div>{{ element.name }}</div>
             </div>
           </VTab>
           <VTab v-else :value="element.mediaid_prefix" @to="jumpTab(element.mediaid_prefix)">
-            <div><VIcon class="cursor-move" size="20" start icon="mdi-drag" /></div>
+            <div><VIcon class="cursor-move" start icon="mdi-drag" /></div>
             <div class="min-w-24">
               <div>{{ element.name }}</div>
             </div>
