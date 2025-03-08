@@ -4,12 +4,16 @@ import api from '@/api'
 import draggable from 'vuedraggable'
 import type { NotificationConf, NotificationSwitchConf } from '@/api/types'
 import NotificationChannelCard from '@/components/cards/NotificationChannelCard.vue'
+import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 
 // 所有消息渠道
 const notifications = ref<NotificationConf[]>([])
 
 // 提示框
 const $toast = useToast()
+
+// 进度框
+const progressDialog = ref(false)
 
 // 消息类型开关
 const notificationSwitchs = ref<NotificationSwitchConf[]>([
@@ -49,6 +53,7 @@ const notificationSwitchs = ref<NotificationSwitchConf[]>([
 
 // 重载系统生效配置
 async function reloadSystem() {
+  progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
     if (result.success) $toast.success('系统配置已生效')
@@ -56,6 +61,7 @@ async function reloadSystem() {
   } catch (error) {
     console.log(error)
   }
+  progressDialog.value = false
 }
 
 // 添加通知渠道
@@ -240,4 +246,6 @@ onMounted(() => {
       </VCard>
     </VCol>
   </VRow>
+  <!-- 进度框 -->
+  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
 </template>

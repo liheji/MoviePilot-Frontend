@@ -8,6 +8,7 @@ import { DownloaderConf, MediaServerConf } from '@/api/types'
 import DownloaderCard from '@/components/cards/DownloaderCard.vue'
 import MediaServerCard from '@/components/cards/MediaServerCard.vue'
 import { copyToClipboard } from '@/@core/utils/navigator'
+import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 
 // 系统设置项
 const SystemSettings = ref<any>({
@@ -68,6 +69,9 @@ const downloaders = ref<DownloaderConf[]>([])
 // 提示框
 const $toast = useToast()
 
+// 进度框
+const progressDialog = ref(false)
+
 // 高级设置对话框
 const advancedDialog = ref(false)
 
@@ -85,6 +89,7 @@ async function loadDownloaderSetting() {
 
 // 重载系统生效配置
 async function reloadSystem() {
+  progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
     if (result.success) $toast.success('系统配置已生效')
@@ -92,6 +97,7 @@ async function reloadSystem() {
   } catch (error) {
     console.log(error)
   }
+  progressDialog.value = false
 }
 
 // 调用API保存下载器设置
@@ -838,4 +844,6 @@ onDeactivated(() => {
       </VCardActions>
     </VCard>
   </VDialog>
+  <!-- 进度框 -->
+  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
 </template>

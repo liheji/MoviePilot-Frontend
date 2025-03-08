@@ -7,6 +7,7 @@ import api from '@/api'
 import { TransferDirectoryConf, StorageConf } from '@/api/types'
 import DirectoryCard from '@/components/cards/DirectoryCard.vue'
 import StorageCard from '@/components/cards/StorageCard.vue'
+import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 
 // 所有下载目录
 const directories = ref<TransferDirectoryConf[]>([])
@@ -19,6 +20,9 @@ const mediaCategories = ref<{ [key: string]: any }>({})
 
 // 提示框
 const $toast = useToast()
+
+// 进度框
+const progressDialog = ref(false)
 
 // 数据源
 const sourceItems = [
@@ -54,6 +58,7 @@ async function loadSystemSettings() {
 
 // 重载系统生效配置
 async function reloadSystem() {
+  progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
     if (result.success) $toast.success('系统配置已生效')
@@ -61,6 +66,7 @@ async function reloadSystem() {
   } catch (error) {
     console.log(error)
   }
+  progressDialog.value = false
 }
 
 // 移动结束
@@ -141,7 +147,7 @@ function addDirectory() {
     monitor_type: '',
     media_type: '',
     media_category: '',
-    transfer_type: ''
+    transfer_type: '',
   })
   orderDirectoryCards()
 }
@@ -304,4 +310,6 @@ onMounted(() => {
       </VCard>
     </VCol>
   </VRow>
+  <!-- 进度框 -->
+  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
 </template>

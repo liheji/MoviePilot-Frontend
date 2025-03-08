@@ -1,9 +1,13 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
+import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 
 // 提示框
 const $toast = useToast()
+
+// 进度框
+const progressDialog = ref(false)
 
 // 站点重置
 const isConfirmResetSites = ref(false)
@@ -90,6 +94,7 @@ async function loadSiteSettings() {
 
 // 重载系统生效配置
 async function reloadSystem() {
+  progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
     if (result.success) $toast.success('系统配置已生效')
@@ -97,6 +102,7 @@ async function reloadSystem() {
   } catch (error) {
     console.log(error)
   }
+  progressDialog.value = false
 }
 
 // 调用API保存设置
@@ -269,4 +275,6 @@ onMounted(() => {
       </VCard>
     </VCol>
   </VRow>
+  <!-- 进度框 -->
+  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
 </template>
