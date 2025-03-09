@@ -43,6 +43,10 @@ async function loadMediaStatistic() {
 onMounted(() => {
   loadMediaStatistic()
 })
+
+onActivated(() => {
+  loadMediaStatistic()
+})
 </script>
 
 <template>

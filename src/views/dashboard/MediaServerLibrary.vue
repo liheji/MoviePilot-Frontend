@@ -33,12 +33,21 @@ async function loadLibrary(server: string) {
   }
 }
 
-onMounted(async () => {
+// 加载数据
+async function loadData() {
   await loadMediaServerSetting()
   const enabledServers = mediaServers.value.filter(server => server.enabled)
   for (const server of enabledServers) {
     loadLibrary(server.name)
   }
+}
+
+onMounted(() => {
+  loadData()
+})
+
+onActivated(() => {
+  loadData()
 })
 </script>
 

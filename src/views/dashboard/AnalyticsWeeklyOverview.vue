@@ -113,6 +113,10 @@ async function getWeeklyData() {
 onMounted(() => {
   getWeeklyData()
 })
+
+onActivated(() => {
+  getWeeklyData()
+})
 </script>
 
 <template>

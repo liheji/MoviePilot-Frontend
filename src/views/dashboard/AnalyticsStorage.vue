@@ -36,6 +36,10 @@ async function getStorage() {
 onMounted(() => {
   getStorage()
 })
+
+onActivated(() => {
+  getStorage()
+})
 </script>
 
 <template>
