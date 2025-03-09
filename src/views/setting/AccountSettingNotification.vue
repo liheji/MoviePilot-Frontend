@@ -51,6 +51,12 @@ const notificationSwitchs = ref<NotificationSwitchConf[]>([
   },
 ])
 
+// 通知发送时间
+const notificationTime = ref({
+  start: '00:00',
+  end: '23:59',
+})
+
 // 重载系统生效配置
 async function reloadSystem() {
   progressDialog.value = true
@@ -94,6 +100,16 @@ async function loadNotificationSetting() {
   }
 }
 
+// 调用API查询通知发送时间设置
+async function loadNotificationTime() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/NotificationSendTime')
+    notificationTime.value = result.data?.value ?? { start: '00:00', end: '23:59' }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // 调用API保存通知设置
 async function saveNotificationSetting() {
   try {
@@ -102,6 +118,18 @@ async function saveNotificationSetting() {
       $toast.success('通知设置保存成功')
       await reloadSystem()
     } else $toast.error('通知设置保存失败！')
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 调用API保存通知发送时间设置
+async function saveNotificationTime() {
+  try {
+    const result: { [key: string]: any } = await api.post('system/setting/NotificationSendTime', notificationTime.value)
+    if (result.success) {
+      $toast.success('通知发送时间保存成功')
+    } else $toast.error('通知发送时间保存失败！')
   } catch (error) {
     console.log(error)
   }
@@ -141,6 +169,7 @@ async function saveNotificationSwitchs() {
 onMounted(() => {
   loadNotificationSetting()
   loadNotificationSwitchs()
+  loadNotificationTime()
 })
 </script>
 
@@ -240,6 +269,33 @@ onMounted(() => {
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
               <VBtn type="submit" @click="saveNotificationSwitchs"> 保存 </VBtn>
+            </div>
+          </VForm>
+        </VCardText>
+      </VCard>
+    </VCol>
+  </VRow>
+  <VRow>
+    <VCol cols="12">
+      <VCard>
+        <VCardItem>
+          <VCardTitle>通知发送时间</VCardTitle>
+          <VCardSubtitle>设定消息发送的时间范围。</VCardSubtitle>
+        </VCardItem>
+        <VCardText>
+          <VRow>
+            <VCol cols="6">
+              <VTextField v-model="notificationTime.start" label="开始时间" type="time" />
+            </VCol>
+            <VCol cols="6">
+              <VTextField v-model="notificationTime.end" label="结束时间" type="time" />
+            </VCol>
+          </VRow>
+        </VCardText>
+        <VCardText>
+          <VForm @submit.prevent="() => {}">
+            <div class="d-flex flex-wrap gap-4 mt-4">
+              <VBtn type="submit" @click="saveNotificationTime"> 保存 </VBtn>
             </div>
           </VForm>
         </VCardText>
