@@ -51,8 +51,8 @@ export default defineComponent({
       const main = h(
         'main',
         { class: 'layout-page-content' },
-        h(Transition, { name: 'fade-slide', mode: 'out-in', appear: true },
-          () => h('section', { class: 'page-content-container' }, slots.default?.()),
+        h(Transition, { name: 'fade-slide', mode: 'out-in', appear: true }, () =>
+          h('section', { class: 'page-content-container' }, slots.default?.()),
         ),
       )
 
@@ -69,6 +69,9 @@ export default defineComponent({
         },
       })
 
+      // 👉 修改：根据路由 meta 决定是否显示 footer
+      const shouldShowFooter = !route.meta.hideFooter
+
       return h(
         'div',
         {
@@ -82,7 +85,7 @@ export default defineComponent({
         },
         [
           verticalNav,
-          h('div', { class: 'layout-content-wrapper' }, [navbar, main, footer]),
+          h('div', { class: 'layout-content-wrapper' }, [navbar, main, shouldShowFooter && footer]),
           layoutOverlay,
         ],
       )
@@ -92,9 +95,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@use "@configured-variables" as variables;
-@use "@layouts/styles/placeholders";
-@use "@layouts/styles/mixins";
+@use '@configured-variables' as variables;
+@use '@layouts/styles/placeholders';
+@use '@layouts/styles/mixins';
 
 .layout-wrapper.layout-nav-type-vertical {
   // TODO(v2): Check why we need height in vertical nav & min-height in horizontal nav
@@ -116,9 +119,7 @@ export default defineComponent({
     inset-block-start: 0;
 
     .navbar-content-container {
-      block-size: calc(
-        env(safe-area-inset-top) + variables.$layout-vertical-nav-navbar-height
-      );
+      block-size: calc(env(safe-area-inset-top) + variables.$layout-vertical-nav-navbar-height);
     }
 
     @at-root {

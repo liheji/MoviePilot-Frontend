@@ -96,6 +96,7 @@ const router = createRouter({
           component: () => import('../pages/history.vue'),
           meta: {
             requiresAuth: true,
+            hideFooter: true,
           },
         },
         {
@@ -178,6 +179,7 @@ const router = createRouter({
           meta: {
             keepAlive: true,
             requiresAuth: true,
+            hideFooter: true,
           },
         },
         {
