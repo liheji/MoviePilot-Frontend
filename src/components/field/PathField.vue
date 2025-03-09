@@ -6,7 +6,7 @@ const attrs = useAttrs()
 const props = defineProps({
   modelValue: {
     type: String,
-    default: '* * * * *',
+    default: '/',
   },
   storage: {
     type: String,
