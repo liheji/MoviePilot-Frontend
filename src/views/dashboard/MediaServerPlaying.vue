@@ -24,7 +24,11 @@ async function loadPlayingList(server: string) {
   try {
     const result: MediaServerPlayItem[] = await api.get('mediaserver/playing', { params: { server } })
     if (result && result.length > 0) {
-      playingList.value = playingList.value.concat(result)
+      // 不存在时添加
+      for (const item of result) {
+        const index = playingList.value.findIndex(i => i.id === item.id)
+        if (index === -1) playingList.value = playingList.value.concat(result)
+      }
     }
   } catch (e) {
     console.log(e)

@@ -26,7 +26,11 @@ async function loadLibrary(server: string) {
       params: { server: server, hidden: true },
     })
     if (result && result.length > 0) {
-      libraryList.value = libraryList.value.concat(result)
+      // 不存在时添加
+      for (const item of result) {
+        const index = libraryList.value.findIndex(i => i.id === item.id)
+        if (index === -1) libraryList.value.push(item)
+      }
     }
   } catch (e) {
     console.log(e)
