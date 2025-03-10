@@ -129,6 +129,7 @@ async function saveNotificationTime() {
     const result: { [key: string]: any } = await api.post('system/setting/NotificationSendTime', notificationTime.value)
     if (result.success) {
       $toast.success('通知发送时间保存成功')
+      await reloadSystem()
     } else $toast.error('通知发送时间保存失败！')
   } catch (error) {
     console.log(error)
