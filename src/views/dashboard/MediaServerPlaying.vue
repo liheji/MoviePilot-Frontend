@@ -27,7 +27,9 @@ async function loadPlayingList(server: string) {
       // 不存在时添加
       for (const item of result) {
         const index = playingList.value.findIndex(i => i.id === item.id)
-        if (index === -1) playingList.value = playingList.value.concat(result)
+        if (index === -1) {
+          playingList.value.push(item)
+        }
       }
     }
   } catch (e) {
