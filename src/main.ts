@@ -50,11 +50,19 @@ import '@styles/styles.scss'
 // 创建Vue实例
 const app = createApp(App)
 
+// 注册pinia
+app.use(pinia)
+
+// 初始化配置
 async function initializeApp() {
   try {
     // 是否为PWA
     const pwaMode = await isPWA()
     app.provide('pwaMode', pwaMode)
+
+    // 全局设置
+    const globalSettings = await fetchGlobalSettings()
+    app.provide('globalSettings', globalSettings)
   } catch (error) {
     console.error('Failed to initialize app', error)
   }
@@ -65,13 +73,10 @@ initializeApp().then(() => {
   // 1. 注册 UI 框架
   app.use(vuetify)
 
-  // 2. 注册状态管理与路由
-  app.use(pinia).use(router)
+  // 2. 注册路由
+  app.use(router)
 
-  // 3. 全局设置
-  app.provide('globalSettings', fetchGlobalSettings())
-
-  // 4. 注册全局组件
+  // 3. 注册全局组件
   app
     .component('VAceEditor', VAceEditor)
     .component('VApexChart', VueApexCharts)
