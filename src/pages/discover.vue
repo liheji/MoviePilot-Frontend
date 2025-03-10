@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { DiscoverTabs } from '@/router/menu'
 import draggable from 'vuedraggable'
-import router from '@/router'
 import TheMovieDbView from '@/views/discover/TheMovieDbView.vue'
 import DoubanView from '@/views/discover/DoubanView.vue'
 import BangumiView from '@/views/discover/BangumiView.vue'
@@ -9,12 +8,7 @@ import ExtraSourceView from '@/views/discover/ExtraSourceView.vue'
 import { DiscoverSource } from '@/api/types'
 import api from '@/api'
 
-const route = useRoute()
-const activeTab = ref(route.query.tab)
-
-function jumpTab(tab: string) {
-  router.push('/subscribe/discover?tab=' + tab)
-}
+const activeTab = ref('')
 
 // 本地存储键值
 const localOrderKey = 'MP_DISCOVER_TAB_ORDER'
@@ -106,14 +100,18 @@ async function saveTabOrder() {
 }
 
 onBeforeMount(async () => {
-  await loadOrderConfig()
   initDiscoverTabs()
+  await loadOrderConfig()
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
+  // 选中第一个标签页
+  if (discoverTabs.value.length > 0) {
+    activeTab.value = discoverTabs.value[0].mediaid_prefix
+  }
 })
 
 onActivated(async () => {
-  loadExtraDiscoverSources()
+  await loadExtraDiscoverSources()
   sortSubscribeOrder()
 })
 </script>
@@ -123,7 +121,7 @@ onActivated(async () => {
     <VTabs v-model="activeTab" show-arrows>
       <draggable v-model="discoverTabs" handle=".cursor-move" item-key="tab" tag="div" @end="saveTabOrder">
         <template #item="{ element }">
-          <VTab :key="element.mediaid_prefix" :value="element.mediaid_prefix" @to="jumpTab(element.mediaid_prefix)">
+          <VTab :key="element.mediaid_prefix" :value="element.mediaid_prefix">
             <div><VIcon class="cursor-move" start icon="mdi-drag" /></div>
             <div class="min-w-24">
               <div>{{ element.name }}</div>
