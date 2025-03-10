@@ -114,6 +114,7 @@ onBeforeMount(async () => {
 
 onActivated(async () => {
   loadExtraDiscoverSources()
+  sortSubscribeOrder()
 })
 </script>
 
@@ -122,19 +123,7 @@ onActivated(async () => {
     <VTabs v-model="activeTab" show-arrows>
       <draggable v-model="discoverTabs" handle=".cursor-move" item-key="tab" tag="div" @end="saveTabOrder">
         <template #item="{ element }">
-          <VTab
-            v-if="element.api_path"
-            :key="element.mediaid_prefix"
-            :value="element.name"
-            prepend-icon="mdi-drag"
-            @to="jumpTab(element.mediaid_prefix)"
-          >
-            <div><VIcon class="cursor-move" start icon="mdi-drag" /></div>
-            <div class="min-w-24">
-              <div>{{ element.name }}</div>
-            </div>
-          </VTab>
-          <VTab v-else :value="element.mediaid_prefix" @to="jumpTab(element.mediaid_prefix)">
+          <VTab :key="element.mediaid_prefix" :value="element.mediaid_prefix" @to="jumpTab(element.mediaid_prefix)">
             <div><VIcon class="cursor-move" start icon="mdi-drag" /></div>
             <div class="min-w-24">
               <div>{{ element.name }}</div>
