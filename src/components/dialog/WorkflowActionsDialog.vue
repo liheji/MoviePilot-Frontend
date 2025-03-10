@@ -142,33 +142,6 @@ function shareWorkflow() {
   $toast.success('任务流程代码已复制到剪贴板！')
 }
 
-// 删除选中节点或连接线
-const deleteSelectedNodeOrEdge = () => {
-  // 删除选中的节点
-  const selectedNode = nodes.value.find((node: { selected: any }) => node.selected)
-  if (selectedNode) {
-    // 删除节点
-    nodes.value = nodes.value.filter((node: { id: any }) => node.id !== selectedNode.id)
-    // 删除与该节点相关的 edges
-    edges.value = edges.value.filter(
-      (edge: { source: any; target: any }) => edge.source !== selectedNode.id && edge.target !== selectedNode.id,
-    )
-  }
-  // 删除选中的连接线
-  const selectedEdge = edges.value.find((edge: { selected: any }) => edge.selected)
-  if (selectedEdge) {
-    // 删除连接线
-    edges.value = edges.value.filter((edge: { id: any }) => edge.id !== selectedEdge.id)
-  }
-}
-
-// 键盘按键事件处理
-const handleKeyDown = (event: { key: string }) => {
-  if (event.key === 'Delete' || event.key === 'Backspace') {
-    deleteSelectedNodeOrEdge()
-  }
-}
-
 onMounted(() => {
   if (props.workflow) {
     nodes.value = props.workflow.actions ?? []
@@ -214,7 +187,7 @@ onMounted(() => {
             :edge-updater-radius="10"
             @dragover="onDragOver"
             @dragleave="onDragLeave"
-            @keydown="handleKeyDown"
+            delete-key-code="Delete"
             auto-connect
           >
             <MiniMap />
