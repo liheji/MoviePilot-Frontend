@@ -56,9 +56,18 @@ export default defineComponent({
         ),
       )
 
+      // 👉 根据路由 meta 决定 footer 高度
+      const shouldShowFooter = !route.meta.hideFooter
+
       // 👉 Footer
       const footer = h('footer', { class: 'layout-footer' }, [
-        h('div', { class: 'footer-content-container' }, slots.footer?.()),
+        h(
+          'div',
+          {
+            class: ['footer-content-container', !shouldShowFooter && 'footer-content-container-noheight'],
+          },
+          slots.footer?.(),
+        ),
       ])
 
       // 👉 Overlay
@@ -68,9 +77,6 @@ export default defineComponent({
           isLayoutOverlayVisible.value = !isLayoutOverlayVisible.value
         },
       })
-
-      // 👉 修改：根据路由 meta 决定是否显示 footer
-      const shouldShowFooter = !route.meta.hideFooter
 
       return h(
         'div',
@@ -83,11 +89,7 @@ export default defineComponent({
             scrollDistance.value && 'window-scrolled',
           ],
         },
-        [
-          verticalNav,
-          h('div', { class: 'layout-content-wrapper' }, [navbar, main, shouldShowFooter && footer]),
-          layoutOverlay,
-        ],
+        [verticalNav, h('div', { class: 'layout-content-wrapper' }, [navbar, main, footer]), layoutOverlay],
       )
     }
   },

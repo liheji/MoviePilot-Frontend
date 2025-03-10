@@ -65,6 +65,10 @@ body,
     block-size: variables.$layout-vertical-nav-footer-height;
   }
 
+  .footer-content-container-noheight {
+    block-size: 0px !important;
+  }
+
   .layout-footer-sticky & {
     position: sticky;
     inset-block-end: 0;
