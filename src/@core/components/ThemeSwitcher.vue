@@ -209,7 +209,7 @@ onMounted(() => {
     </VList>
   </VMenu>
   <!-- 自定义 CSS -- -->
-  <VDialog v-if="cssDialog" v-model="cssDialog" persistent max-width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
+  <VDialog v-if="cssDialog" v-model="cssDialog" max-width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard title="自定义主题风格">
       <DialogCloseBtn @click="cssDialog = false" />
       <VDivider />

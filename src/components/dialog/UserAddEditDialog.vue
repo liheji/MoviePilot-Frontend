@@ -267,7 +267,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VDialog scrollable :close-on-back="false" persistent eager max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable :close-on-back="false" eager max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard
       :title="`${props.oper === 'add' ? '新增' : '编辑'}用户${props.oper !== 'add' ? ` - ${userName}` : ''}`"
       class="rounded-t"
