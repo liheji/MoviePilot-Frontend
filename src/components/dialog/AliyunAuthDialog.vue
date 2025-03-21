@@ -48,6 +48,7 @@ async function getQrcode() {
       qrCodeContent.value = result.data.codeContent
       ck.value = result.data.ck
       t.value = result.data.t
+      timeoutTimer = setTimeout(checkQrcode, 3000)
     } else {
       text.value = result.message
     }
@@ -98,7 +99,6 @@ async function savaAliPanConfig() {
 
 onMounted(async () => {
   await getQrcode()
-  timeoutTimer = setTimeout(checkQrcode, 3000)
 })
 
 onUnmounted(() => {

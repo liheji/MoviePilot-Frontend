@@ -18,7 +18,7 @@ const emit = defineEmits(['done', 'close'])
 const qrCodeContent = ref('')
 
 // 下方的提示信息
-const text = ref('请使用微信或115客户端扫码，或在下方输入Cookie')
+const text = ref('请使用微信或115客户端扫码')
 
 // 提醒类型
 const alertType = ref<'success' | 'info' | 'error' | 'warning' | undefined>('info')
@@ -29,7 +29,7 @@ let timeoutTimer: NodeJS.Timeout | undefined = undefined
 // 完成
 async function handleDone() {
   clearTimeout(timeoutTimer)
-  if (props.conf?.cookie) {
+  if (props.conf?.refresh_token) {
     await savaU115Config()
   }
   emit('done')
@@ -41,6 +41,7 @@ async function getQrcode() {
     const result: { [key: string]: any } = await api.get('/storage/qrcode/u115')
     if (result.success && result.data) {
       qrCodeContent.value = result.data.codeContent
+      timeoutTimer = setTimeout(checkQrcode, 3000)
     } else {
       text.value = result.message
     }
@@ -95,7 +96,6 @@ async function savaU115Config() {
 
 onMounted(async () => {
   await getQrcode()
-  timeoutTimer = setTimeout(checkQrcode, 3000)
 })
 
 onUnmounted(() => {
@@ -118,7 +118,7 @@ onUnmounted(() => {
       <VCardText>
         <VRow>
           <VCol class="mt-2">
-            <VTextField label="自定义Cookie" v-model="props.conf.cookie" outlined dense />
+            <VTextField label="自定义refreshToken" v-model="props.conf.refresh_token" outlined dense />
           </VCol>
         </VRow>
       </VCardText>
