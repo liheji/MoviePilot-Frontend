@@ -262,7 +262,7 @@ onMounted(() => {
   <VDialog
     v-if="messageDialog"
     v-model="messageDialog"
-    max-width="60rem"
+    max-width="45rem"
     scrollable
     :fullscreen="!display.mdAndUp.value"
   >
