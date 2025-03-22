@@ -29,6 +29,11 @@ const typeItems = [
   { title: '电视剧', value: '电视剧' },
 ]
 
+// 计算资源存储字典（整理方式为下载器时不能为远程存储）
+const resourceStorageOptions = computed(() => {
+  return storageOptions.filter(item => !item.remote || props.directory.monitor_type !== 'downloader')
+})
+
 // 自动整理方式下拉字典
 const transferSourceItems = [
   { title: '不整理', value: '' },
@@ -131,7 +136,7 @@ const getCategories = computed(() => {
   return default_value.concat(props.categories[props.directory.media_type ?? ''])
 })
 
-// 监听 下载储存与媒体库储存 变化，重新加载整理方式下拉字典
+// 监听 资源存储与媒体库储存 变化，重新加载整理方式下拉字典
 watch(
   [() => props.directory.library_storage, () => props.directory.storage],
   ([newLibraryStorage, newStorage], [oldLibraryStorage, oldStorage]) => {
@@ -153,6 +158,16 @@ watch(
     if (newMediaCategory && newMediaCategory !== oldMediaCategory) {
       props.directory.download_category_folder = false
       props.directory.library_category_folder = false
+    }
+  },
+)
+
+// 监听monitor_type变化，如果为downloader则设置为本地
+watch(
+  () => props.directory.monitor_type,
+  newMonitorType => {
+    if (newMonitorType === 'downloader') {
+      props.directory.storage = 'local'
     }
   },
 )
@@ -198,8 +213,8 @@ watch(
             <VSelect
               v-model="props.directory.storage"
               variant="underlined"
-              :items="storageOptions"
-              label="下载存储/源存储"
+              :items="resourceStorageOptions"
+              label="资源存储"
             />
           </VCol>
           <VCol cols="8">
@@ -207,7 +222,7 @@ watch(
               v-model="props.directory.download_path"
               :storage="props.directory.storage"
               variant="underlined"
-              label="下载目录/源目录"
+              label="资源目录"
             />
           </VCol>
           <VCol cols="6" v-if="!props.directory.media_type || props.directory.media_type === ''">
