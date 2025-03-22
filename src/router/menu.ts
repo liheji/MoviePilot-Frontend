@@ -56,7 +56,7 @@ export const SystemNavMenus = [
     icon: 'mdi-state-machine',
     to: '/workflow',
     header: '订阅',
-    admin: false,
+    admin: true,
     footer: false,
   },
   {

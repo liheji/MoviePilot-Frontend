@@ -138,7 +138,7 @@ onMounted(() => {
               <span class="text-orange-700 ms-2 text-sm">↓{{ torrent?.peers }}</span>
             </VListItemTitle>
           </VListItem>
-          <VListItem>
+          <VListItem v-if="torrent?.description">
             <template #prepend>
               <VIcon icon="mdi-subtitles-outline"></VIcon>
             </template>
@@ -146,7 +146,7 @@ onMounted(() => {
               <span class="text-body-1 whitespace-break-spaces">{{ torrent?.description }}</span>
             </VListItemTitle>
           </VListItem>
-          <VListItem>
+          <VListItem v-if="torrent?.size">
             <template #prepend>
               <VIcon icon="mdi-database"></VIcon>
             </template>
@@ -164,7 +164,7 @@ onMounted(() => {
             <VSelect
               v-model="selectedDownloader"
               :items="downloaderOptions"
-              label="指定下载器"
+              label="下载器（默认）"
               variant="underlined"
               placeholder="留空默认"
             />
@@ -173,7 +173,7 @@ onMounted(() => {
             <VCombobox
               v-model="selectedDirectory"
               :items="targetDirectories"
-              label="指定保存目录"
+              label="保存目录（自动）"
               placeholder="留空自动匹配"
               variant="underlined"
             />
