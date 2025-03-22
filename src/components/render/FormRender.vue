@@ -49,9 +49,28 @@ const parseProps = (rawProps: Record<string, any>, model: Record<string, any>) =
         model[value] = newValue
       }
     } else if (key.startsWith('on')) {
-      // 处理事件监听，值是函数的代码
-      const eventName = key.replace('on', '').toLowerCase()
-      parsedProps[eventName] = new Function('model', `with(model) { return ${value} }`)(model)
+      // 处理事件监听，值是函数的代码 function xxx(e) { ... }
+      if (typeof value === 'string') {
+        // 创建动态函数并绑定model上下文
+        const handler = new Function(
+          'model',
+          'event',
+          `
+            try {
+              with(model) {
+                return (${value})(event);
+              }
+            } catch(e) {
+              console.error('事件处理函数执行错误:', e);
+            }
+          `,
+        )
+        // 包装事件处理器，保持vue事件参数传递特性
+        parsedProps[key] = (...args: any[]) => {
+          const [event] = args
+          return handler(model, event)
+        }
+      }
     } else {
       // 如果是表达式，需要绑定
       if (typeof value === 'string' && isExpression(value)) {
