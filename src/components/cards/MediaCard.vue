@@ -84,6 +84,18 @@ const selectedSites = ref<number[]>([])
 // 搜索菜单显示状态
 const searchMenuShow = ref(false)
 
+// 全选/全不选按钮文字
+const checkAllText = computed(() => (selectedSites.value.length === allSites.value.length ? '全不选' : '全选'))
+
+// 全选/全不选
+function checkAllSitesorNot() {
+  if (selectedSites.value.length === allSites.value.length) {
+    selectedSites.value = []
+  } else {
+    selectedSites.value = allSites.value.map(item => item.id)
+  }
+}
+
 // 查询所有站点
 async function querySites() {
   try {
@@ -573,6 +585,11 @@ function onRemoveSubscribe() {
                         {{ site.name }}
                       </VChip>
                     </VChipGroup>
+                    <div>
+                      <VBtn size="small" variant="text" @click.stop="checkAllSitesorNot">
+                        {{ checkAllText }}
+                      </VBtn>
+                    </div>
                   </VListItem>
                   <VListItem>
                     <VBtn @click="handleSearch" block>搜索</VBtn>

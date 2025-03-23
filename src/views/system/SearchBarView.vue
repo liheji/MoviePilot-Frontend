@@ -29,6 +29,18 @@ const searchWordInput = ref<HTMLElement | null>(null)
 // 近期搜索词条
 const recentSearches = ref<string[]>([])
 
+// 全选/全不选按钮文字
+const checkAllText = computed(() => (selectedSites.value.length === allSites.value.length ? '全不选' : '全选'))
+
+// 全选/全不选
+function checkAllSitesorNot() {
+  if (selectedSites.value.length === allSites.value.length) {
+    selectedSites.value = []
+  } else {
+    selectedSites.value = allSites.value.map(item => item.id)
+  }
+}
+
 // 保存近期搜索到本地
 function saveRecentSearches(keyword: string) {
   if (!keyword) return
@@ -363,6 +375,11 @@ onMounted(() => {
                     {{ site.name }}
                   </VChip>
                 </VChipGroup>
+                <div v-if="hover.isHovering">
+                  <VBtn size="small" variant="text" @click.stop="checkAllSitesorNot">
+                    {{ checkAllText }}
+                  </VBtn>
+                </div>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
                 </template>
