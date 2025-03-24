@@ -169,7 +169,7 @@ const sortIcon = computed(() => {
         </IconBtn>
       </template>
     </VTooltip>
-    <VDialog v-if="newFolderPopper" v-model="newFolderPopper" max-width="50rem">
+    <VDialog v-model="newFolderPopper" max-width="50rem">
       <template #activator="{ props }">
         <IconBtn v-bind="props">
           <VTooltip text="新建文件夹">
