@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import api from '@/api'
 import QrcodeVue from 'qrcode.vue'
-import { VCardItem, VTextField } from 'vuetify/lib/components/index.mjs'
 
 // 定义输入
 const props = defineProps({
@@ -29,9 +28,6 @@ let timeoutTimer: NodeJS.Timeout | undefined = undefined
 // 完成
 async function handleDone() {
   clearTimeout(timeoutTimer)
-  if (props.conf?.refresh_token) {
-    await savaU115Config()
-  }
   emit('done')
 }
 
@@ -85,15 +81,6 @@ async function checkQrcode() {
   }
 }
 
-// 保存cookie设置
-async function savaU115Config() {
-  try {
-    await api.post(`storage/save/u115`, props.conf)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
 onMounted(async () => {
   await getQrcode()
 })
@@ -114,13 +101,6 @@ onUnmounted(() => {
         <VAlert variant="tonal" :type="alertType" class="my-4 text-center" :text="text">
           <template #prepend />
         </VAlert>
-      </VCardText>
-      <VCardText>
-        <VRow>
-          <VCol class="mt-2">
-            <VTextField label="自定义refreshToken" v-model="props.conf.refresh_token" outlined dense />
-          </VCol>
-        </VRow>
       </VCardText>
       <VCardActions>
         <VSpacer />
