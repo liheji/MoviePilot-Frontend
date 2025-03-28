@@ -3,6 +3,7 @@ import type { MediaServerLibrary } from '@/api/types'
 import plex from '@images/misc/plex.png'
 import emby from '@images/misc/emby.png'
 import jellyfin from '@images/misc/jellyfin.png'
+import trimemedia from '@images/logos/trimemedia.png'
 
 // 输入参数
 const props = defineProps({
@@ -38,6 +39,7 @@ function getDefaultImage() {
   if (props.media?.server === 'plex') return plex
   else if (props.media?.server === 'emby') return emby
   else if (props.media?.server === 'jellyfin') return jellyfin
+  else if (props.media?.server === 'trimemedia') return trimemedia
   else return plex
 }
 
