@@ -538,6 +538,9 @@ onDeactivated(() => {
                     <VListItem variant="plain" @click="addMediaServer('plex')">
                       <VListItemTitle>Plex</VListItemTitle>
                     </VListItem>
+                    <VListItem variant="plain" @click="addMediaServer('trimemedia')">
+                      <VListItemTitle>飞牛影视</VListItemTitle>
+                    </VListItem>
                   </VList>
                 </VMenu>
               </VBtn>
