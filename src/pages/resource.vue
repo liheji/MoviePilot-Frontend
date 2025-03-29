@@ -514,17 +514,43 @@ onUnmounted(() => {
 
 @media (max-width: 600px) {
   .search-header {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 8px 12px;
   }
-
+  
+  .search-title {
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  
   .search-info-container {
-    margin-bottom: 12px;
-    width: 100%;
+    flex: 1;
+    gap: 8px;
+    min-width: 0;
+    overflow: hidden;
   }
-
+  
+  .search-tags {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    margin-right: 8px;
+  }
+  
+  .search-tags::-webkit-scrollbar {
+    display: none;
+  }
+  
   .view-toggle-container {
-    align-self: flex-end;
+    flex-shrink: 0;
+  }
+  
+  .view-toggle-buttons {
+    padding: 2px;
+  }
+  
+  .view-toggle-btn {
+    width: 36px;
+    height: 32px;
   }
 }
 </style>

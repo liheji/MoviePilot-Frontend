@@ -379,98 +379,101 @@ function toggleFilterMenu(key: string) {
 
 <template>
   <div class="torrent-view">
-    <!-- PC端页面头部和筛选栏 -->
-    <div class="view-header mb-3 d-none d-sm-block">
-      <div class="d-flex align-center flex-wrap">
-        <VChip color="primary" variant="flat" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
-          {{ dataList.length }} 个资源
-        </VChip>
+    <!-- 搜索头部容器 - 新增，用于固定在顶部 -->
+    <div class="search-header d-none d-sm-block">
+      <!-- PC端页面头部和筛选栏 -->
+      <div class="view-header mb-3">
+        <div class="d-flex align-center flex-wrap">
+          <VChip color="primary" variant="flat" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
+            {{ dataList.length }} 个资源
+          </VChip>
 
-        <div class="filter-bar">
-          <!-- 排序选择 -->
-          <VSelect
-            v-model="sortField"
-            :items="Object.entries(sortTitles).map(([key, title]) => ({ title, value: key }))"
-            item-title="title"
-            item-value="value"
-            variant="plain"
-            density="compact"
-            hide-details
-            class="sort-select"
-          >
-            <template v-slot:prepend>
-              <VIcon size="small" icon="mdi-sort"></VIcon>
-            </template>
-          </VSelect>
+          <div class="filter-bar">
+            <!-- 排序选择 -->
+            <VSelect
+              v-model="sortField"
+              :items="Object.entries(sortTitles).map(([key, title]) => ({ title, value: key }))"
+              item-title="title"
+              item-value="value"
+              variant="plain"
+              density="compact"
+              hide-details
+              class="sort-select"
+            >
+              <template v-slot:prepend>
+                <VIcon size="small" icon="mdi-sort"></VIcon>
+              </template>
+            </VSelect>
 
-          <div class="filter-divider"></div>
+            <div class="filter-divider"></div>
 
-          <!-- 筛选按钮 -->
-          <VBtn
-            v-for="(title, key) in filterTitles"
-            v-show="filterOptions[key].length > 0"
-            :key="key"
-            variant="tonal"
-            size="small"
-            :color="filterForm[key].length > 0 ? 'primary' : undefined"
-            :prepend-icon="getFilterIcon(key)"
-            @click="toggleFilterMenu(key)"
-            class="filter-btn"
-            rounded="pill"
-          >
-            {{ title }}
-            <VChip v-if="filterForm[key].length > 0" size="x-small" color="primary" class="ms-1" variant="elevated">{{
-              filterForm[key].length
-            }}</VChip>
-          </VBtn>
+            <!-- 筛选按钮 -->
+            <VBtn
+              v-for="(title, key) in filterTitles"
+              v-show="filterOptions[key].length > 0"
+              :key="key"
+              variant="tonal"
+              size="small"
+              :color="filterForm[key].length > 0 ? 'primary' : undefined"
+              :prepend-icon="getFilterIcon(key)"
+              @click="toggleFilterMenu(key)"
+              class="filter-btn"
+              rounded="pill"
+            >
+              {{ title }}
+              <VChip v-if="filterForm[key].length > 0" size="x-small" color="primary" class="ms-1" variant="elevated">{{
+                filterForm[key].length
+              }}</VChip>
+            </VBtn>
 
-          <!-- 清除全部筛选按钮 -->
-          <VBtn
-            v-if="getFilterCount > 0"
-            variant="text"
-            size="small"
-            color="error"
-            @click="clearAllFilters"
-            class="filter-btn"
-            prepend-icon="mdi-close-circle-outline"
-          >
-            清除筛选
-          </VBtn>
+            <!-- 清除全部筛选按钮 -->
+            <VBtn
+              v-if="getFilterCount > 0"
+              variant="text"
+              size="small"
+              color="error"
+              @click="clearAllFilters"
+              class="filter-btn"
+              prepend-icon="mdi-close-circle-outline"
+            >
+              清除筛选
+            </VBtn>
+          </div>
+        </div>
+      </div>
+
+      <!-- 已选择的过滤项显示 -->
+      <div v-if="getFilterCount > 0" class="selected-filters mb-3">
+        <div class="d-flex flex-wrap align-center">
+          <template v-for="(values, key) in getSelectedFilters" :key="key">
+            <VChip
+              v-for="(value, index) in values"
+              :key="`${key}-${index}`"
+              color="primary"
+              size="small"
+              closable
+              variant="elevated"
+              class="me-1 mb-1 mt-1 filter-tag"
+              @click:close="removeFilter(key, value)"
+            >
+              <VIcon size="x-small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
+              <strong>{{ filterTitles[key] }}:</strong> {{ value }}
+            </VChip>
+          </template>
         </div>
       </div>
     </div>
 
-    <!-- 已选择的过滤项显示 -->
-    <div v-if="getFilterCount > 0" class="selected-filters mb-3 d-none d-sm-block">
-      <div class="d-flex flex-wrap align-center">
-        <template v-for="(values, key) in getSelectedFilters" :key="key">
-          <VChip
-            v-for="(value, index) in values"
-            :key="`${key}-${index}`"
-            color="primary"
-            size="small"
-            closable
-            variant="elevated"
-            class="me-1 mb-1 mt-1 filter-tag"
-            @click:close="removeFilter(key, value)"
-          >
-            <VIcon size="x-small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
-            <strong>{{ filterTitles[key] }}:</strong> {{ value }}
-          </VChip>
-        </template>
-      </div>
-    </div>
-
     <!-- 移动端头部和筛选区域 -->
-    <div class="d-block d-sm-none">
+    <div class="d-block d-sm-none search-header-mobile">
       <!-- 移动端头部 -->
-      <div class="view-header mb-3">
-        <div class="d-flex align-center flex-wrap pa-3">
-          <div class="d-flex align-center w-100 mb-2">
+      <div class="view-header mb-2">
+        <div class="d-flex align-center flex-wrap pa-2">
+          <div class="d-flex align-center w-100 mb-1">
             <VChip
               color="primary"
               variant="elevated"
-              size="small"
+              size="x-small"
               class="search-count me-auto"
               prepend-icon="mdi-magnify"
             >
@@ -584,13 +587,28 @@ function toggleFilterMenu(key: string) {
   height: 100%;
 }
 
+.search-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: rgba(var(--v-theme-background), 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.search-header-mobile {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: rgba(var(--v-theme-background), 0.95);
+  backdrop-filter: blur(10px);
+}
+
 .view-header {
   padding: 12px 16px;
   background-color: rgb(var(--v-theme-surface));
   border-radius: 12px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   box-shadow: none;
-  margin-bottom: 16px;
   overflow: hidden;
 }
 
@@ -664,23 +682,10 @@ function toggleFilterMenu(key: string) {
 }
 
 .resource-list-container {
-  height: calc(100vh - 10rem - env(safe-area-inset-bottom));
-  overflow-y: auto;
-  position: relative;
   border-radius: 12px;
   background-color: rgb(var(--v-theme-surface));
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   padding: 8px;
-  scrollbar-width: thin;
-}
-
-.resource-list-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.resource-list-container::-webkit-scrollbar-thumb {
-  background-color: rgba(var(--v-theme-on-surface), 0.2);
-  border-radius: 3px;
 }
 
 .resource-list {
@@ -694,26 +699,25 @@ function toggleFilterMenu(key: string) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   min-height: 300px;
 }
 
 .mobile-sort-select {
-  min-width: 130px;
-  max-width: 150px;
-  font-size: 0.9rem;
+  min-width: 110px;
+  max-width: 130px;
+  font-size: 0.8rem;
 }
 
 .filter-buttons-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 4px;
 }
 
 .filter-btn-mobile {
   height: auto;
-  min-height: 64px;
-  padding: 8px 0;
+  min-height: 48px;
+  padding: 4px 0;
   background-color: rgba(var(--v-theme-surface), 1);
   border-radius: 8px;
   display: flex;
@@ -724,18 +728,22 @@ function toggleFilterMenu(key: string) {
 }
 
 .filter-icon {
-  margin-bottom: 4px;
-  font-size: 22px;
+  margin-bottom: 2px;
+  font-size: 18px;
 }
 
 .filter-label {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-align: center;
 }
 
 @media (max-width: 600px) {
-  .resource-list-container {
-    height: calc(100vh - 18rem - env(safe-area-inset-bottom));
+  .filter-btn {
+    font-size: 0.75rem;
+  }
+
+  .sort-select {
+    min-width: 100px;
   }
 }
 </style>
