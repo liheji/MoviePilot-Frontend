@@ -31,6 +31,15 @@ const filterForm: Record<string, string[]> = reactive({
   resolution: [] as string[],
 })
 
+// 排序选项
+const sortField = ref('default')
+const sortTitles: Record<string, string> = {
+  default: '默认',
+  site: '站点',
+  size: '大小',
+  seeder: '做种数',
+}
+
 // 过滤项映射（保持中文标题）
 const filterTitles: Record<string, string> = {
   site: '站点',
@@ -69,6 +78,17 @@ const displayDataList = ref<Array<SearchTorrent>>([])
 
 // 分组后的数据列表
 const groupedDataList = ref<Map<string, Context[]>>()
+
+// 过滤菜单相关
+const filterMenuOpen = ref(false)
+const currentFilter = ref('site')
+const currentFilterTitle = computed(() => filterTitles[currentFilter.value])
+const currentFilterOptions = computed(() => {
+  if (currentFilter.value === 'season') {
+    return sortSeasonFilterOptions.value
+  }
+  return filterOptions[currentFilter.value]
+})
 
 // 初始化过滤选项
 function initOptions(data: Context) {
@@ -226,8 +246,9 @@ onMounted(() => {
   groupedDataList.value = groupMap
 })
 
-// 只监听filterForm和groupedDataList的变化。因为displayDataList的变化不需要清空列表
-watch([filterForm, groupedDataList], filterData)
+// 修改watch监听，同时监听排序字段的变化
+watch([filterForm, groupedDataList, sortField], filterData)
+
 function filterData() {
   // 清空列表
   dataList = []
@@ -235,6 +256,9 @@ function filterData() {
   // 匹配过滤函数，filter中有任一值包含value则返回true
   const match = (filter: Array<string>, value: string | undefined) =>
     filter.length === 0 || (value && filter.includes(value))
+
+  // 筛选数据
+  const filteredData: SearchTorrent[] = []
 
   groupedDataList.value?.forEach(value => {
     if (value.length > 0) {
@@ -261,17 +285,115 @@ function filterData() {
       if (matchData.length > 0) {
         const firstData = cloneDeepWith(matchData[0]) as SearchTorrent
         if (matchData.length > 1) firstData.more = matchData.slice(1)
-
-        // 显示前20个，4行左右。
-        if (displayDataList.value.length < 20) {
-          displayDataList.value.push(firstData)
-        } else {
-          // 后续内容不显示，存在list里。loadMore的时候再加载。
-          dataList.push(firstData)
-        }
+        filteredData.push(firstData)
       }
     }
   })
+
+  // 排序数据
+  if (sortField.value !== 'default') {
+    filteredData.sort((a, b) => {
+      if (sortField.value === 'site') {
+        // 按站点名称排序
+        return (a.torrent_info.site_name || '').localeCompare(b.torrent_info.site_name || '')
+      } else if (sortField.value === 'size') {
+        // 按文件大小排序（降序）
+        return (Number(b.torrent_info.size) || 0) - (Number(a.torrent_info.size) || 0)
+      } else if (sortField.value === 'seeder') {
+        // 按做种数排序（降序）
+        return (Number(b.torrent_info.seeders) || 0) - (Number(a.torrent_info.seeders) || 0)
+      }
+      return 0
+    })
+  }
+
+  // 显示前20个
+  displayDataList.value = filteredData.slice(0, 20)
+  // 保存剩余数据
+  dataList = filteredData.slice(20)
+}
+
+// 给定过滤类型返回不同图标
+function getFilterIcon(key: string) {
+  const icons: Record<string, string> = {
+    site: 'mdi-server-network',
+    season: 'mdi-television-classic',
+    freeState: 'mdi-gift-outline',
+    resolution: 'mdi-monitor-screenshot',
+    videoCode: 'mdi-video-vintage',
+    edition: 'mdi-quality-high',
+    releaseGroup: 'mdi-account-group-outline',
+  }
+  return icons[key] || 'mdi-filter-variant'
+}
+
+// 开关筛选菜单
+function toggleFilterMenu(key: string) {
+  if (currentFilter.value === key && filterMenuOpen.value) {
+    filterMenuOpen.value = false
+  } else {
+    currentFilter.value = key
+    filterMenuOpen.value = true
+  }
+}
+
+// 切换过滤器选项
+function toggleFilter(key: string, value: string) {
+  const index = filterForm[key].indexOf(value)
+  if (index === -1) {
+    filterForm[key].push(value)
+  } else {
+    filterForm[key].splice(index, 1)
+  }
+}
+
+// 清除所有过滤条件
+function clearAllFilters() {
+  for (const key in filterForm) {
+    filterForm[key] = []
+  }
+}
+
+// 清除某个过滤项
+function clearFilter(key: string) {
+  filterForm[key] = []
+}
+
+// 全选某个过滤项
+function selectAll(key: string) {
+  if (key === 'season') {
+    filterForm[key] = [...sortSeasonFilterOptions.value]
+  } else {
+    filterForm[key] = [...filterOptions[key]]
+  }
+}
+
+// 计算已选择的过滤条件数量
+const getFilterCount = computed(() => {
+  let count = 0
+  for (const key in filterForm) {
+    count += filterForm[key].length
+  }
+  return count
+})
+
+// 计算已选择的过滤条件
+const getSelectedFilters = computed(() => {
+  const filters: Record<string, string[]> = {}
+  for (const key in filterForm) {
+    if (filterForm[key].length > 0) {
+      filters[key] = [...filterForm[key]]
+    }
+  }
+  return filters
+})
+
+// 移除单个过滤条件
+function removeFilter(key: string, value: string) {
+  const index = filterForm[key].indexOf(value)
+  if (index !== -1) {
+    filterForm[key].splice(index, 1)
+  }
 }
 
 function loadMore({ done }: { done: any }) {
@@ -282,34 +404,244 @@ function loadMore({ done }: { done: any }) {
 </script>
 
 <template>
-  <VCard class="bg-transparent mb-3 pt-2 shadow-none">
-    <VRow>
-      <VCol v-for="(options, key) in filterOptionsNotEmpty" :key="key" cols="6" md="">
-        <VSelect
-          v-if="key === 'season'"
-          v-model="filterForm[key]"
-          :items="sortSeasonFilterOptions"
-          size="small"
-          density="compact"
-          chips
-          :label="filterTitles[key]"
-          multiple
-          clearable
-        />
-        <VSelect
-          v-else
-          v-model="filterForm[key]"
-          :items="options"
-          size="small"
-          density="compact"
-          chips
-          :label="filterTitles[key]"
-          multiple
-          clearable
-        />
-      </VCol>
-    </VRow>
-  </VCard>
+  <div class="search-header mb-4 d-none d-sm-flex">
+    <!-- 页面头部和筛选栏 -->
+    <div class="view-header bg-surface rounded-xl">
+      <div class="d-flex align-center flex-wrap pa-3">
+        <VChip color="primary" variant="elevated" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
+          {{ props.items?.length || 0 }} 个资源
+        </VChip>
+
+        <!-- 排序选择 -->
+        <div class="sort-container me-4">
+          <VSelect
+            v-model="sortField"
+            :items="Object.entries(sortTitles).map(([key, title]) => ({ title, value: key }))"
+            item-title="title"
+            item-value="value"
+            variant="plain"
+            density="compact"
+            hide-details
+            class="sort-select"
+            prepend-icon="mdi-sort"
+          ></VSelect>
+        </div>
+
+        <!-- 筛选按钮组 -->
+        <div class="filter-bar">
+          <VBtn
+            v-for="(title, key) in filterTitles"
+            :key="key"
+            variant="tonal"
+            size="small"
+            :color="filterForm[key].length > 0 ? 'primary' : undefined"
+            :prepend-icon="getFilterIcon(key)"
+            @click="toggleFilterMenu(key)"
+            class="filter-btn"
+            rounded="pill"
+          >
+            {{ title }}
+            <VChip v-if="filterForm[key].length > 0" size="x-small" color="primary" class="ms-1" variant="elevated">{{
+              filterForm[key].length
+            }}</VChip>
+          </VBtn>
+
+          <!-- 清除全部筛选按钮 -->
+          <VBtn
+            v-if="getFilterCount > 0"
+            variant="tonal"
+            size="small"
+            color="error"
+            @click="clearAllFilters"
+            class="filter-btn"
+            prepend-icon="mdi-close-circle-outline"
+            rounded="pill"
+          >
+            清除筛选
+          </VBtn>
+        </div>
+      </div>
+
+      <!-- 已选择的过滤项显示 -->
+      <div v-if="getFilterCount > 0" class="selected-filters pa-3 pt-0">
+        <div class="d-flex flex-wrap align-center">
+          <template v-for="(values, key) in getSelectedFilters" :key="key">
+            <VChip
+              v-for="(value, index) in values"
+              :key="`${key}-${index}`"
+              color="primary"
+              size="small"
+              closable
+              variant="elevated"
+              class="me-1 mb-1 filter-tag"
+              @click:close="removeFilter(key, value)"
+            >
+              <VIcon size="x-small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
+              <strong>{{ filterTitles[key] }}:</strong> {{ value }}
+            </VChip>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- 筛选菜单 -->
+    <VDialog v-model="filterMenuOpen" max-width="400px" location="center">
+      <VCard>
+        <VCardTitle class="py-2 d-flex align-center">
+          <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
+          <span>{{ currentFilterTitle }} 筛选</span>
+          <VSpacer />
+          <VBtn
+            v-if="filterForm[currentFilter].length > 0"
+            variant="text"
+            size="small"
+            color="error"
+            @click="clearFilter(currentFilter)"
+          >
+            清除
+          </VBtn>
+          <VBtn variant="text" size="small" color="primary" @click="selectAll(currentFilter)"> 全选 </VBtn>
+        </VCardTitle>
+
+        <VDivider />
+
+        <VCardText class="filter-menu-content pt-4">
+          <VChipGroup v-model="filterForm[currentFilter]" column multiple class="filter-options">
+            <VChip
+              v-for="option in currentFilterOptions"
+              :key="option"
+              :value="option"
+              filter
+              variant="elevated"
+              class="ma-1 filter-chip"
+              size="small"
+            >
+              {{ option }}
+            </VChip>
+          </VChipGroup>
+        </VCardText>
+
+        <VCardActions>
+          <VSpacer />
+          <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> 确定 </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+  </div>
+
+  <div class="d-block d-sm-none">
+    <!-- 移动端头部 -->
+    <div class="view-header mb-3">
+      <div class="d-flex align-center flex-wrap pa-3">
+        <div class="d-flex align-center w-100 mb-2">
+          <VChip
+            color="primary"
+            variant="elevated"
+            size="small"
+            class="search-count me-auto"
+            prepend-icon="mdi-magnify"
+          >
+            {{ props.items?.length || 0 }} 个资源
+          </VChip>
+
+          <!-- 排序选择 -->
+          <VSelect
+            v-model="sortField"
+            :items="Object.entries(sortTitles).map(([key, title]) => ({ title, value: key }))"
+            item-title="title"
+            item-value="value"
+            variant="outlined"
+            density="compact"
+            hide-details
+            class="mobile-sort-select"
+            prepend-icon="mdi-sort"
+          ></VSelect>
+        </div>
+
+        <!-- 筛选图标按钮区域 -->
+        <div class="filter-buttons-grid w-100">
+          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('site')">
+            <VIcon icon="mdi-server" class="filter-icon"></VIcon>
+            <span class="filter-label">站点</span>
+            <VBadge
+              v-if="filterForm.site.length > 0"
+              :content="filterForm.site.length"
+              color="primary"
+              location="top end"
+              offset-x="2"
+              offset-y="2"
+            ></VBadge>
+          </VBtn>
+
+          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('season')">
+            <VIcon icon="mdi-movie-open" class="filter-icon"></VIcon>
+            <span class="filter-label">季集</span>
+            <VBadge
+              v-if="filterForm.season.length > 0"
+              :content="filterForm.season.length"
+              color="primary"
+              location="top end"
+              offset-x="2"
+              offset-y="2"
+            ></VBadge>
+          </VBtn>
+
+          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('freeState')">
+            <VIcon icon="mdi-gift" class="filter-icon"></VIcon>
+            <span class="filter-label">促销状态</span>
+            <VBadge
+              v-if="filterForm.freeState.length > 0"
+              :content="filterForm.freeState.length"
+              color="primary"
+              location="top end"
+              offset-x="2"
+              offset-y="2"
+            ></VBadge>
+          </VBtn>
+
+          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('resolution')">
+            <VIcon icon="mdi-video" class="filter-icon"></VIcon>
+            <span class="filter-label">视频质量</span>
+            <VBadge
+              v-if="filterForm.resolution.length > 0"
+              :content="filterForm.resolution.length"
+              color="primary"
+              location="top end"
+              offset-x="2"
+              offset-y="2"
+            ></VBadge>
+          </VBtn>
+
+          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('videoCode')">
+            <VIcon icon="mdi-quality-high" class="filter-icon"></VIcon>
+            <span class="filter-label">视频编码</span>
+            <VBadge
+              v-if="filterForm.videoCode.length > 0"
+              :content="filterForm.videoCode.length"
+              color="primary"
+              location="top end"
+              offset-x="2"
+              offset-y="2"
+            ></VBadge>
+          </VBtn>
+
+          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('releaseGroup')">
+            <VIcon icon="mdi-account-group" class="filter-icon"></VIcon>
+            <span class="filter-label">制作组</span>
+            <VBadge
+              v-if="filterForm.releaseGroup.length > 0"
+              :content="filterForm.releaseGroup.length"
+              color="primary"
+              location="top end"
+              offset-x="2"
+              offset-y="2"
+            ></VBadge>
+          </VBtn>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <VInfiniteScroll mode="intersect" side="end" :items="displayDataList" class="overflow-hidden" @load="loadMore">
     <template #loading />
     <template #empty />
@@ -323,3 +655,160 @@ function loadMore({ done }: { done: any }) {
     </div>
   </VInfiniteScroll>
 </template>
+
+<style scoped>
+.search-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: rgba(var(--v-theme-background), 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.view-header {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  overflow: hidden;
+}
+
+.sort-container {
+  border-right: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  padding-right: 12px;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-btn {
+  min-width: 0;
+  transition: transform 0.2s;
+}
+
+.filter-btn:hover {
+  transform: translateY(-2px);
+}
+
+.sort-select {
+  font-size: 0.9rem;
+  min-width: 120px;
+  max-width: 160px;
+  font-weight: 500;
+}
+
+.sort-select :deep(.v-field__input) {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  min-height: 36px;
+}
+
+.selected-filters {
+  background-color: rgba(var(--v-theme-surface-variant), 0.08);
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+}
+
+.filter-menu-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  margin: 4px;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  transform: translateY(-2px);
+}
+
+.filter-tag {
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.filter-tag:hover {
+  transform: translateY(-2px);
+}
+
+.search-count {
+  font-weight: 600;
+}
+
+.grid-torrent-card {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  background-color: rgb(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+@media (max-width: 600px) {
+  .sort-select {
+    min-width: 100px;
+    max-width: 120px;
+  }
+
+  .filter-btn {
+    font-size: 0.75rem;
+  }
+
+  .sort-container {
+    border-right: none;
+    padding-right: 0;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .sort-select {
+    width: 100%;
+  }
+
+  .filter-bar {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+.mobile-sort-select {
+  min-width: 130px;
+  max-width: 150px;
+  font-size: 0.9rem;
+}
+
+.filter-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.filter-btn-mobile {
+  height: auto;
+  min-height: 64px;
+  padding: 8px 0;
+  background-color: rgba(var(--v-theme-surface), 1);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.filter-icon {
+  margin-bottom: 4px;
+  font-size: 22px;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  text-align: center;
+}
+</style>
