@@ -474,7 +474,7 @@ onUnmounted(() => {
   letter-spacing: 1px;
 }
 
-/* 初始加载状态 */
+/* 初始的加载状态 */
 .initial-loading-container {
   display: flex;
   justify-content: center;

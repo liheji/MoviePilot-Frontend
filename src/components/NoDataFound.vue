@@ -52,7 +52,7 @@ interface Props {
   height: auto !important;
 }
 
-/* 响应式设计 */
+/* 移动响应式设计 */
 @media (max-width: 768px) {
   .no-data-container :deep(.v-responsive) {
     max-width: 350px;
