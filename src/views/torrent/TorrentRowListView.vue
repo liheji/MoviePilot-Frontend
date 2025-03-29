@@ -408,6 +408,7 @@ function toggleFilterMenu(key: string) {
           <!-- 筛选按钮 -->
           <VBtn
             v-for="(title, key) in filterTitles"
+            v-show="filterOptions[key].length > 0"
             :key="key"
             variant="tonal"
             size="small"
@@ -436,6 +437,27 @@ function toggleFilterMenu(key: string) {
             清除筛选
           </VBtn>
         </div>
+      </div>
+    </div>
+
+    <!-- 已选择的过滤项显示 -->
+    <div v-if="getFilterCount > 0" class="selected-filters mb-3 d-none d-sm-block">
+      <div class="d-flex flex-wrap align-center">
+        <template v-for="(values, key) in getSelectedFilters" :key="key">
+          <VChip
+            v-for="(value, index) in values"
+            :key="`${key}-${index}`"
+            color="primary"
+            size="small"
+            closable
+            variant="elevated"
+            class="me-1 mb-1 mt-1 filter-tag"
+            @click:close="removeFilter(key, value)"
+          >
+            <VIcon size="x-small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
+            <strong>{{ filterTitles[key] }}:</strong> {{ value }}
+          </VChip>
+        </template>
       </div>
     </div>
 
@@ -471,106 +493,29 @@ function toggleFilterMenu(key: string) {
 
           <!-- 筛选图标按钮区域 -->
           <div class="filter-buttons-grid w-100">
-            <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('site')">
-              <VIcon icon="mdi-server" class="filter-icon"></VIcon>
-              <span class="filter-label">站点</span>
+            <VBtn
+              v-for="(title, key) in filterTitles"
+              v-show="filterOptions[key].length > 0"
+              variant="text"
+              color="primary"
+              class="filter-btn-mobile"
+              @click="toggleFilterMenu(key)"
+            >
+              <VIcon :icon="getFilterIcon(key)" class="filter-icon"></VIcon>
+              <span class="filter-label">
+                {{ title }}
+              </span>
               <VBadge
-                v-if="filterForm.site.length > 0"
-                :content="filterForm.site.length"
+                v-if="filterForm[key].length > 0"
+                :content="filterForm[key].length"
                 color="primary"
                 location="top end"
-                offset-x="2"
-                offset-y="2"
-              ></VBadge>
-            </VBtn>
-
-            <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('season')">
-              <VIcon icon="mdi-movie-open" class="filter-icon"></VIcon>
-              <span class="filter-label">季集</span>
-              <VBadge
-                v-if="filterForm.season.length > 0"
-                :content="filterForm.season.length"
-                color="primary"
-                location="top end"
-                offset-x="2"
-                offset-y="2"
-              ></VBadge>
-            </VBtn>
-
-            <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('freeState')">
-              <VIcon icon="mdi-gift" class="filter-icon"></VIcon>
-              <span class="filter-label">促销状态</span>
-              <VBadge
-                v-if="filterForm.freeState.length > 0"
-                :content="filterForm.freeState.length"
-                color="primary"
-                location="top end"
-                offset-x="2"
-                offset-y="2"
-              ></VBadge>
-            </VBtn>
-
-            <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('resolution')">
-              <VIcon icon="mdi-video" class="filter-icon"></VIcon>
-              <span class="filter-label">视频质量</span>
-              <VBadge
-                v-if="filterForm.resolution.length > 0"
-                :content="filterForm.resolution.length"
-                color="primary"
-                location="top end"
-                offset-x="2"
-                offset-y="2"
-              ></VBadge>
-            </VBtn>
-
-            <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('videoCode')">
-              <VIcon icon="mdi-quality-high" class="filter-icon"></VIcon>
-              <span class="filter-label">视频编码</span>
-              <VBadge
-                v-if="filterForm.videoCode.length > 0"
-                :content="filterForm.videoCode.length"
-                color="primary"
-                location="top end"
-                offset-x="2"
-                offset-y="2"
-              ></VBadge>
-            </VBtn>
-
-            <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('releaseGroup')">
-              <VIcon icon="mdi-account-group" class="filter-icon"></VIcon>
-              <span class="filter-label">制作组</span>
-              <VBadge
-                v-if="filterForm.releaseGroup.length > 0"
-                :content="filterForm.releaseGroup.length"
-                color="primary"
-                location="top end"
-                offset-x="2"
-                offset-y="2"
+                offset-x="-20"
+                offset-y="-10"
               ></VBadge>
             </VBtn>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- 已选择的过滤项显示 -->
-    <div v-if="getFilterCount > 0" class="selected-filters mb-3">
-      <div class="d-flex flex-wrap align-center">
-        <template v-for="(values, key) in getSelectedFilters" :key="key">
-          <VChip
-            v-for="(value, index) in values"
-            :key="`${key}-${index}`"
-            color="primary"
-            size="small"
-            closable
-            variant="elevated"
-            class="me-1 mb-1 filter-tag"
-            @click:close="removeFilter(key, value)"
-          >
-            <VIcon size="x-small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
-            <strong>{{ filterTitles[key] }}:</strong> {{ value }}
-          </VChip>
-        </template>
       </div>
     </div>
 
@@ -592,9 +537,7 @@ function toggleFilterMenu(key: string) {
           </VBtn>
           <VBtn variant="text" size="small" color="primary" @click="selectAll(currentFilter)"> 全选 </VBtn>
         </VCardTitle>
-
         <VDivider />
-
         <VCardText class="filter-menu-content pt-4">
           <VChipGroup v-model="filterForm[currentFilter]" column multiple class="filter-options">
             <VChip
@@ -610,7 +553,6 @@ function toggleFilterMenu(key: string) {
             </VChip>
           </VChipGroup>
         </VCardText>
-
         <VCardActions>
           <VSpacer />
           <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> 确定 </VBtn>

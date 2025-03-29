@@ -404,7 +404,7 @@ function loadMore({ done }: { done: any }) {
 </script>
 
 <template>
-  <div class="search-header mb-4 d-none d-sm-flex">
+  <div class="search-header d-none d-sm-flex">
     <!-- 页面头部和筛选栏 -->
     <div class="view-header bg-surface rounded-xl">
       <div class="d-flex align-center flex-wrap pa-3">
@@ -431,6 +431,7 @@ function loadMore({ done }: { done: any }) {
         <div class="filter-bar">
           <VBtn
             v-for="(title, key) in filterTitles"
+            v-show="filterOptions[key].length > 0"
             :key="key"
             variant="tonal"
             size="small"
@@ -473,7 +474,7 @@ function loadMore({ done }: { done: any }) {
               size="small"
               closable
               variant="elevated"
-              class="me-1 mb-1 filter-tag"
+              class="me-1 mt-2 filter-tag"
               @click:close="removeFilter(key, value)"
             >
               <VIcon size="x-small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
@@ -483,52 +484,9 @@ function loadMore({ done }: { done: any }) {
         </div>
       </div>
     </div>
-
-    <!-- 筛选菜单 -->
-    <VDialog v-model="filterMenuOpen" max-width="400px" location="center">
-      <VCard>
-        <VCardTitle class="py-2 d-flex align-center">
-          <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
-          <span>{{ currentFilterTitle }} 筛选</span>
-          <VSpacer />
-          <VBtn
-            v-if="filterForm[currentFilter].length > 0"
-            variant="text"
-            size="small"
-            color="error"
-            @click="clearFilter(currentFilter)"
-          >
-            清除
-          </VBtn>
-          <VBtn variant="text" size="small" color="primary" @click="selectAll(currentFilter)"> 全选 </VBtn>
-        </VCardTitle>
-
-        <VDivider />
-
-        <VCardText class="filter-menu-content pt-4">
-          <VChipGroup v-model="filterForm[currentFilter]" column multiple class="filter-options">
-            <VChip
-              v-for="option in currentFilterOptions"
-              :key="option"
-              :value="option"
-              filter
-              variant="elevated"
-              class="ma-1 filter-chip"
-              size="small"
-            >
-              {{ option }}
-            </VChip>
-          </VChipGroup>
-        </VCardText>
-
-        <VCardActions>
-          <VSpacer />
-          <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> 确定 </VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
   </div>
 
+  <!-- 移动端头部和筛选区域 -->
   <div class="d-block d-sm-none">
     <!-- 移动端头部 -->
     <div class="view-header mb-3">
@@ -560,81 +518,25 @@ function loadMore({ done }: { done: any }) {
 
         <!-- 筛选图标按钮区域 -->
         <div class="filter-buttons-grid w-100">
-          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('site')">
-            <VIcon icon="mdi-server" class="filter-icon"></VIcon>
-            <span class="filter-label">站点</span>
+          <VBtn
+            v-for="(title, key) in filterTitles"
+            v-show="filterOptions[key].length > 0"
+            variant="text"
+            color="primary"
+            class="filter-btn-mobile"
+            @click="toggleFilterMenu(key)"
+          >
+            <VIcon :icon="getFilterIcon(key)" class="filter-icon"></VIcon>
+            <span class="filter-label">
+              {{ title }}
+            </span>
             <VBadge
-              v-if="filterForm.site.length > 0"
-              :content="filterForm.site.length"
+              v-if="filterForm[key].length > 0"
+              :content="filterForm[key].length"
               color="primary"
               location="top end"
-              offset-x="2"
-              offset-y="2"
-            ></VBadge>
-          </VBtn>
-
-          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('season')">
-            <VIcon icon="mdi-movie-open" class="filter-icon"></VIcon>
-            <span class="filter-label">季集</span>
-            <VBadge
-              v-if="filterForm.season.length > 0"
-              :content="filterForm.season.length"
-              color="primary"
-              location="top end"
-              offset-x="2"
-              offset-y="2"
-            ></VBadge>
-          </VBtn>
-
-          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('freeState')">
-            <VIcon icon="mdi-gift" class="filter-icon"></VIcon>
-            <span class="filter-label">促销状态</span>
-            <VBadge
-              v-if="filterForm.freeState.length > 0"
-              :content="filterForm.freeState.length"
-              color="primary"
-              location="top end"
-              offset-x="2"
-              offset-y="2"
-            ></VBadge>
-          </VBtn>
-
-          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('resolution')">
-            <VIcon icon="mdi-video" class="filter-icon"></VIcon>
-            <span class="filter-label">视频质量</span>
-            <VBadge
-              v-if="filterForm.resolution.length > 0"
-              :content="filterForm.resolution.length"
-              color="primary"
-              location="top end"
-              offset-x="2"
-              offset-y="2"
-            ></VBadge>
-          </VBtn>
-
-          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('videoCode')">
-            <VIcon icon="mdi-quality-high" class="filter-icon"></VIcon>
-            <span class="filter-label">视频编码</span>
-            <VBadge
-              v-if="filterForm.videoCode.length > 0"
-              :content="filterForm.videoCode.length"
-              color="primary"
-              location="top end"
-              offset-x="2"
-              offset-y="2"
-            ></VBadge>
-          </VBtn>
-
-          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleFilterMenu('releaseGroup')">
-            <VIcon icon="mdi-account-group" class="filter-icon"></VIcon>
-            <span class="filter-label">制作组</span>
-            <VBadge
-              v-if="filterForm.releaseGroup.length > 0"
-              :content="filterForm.releaseGroup.length"
-              color="primary"
-              location="top end"
-              offset-x="2"
-              offset-y="2"
+              offset-x="-20"
+              offset-y="-10"
             ></VBadge>
           </VBtn>
         </div>
@@ -642,6 +544,51 @@ function loadMore({ done }: { done: any }) {
     </div>
   </div>
 
+  <!-- 筛选菜单 -->
+  <VDialog v-model="filterMenuOpen" max-width="400px" location="center">
+    <VCard>
+      <VCardTitle class="py-2 d-flex align-center">
+        <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
+        <span>{{ currentFilterTitle }} 筛选</span>
+        <VSpacer />
+        <VBtn
+          v-if="filterForm[currentFilter].length > 0"
+          variant="text"
+          size="small"
+          color="error"
+          @click="clearFilter(currentFilter)"
+        >
+          清除
+        </VBtn>
+        <VBtn variant="text" size="small" color="primary" @click="selectAll(currentFilter)"> 全选 </VBtn>
+      </VCardTitle>
+
+      <VDivider />
+
+      <VCardText class="filter-menu-content pt-4">
+        <VChipGroup v-model="filterForm[currentFilter]" column multiple class="filter-options">
+          <VChip
+            v-for="option in currentFilterOptions"
+            :key="option"
+            :value="option"
+            filter
+            variant="elevated"
+            class="ma-1 filter-chip"
+            size="small"
+          >
+            {{ option }}
+          </VChip>
+        </VChipGroup>
+      </VCardText>
+
+      <VCardActions>
+        <VSpacer />
+        <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> 确定 </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
+  <!-- 资源列表 -->
   <VInfiniteScroll mode="intersect" side="end" :items="displayDataList" class="overflow-hidden" @load="loadMore">
     <template #loading />
     <template #empty />
@@ -666,6 +613,8 @@ function loadMore({ done }: { done: any }) {
 }
 
 .view-header {
+  background-color: rgb(var(--v-theme-surface));
+  border-radius: 12px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   overflow: hidden;
 }
