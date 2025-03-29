@@ -410,7 +410,9 @@ onMounted(() => {
 .torrent-title {
   font-size: 0.9rem;
   font-weight: 500;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   color: rgba(var(--v-theme-on-surface), 0.87);
