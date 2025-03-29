@@ -239,7 +239,7 @@ onUnmounted(() => {
     </div>
 
     <!-- 初始加载状态 -->
-    <div v-else-if="!isRefreshed" class="initial-loading-container">
+    <div v-else-if="!isRefreshed && !progressValue" class="initial-loading-container">
       <div class="initial-loading-content">
         <div class="wave-loader">
           <div class="wave-dot"></div>
