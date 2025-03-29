@@ -510,7 +510,7 @@ function toggleFilterMenu(key: string) {
                 :content="filterForm[key].length"
                 color="primary"
                 location="top end"
-                offset-x="-20"
+                offset-x="-10"
                 offset-y="-10"
               ></VBadge>
             </VBtn>
