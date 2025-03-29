@@ -487,15 +487,15 @@ function loadMore({ done }: { done: any }) {
   </div>
 
   <!-- 移动端头部和筛选区域 -->
-  <div class="d-block d-sm-none">
+  <div class="d-block d-sm-none search-header-mobile">
     <!-- 移动端头部 -->
-    <div class="view-header mb-3">
-      <div class="d-flex align-center flex-wrap pa-3">
-        <div class="d-flex align-center w-100 mb-2">
+    <div class="view-header mb-2">
+      <div class="d-flex align-center flex-wrap pa-2">
+        <div class="d-flex align-center w-100 mb-1">
           <VChip
             color="primary"
             variant="elevated"
-            size="small"
+            size="x-small"
             class="search-count me-auto"
             prepend-icon="mdi-magnify"
           >
@@ -727,21 +727,21 @@ function loadMore({ done }: { done: any }) {
 }
 
 .mobile-sort-select {
-  min-width: 130px;
-  max-width: 150px;
-  font-size: 0.9rem;
+  min-width: 110px;
+  max-width: 130px;
+  font-size: 0.8rem;
 }
 
 .filter-buttons-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 4px;
 }
 
 .filter-btn-mobile {
   height: auto;
-  min-height: 64px;
-  padding: 8px 0;
+  min-height: 48px;
+  padding: 4px 0;
   background-color: rgba(var(--v-theme-surface), 1);
   border-radius: 8px;
   display: flex;
@@ -752,12 +752,20 @@ function loadMore({ done }: { done: any }) {
 }
 
 .filter-icon {
-  margin-bottom: 4px;
-  font-size: 22px;
+  margin-bottom: 2px;
+  font-size: 18px;
 }
 
 .filter-label {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-align: center;
+}
+
+.search-header-mobile {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: rgba(var(--v-theme-background), 0.95);
+  backdrop-filter: blur(10px);
 }
 </style>
