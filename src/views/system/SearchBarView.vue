@@ -4,6 +4,16 @@ import type { Plugin, Site, Subscribe } from '@/api/types'
 import { SystemNavMenus, SettingTabs } from '@/router/menu'
 import { NavMenu } from '@/@layouts/types'
 import { useUserStore } from '@/stores'
+import { useTheme } from 'vuetify'
+import { computed, onMounted, ref } from 'vue'
+
+// 定义站点信息接口
+interface SiteInfo {
+  id: number
+  name: string
+  is_active: boolean
+  [key: string]: any
+}
 
 // 路由
 const router = useRouter()
@@ -17,8 +27,19 @@ const superUser = userStore.superUser
 // 当前用户名
 const userName = userStore.userName
 
+// 定义props，接收modelValue
+const props = defineProps<{
+  modelValue: boolean
+}>()
+
 // 定义事件
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'update:modelValue'])
+
+// 对话框状态的本地计算属性
+const dialog = computed({
+  get: () => props.modelValue,
+  set: val => emit('update:modelValue', val),
+})
 
 // 搜索词
 const searchWord = ref<string | null>(null)
@@ -30,14 +51,16 @@ const searchWordInput = ref<HTMLElement | null>(null)
 const recentSearches = ref<string[]>([])
 
 // 全选/全不选按钮文字
-const checkAllText = computed(() => (selectedSites.value.length === allSites.value.length ? '全不选' : '全选'))
+const checkAllText = computed(() => {
+  return selectedSites.value.length < allSites.value.length ? '选择全部' : '取消全选'
+})
 
 // 全选/全不选
-function checkAllSitesorNot() {
-  if (selectedSites.value.length === allSites.value.length) {
-    selectedSites.value = []
+const checkAllSitesorNot = () => {
+  if (selectedSites.value.length < allSites.value.length) {
+    selectedSites.value = allSites.value.map((item: SiteInfo) => item.id)
   } else {
-    selectedSites.value = allSites.value.map(item => item.id)
+    selectedSites.value = []
   }
 }
 
@@ -138,11 +161,11 @@ const matchedPluginItems = computed(() => {
 // 所有订阅数据
 const SubscribeItems = ref<Subscribe[]>([])
 
-// 所有站点
-const allSites = ref<Site[]>([])
-
-// 选中的站点
+// 站点选择对话框
+const showSiteDialog = ref(false)
+const siteFilter = ref('')
 const selectedSites = ref<number[]>([])
+const allSites = ref<SiteInfo[]>([])
 
 // 获取订阅列表数据
 async function fetchSubscribes() {
@@ -153,27 +176,77 @@ async function fetchSubscribes() {
   }
 }
 
-// 查询所有站点
-async function querySites() {
-  try {
-    const data: Site[] = await api.get('site/')
+// 根据筛选条件过滤站点
+const filteredSites = computed(() => {
+  if (!siteFilter.value) return allSites.value
+  const filter = siteFilter.value.toLowerCase()
+  return allSites.value.filter((site: SiteInfo) => 
+    site.name.toLowerCase().includes(filter)
+  )
+})
 
-    // 过滤站点，只有启用的站点才显示
-    allSites.value = data.filter(item => item.is_active)
-  } catch (error) {
-    console.log(error)
+// 保存用户站点选择到本地
+const saveUserSitePreferences = () => {
+  try {
+    localStorage.setItem('MP_SelectedSites', JSON.stringify(selectedSites.value))
+  } catch (err) {
+    console.error('保存站点选择失败:', err)
   }
 }
 
-// 查询用户选中的站点
-async function querySelectedSites() {
+// 从本地或接口加载用户站点偏好设置
+const loadUserSitePreferences = async () => {
   try {
-    const result: { [key: string]: any } = await api.get('system/setting/IndexerSites')
-
-    selectedSites.value = result.data?.value ?? []
-  } catch (error) {
-    console.log(error)
+    // 先尝试从本地存储获取
+    const storedSites = localStorage.getItem('MP_SelectedSites')
+    if (storedSites) {
+      selectedSites.value = JSON.parse(storedSites)
+      console.log('从本地加载站点选择:', selectedSites.value)
+      return
+    }
+    
+    // 如果本地没有，尝试从接口获取系统预设
+    const result = await api.get('system/setting/IndexerSites')
+    if (result && result.data && result.data.value) {
+      selectedSites.value = result.data.value
+      console.log('从系统预设加载站点选择:', selectedSites.value)
+      return
+    }
+  } catch (err) {
+    console.error('加载站点选择失败:', err)
   }
+}
+
+// 获取站点分类信息
+const getSiteCategories = () => {
+  api.get('site/').then(async (res: any) => {
+    if (res && Array.isArray(res)) {
+      allSites.value = res.filter((site: any) => site.is_active) || []
+      // 加载用户站点选择
+      await loadUserSitePreferences()
+      // 如果没有选择任何站点并且有可用站点，才默认选择全部
+      if (selectedSites.value.length === 0 && allSites.value.length > 0) {
+        selectedSites.value = allSites.value.map((site: SiteInfo) => site.id)
+      }
+    } else if (res.data && Array.isArray(res.data)) {
+      allSites.value = res.data.filter((site: any) => site.is_active) || []
+      // 加载用户站点选择
+      await loadUserSitePreferences()
+      // 如果没有选择任何站点并且有可用站点，才默认选择全部
+      if (selectedSites.value.length === 0 && allSites.value.length > 0) {
+        selectedSites.value = allSites.value.map((site: SiteInfo) => site.id)
+      }
+    }
+    console.log('站点数据:', allSites.value)
+    console.log('已选站点:', selectedSites.value)
+  }).catch(err => {
+    console.error('获取站点数据失败:', err)
+  })
+}
+
+// 打开站点选择对话框
+const openSiteDialog = () => {
+  showSiteDialog.value = true
 }
 
 // 匹配的订阅列表
@@ -185,6 +258,27 @@ const matchedSubscribeItems = computed(() => {
   })
 })
 
+// 搜索站点资源
+const searchTorrent = () => {
+  if (!searchWord.value) return
+  // 记录搜索词
+  saveRecentSearches(searchWord.value)
+  // 保存用户站点选择
+  saveUserSitePreferences()
+  // 跳转到搜索页面
+  router.push({
+    path: '/resource',
+    query: {
+      keyword: searchWord.value,
+      area: 'title',
+      sites: selectedSites.value.join(','),
+    },
+  })
+  // 关闭搜索对话框
+  dialog.value = false
+  emit('close')
+}
+
 // 跳转媒体搜索页面
 function searchMedia(searchType: string) {
   // 搜索类型 media/person
@@ -195,21 +289,6 @@ function searchMedia(searchType: string) {
     query: {
       title: searchWord.value,
       type: searchType,
-    },
-  })
-  emit('close')
-}
-
-// 跳转到种子搜索页面
-function searchTorrent() {
-  if (!searchWord.value) return
-  saveRecentSearches(searchWord.value)
-  router.push({
-    path: '/resource',
-    query: {
-      keyword: searchWord.value,
-      area: 'title',
-      sites: selectedSites.value.join(','),
     },
   })
   emit('close')
@@ -273,217 +352,788 @@ onMounted(() => {
   fetchInstalledPlugins()
   fetchSubscribes()
   loadRecentSearches()
-  querySites()
-  querySelectedSites()
+  getSiteCategories()
 })
 </script>
 <template>
-  <VDialog max-width="40rem" scrollable>
-    <VCard>
-      <VCardItem class="pe-12">
+  <VDialog v-model="dialog" max-width="42rem" scrollable>
+    <VCard class="search-dialog">
+      <!-- 搜索输入框 -->
+      <VCardItem class="pa-4 pa-sm-5 search-box-container">
         <VCombobox
           ref="searchWordInput"
           v-model="searchWord"
-          density="compact"
-          variant="plain"
-          class="text-high-emphasis"
-          placeholder="搜索 ..."
+          density="comfortable"
+          variant="outlined"
+          class="search-input"
+          placeholder="输入关键词搜索..."
           @keydown.enter="searchMedia('media')"
+          hide-details
+          clearable
         >
           <template #prepend>
-            <VIcon icon="ri-search-line" style="opacity: 1" />
+            <VIcon icon="mdi-magnify" color="primary" class="search-icon" />
           </template>
         </VCombobox>
+        <DialogCloseBtn inner-class="close-btn" @click="emit('close')">
+          <template #default>
+            <VIcon icon="mdi-close-circle" color="error" />
+          </template>
+        </DialogCloseBtn>
       </VCardItem>
-      <DialogCloseBtn inner-class="absolute right-3 top-5 text-high-emphasis" @click="emit('close')" />
-      <VDivider />
-      <VCardText class="p-0">
-        <VList lines="two" v-if="searchWord">
-          <!-- 搜索结果 -->
-          <VListSubheader v-if="searchWord"> 媒体 & 资源 </VListSubheader>
+      
+      <VDivider class="search-divider" />
+      
+      <!-- 主搜索结果区域 -->
+      <VCardText class="search-results-container pa-0">
+        <!-- 有搜索词时显示结果 -->
+        <VList lines="two" v-if="searchWord" class="search-list py-2">
+          <!-- 搜索结果分组标题 -->
+          <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6">
+            <span class="category-title">媒体搜索</span>
+          </VListSubheader>
+          
+          <!-- 媒体搜索选项 -->
           <VHover>
             <template #default="hover">
               <VListItem
-                prepend-icon="mdi-movie-search"
-                density="compact"
+                density="comfortable"
                 link
+                rounded="xl"
                 v-bind="hover.props"
                 @click="searchMedia('media')"
+                class="search-option mx-2 mx-sm-4 my-1"
               >
-                <VListItemTitle class="break-words whitespace-break-spaces">
-                  搜索 <span class="font-bold">{{ searchWord }} </span> 相关的【电影、电视剧】 ...
+                <template #prepend>
+                  <div class="option-icon-wrapper d-flex align-center justify-center">
+                    <VIcon 
+                      icon="mdi-movie-search" 
+                      :color="hover.isHovering ? 'primary' : 'medium-emphasis'"
+                      size="small"
+                    />
+                  </div>
+                </template>
+                <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                  电影、电视剧
                 </VListItemTitle>
+                <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
+                  搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的影视作品
+                </VListItemSubtitle>
                 <template #append>
-                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
+                  <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
                 </template>
               </VListItem>
             </template>
           </VHover>
+          
           <VHover>
             <template #default="hover">
               <VListItem
-                prepend-icon="mdi-movie-filter"
-                density="compact"
+                density="comfortable"
                 link
+                rounded="xl"
                 v-bind="hover.props"
                 @click="searchMedia('collection')"
+                class="search-option mx-2 mx-sm-4 my-1"
               >
-                <VListItemTitle class="break-words whitespace-break-spaces">
-                  搜索 <span class="font-bold">{{ searchWord }} </span> 相关的【系列合集】 ...
+                <template #prepend>
+                  <div class="option-icon-wrapper d-flex align-center justify-center">
+                    <VIcon 
+                      icon="mdi-movie-filter" 
+                      :color="hover.isHovering ? 'primary' : 'medium-emphasis'"
+                      size="small"
+                    />
+                  </div>
+                </template>
+                <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                  系列合集
                 </VListItemTitle>
+                <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
+                  搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的系列作品
+                </VListItemSubtitle>
                 <template #append>
-                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
+                  <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
                 </template>
               </VListItem>
             </template>
           </VHover>
+          
           <VHover>
             <template #default="hover">
-              <VListItem prepend-icon="mdi-account-search" link v-bind="hover.props" @click="searchMedia('person')">
-                <VListItemTitle class="break-words whitespace-break-spaces">
-                  搜索 <span class="font-bold">{{ searchWord }}</span> 相关的【演职人员】 ...
-                </VListItemTitle>
-                <template #append>
-                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
-                </template>
-              </VListItem>
-            </template>
-          </VHover>
-          <VHover>
-            <template #default="hover">
-              <VListItem
-                prepend-icon="mdi-file-search"
-                link
-                v-bind="hover.props"
-                @click="searchTorrent"
-                :ripple="false"
+              <VListItem 
+                density="comfortable"
+                link 
+                rounded="xl"
+                v-bind="hover.props" 
+                @click="searchMedia('person')"
+                class="search-option mx-2 mx-sm-4 my-1"
               >
-                <VListItemTitle class="break-words whitespace-break-spaces">
-                  搜索 <span class="font-bold">{{ searchWord }}</span> 相关的【站点资源】 ...
+                <template #prepend>
+                  <div class="option-icon-wrapper d-flex align-center justify-center">
+                    <VIcon 
+                      icon="mdi-account-search" 
+                      :color="hover.isHovering ? 'primary' : 'medium-emphasis'"
+                      size="small"
+                    />
+                  </div>
+                </template>
+                <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                  演职人员
                 </VListItemTitle>
-                <VChipGroup v-if="hover.isHovering" v-model="selectedSites" column multiple>
-                  <VChip
-                    v-for="site in allSites"
-                    :key="site.id"
-                    :color="selectedSites.includes(site.id) ? 'primary' : ''"
-                    filter
-                    variant="outlined"
-                    :value="site.id"
-                    size="small"
-                    @click.stop
-                  >
-                    {{ site.name }}
-                  </VChip>
-                </VChipGroup>
-                <div v-if="hover.isHovering">
-                  <VBtn size="small" variant="text" @click.stop="checkAllSitesorNot">
-                    {{ checkAllText }}
-                  </VBtn>
-                </div>
+                <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
+                  搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的演员、导演等
+                </VListItemSubtitle>
                 <template #append>
-                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
+                  <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
                 </template>
               </VListItem>
             </template>
           </VHover>
+          
           <VHover v-if="superUser">
             <template #default="hover">
-              <VListItem prepend-icon="mdi-history" link v-bind="hover.props" @click="searchHistory">
-                <VListItemTitle class="break-words whitespace-break-spaces">
-                  搜索 <span class="font-bold">{{ searchWord }}</span> 相关的【整理记录】 ...
-                </VListItemTitle>
-                <template #append>
-                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
-                </template>
-              </VListItem>
-            </template>
-          </VHover>
-          <VListSubheader v-if="matchedSubscribeItems.length > 0"> 订阅 </VListSubheader>
-          <VHover
-            v-if="matchedSubscribeItems.length > 0"
-            v-for="subscribe in matchedSubscribeItems"
-            :key="subscribe.id"
-          >
-            <template #default="hover">
-              <VListItem
-                :prepend-icon="`${subscribe.type === '电影' ? 'mdi-movie-roll' : 'mdi-television-classic'}`"
-                density="compact"
-                link
-                v-bind="hover.props"
-                @click="goSubscribe(subscribe)"
+              <VListItem 
+                density="comfortable"
+                link 
+                rounded="xl"
+                v-bind="hover.props" 
+                @click="searchHistory"
+                class="search-option mx-2 mx-sm-4 my-1"
               >
-                <VListItemTitle>
-                  {{ subscribe.name }}<span v-if="subscribe.season"> 第 {{ subscribe.season }} 季</span>
+                <template #prepend>
+                  <div class="option-icon-wrapper d-flex align-center justify-center">
+                    <VIcon 
+                      icon="mdi-history" 
+                      :color="hover.isHovering ? 'primary' : 'medium-emphasis'"
+                      size="small"
+                    />
+                  </div>
+                </template>
+                <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                  整理记录
                 </VListItemTitle>
-                <VListItemSubtitle> {{ subscribe.type }}</VListItemSubtitle>
+                <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
+                  搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的历史记录
+                </VListItemSubtitle>
                 <template #append>
-                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
+                  <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
                 </template>
               </VListItem>
             </template>
           </VHover>
-          <VListSubheader v-if="matchedMenuItems.length > 0"> 功能 </VListSubheader>
-          <VHover v-if="matchedMenuItems.length > 0" v-for="menu in matchedMenuItems" :key="menu.title">
-            <template #default="hover">
-              <VListItem
-                :prepend-icon="menu.icon as string"
-                density="compact"
-                link
-                v-bind="hover.props"
-                @click="goPage(menu.to as string)"
-              >
-                <VListItemTitle>
-                  {{ menu.title }}
-                </VListItemTitle>
-                <VListItemSubtitle v-if="menu.description"> {{ menu.description }} </VListItemSubtitle>
-                <template #append>
-                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
-                </template>
-              </VListItem>
-            </template>
-          </VHover>
-          <VListSubheader v-if="matchedPluginItems.length > 0"> 插件 </VListSubheader>
-          <VHover v-if="matchedPluginItems.length > 0" v-for="plugin in matchedPluginItems" :key="plugin.id">
-            <template #default="hover">
-              <VListItem
-                prepend-icon="mdi-puzzle"
-                density="compact"
-                link
-                v-bind="hover.props"
-                @click="showPlugin(plugin.id ?? '')"
-              >
-                <VListItemTitle> {{ plugin.plugin_name }} </VListItemTitle>
-                <VListItemSubtitle> {{ plugin.plugin_desc }} </VListItemSubtitle>
-                <template #append>
-                  <VIcon v-if="hover.isHovering" icon="ri-corner-down-left-line" />
-                </template>
-              </VListItem>
-            </template>
-          </VHover>
-        </VList>
-        <div v-else>
-          <!-- 默认 -->
-          <VCardText>
-            <VRow v-if="recentSearches.length > 0">
-              <VCol cols="12">
-                <p class="custom-letter-spacing text-sm text-disabled text-uppercase py-2 px-4 mb-0">最近搜索</p>
-                <div class="px-3">
-                  <VChip
-                    v-for="(word, index) in recentSearches"
-                    :key="index"
-                    class="me-2 mb-1"
-                    variant="tonal"
-                    @click="searchWord = word"
-                    label
-                  >
-                    {{ word }}
-                  </VChip>
+
+          <!-- 其他搜索结果 -->
+          <template v-if="matchedSubscribeItems.length > 0">
+            <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
+            <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 
+              <span class="category-title">订阅内容</span>
+            </VListSubheader>
+            
+            <VHover
+              v-for="subscribe in matchedSubscribeItems"
+              :key="subscribe.id"
+            >
+              <template #default="hover">
+                <VListItem
+                  density="comfortable"
+                  link
+                  rounded="xl"
+                  v-bind="hover.props"
+                  @click="goSubscribe(subscribe)"
+                  class="search-option mx-2 mx-sm-4 my-1"
+                >
+                  <template #prepend>
+                    <div class="option-icon-wrapper d-flex align-center justify-center">
+                      <VIcon 
+                        :icon="subscribe.type === '电影' ? 'mdi-movie-roll' : 'mdi-television-classic'" 
+                        :color="hover.isHovering ? 'primary' : 'medium-emphasis'"
+                        size="small"
+                      />
+                    </div>
+                  </template>
+                  <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                    {{ subscribe.name }}<span v-if="subscribe.season" class="text-body-2"> 第 {{ subscribe.season }} 季</span>
+                  </VListItemTitle>
+                  <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1"> 
+                    {{ subscribe.type }}
+                  </VListItemSubtitle>
+                  <template #append>
+                    <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
+                  </template>
+                </VListItem>
+              </template>
+            </VHover>
+          </template>
+          
+          <template v-if="matchedMenuItems.length > 0">
+            <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
+            <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 
+              <span class="category-title">功能菜单</span>
+            </VListSubheader>
+            
+            <VHover v-for="menu in matchedMenuItems" :key="menu.title">
+              <template #default="hover">
+                <VListItem
+                  density="comfortable"
+                  link
+                  rounded="xl"
+                  v-bind="hover.props"
+                  @click="goPage(menu.to as string)"
+                  class="search-option mx-2 mx-sm-4 my-1"
+                >
+                  <template #prepend>
+                    <div class="option-icon-wrapper d-flex align-center justify-center">
+                      <VIcon 
+                        :icon="menu.icon as string" 
+                        :color="hover.isHovering ? 'primary' : 'medium-emphasis'"
+                        size="small"
+                      />
+                    </div>
+                  </template>
+                  <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                    {{ menu.title }}
+                  </VListItemTitle>
+                  <VListItemSubtitle v-if="menu.description" class="text-body-2 text-medium-emphasis mt-1"> 
+                    {{ menu.description }}
+                  </VListItemSubtitle>
+                  <template #append>
+                    <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
+                  </template>
+                </VListItem>
+              </template>
+            </VHover>
+          </template>
+          
+          <template v-if="matchedPluginItems.length > 0">
+            <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
+            <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 
+              <span class="category-title">插件</span>
+            </VListSubheader>
+            
+            <VHover v-for="plugin in matchedPluginItems" :key="plugin.id">
+              <template #default="hover">
+                <VListItem
+                  density="comfortable"
+                  link
+                  rounded="xl"
+                  v-bind="hover.props"
+                  @click="showPlugin(plugin.id ?? '')"
+                  class="search-option mx-2 mx-sm-4 my-1"
+                >
+                  <template #prepend>
+                    <div class="option-icon-wrapper d-flex align-center justify-center">
+                      <VIcon 
+                        icon="mdi-puzzle" 
+                        :color="hover.isHovering ? 'primary' : 'medium-emphasis'"
+                        size="small"
+                      />
+                    </div>
+                  </template>
+                  <VListItemTitle class="text-subtitle-1 font-weight-medium"> 
+                    {{ plugin.plugin_name }} 
+                  </VListItemTitle>
+                  <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1"> 
+                    {{ plugin.plugin_desc }} 
+                  </VListItemSubtitle>
+                  <template #append>
+                    <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
+                  </template>
+                </VListItem>
+              </template>
+            </VHover>
+          </template>
+          
+          <!-- 将站点资源搜索移到最底部 -->
+          <template v-if="searchWord">
+            <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
+            <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 
+              <span class="category-title">站点资源搜索</span>
+            </VListSubheader>
+            
+            <VCard class="mx-3 mx-sm-6 mb-4 mt-2 site-search-card" elevation="0">
+              <VCardText class="pa-3 pa-sm-4">
+                <div class="d-flex flex-column">
+                  <div class="d-flex align-center mb-3">
+                    <div class="search-icon-wrapper mr-3">
+                      <VIcon icon="mdi-file-search" color="primary" size="small" />
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="font-weight-medium text-body-1">在站点中搜索种子资源</div>
+                      <div class="text-caption text-medium-emphasis mt-1">
+                        搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关资源
+                      </div>
+                    </div>
+                    <VBtn 
+                      color="primary" 
+                      @click="searchTorrent" 
+                      prepend-icon="mdi-magnify"
+                      rounded="pill"
+                      size="small"
+                      variant="flat"
+                      elevation="0"
+                      class="search-btn"
+                    >
+                      搜索
+                    </VBtn>
+                  </div>
+                  
+                  <div class="d-flex align-center flex-wrap site-chips-container mt-1 py-2 px-2 px-sm-3">
+                    <div class="d-flex align-center flex-wrap flex-grow-1">
+                      <VChip
+                        v-if="selectedSites.length > 0"
+                        color="primary"
+                        size="small"
+                        variant="flat"
+                        class="mr-2 mb-1 font-weight-medium"
+                      >
+                        {{ selectedSites.length }}/{{ allSites.length }}
+                      </VChip>
+                      <VChip
+                        v-for="(site, index) in allSites.filter(s => selectedSites.includes(s.id)).slice(0, 5)"
+                        :key="site.id"
+                        size="x-small"
+                        variant="outlined"
+                        class="mr-1 mb-1 site-chip"
+                      >
+                        {{ site.name }}
+                      </VChip>
+                      <VChip
+                        v-if="selectedSites.length > 5"
+                        size="x-small"
+                        variant="outlined"
+                        class="mr-1 mb-1 site-chip text-medium-emphasis"
+                      >
+                        +{{ selectedSites.length - 5 }}
+                      </VChip>
+                    </div>
+                    <VBtn 
+                      size="small" 
+                      variant="tonal"
+                      color="primary"
+                      @click="openSiteDialog"
+                      class="ml-auto site-select-btn"
+                    >
+                      选择站点
+                      <VIcon size="small" class="ml-1">mdi-cog-outline</VIcon>
+                    </VBtn>
+                  </div>
                 </div>
-              </VCol>
-            </VRow>
-          </VCardText>
+              </VCardText>
+            </VCard>
+          </template>
+        </VList>
+        
+        <!-- 无搜索词时显示最近搜索和提示 -->
+        <div v-else class="recent-searches py-6 px-4 px-sm-6">
+          <div v-if="recentSearches.length > 0" class="mb-6">
+            <div class="text-h6 font-weight-medium mb-3">最近搜索</div>
+            <div class="d-flex flex-wrap">
+              <VChip
+                v-for="(word, index) in recentSearches"
+                :key="index"
+                class="me-2 mb-2"
+                variant="flat"
+                color="primary"
+                size="small"
+                @click="searchWord = word"
+              >
+                <VIcon start size="x-small">mdi-history</VIcon>
+                {{ word }}
+              </VChip>
+            </div>
+          </div>
+          
+          <div class="text-center mt-6 py-6 empty-search-state">
+            <div class="search-icon-wrapper mx-auto mb-4">
+              <VIcon icon="mdi-magnify" size="large" color="primary" />
+            </div>
+            <div class="text-h6 font-weight-medium mb-2">输入关键词开始搜索</div>
+            <div class="text-body-2 text-medium-emphasis">可搜索电影、电视剧、演员、资源等</div>
+          </div>
         </div>
       </VCardText>
     </VCard>
   </VDialog>
+
+  <!-- 站点选择对话框 -->
+  <VDialog v-model="showSiteDialog" max-width="640px" persistent fullscreen-mobile>
+    <VCard class="site-dialog">
+      <VCardTitle class="d-flex align-center pa-4">
+        <span class="text-h6 font-weight-medium">选择搜索站点</span>
+        <VSpacer />
+        <VTextField
+          v-model="siteFilter"
+          placeholder="过滤站点..."
+          density="compact"
+          variant="outlined"
+          hide-details
+          class="ml-4"
+          style="max-width: 200px"
+          prepend-inner-icon="mdi-magnify"
+          clearable
+        />
+      </VCardTitle>
+      <VDivider class="search-divider" />
+      
+      <VCardText style="max-height: 420px" class="overflow-y-auto px-4 py-4">
+        <!-- 站点列表 -->
+        <div v-if="filteredSites.length > 0">
+          <!-- 选择操作 -->
+          <div class="d-flex align-center mb-4">
+            <VBtn
+              size="small"
+              :color="selectedSites.length < allSites.length ? 'primary' : 'error'"
+              @click="checkAllSitesorNot"
+              class="me-2"
+              variant="flat"
+              rounded="pill"
+              elevation="0"
+            >
+              <VIcon start size="small">
+                {{ selectedSites.length < allSites.length ? 'mdi-check-all' : 'mdi-close-circle-outline' }}
+              </VIcon>
+              {{ checkAllText }}
+            </VBtn>
+            <div class="text-body-2 font-weight-medium" :class="selectedSites.length > 0 ? 'text-primary' : 'text-medium-emphasis'">
+              已选择 {{ selectedSites.length }}/{{ allSites.length }} 个站点
+            </div>
+          </div>
+          
+          <!-- 站点选择 -->
+          <VRow dense>
+            <VCol
+              v-for="site in filteredSites"
+              :key="site.id"
+              cols="6"
+              sm="6"
+              md="4"
+            >
+              <VHover v-slot="{ isHovering, props }">
+                <div
+                  v-bind="props"
+                  :class="[
+                    'site-checkbox-wrapper pa-2 pa-sm-3 rounded-lg d-flex align-center', 
+                    { 
+                      'site-selected': selectedSites.includes(site.id),
+                      'site-hover': isHovering && !selectedSites.includes(site.id)
+                    }
+                  ]"
+                  @click="() => {
+                    const index = selectedSites.indexOf(site.id);
+                    if (index === -1) {
+                      selectedSites.push(site.id);
+                    } else {
+                      selectedSites.splice(index, 1);
+                    }
+                  }"
+                >
+                  <VIcon
+                    :icon="selectedSites.includes(site.id) ? 'mdi-check-circle' : 'mdi-checkbox-blank-circle-outline'"
+                    :color="selectedSites.includes(site.id) ? 'primary' : 'medium-emphasis'"
+                    class="me-2"
+                    size="small"
+                  />
+                  <span :class="[
+                    'text-body-2 site-name',
+                    { 'font-weight-medium': selectedSites.includes(site.id) }
+                  ]">
+                    {{ site.name }}
+                  </span>
+                </div>
+              </VHover>
+            </VCol>
+          </VRow>
+        </div>
+        <div v-else class="text-center py-8 empty-site-state">
+          <div class="search-icon-wrapper mb-4 mx-auto warning">
+            <VIcon icon="mdi-alert-circle-outline" size="large" color="warning" />
+          </div>
+          <div class="text-h6 font-weight-medium mb-2">没有找到匹配的站点</div>
+          <div class="text-subtitle-1 text-medium-emphasis mb-4">
+            {{ siteFilter ? '请尝试修改过滤条件' : '站点数据加载失败，请刷新页面重试' }}
+          </div>
+          <VBtn
+            v-if="siteFilter"
+            color="primary"
+            variant="flat"
+            class="mt-3"
+            prepend-icon="mdi-refresh"
+            rounded="pill"
+            elevation="0"
+            @click="siteFilter = ''"
+          >
+            清除过滤条件
+          </VBtn>
+          <VBtn
+            v-else
+            color="primary"
+            variant="flat"
+            class="mt-3"
+            prepend-icon="mdi-refresh"
+            rounded="pill"
+            elevation="0"
+            @click="getSiteCategories"
+          >
+            重新加载站点
+          </VBtn>
+        </div>
+      </VCardText>
+      
+      <VDivider class="search-divider" />
+      
+      <VCardActions class="pa-4">
+        <VSpacer />
+        <VBtn
+          color="grey-darken-1"
+          variant="text"
+          @click="showSiteDialog = false"
+          rounded="pill"
+          class="mr-2 d-flex align-center justify-center"
+        >
+          取消
+        </VBtn>
+        <VBtn
+          color="success"
+          variant="flat"
+          @click="showSiteDialog = false"
+          rounded="pill"
+          elevation="0"
+          class="mr-2 d-flex align-center justify-center"
+          :disabled="selectedSites.length === 0"
+        >
+          确定
+        </VBtn>
+        <VBtn
+          color="primary"
+          variant="flat"
+          :disabled="selectedSites.length === 0"
+          @click="() => { searchTorrent(); showSiteDialog = false; }"
+          prepend-icon="mdi-magnify"
+          rounded="pill"
+          elevation="0"
+          class="d-flex align-center justify-center"
+        >
+          直接搜索
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
+
+<style scoped>
+.search-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.site-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.search-divider {
+  opacity: 0.08;
+}
+
+.search-box-container {
+  position: relative;
+  background-color: rgb(var(--v-theme-background));
+}
+
+.close-btn {
+  position: absolute;
+  right: 1.2rem;
+  top: 1.2rem;
+  background-color: rgba(var(--v-theme-on-surface), 0.04);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: rgba(var(--v-theme-error), 0.1);
+}
+
+.search-input {
+  border-radius: 12px;
+  font-size: 16px;
+  padding-right: 40px;
+}
+
+.search-input :deep(.v-field__input) {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  min-height: 40px;
+}
+
+.search-icon {
+  color: rgb(var(--v-theme-primary));
+}
+
+.search-list {
+  background-color: rgb(var(--v-theme-background));
+}
+
+.category-title {
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.option-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface-variant), 0.12);
+  margin-right: 12px;
+}
+
+.search-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: rgba(var(--v-theme-primary), 0.08);
+}
+
+.search-icon-wrapper.warning {
+  background-color: rgba(var(--v-theme-warning), 0.08);
+}
+
+.primary-text {
+  color: rgb(var(--v-theme-primary));
+}
+
+.search-option {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+}
+
+.search-option:hover {
+  background-color: rgba(var(--v-theme-primary), 0.04);
+  transform: translateX(4px);
+}
+
+.recent-searches {
+  min-height: 200px;
+  background-color: rgb(var(--v-theme-background));
+}
+
+.site-checkbox-wrapper {
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.site-checkbox-wrapper:hover {
+  transform: translateY(-2px);
+}
+
+.site-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site-selected {
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  color: rgb(var(--v-theme-primary));
+  border-color: rgba(var(--v-theme-primary), 0.2);
+}
+
+.site-hover {
+  background-color: rgba(var(--v-theme-primary), 0.04);
+}
+
+.site-chips-container {
+  border-radius: 10px;
+  background-color: rgba(var(--v-theme-surface-variant), 0.06);
+}
+
+.site-chip {
+  transition: all 0.2s ease;
+  font-weight: normal;
+}
+
+.site-chip:hover {
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  color: rgb(var(--v-theme-primary));
+}
+
+.site-search-card {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 14px;
+  background-color: rgb(var(--v-theme-surface));
+}
+
+.search-btn {
+  min-width: 70px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.empty-search-state,
+.empty-site-state {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.clear-icon {
+  opacity: 0.7;
+}
+
+.clear-icon:hover {
+  opacity: 1;
+}
+
+.site-select-btn {
+  min-height: 32px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding: 0 12px;
+}
+
+@media (max-width: 600px) {
+  .search-box-container {
+    padding: 16px;
+  }
+  
+  .search-input {
+    font-size: 14px;
+  }
+  
+  .close-btn {
+    right: 0.8rem;
+    top: 0.8rem;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .site-chips-container {
+    padding: 6px 8px;
+  }
+  
+  .site-select-btn {
+    min-height: 28px;
+    font-size: 11px;
+  }
+}
+</style>
