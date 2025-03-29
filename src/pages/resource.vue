@@ -64,20 +64,49 @@ const errorDescription = ref('未搜索到任何资源')
 // 使用SSE监听加载进度
 function startLoadingProgress() {
   progressText.value = '正在搜索，请稍候...'
+  progressValue.value = 10 // 初始进度设为10%，确保进度条显示
   progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/search`)
   progressEventSource.value.onmessage = event => {
     const progress = JSON.parse(event.data)
     if (progress) {
       progressText.value = progress.text
       progressValue.value = progress.value
+
+      // 搜索完成条件调整：只有明确完成时才关闭
+      if (progress.text.includes('完成') && progress.value >= 99) {
+        setTimeout(() => {
+          stopLoadingProgress()
+        }, 1000) // 延迟1秒关闭，确保用户能看到100%
+      }
     }
   }
+  
+  // 添加错误处理
+  progressEventSource.value.onerror = () => {
+    setTimeout(() => {
+      stopLoadingProgress()
+    }, 1000)
+  }
+  
+  // 添加安全超时，确保不会永远卡住
+  setTimeout(() => {
+    if (progressEventSource.value && progressValue.value < 100) {
+      stopLoadingProgress()
+    }
+  }, 60000) // 60秒超时
 }
 
 // 停止监听加载进度
 function stopLoadingProgress() {
-  if (progressEventSource.value) progressEventSource.value?.close()
-  progressValue.value = 0
+  if (progressEventSource.value) {
+    progressEventSource.value.close()
+    progressEventSource.value = undefined
+  }
+  // 确保进度显示100%，然后再渐进清零
+  progressValue.value = 100
+  setTimeout(() => {
+    progressValue.value = 0
+  }, 1500) // 延长到1.5秒，让用户有足够时间看到完成状态
 }
 
 // 设置视图类型
@@ -125,7 +154,7 @@ async function fetchData() {
         })
       }
       if (result && result.success) {
-        dataList.value = result.data
+        dataList.value = result.data || []
       } else if (result && result.message) {
         errorDescription.value = result.message
       }
@@ -137,6 +166,8 @@ async function fetchData() {
     isRefreshed.value = true
   } catch (error) {
     console.error(error)
+    stopLoadingProgress()
+    isRefreshed.value = true
     return Promise.reject(error)
   }
 }
@@ -156,7 +187,7 @@ onUnmounted(() => {
   <div>
     <!-- 加载进度条 -->
     <VFadeTransition>
-      <div v-if="progressValue > 0 && progressValue < 100" class="search-progress-container">
+      <div v-if="progressValue > 0" class="search-progress-container">
         <div class="search-progress-card">
           <div class="progress-header">
             <VIcon icon="mdi-movie-search" color="primary" size="small" class="me-2" />
@@ -231,9 +262,8 @@ onUnmounted(() => {
     <!-- 无数据显示 -->
     <div v-else-if="isRefreshed && !isViewChanging" class="d-flex flex-column align-center justify-center py-8">
       <NoDataFound
-        :title="errorTitle"
-        :description="errorDescription"
-        :image="require('@images/illustrations/no-results.png')"
+        :errorTitle="errorTitle"
+        :errorDescription="errorDescription"
       />
       <VBtn class="mt-4" color="primary" prepend-icon="mdi-magnify" to="/"> 返回首页 </VBtn>
     </div>
@@ -444,7 +474,7 @@ onUnmounted(() => {
   letter-spacing: 1px;
 }
 
-/* 初始加载状态 */
+/* 初始的加载状态 */
 .initial-loading-container {
   display: flex;
   justify-content: center;
