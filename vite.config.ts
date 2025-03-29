@@ -96,8 +96,8 @@ export default defineConfig({
             'purpose': 'maskable',
           },
         ],
-        'theme_color': '#28243D',
-        'background_color': '#28243D',
+        'theme_color': '#0E1116',
+        'background_color': '#0E1116',
         'shortcuts': [
           {
             'name': '推荐',
