@@ -30,7 +30,7 @@ const meta = ref(props.torrent?.meta_info)
 const downloadItem = ref(props.torrent)
 
 // 站点图标
-const siteIcon = ref('')
+const siteIcons = ref<Record<number, string>>({})
 
 // 存储是否已经下载过的记录
 const downloaded = ref<string[]>([])
@@ -51,9 +51,10 @@ function addDownloadError(error: string) {
 }
 
 // 查询站点图标
-async function getSiteIcon() {
+async function getSiteIcon(site: number | undefined) {
+  if (!site) return
   try {
-    siteIcon.value = (await api.get(`site/icon/${torrent?.value?.site}`)).data.icon
+    siteIcons.value[site] = (await api.get(`site/icon/${site}`)).data.icon
   } catch (error) {
     console.error(error)
   }
@@ -87,9 +88,17 @@ function getPromotionClass(downloadVolumeFactor: number | undefined, uploadVolum
   else return ''
 }
 
+// 打开更多来源对话框
+async function openMoreTorrentsDialog() {
+  props.more?.forEach(t => {
+    return getSiteIcon(t.torrent_info?.site)
+  })
+  showMoreTorrents.value = true
+}
+
 // 装载时查询站点图标
 onMounted(() => {
-  getSiteIcon()
+  getSiteIcon(props.torrent?.torrent_info?.site)
 })
 </script>
 
@@ -124,7 +133,7 @@ onMounted(() => {
         <!-- 站点信息条 -->
         <div class="site-info">
           <div class="d-flex align-center">
-            <img v-if="siteIcon" :src="siteIcon" class="site-icon" />
+            <img v-if="siteIcons[torrent?.site || 0]" :src="siteIcons[torrent?.site || 0]" class="site-icon" />
             <span v-else class="site-fallback">{{ torrent?.site_name?.substring(0, 1) }}</span>
             <span class="site-name">{{ torrent?.site_name }}</span>
           </div>
@@ -171,7 +180,7 @@ onMounted(() => {
       <!-- 卡片底部信息 -->
       <div class="card-footer">
         <div class="more-sources-wrapper" v-if="props.more && props.more.length > 0">
-          <div class="more-sources-toggle" @click.stop="showMoreTorrents = !showMoreTorrents">
+          <div class="more-sources-toggle" @click.stop="openMoreTorrentsDialog">
             <VIcon :icon="showMoreTorrents ? 'mdi-chevron-up' : 'mdi-chevron-down'" size="small" class="me-1"></VIcon>
             <span>更多来源 ({{ props.more.length }})</span>
           </div>
@@ -213,10 +222,14 @@ onMounted(() => {
             v-for="(item, index) in props.more"
             :key="index"
             @click.stop="handleAddDownload(item)"
-            class="more-source-item"
+            class="more-source-item cursor-pointer"
           >
             <div class="source-site-info">
-              <img v-if="siteIcon" :src="siteIcon" class="source-site-icon" />
+              <img
+                v-if="siteIcons[item.torrent_info?.site || 0]"
+                :src="siteIcons[item.torrent_info?.site || 0]"
+                class="source-site-icon"
+              />
               <span v-else class="source-site-fallback">{{ item.torrent_info?.site_name?.substring(0, 1) }}</span>
               <span class="source-site-name">{{ item.torrent_info.site_name }}</span>
 
