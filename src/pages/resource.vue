@@ -77,6 +77,7 @@ function startLoadingProgress() {
 // 停止监听加载进度
 function stopLoadingProgress() {
   if (progressEventSource.value) progressEventSource.value?.close()
+  progressValue.value = 0
 }
 
 // 设置视图类型
@@ -261,7 +262,7 @@ onUnmounted(() => {
   z-index: 100;
   display: flex;
   justify-content: center;
-  padding-top: 20px;
+  padding-top: 4rem;
 }
 
 .search-progress-card {
