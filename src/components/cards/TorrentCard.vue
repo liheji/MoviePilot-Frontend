@@ -126,7 +126,6 @@ onMounted(() => {
         <div class="media-title-wrapper">
           <h3 class="media-title">
             {{ media?.title ?? meta?.name }}
-            <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
           </h3>
         </div>
 
@@ -136,6 +135,7 @@ onMounted(() => {
             <img v-if="siteIcons[torrent?.site || 0]" :src="siteIcons[torrent?.site || 0]" class="site-icon" />
             <span v-else class="site-fallback">{{ torrent?.site_name?.substring(0, 1) }}</span>
             <span class="site-name">{{ torrent?.site_name }}</span>
+            <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
           </div>
 
           <div class="seeder-peers">
@@ -232,6 +232,7 @@ onMounted(() => {
               />
               <span v-else class="source-site-fallback">{{ item.torrent_info?.site_name?.substring(0, 1) }}</span>
               <span class="source-site-name">{{ item.torrent_info.site_name }}</span>
+              <span v-if="item.meta_info?.season_episode" class="season-tag source-season-tag">{{ item.meta_info.season_episode }}</span>
 
               <span
                 v-if="item.torrent_info?.downloadvolumefactor !== 1 || item.torrent_info?.uploadvolumefactor !== 1"
@@ -349,12 +350,16 @@ onMounted(() => {
 
 .season-tag {
   font-size: 0.875rem;
-  background-color: rgba(var(--v-theme-primary), 0.08);
-  color: rgb(var(--v-theme-primary));
-  padding: 2px 8px;
+  background-color: #5c6bc0;
+  color: white;
+  padding: 2px 6px;
   border-radius: 4px;
   margin-left: 8px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
 
 .site-info {
@@ -362,6 +367,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
 .site-icon {
@@ -560,6 +566,13 @@ onMounted(() => {
 .source-site-name {
   font-size: 0.875rem;
   font-weight: 600;
+}
+
+.source-season-tag {
+  font-size: 0.75rem;
+  padding: 1px 4px;
+  margin-left: 4px;
+  background-color: #5c6bc0;
 }
 
 .source-discount {

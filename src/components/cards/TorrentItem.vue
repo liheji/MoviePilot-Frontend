@@ -154,6 +154,7 @@ onMounted(() => {
           <img v-if="siteIcon" :src="siteIcon" class="site-icon" />
           <span v-else class="site-fallback">{{ torrent?.site_name?.substring(0, 1) }}</span>
           <div class="site-name">{{ torrent?.site_name }}</div>
+          <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
           <span
             v-if="torrent?.downloadvolumefactor !== 1 || torrent?.uploadvolumefactor !== 1"
             class="free-tag"
@@ -167,7 +168,6 @@ onMounted(() => {
         <div class="item-header">
           <div class="media-info">
             <span class="media-title">{{ media?.title ?? meta?.name }}</span>
-            <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
           </div>
         </div>
 
@@ -255,44 +255,52 @@ onMounted(() => {
 }
 
 .site-wrapper {
-  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  width: 50px;
-  margin-right: 16px;
+  min-width: 140px;
+  flex-wrap: wrap;
 }
 
 .site-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 2px;
-  margin-bottom: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  margin-right: 8px;
 }
 
 .site-fallback {
-  width: 32px;
-  height: 32px;
-  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  border-radius: 4px;
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  color: rgb(var(--v-theme-primary));
   font-weight: 700;
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  background-color: rgba(var(--v-theme-on-surface), 0.1);
-  border-radius: 2px;
-  margin-bottom: 4px;
+  margin-right: 8px;
+  font-size: 0.8rem;
 }
 
 .site-name {
-  font-size: 0.8rem;
+  margin-right: 8px;
   font-weight: 600;
-  color: rgba(var(--v-theme-on-surface), 0.85);
-  text-align: center;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 0.9rem;
+}
+
+.season-tag {
+  font-size: 0.875rem;
+  background-color: #5c6bc0;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
 
 .free-tag {
@@ -345,16 +353,6 @@ onMounted(() => {
   font-size: 1.1rem;
   font-weight: 600;
   color: rgba(var(--v-theme-on-surface), 0.87);
-}
-
-.season-tag {
-  font-size: 0.9rem;
-  background-color: rgba(var(--v-theme-primary), 0.08);
-  color: rgb(var(--v-theme-primary));
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-left: 4px;
-  font-weight: 600;
 }
 
 .item-actions {
@@ -501,8 +499,20 @@ onMounted(() => {
   }
 
   .site-wrapper {
-    width: 40px;
+    min-width: 100px;
+    flex-wrap: wrap;
     margin-right: 10px;
+  }
+
+  .site-name {
+    font-size: 0.8rem;
+    margin-right: 4px;
+  }
+
+  .season-tag {
+    font-size: 0.75rem;
+    padding: 1px 4px;
+    margin-right: 4px;
   }
 
   .resource-tag {

@@ -117,13 +117,23 @@ function handleNavScroll(evt: Event) {
   }
 
   .nav-items {
+    overflow-x: hidden;
+    overflow-y: auto;
     block-size: 100%;
-
-    // ℹ️ We no loner needs this overflow styles as perfect scrollbar applies it
-    // overflow-x: hidden;
-
-    // // ℹ️ We used `overflow-y` instead of `overflow` to mitigate overflow x. Revert back if any issue found.
-    // overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 16px 0;
+    
+    /* 完全隐藏滚动条 */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    
+    > li {
+      margin-block-end: 2px;
+    }
   }
 
   .nav-item-title {
