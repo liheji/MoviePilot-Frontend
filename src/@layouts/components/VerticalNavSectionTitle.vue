@@ -8,22 +8,19 @@ defineProps<{
 
 <template>
   <li class="nav-section-title">
-    <div class="title-text">{{ item.heading }}</div>
+    <div class="title-wrapper">
+      <!-- eslint-disable vue/no-v-text-v-html-on-component -->
+      <span class="title-text" v-text="item.heading" />
+      <!-- eslint-enable vue/no-v-text-v-html-on-component -->
+    </div>
   </li>
 </template>
 
 <style lang="scss">
 .layout-vertical-nav {
   .nav-section-title {
-    margin: 16px 16px 6px 16px;
-    position: relative;
-    
-    .title-text {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: rgb(var(--v-theme-primary));
-      padding-left: 0;
-    }
+    padding-left: 1.375rem;
+    padding-right: 1rem;
   }
 }
 </style>
