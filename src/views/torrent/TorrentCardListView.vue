@@ -545,7 +545,7 @@ function loadMore({ done }: { done: any }) {
   </div>
 
   <!-- 筛选菜单 -->
-  <VDialog v-model="filterMenuOpen" max-width="400px" location="center">
+  <VDialog v-model="filterMenuOpen" max-width="25rem" location="center">
     <VCard>
       <VCardTitle class="py-2 d-flex align-center">
         <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
@@ -705,10 +705,6 @@ function loadMore({ done }: { done: any }) {
 
 .grid-torrent-card {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  background-color: rgb(var(--v-theme-surface));
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: 12px;
-  padding: 12px;
 }
 
 @media (max-width: 600px) {

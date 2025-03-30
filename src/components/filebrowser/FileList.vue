@@ -127,7 +127,7 @@ const isImage = computed(() => {
 
 // 创建一个计算属性用于设置虚拟滚动的高度
 const fileListStyle = computed(() => {
-  return 'height: 100%';
+  return 'height: 100%'
 })
 
 // 调整选择模式
@@ -154,7 +154,7 @@ async function list_files() {
   items.value = (await inProps.axios.request(config)) ?? []
   emit('loading', false)
   loading.value = false
-  
+
   // 通知父组件文件列表更新
   emit('items-updated', items.value)
 }
@@ -559,8 +559,8 @@ onMounted(() => {
         placeholder="搜索文件和文件夹..."
         prepend-inner-icon="mdi-magnify"
         class="me-2 search-field"
-        rounded
         bg-color="grey-lighten-5"
+        rounded="0"
       />
       <VSpacer v-if="isFile" />
       <IconBtn v-if="!isFile" @click="changeSelectMode" tooltip="切换选择模式" class="action-btn">
@@ -590,17 +590,23 @@ onMounted(() => {
         </IconBtn>
       </span>
     </VToolbar>
-    
+
     <div class="file-content-container">
       <div v-if="loading" class="text-center flex flex-col items-center loading-container">
         <VProgressCircular size="48" indeterminate color="primary" />
         <span class="mt-2 text-medium-emphasis">加载中...</span>
       </div>
-      
+
       <!-- 文件详情 -->
       <div v-else-if="isFile && !isImage && items.length > 0" class="text-center break-all file-details">
         <div v-if="items[0]?.thumbnail" class="flex justify-center">
-          <VImg max-width="15rem" cover :src="items[0]?.thumbnail" class="rounded-lg border shadow-lg file-thumbnail" height="auto">
+          <VImg
+            max-width="15rem"
+            cover
+            :src="items[0]?.thumbnail"
+            class="rounded-lg border shadow-lg file-thumbnail"
+            height="auto"
+          >
             <template #placeholder>
               <VSkeletonLoader class="object-cover w-full h-full" type="image" />
             </template>
@@ -618,12 +624,12 @@ onMounted(() => {
           </div>
         </VCard>
       </div>
-      
+
       <!-- 图片 -->
       <div v-else-if="isFile && isImage && items.length > 0" class="d-flex justify-center align-center image-container">
         <VImg :src="currentImgLink" max-width="100%" max-height="100%" class="rounded-lg shadow" />
       </div>
-      
+
       <!-- 目录和文件列表 -->
       <div v-else-if="dirs.length || files.length" class="file-list-container">
         <VList subheader class="file-list">
@@ -631,11 +637,11 @@ onMounted(() => {
             <template #default="{ item }">
               <VHover>
                 <template #default="hover">
-                  <VListItem 
-                    v-bind="hover.props" 
-                    class="px-3 pe-1 file-list-item" 
+                  <VListItem
+                    v-bind="hover.props"
+                    class="px-3 pe-1 file-list-item"
                     @click="listItemClick(item)"
-                    :class="{'file-list-item-hover': hover.isHovering}"
+                    :class="{ 'file-list-item-hover': hover.isHovering }"
                     rounded="sm"
                     :active="false"
                   >
@@ -650,9 +656,9 @@ onMounted(() => {
                           :color="item.type === 'dir' ? 'amber-darken-2' : 'grey-darken-1'"
                           class="file-icon"
                         />
-                        <VIcon 
-                          v-else-if="item.type == 'dir'" 
-                          icon="mdi-folder" 
+                        <VIcon
+                          v-else-if="item.type == 'dir'"
+                          icon="mdi-folder"
                           color="amber-darken-2"
                           class="file-icon"
                         />
@@ -734,12 +740,12 @@ onMounted(() => {
           </VVirtualScroll>
         </VList>
       </div>
-      
+
       <div v-else-if="filter" class="d-flex justify-center align-center text-grey empty-state">
         <VIcon icon="mdi-file-search-outline" size="large" class="mb-2" />
         <div class="text-subtitle-1 mt-2">没有匹配的文件或文件夹</div>
       </div>
-      
+
       <div v-else-if="!loading" class="d-flex flex-column justify-center align-center empty-state">
         <VIcon icon="mdi-folder-outline" size="large" class="mb-2" color="grey-lighten-1" />
         <div class="text-subtitle-1 text-grey">空目录</div>
@@ -747,7 +753,7 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  
+
   <!-- 重命名弹窗 -->
   <VDialog v-if="renamePopper" v-model="renamePopper" max-width="40rem" class="rename-dialog">
     <VCard title="重命名" class="pa-2">
@@ -762,10 +768,10 @@ onMounted(() => {
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VTextField 
-              v-model="newName" 
-              label="新名称" 
-              :loading="renameLoading" 
+            <VTextField
+              v-model="newName"
+              label="新名称"
+              :loading="renameLoading"
               variant="outlined"
               placeholder="输入新的文件名称"
               hide-details="auto"
@@ -781,12 +787,8 @@ onMounted(() => {
           自动识别名称
         </VBtn>
         <VSpacer />
-        <VBtn color="grey" variant="text" @click="renamePopper = false">
-          取消
-        </VBtn>
-        <VBtn color="primary" :disabled="!newName" variant="elevated" @click="rename" class="ms-2">
-          确定
-        </VBtn>
+        <VBtn color="grey" variant="text" @click="renamePopper = false"> 取消 </VBtn>
+        <VBtn color="primary" :disabled="!newName" variant="elevated" @click="rename" class="ms-2"> 确定 </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
@@ -828,10 +830,6 @@ onMounted(() => {
   flex: 1;
   overflow: auto;
   position: relative;
-}
-
-.search-field {
-  max-width: 300px;
 }
 
 .file-list-container {

@@ -127,15 +127,20 @@ onMounted(() => {
           <h3 class="media-title">
             {{ media?.title ?? meta?.name }}
           </h3>
+          <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
         </div>
 
         <!-- 站点信息条 -->
         <div class="site-info">
           <div class="d-flex align-center">
-            <img v-if="siteIcons[torrent?.site || 0]" :src="siteIcons[torrent?.site || 0]" class="site-icon" />
+            <img
+              :alt="torrent?.site_name"
+              v-if="siteIcons[torrent?.site || 0]"
+              :src="siteIcons[torrent?.site || 0]"
+              class="site-icon"
+            />
             <span v-else class="site-fallback">{{ torrent?.site_name?.substring(0, 1) }}</span>
             <span class="site-name">{{ torrent?.site_name }}</span>
-            <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
           </div>
 
           <div class="seeder-peers">
@@ -226,13 +231,16 @@ onMounted(() => {
           >
             <div class="source-site-info">
               <img
+                :alt="item.torrent_info?.site_name"
                 v-if="siteIcons[item.torrent_info?.site || 0]"
                 :src="siteIcons[item.torrent_info?.site || 0]"
                 class="source-site-icon"
               />
               <span v-else class="source-site-fallback">{{ item.torrent_info?.site_name?.substring(0, 1) }}</span>
               <span class="source-site-name">{{ item.torrent_info.site_name }}</span>
-              <span v-if="item.meta_info?.season_episode" class="season-tag source-season-tag">{{ item.meta_info.season_episode }}</span>
+              <span v-if="item.meta_info?.season_episode" class="season-tag source-season-tag">
+                {{ item.meta_info.season_episode }}
+              </span>
 
               <span
                 v-if="item.torrent_info?.downloadvolumefactor !== 1 || item.torrent_info?.uploadvolumefactor !== 1"
@@ -333,6 +341,9 @@ onMounted(() => {
 
 .media-title-wrapper {
   margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  padding-right: 2rem;
 }
 
 .media-title {

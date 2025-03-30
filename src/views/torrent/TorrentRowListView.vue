@@ -1,15 +1,11 @@
 <script lang="ts" setup>
 import type { Context } from '@/api/types'
 import TorrentItem from '@/components/cards/TorrentItem.vue'
-import FilterOption from '@/components/misc/FilterOption.vue'
 import { useDisplay } from 'vuetify'
 
 // 设备模式
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
-
-// 过滤弹窗
-const filterDialog = ref(false)
 
 // 定义输入参数
 const props = defineProps({

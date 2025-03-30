@@ -118,15 +118,16 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VDialog max-width="45rem" scrollable>
+  <VDialog max-width="35rem" scrollable>
     <VCard>
-      <VCardItem>
-        <VCardTitle v-if="title">{{ torrent?.site_name }} - {{ title }}</VCardTitle>
-        <VCardTitle v-else>确认下载</VCardTitle>
-        <DialogCloseBtn @click="emit('close')" />
-      </VCardItem>
+      <VCardTitle class="py-3">
+        <VIcon icon="mdi-download" class="me-2" />
+        <span v-if="title">{{ torrent?.site_name }} - {{ title }}</span>
+        <span v-else>确认下载</span>
+      </VCardTitle>
+      <DialogCloseBtn @click="emit('close')" />
       <VDivider />
-      <VCardText>
+      <VCardText class="p-1">
         <VList lines="one">
           <VListItem>
             <template #prepend>
@@ -143,7 +144,7 @@ onMounted(() => {
               <VIcon icon="mdi-subtitles-outline"></VIcon>
             </template>
             <VListItemTitle>
-              <span class="text-body-1 whitespace-break-spaces">{{ torrent?.description }}</span>
+              <span class="text-body-2 whitespace-break-spaces">{{ torrent?.description }}</span>
             </VListItemTitle>
           </VListItem>
           <VListItem v-if="torrent?.size">
@@ -151,7 +152,7 @@ onMounted(() => {
               <VIcon icon="mdi-database"></VIcon>
             </template>
             <VListItemTitle>
-              <span class="text-body-1">
+              <span class="text-body-2">
                 <VChip variant="tonal" label>
                   {{ formatFileSize(torrent?.size || 0) }}
                 </VChip>
@@ -181,14 +182,7 @@ onMounted(() => {
         </VRow>
       </VCardText>
       <VCardText class="text-center">
-        <VBtn
-          variant="elevated"
-          :disabled="loading"
-          @click="addDownload"
-          :prepend-icon="icon"
-          class="px-5"
-          size="large"
-        >
+        <VBtn variant="elevated" :disabled="loading" @click="addDownload" :prepend-icon="icon" class="px-5">
           {{ buttonText }}
         </VBtn>
       </VCardText>

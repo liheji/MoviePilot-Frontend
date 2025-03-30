@@ -175,9 +175,9 @@ function refreshBrowser() {
     <VCardTitle class="px-4 py-3 d-flex align-center file-browser-header">
       <VIcon icon="mdi-folder-open" color="primary" class="me-2" />
       <span>文件管理</span>
-      
+
       <VSpacer />
-      
+
       <!-- 存储选择菜单 -->
       <VMenu v-if="props.storages && props.storages.length > 1" offset-y class="storage-menu me-3">
         <template #activator="{ props: menuProps }">
@@ -189,8 +189,13 @@ function refreshBrowser() {
             density="default"
             size="default"
           >
-            <VIcon :icon="storagesArray.find(item => item.value === activeStorage)?.icon || 'mdi-database'" class="me-2" />
-            <span class="text-truncate">{{ storagesArray.find(item => item.value === activeStorage)?.title || '本地' }}</span>
+            <VIcon
+              :icon="storagesArray.find(item => item.value === activeStorage)?.icon || 'mdi-database'"
+              class="me-2"
+            />
+            <span class="text-truncate">{{
+              storagesArray.find(item => item.value === activeStorage)?.title || '本地'
+            }}</span>
             <VIcon end icon="mdi-chevron-down" />
           </VBtn>
         </template>
@@ -204,20 +209,12 @@ function refreshBrowser() {
             rounded="sm"
           >
             <template #prepend>
-              <VIcon :icon="item.icon" size="small" class="me-2" />
+              <VIcon :icon="item.icon" size="small" />
             </template>
             <VListItemTitle class="text-truncate">{{ item.title }}</VListItemTitle>
           </VListItem>
         </VList>
       </VMenu>
-      
-      <VBtn
-        variant="text"
-        size="small"
-        icon="mdi-refresh"
-        color="primary"
-        @click="refreshBrowser"
-      />
     </VCardTitle>
     <VDivider />
     <div v-if="activeStorage && item" class="file-browser-container">
@@ -273,8 +270,6 @@ function refreshBrowser() {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
 .file-browser-header {
@@ -288,14 +283,14 @@ function refreshBrowser() {
   padding: 0 16px;
   height: 40px;
   box-shadow: 0 2px 6px rgba(var(--v-theme-primary), 0.1);
-  
+
   :deep(.v-btn__content) {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     width: 100%;
   }
-  
+
   .text-truncate {
     max-width: 100px;
     overflow: hidden;

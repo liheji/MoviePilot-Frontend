@@ -61,18 +61,6 @@ const pathSegments = computed(() => {
   )
 })
 
-// 当前存储
-const storageObject = computed(() => {
-  return inProps.storages?.find(item => item.value === inProps.storage)
-})
-
-// 切换存储
-function changeStorage(code: string) {
-  if (inProps.storage !== code) {
-    emit('storagechanged', code)
-  }
-}
-
 // 路径变化
 function changePath(item: FileItem) {
   emit('pathchanged', item)
@@ -120,10 +108,10 @@ const pathSegmentRef = ref<HTMLElement | null>(null)
 function checkTextTruncated(event: MouseEvent) {
   const target = event.target as HTMLElement
   if (!target) return
-  
+
   // 动态设置tooltip是否禁用
   const isTextOverflowing = target.offsetWidth < target.scrollWidth
-  
+
   // 找到最近的tooltip组件并设置disabled属性
   const tooltipEl = target.closest('.v-tooltip')
   if (tooltipEl) {
@@ -138,37 +126,31 @@ function checkTextTruncated(event: MouseEvent) {
 <template>
   <VToolbar flat dense class="file-toolbar">
     <VToolbarItems class="overflow-hidden w-100">
-      <VBtn 
-        variant="text" 
+      <VBtn
+        variant="text"
         :input-value="inProps.item?.path === '/'"
-        color="primary" 
-        class="px-1 path-button home-button" 
+        color="primary"
+        class="px-1 path-button home-button"
         @click="changePath(inProps.itemstack[0])"
       >
-        <VIcon icon="mdi-home" class="me-2" />
-        <span class="text-truncate">根目录</span>
+        <VIcon icon="mdi-home" class="mx-2" />
       </VBtn>
-      
+
       <div class="breadcrumb">
         <template v-for="(segment, index) in pathSegments" :key="index">
           <VBtn
             v-if="display.mdAndUp.value"
             variant="text"
             color="primary"
-            density="comfortable" 
+            density="comfortable"
             :input-value="index === pathSegments.length - 1"
-            :class="['px-1', 'path-button', {'current-path': index === pathSegments.length - 1}]"
+            :class="['px-1', 'path-button', { 'current-path': index === pathSegments.length - 1 }]"
             @click="changePath(inProps.itemstack[index + 1])"
           >
             <VIcon icon="mdi-chevron-right" size="small" />
             <VTooltip>
               <template #activator="{ props }">
-                <span 
-                  class="path-segment" 
-                  v-bind="props"
-                  ref="pathSegmentRef"
-                  @mouseover="checkTextTruncated"
-                >
+                <span class="path-segment" v-bind="props" ref="pathSegmentRef" @mouseover="checkTextTruncated">
                   {{ segment.name }}
                 </span>
               </template>
@@ -183,43 +165,23 @@ function checkTextTruncated(event: MouseEvent) {
       <div class="file-actions">
         <VTooltip text="调整排序">
           <template #activator="{ props }">
-            <VBtn 
-              v-bind="props" 
-              @click="changeSort" 
-              icon 
-              variant="text" 
-              color="primary"
-              class="action-button"
-            >
+            <VBtn v-bind="props" @click="changeSort" icon variant="text" color="primary" class="action-button">
               <VIcon :icon="sortIcon" />
             </VBtn>
           </template>
         </VTooltip>
-        
+
         <VTooltip text="返回上一级" v-if="pathSegments.length > 0">
           <template #activator="{ props }">
-            <VBtn 
-              v-bind="props" 
-              @click="goUp" 
-              icon 
-              variant="text" 
-              color="primary"
-              class="action-button"
-            >
+            <VBtn v-bind="props" @click="goUp" icon variant="text" color="primary" class="action-button">
               <VIcon icon="mdi-arrow-up" />
             </VBtn>
           </template>
         </VTooltip>
-        
+
         <VDialog v-model="newFolderPopper" max-width="40rem" class="mkdir-dialog">
           <template #activator="{ props }">
-            <VBtn 
-              v-bind="props" 
-              icon 
-              variant="text" 
-              color="primary"
-              class="action-button"
-            >
+            <VBtn v-bind="props" icon variant="text" color="primary" class="action-button">
               <VTooltip text="新建文件夹">
                 <template #activator="{ props: _props }">
                   <VIcon v-bind="_props" icon="mdi-folder-plus" />
@@ -237,9 +199,9 @@ function checkTextTruncated(event: MouseEvent) {
             <DialogCloseBtn @click="newFolderPopper = false" />
             <VDivider class="mt-3" />
             <VCardText>
-              <VTextField 
-                v-model="newFolderName" 
-                label="文件夹名称" 
+              <VTextField
+                v-model="newFolderName"
+                label="文件夹名称"
                 placeholder="请输入文件夹名称"
                 variant="outlined"
                 hide-details="auto"
@@ -250,13 +212,7 @@ function checkTextTruncated(event: MouseEvent) {
             <VCardActions class="pa-4 pt-0">
               <VSpacer />
               <VBtn color="grey" variant="text" @click="newFolderPopper = false">取消</VBtn>
-              <VBtn 
-                :disabled="!newFolderName" 
-                color="primary" 
-                variant="elevated" 
-                @click="mkdir" 
-                class="ms-2"
-              >
+              <VBtn :disabled="!newFolderName" color="primary" variant="elevated" @click="mkdir" class="ms-2">
                 创建
               </VBtn>
             </VCardActions>
@@ -277,11 +233,11 @@ function checkTextTruncated(event: MouseEvent) {
 .home-button {
   min-width: 50px;
   flex-shrink: 0;
-  
+
   @media (min-width: 960px) {
     max-width: unset;
   }
-  
+
   @media (max-width: 959px) {
     max-width: 120px;
   }
@@ -296,16 +252,16 @@ function checkTextTruncated(event: MouseEvent) {
   -ms-overflow-style: none;
   flex: 1;
   min-width: 0;
-  
+
   &::-webkit-scrollbar {
     display: none;
   }
-  
+
   // 确保当面包屑宽度超出容器时，最后一个元素可见
   &:hover {
     scroll-behavior: smooth;
   }
-  
+
   // 允许在触摸设备上滚动
   touch-action: pan-x;
 }
@@ -316,13 +272,13 @@ function checkTextTruncated(event: MouseEvent) {
   height: 36px;
   font-weight: normal;
   flex-shrink: 0;
-  
+
   &:not(.current-path) {
     @media (max-width: 959px) {
       max-width: 120px;
     }
   }
-  
+
   &.current-path {
     flex-shrink: 1;
   }
@@ -333,34 +289,34 @@ function checkTextTruncated(event: MouseEvent) {
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
-  
+
   .path-button:not(.current-path) & {
     @media (min-width: 1200px) {
       max-width: 200px;
     }
-    
+
     @media (min-width: 960px) and (max-width: 1199px) {
       max-width: 150px;
     }
-    
+
     @media (min-width: 600px) and (max-width: 959px) {
       max-width: 100px;
     }
-    
+
     @media (max-width: 599px) {
       max-width: 80px;
     }
   }
-  
+
   .current-path & {
     @media (min-width: 960px) {
       max-width: unset;
     }
-    
+
     @media (max-width: 959px) {
       max-width: 150px;
     }
-    
+
     @media (max-width: 599px) {
       max-width: 120px;
     }
@@ -371,7 +327,7 @@ function checkTextTruncated(event: MouseEvent) {
   margin: 0 2px;
   border-radius: 4px;
   flex-shrink: 0;
-  
+
   &:hover {
     background-color: rgba(var(--v-theme-primary), 0.05);
   }

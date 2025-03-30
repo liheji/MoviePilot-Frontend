@@ -1,3 +1,5 @@
+import { VCard } from 'vuetify/lib/components/index.mjs'
+
 export default {
   IconBtn: {
     icon: true,
@@ -26,6 +28,9 @@ export default {
   VBtn: {
     // set v-btn default color to primary
     color: 'primary',
+  },
+  VCard: {
+    elevation: 3,
   },
   VChip: {
     elevation: 0,

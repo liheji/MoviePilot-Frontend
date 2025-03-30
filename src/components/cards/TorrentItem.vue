@@ -151,16 +151,16 @@ onMounted(() => {
     >
       <template v-slot:prepend>
         <div class="site-wrapper">
-          <img v-if="siteIcon" :src="siteIcon" class="site-icon" />
+          <img :alt="torrent?.site_name" v-if="siteIcon" :src="siteIcon" class="site-icon" />
           <span v-else class="site-fallback">{{ torrent?.site_name?.substring(0, 1) }}</span>
           <div class="site-name">{{ torrent?.site_name }}</div>
-          <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
           <span
             v-if="torrent?.downloadvolumefactor !== 1 || torrent?.uploadvolumefactor !== 1"
             class="free-tag"
             :class="getPromotionClass(torrent?.downloadvolumefactor, torrent?.uploadvolumefactor)"
-            >{{ torrent?.volume_factor }}</span
           >
+            {{ torrent?.volume_factor }}
+          </span>
         </div>
       </template>
 
@@ -168,6 +168,7 @@ onMounted(() => {
         <div class="item-header">
           <div class="media-info">
             <span class="media-title">{{ media?.title ?? meta?.name }}</span>
+            <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
           </div>
         </div>
 
@@ -239,13 +240,12 @@ onMounted(() => {
 }
 
 .torrent-item {
-  border-radius: 12px;
   transition: background-color 0.2s ease, transform 0.2s ease;
   margin-bottom: 8px;
   padding: 12px;
   background-color: rgb(var(--v-theme-surface));
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   box-shadow: none;
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.1);
 }
 
 .torrent-item:hover {
@@ -257,13 +257,13 @@ onMounted(() => {
 .site-wrapper {
   display: flex;
   align-items: center;
-  min-width: 140px;
+  min-width: 100px;
   flex-wrap: wrap;
 }
 
 .site-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 4px;
   margin-right: 8px;
 }
