@@ -156,12 +156,12 @@ onMounted(() => {
       @click="handleResourceBrowse"
       :ripple="false"
     >
-      <template #image>
-        <VAvatar class="absolute right-2 bottom-2 rounded" variant="flat" rounded="0">
-          <VImg :src="siteIcon" />
-        </VAvatar>
-      </template>
-      <VCardItem style="padding-block-end: 0">
+      <VCardItem class="pt-3 pb-0">
+        <template #prepend>
+          <VAvatar class="rounded" variant="flat" size="small" rounded>
+            <VImg :src="siteIcon" />
+          </VAvatar>
+        </template>
         <VCardTitle class="font-bold">
           {{ cardProps.site?.name }}
         </VCardTitle>
@@ -169,7 +169,7 @@ onMounted(() => {
           {{ cardProps.site?.url }}
         </VCardSubtitle>
       </VCardItem>
-      <VCardText class="py-1">
+      <VCardText class="py-0">
         <VTooltip v-if="cardProps.site?.limit_interval" text="流控">
           <template #activator="{ props }">
             <VIcon color="primary" class="me-2" v-bind="props" icon="mdi-speedometer" />
@@ -191,8 +191,8 @@ onMounted(() => {
           </template>
         </VTooltip>
       </VCardText>
-      <VCardActions>
-        <div class="text-sm">
+      <VCardActions class="flex justify-between">
+        <div class="text-sm ms-1 grow">
           ↑ {{ formatFileSize(cardProps.data?.upload || 0) }} / ↓ {{ formatFileSize(cardProps.data?.download || 0) }}
         </div>
         <IconBtn>
@@ -232,7 +232,6 @@ onMounted(() => {
             </VList>
           </VMenu>
         </IconBtn>
-        <VSpacer />
       </VCardActions>
       <StatIcon v-if="cardProps.site?.is_active" :color="statColor" />
       <span class="absolute top-1 right-8">
