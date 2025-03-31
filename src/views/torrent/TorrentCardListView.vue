@@ -508,7 +508,7 @@ function loadMore({ done }: { done: any }) {
             :items="Object.entries(sortTitles).map(([key, title]) => ({ title, value: key }))"
             item-title="title"
             item-value="value"
-            variant="outlined"
+            variant="plain"
             density="compact"
             hide-details
             class="mobile-sort-select"
