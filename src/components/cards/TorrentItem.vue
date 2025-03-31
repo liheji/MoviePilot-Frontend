@@ -10,9 +10,6 @@ const props = defineProps({
   torrent: Object as PropType<Context>,
 })
 
-// 更多来源界面
-const showMoreTorrents = ref(false)
-
 // 种子信息
 const torrent = ref(props.torrent?.torrent_info)
 
@@ -245,7 +242,6 @@ onMounted(() => {
   padding: 12px;
   background-color: rgb(var(--v-theme-surface));
   box-shadow: none;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.1);
 }
 
 .torrent-item:hover {

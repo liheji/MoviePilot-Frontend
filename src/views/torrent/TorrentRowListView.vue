@@ -60,15 +60,6 @@ const filterOptions: Record<string, string[]> = reactive({
   releaseGroup: [] as string[],
 })
 
-// 非空值的过滤选项
-const filterOptionsNotEmpty = computed(() => {
-  const options: Record<string, string[]> = {}
-  for (const key in filterOptions) {
-    if (filterOptions[key].length > 0) options[key] = filterOptions[key]
-  }
-  return options
-})
-
 // 对季过滤选项进行排序
 const sortSeasonFilterOptions = computed(() => {
   // 预解析所有选项
@@ -187,13 +178,6 @@ const sortSeasonFilterOptions = computed(() => {
   return parsedOptions.map(option => option.original)
 })
 
-// 列表样式
-const listStyle = computed(() => {
-  return appMode
-    ? 'height: calc(100vh - 7.5rem - env(safe-area-inset-bottom) - 3.5rem)'
-    : 'height: calc(100vh - 6.5rem - env(safe-area-inset-bottom)'
-})
-
 // 排序字段
 const sortField = ref('default')
 
@@ -277,7 +261,6 @@ watchEffect(() => {
   if (props.items?.length) {
     // 首先收集所有过滤选项
     props.items.forEach(data => {
-      const { meta_info, torrent_info } = data
       initOptions(data)
     })
 
@@ -306,19 +289,8 @@ watchEffect(() => {
   }
 })
 
-// 切换过滤器选项
-function toggleFilter(key: string, value: string) {
-  const index = filterForm[key].indexOf(value)
-  if (index === -1) {
-    filterForm[key].push(value)
-  } else {
-    filterForm[key].splice(index, 1)
-  }
-}
-
 // 过滤菜单相关
 const filterMenuOpen = ref(false)
-const filterMenuAnchor = ref(null)
 const currentFilter = ref('site')
 const currentFilterTitle = computed(() => filterTitles[currentFilter.value])
 const currentFilterOptions = computed(() => {
@@ -327,12 +299,6 @@ const currentFilterOptions = computed(() => {
   }
   return filterOptions[currentFilter.value]
 })
-
-// 打开过滤菜单
-function openFilterMenu(key: string) {
-  currentFilter.value = key
-  filterMenuOpen.value = true
-}
 
 // 给定过滤类型返回不同图标
 function getFilterIcon(key: string) {
@@ -417,9 +383,9 @@ function toggleFilterMenu(key: string) {
               rounded="pill"
             >
               {{ title }}
-              <VChip v-if="filterForm[key].length > 0" size="x-small" color="primary" class="ms-1" variant="elevated">{{
-                filterForm[key].length
-              }}</VChip>
+              <VChip v-if="filterForm[key].length > 0" size="small" color="primary" class="ms-1" variant="elevated">
+                {{ filterForm[key].length }}
+              </VChip>
             </VBtn>
 
             <!-- 清除全部筛选按钮 -->
@@ -452,7 +418,7 @@ function toggleFilterMenu(key: string) {
               class="me-1 mb-1 mt-1 filter-tag"
               @click:close="removeFilter(key, value)"
             >
-              <VIcon size="x-small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
+              <VIcon size="small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
               <strong>{{ filterTitles[key] }}:</strong> {{ value }}
             </VChip>
           </template>
@@ -469,7 +435,7 @@ function toggleFilterMenu(key: string) {
             <VChip
               color="primary"
               variant="elevated"
-              size="x-small"
+              size="small"
               class="search-count me-auto"
               prepend-icon="mdi-magnify"
             >
@@ -500,7 +466,7 @@ function toggleFilterMenu(key: string) {
               class="filter-btn-mobile"
               @click="toggleFilterMenu(key)"
             >
-              <VIcon :icon="getFilterIcon(key)" class="filter-icon"></VIcon>
+              <VIcon :icon="getFilterIcon(key)" class="filter-icon me-1"></VIcon>
               <span class="filter-label">
                 {{ title }}
               </span>
@@ -571,6 +537,7 @@ function toggleFilterMenu(key: string) {
       <div v-else class="resource-list">
         <div v-for="(item, index) in dataList" :key="`${item.torrent_info?.enclosure || ''}-${index}`">
           <TorrentItem :torrent="item" />
+          <VDivider v-if="index < dataList.length - 1" class="my-2" />
         </div>
       </div>
     </div>
@@ -741,15 +708,11 @@ function toggleFilterMenu(key: string) {
 }
 
 .filter-label {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-align: center;
 }
 
 @media (max-width: 600px) {
-  .filter-btn {
-    font-size: 0.75rem;
-  }
-
   .sort-select {
     min-width: 100px;
   }

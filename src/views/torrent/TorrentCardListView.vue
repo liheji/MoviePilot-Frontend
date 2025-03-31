@@ -62,15 +62,6 @@ const filterOptions: Record<string, string[]> = reactive({
   releaseGroup: [] as string[],
 })
 
-// 非空值的过滤选项
-const filterOptionsNotEmpty = computed(() => {
-  const options: Record<string, string[]> = {}
-  for (const key in filterOptions) {
-    if (filterOptions[key].length > 0) options[key] = filterOptions[key]
-  }
-  return options
-})
-
 // 完整的数据列表
 let dataList: SearchTorrent[]
 // 显示用的数据列表
@@ -442,7 +433,7 @@ function loadMore({ done }: { done: any }) {
             rounded="pill"
           >
             {{ title }}
-            <VChip v-if="filterForm[key].length > 0" size="x-small" color="primary" class="ms-1" variant="elevated">{{
+            <VChip v-if="filterForm[key].length > 0" size="small" color="primary" class="ms-1" variant="elevated">{{
               filterForm[key].length
             }}</VChip>
           </VBtn>
@@ -477,7 +468,7 @@ function loadMore({ done }: { done: any }) {
               class="me-1 mt-2 filter-tag"
               @click:close="removeFilter(key, value)"
             >
-              <VIcon size="x-small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
+              <VIcon size="small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
               <strong>{{ filterTitles[key] }}:</strong> {{ value }}
             </VChip>
           </template>
@@ -495,7 +486,7 @@ function loadMore({ done }: { done: any }) {
           <VChip
             color="primary"
             variant="elevated"
-            size="x-small"
+            size="small"
             class="search-count me-auto"
             prepend-icon="mdi-magnify"
           >
@@ -526,7 +517,7 @@ function loadMore({ done }: { done: any }) {
             class="filter-btn-mobile"
             @click="toggleFilterMenu(key)"
           >
-            <VIcon :icon="getFilterIcon(key)" class="filter-icon"></VIcon>
+            <VIcon :icon="getFilterIcon(key)" class="filter-icon me-1"></VIcon>
             <span class="filter-label">
               {{ title }}
             </span>
@@ -765,7 +756,7 @@ function loadMore({ done }: { done: any }) {
 }
 
 .filter-label {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-align: center;
 }
 

@@ -103,13 +103,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="h-full">
     <VCard
       :width="props.width || '100%'"
-      height="300px"
       :variant="downloaded.includes(torrent?.enclosure || '') ? 'outlined' : 'flat'"
       @click="handleAddDownload(props.torrent)"
-      class="torrent-card"
+      class="torrent-card h-full"
       :class="{ 'downloaded-card': downloaded.includes(torrent?.enclosure || '') }"
     >
       <!-- 优惠标签 -->
@@ -164,7 +163,7 @@ onMounted(() => {
         <!-- 种子描述 -->
         <div
           v-if="meta?.subtitle || torrent?.description"
-          class="torrent-desc"
+          class="torrent-desc grow"
           :title="meta?.subtitle || torrent?.description"
         >
           {{ meta?.subtitle || torrent?.description }}
@@ -457,7 +456,6 @@ onMounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  height: 4em;
   margin-bottom: 8px;
 }
 
