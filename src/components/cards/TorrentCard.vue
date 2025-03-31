@@ -123,7 +123,7 @@ onMounted(() => {
       <!-- 媒体标题 -->
       <div class="card-header">
         <div class="media-title-wrapper">
-          <h3 class="media-title">
+          <h3 class="media-title me-2">
             {{ media?.title ?? meta?.name }}
           </h3>
           <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
@@ -364,7 +364,6 @@ onMounted(() => {
   color: white;
   padding: 2px 6px;
   border-radius: 4px;
-  margin-left: 8px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
