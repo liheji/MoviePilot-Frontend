@@ -178,8 +178,8 @@ const TransferDict: { [key: string]: string } = {
 
 const tableStyle = computed(() => {
   return appMode
-    ? 'height: calc(100vh - 15.5rem - env(safe-area-inset-bottom) - 3.5rem)'
-    : 'height: calc(100vh - 14.5rem - env(safe-area-inset-bottom)'
+    ? 'height: calc(100vh - 15rem - env(safe-area-inset-bottom) - 4rem)'
+    : 'height: calc(100vh - 14rem - env(safe-area-inset-bottom)'
 })
 
 // 分页提示
@@ -723,7 +723,7 @@ onMounted(fetchData)
   <TransferQueueDialog v-if="transferQueueDialog" v-model="transferQueueDialog" @close="transferQueueDialog = false" />
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .v-table th {
   white-space: nowrap;
 }

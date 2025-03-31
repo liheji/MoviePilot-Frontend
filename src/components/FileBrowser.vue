@@ -174,15 +174,15 @@ function fileListUpdated(items: FileItem[]) {
 // 外层DIV大小控制
 const scrollStyle = computed(() => {
   return appMode
-    ? 'height: calc(100vh - 12rem - env(safe-area-inset-bottom) - 3.5rem)'
-    : 'height: calc(100vh - 10.5rem - env(safe-area-inset-bottom)'
+    ? 'height: calc(100vh - 10rem - env(safe-area-inset-bottom) - 6rem)'
+    : 'height: calc(100vh - 10rem - env(safe-area-inset-bottom)'
 })
 
 // 文件列表大小限制
 const fileListStyle = computed(() => {
   return appMode
-    ? 'height: calc(100vh - 16rem - env(safe-area-inset-bottom) - 3.5rem)'
-    : 'height: calc(100vh - 14.5rem - env(safe-area-inset-bottom)'
+    ? 'height: calc(100vh - 14rem - env(safe-area-inset-bottom) - 6rem)'
+    : 'height: calc(100vh - 14rem - env(safe-area-inset-bottom)'
 })
 </script>
 

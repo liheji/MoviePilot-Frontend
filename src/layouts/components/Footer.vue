@@ -84,7 +84,7 @@ const currentPath = computed(() => route.path)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .footer-nav {
   /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-backdrop-filter: blur(6px);
