@@ -345,7 +345,7 @@ function toggleFilterMenu(key: string) {
     <div class="search-header d-none d-sm-block">
       <!-- PC端页面头部和筛选栏 -->
       <div class="view-header mb-3">
-        <div class="d-flex align-center flex-wrap">
+        <div class="d-flex align-center flex-wrap pa-3">
           <VChip color="primary" variant="flat" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
             {{ dataList.length }} 个资源
           </VChip>
@@ -430,26 +430,25 @@ function toggleFilterMenu(key: string) {
             </VBtn>
           </div>
         </div>
-      </div>
-
-      <!-- 已选择的过滤项显示 -->
-      <div v-if="getFilterCount > 0" class="selected-filters mb-3">
-        <div class="d-flex flex-wrap align-center">
-          <template v-for="(values, key) in getSelectedFilters" :key="key">
-            <VChip
-              v-for="(value, index) in values"
-              :key="`${key}-${index}`"
-              color="primary"
-              size="small"
-              closable
-              variant="elevated"
-              class="me-1 mb-1 mt-1 filter-tag"
-              @click:close="removeFilter(key, value)"
-            >
-              <VIcon size="small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
-              <strong>{{ filterTitles[key] }}:</strong> {{ value }}
-            </VChip>
-          </template>
+        <!-- 已选择的过滤项显示 -->
+        <div v-if="getFilterCount > 0" class="selected-filters">
+          <div class="d-flex flex-wrap align-center">
+            <template v-for="(values, key) in getSelectedFilters" :key="key">
+              <VChip
+                v-for="(value, index) in values"
+                :key="`${key}-${index}`"
+                color="primary"
+                size="small"
+                closable
+                variant="elevated"
+                class="me-1 mb-1 mt-1 filter-tag"
+                @click:close="removeFilter(key, value)"
+              >
+                <VIcon size="small" :icon="getFilterIcon(key)" class="me-1"></VIcon>
+                <strong>{{ filterTitles[key] }}:</strong> {{ value }}
+              </VChip>
+            </template>
+          </div>
         </div>
       </div>
     </div>
@@ -677,9 +676,7 @@ function toggleFilterMenu(key: string) {
 
 .selected-filters {
   background-color: rgba(var(--v-theme-surface-variant), 0.08);
-  border-radius: 8px;
   padding: 8px 12px;
-  margin-bottom: 16px;
   overflow: hidden;
 }
 
