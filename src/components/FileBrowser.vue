@@ -171,11 +171,18 @@ function fileListUpdated(items: FileItem[]) {
   fileListItems.value = items
 }
 
-// 大小控制
+// 外层DIV大小控制
 const scrollStyle = computed(() => {
   return appMode
     ? 'height: calc(100vh - 11.5rem - env(safe-area-inset-bottom) - 3.5rem)'
     : 'height: calc(100vh - 10.5rem - env(safe-area-inset-bottom)'
+})
+
+// 文件列表大小限制
+const fileListStyle = computed(() => {
+  return appMode
+    ? 'height: calc(100vh - 15.5rem - env(safe-area-inset-bottom) - 3.5rem)'
+    : 'height: calc(100vh - 14.5rem - env(safe-area-inset-bottom)'
 })
 </script>
 
@@ -212,6 +219,7 @@ const scrollStyle = computed(() => {
           :axios="axios"
           :refreshpending="refreshPending"
           :sort="sort"
+          :listStyle="fileListStyle"
           @pathchanged="pathChanged"
           @loading="loadingChanged"
           @refreshed="refreshPending = false"

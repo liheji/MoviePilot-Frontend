@@ -420,7 +420,6 @@ function getIndentLevel(path: string, ancestorPath: string) {
 .tree-item {
   display: flex;
   align-items: center;
-  padding: 6px 16px 6px 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
   min-width: 100%;
@@ -444,6 +443,7 @@ function getIndentLevel(path: string, ancestorPath: string) {
   justify-content: center;
   margin-right: 4px;
   flex-shrink: 0;
+  padding: 6px 0px 6px 12px;
 }
 
 .folder-content {
@@ -454,6 +454,7 @@ function getIndentLevel(path: string, ancestorPath: string) {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  padding: 6px 16px 6px 8px;
 }
 
 .root-item {

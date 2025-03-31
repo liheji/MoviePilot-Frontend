@@ -29,6 +29,7 @@ const inProps = defineProps({
     required: true,
   },
   sort: String,
+  listStyle: String,
 })
 
 // 对外事件
@@ -598,7 +599,7 @@ onMounted(() => {
     <!-- 目录和文件列表 -->
     <VCardText v-else-if="dirs.length || files.length" class="p-0">
       <VList subheader>
-        <VVirtualScroll :items="[...dirs, ...files]">
+        <VVirtualScroll :items="[...dirs, ...files]" :style="listStyle">
           <template #default="{ item }">
             <VHover>
               <template #default="hover">
