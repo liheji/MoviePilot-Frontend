@@ -512,7 +512,7 @@ function loadMore({ done }: { done: any }) {
     <!-- 移动端头部 -->
     <div class="view-header mb-2">
       <div class="d-flex align-center flex-wrap pa-2">
-        <div class="d-flex align-center w-100 mb-1">
+        <div class="d-flex align-center w-100 mb-2">
           <VChip
             color="primary"
             variant="elevated"
@@ -566,7 +566,7 @@ function loadMore({ done }: { done: any }) {
   </div>
 
   <!-- 筛选菜单 -->
-  <VDialog v-model="filterMenuOpen" max-width="25rem" location="center">
+  <VDialog v-model="filterMenuOpen" max-width="25rem" max-height="80%" location="center">
     <VCard>
       <VCardTitle class="py-2 d-flex align-center">
         <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
