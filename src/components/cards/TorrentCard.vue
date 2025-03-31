@@ -122,7 +122,7 @@ onMounted(() => {
 
       <!-- 媒体标题 -->
       <div class="card-header">
-        <div class="media-title-wrapper">
+        <div class="media-title-wrapper flex flex-row flex-wrap justify-start">
           <h3 class="media-title me-2">
             {{ media?.title ?? meta?.name }}
           </h3>
@@ -340,8 +340,6 @@ onMounted(() => {
 
 .media-title-wrapper {
   margin-bottom: 8px;
-  display: flex;
-  flex-wrap: wrap;
   padding-right: 2rem;
 }
 

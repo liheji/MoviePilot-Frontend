@@ -595,7 +595,6 @@ function toggleFilterMenu(key: string) {
 }
 
 .view-header {
-  padding: 12px 16px;
   background-color: rgb(var(--v-theme-surface));
   border-radius: 12px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);

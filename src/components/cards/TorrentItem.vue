@@ -106,7 +106,7 @@ onMounted(() => {
         <div class="site-wrapper">
           <img :alt="torrent?.site_name" v-if="siteIcon" :src="siteIcon" class="site-icon" />
           <span v-else class="site-fallback">{{ torrent?.site_name?.substring(0, 1) }}</span>
-          <div class="site-name">{{ torrent?.site_name }}</div>
+          <div class="site-name d-none d-sm-block">{{ torrent?.site_name }}</div>
           <span
             v-if="torrent?.downloadvolumefactor !== 1 || torrent?.uploadvolumefactor !== 1"
             class="free-tag"
@@ -119,8 +119,8 @@ onMounted(() => {
 
       <VListItemTitle class="item-content">
         <div class="item-header">
-          <div class="media-info">
-            <span class="media-title">{{ media?.title ?? meta?.name }}</span>
+          <div class="media-info flex flex-row flex-wrap justify-start">
+            <span class="media-title me-2">{{ media?.title ?? meta?.name }}</span>
             <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
           </div>
         </div>
@@ -295,10 +295,7 @@ onMounted(() => {
 }
 
 .media-info {
-  display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 
 .media-title {
@@ -447,7 +444,7 @@ onMounted(() => {
   }
 
   .site-wrapper {
-    min-width: 60px;
+    min-width: 24px;
     flex-wrap: wrap;
     margin-right: 10px;
   }
@@ -455,6 +452,10 @@ onMounted(() => {
   .site-name {
     font-size: 0.8rem;
     margin-right: 4px;
+  }
+
+  .size-badge {
+    font-size: 0.7rem;
   }
 
   .resource-tag {
