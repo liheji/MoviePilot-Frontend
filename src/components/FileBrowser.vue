@@ -5,6 +5,7 @@ import FileToolbar from './filebrowser/FileToolbar.vue'
 import FileNavigator from './filebrowser/FileNavigator.vue'
 import type { EndPoints, FileItem, StorageConf } from '@/api/types'
 import { storageOptions } from '@/api/constants'
+import { useDisplay } from 'vuetify'
 
 // 输入参数
 const props = defineProps({
@@ -28,6 +29,12 @@ const props = defineProps({
 
 // 对外事件
 const emit = defineEmits(['pathchanged'])
+
+// 显示器宽度
+const display = useDisplay()
+
+// APP
+const appMode = inject('pwaMode') && display.mdAndDown.value
 
 const fileIcons = {
   // 压缩包
@@ -145,17 +152,9 @@ async function storageChanged(storage: string) {
   emit('pathchanged', { storage: storage, path: '/', fileid: 'root' })
 }
 
-// 文件列表
-const fileListItems = ref<FileItem[]>([])
-
 // 路径变化
 function pathChanged(item: FileItem) {
   emit('pathchanged', item)
-}
-
-// 文件列表数据更新
-function fileListUpdated(items: FileItem[]) {
-  fileListItems.value = items
 }
 
 // 排序变化
@@ -164,60 +163,25 @@ function sortChanged(s: string) {
   refreshPending.value = true
 }
 
-// 刷新浏览器
-function refreshBrowser() {
-  refreshPending.value = true
+// 文件列表
+const fileListItems = ref<FileItem[]>([])
+
+// 文件列表数据更新
+function fileListUpdated(items: FileItem[]) {
+  fileListItems.value = items
 }
+
+// 大小控制
+const scrollStyle = computed(() => {
+  return appMode
+    ? 'height: calc(100vh - 11.5rem - env(safe-area-inset-bottom) - 3.5rem)'
+    : 'height: calc(100vh - 10.5rem - env(safe-area-inset-bottom)'
+})
 </script>
 
 <template>
-  <VCard class="file-browser" :loading="loading > 0" flat>
-    <VCardTitle class="px-4 py-3 d-flex align-center file-browser-header">
-      <VIcon icon="mdi-folder-open" color="primary" class="me-2" />
-      <span>文件管理</span>
-
-      <VSpacer />
-
-      <!-- 存储选择菜单 -->
-      <VMenu v-if="props.storages && props.storages.length > 1" offset-y class="storage-menu me-3">
-        <template #activator="{ props: menuProps }">
-          <VBtn
-            v-bind="menuProps"
-            class="storage-selector-btn"
-            variant="tonal"
-            color="primary"
-            density="default"
-            size="default"
-          >
-            <VIcon
-              :icon="storagesArray.find(item => item.value === activeStorage)?.icon || 'mdi-database'"
-              class="me-2"
-            />
-            <span class="text-truncate">{{
-              storagesArray.find(item => item.value === activeStorage)?.title || '本地'
-            }}</span>
-            <VIcon end icon="mdi-chevron-down" />
-          </VBtn>
-        </template>
-        <VList density="compact" class="pa-1 storage-list">
-          <VListItem
-            v-for="(item, index) in storagesArray"
-            :key="index"
-            :disabled="item.value === activeStorage"
-            @click="storageChanged(item.value)"
-            class="storage-item"
-            rounded="sm"
-          >
-            <template #prepend>
-              <VIcon :icon="item.icon" size="small" />
-            </template>
-            <VListItemTitle class="text-truncate">{{ item.title }}</VListItemTitle>
-          </VListItem>
-        </VList>
-      </VMenu>
-    </VCardTitle>
-    <VDivider />
-    <div v-if="activeStorage && item" class="file-browser-container">
+  <VCard class="mx-auto" :loading="loading > 0">
+    <div v-if="activeStorage && item">
       <FileToolbar
         :item="item"
         :itemstack="itemstack"
@@ -230,7 +194,7 @@ function refreshBrowser() {
         @foldercreated="refreshPending = true"
         @sortchanged="sortChanged"
       />
-      <div class="file-content-wrapper">
+      <div class="flex" :style="scrollStyle">
         <FileNavigator
           :storage="activeStorage"
           :currentPath="item.path"
@@ -240,6 +204,7 @@ function refreshBrowser() {
           @navigate="pathChanged"
         />
         <FileList
+          class="flex-grow"
           :item="item"
           :storage="activeStorage"
           :icons="fileIcons"
@@ -256,73 +221,5 @@ function refreshBrowser() {
         />
       </div>
     </div>
-    <VCardText v-else class="d-flex flex-column justify-center align-center text-center no-storage py-16">
-      <VIcon icon="mdi-database-off" size="64" color="grey-lighten-2" class="mb-4" />
-      <h3 class="text-h5 text-grey-darken-1">未配置存储</h3>
-      <p class="text-body-1 text-grey-darken-1">请先配置文件存储后再使用文件管理功能</p>
-    </VCardText>
   </VCard>
 </template>
-
-<style lang="scss" scoped>
-.file-browser {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.file-browser-header {
-  background-color: var(--v-theme-surface);
-  border-radius: 12px 12px 0 0;
-}
-
-.storage-selector-btn {
-  max-width: 180px;
-  font-size: 1rem;
-  padding: 0 16px;
-  height: 40px;
-  box-shadow: 0 2px 6px rgba(var(--v-theme-primary), 0.1);
-
-  :deep(.v-btn__content) {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-  }
-
-  .text-truncate {
-    max-width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
-.storage-list {
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.storage-item {
-  min-height: 36px;
-}
-
-.file-browser-container {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 48px); /* 减去标题栏高度 */
-  overflow: hidden;
-}
-
-.file-content-wrapper {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  border-radius: 0 0 12px 12px;
-}
-
-.no-storage {
-  flex: 1;
-}
-</style>

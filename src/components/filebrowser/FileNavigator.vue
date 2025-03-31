@@ -2,8 +2,7 @@
 import type { PropType } from 'vue'
 import type { FileItem } from '@/api/types'
 import { useDisplay } from 'vuetify'
-import type { AxiosRequestConfig } from 'axios'
-import type { Axios } from 'axios'
+import type { Axios, AxiosRequestConfig } from 'axios'
 
 // 显示器宽度
 const display = useDisplay()
@@ -276,6 +275,7 @@ function getIndentLevel(path: string, ancestorPath: string) {
         "
       >
         <div class="folder-content">
+          <VIcon icon="mdi-home" class="me-2" color="primary" />
           <span>根目录</span>
         </div>
       </div>
