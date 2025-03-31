@@ -198,7 +198,7 @@ onBeforeMount(() => {
   </VDialog>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .vue-media-back {
   background-image: linear-gradient(
       180deg,

@@ -410,7 +410,6 @@ function getIndentLevel(path: string, ancestorPath: string) {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 8px 0;
 }
 
 .tree-item-container {

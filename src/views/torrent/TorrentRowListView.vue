@@ -386,7 +386,7 @@ function toggleFilterMenu(key: string) {
               <VMenu activator="parent" :close-on-content-click="false">
                 <VCard max-width="20rem">
                   <VCardText class="filter-menu-content">
-                    <div class="text-end">
+                    <div class="flex justify-between">
                       <VBtn variant="text" size="small" color="primary" @click="selectAll(key)"> 全选 </VBtn>
                       <VBtn
                         v-if="filterForm[key].length > 0"

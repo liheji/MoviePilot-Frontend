@@ -123,9 +123,9 @@ onMounted(() => {
       <!-- 媒体标题 -->
       <div class="card-header">
         <div class="media-title-wrapper flex flex-row flex-wrap justify-start">
-          <h3 class="media-title me-2">
+          <span class="media-title me-2">
             {{ media?.title ?? meta?.name }}
-          </h3>
+          </span>
           <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
         </div>
 

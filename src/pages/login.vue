@@ -288,7 +288,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use '@core/scss/pages/page-auth.scss';
 
 .v-card-item__prepend {

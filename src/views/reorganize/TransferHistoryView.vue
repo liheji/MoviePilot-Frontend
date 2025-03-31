@@ -723,7 +723,7 @@ onMounted(fetchData)
   <TransferQueueDialog v-if="transferQueueDialog" v-model="transferQueueDialog" @close="transferQueueDialog = false" />
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .v-table th {
   white-space: nowrap;
 }

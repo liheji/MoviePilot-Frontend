@@ -116,7 +116,7 @@ function goPersonDetail() {
   </VHover>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .person-card {
   background-image: linear-gradient(45deg, rgb(var(--v-theme-background)), rgb(var(--v-theme-surface)) 60%);
 }

@@ -201,7 +201,7 @@ onActivated(() => {
   <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在加载 ..." />
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .v-application .fc {
   --fc-today-bg-color: rgba(var(--v-theme-on-surface), 0.04);
   --fc-border-color: rgba(var(--v-border-color), var(--v-border-opacity));

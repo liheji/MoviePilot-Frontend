@@ -61,7 +61,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style type="scss">
+<style type="scss" scoped>
 .appcenter-grid .v-card {
   /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-backdrop-filter: blur(6px);

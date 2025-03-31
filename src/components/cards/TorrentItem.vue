@@ -299,7 +299,7 @@ onMounted(() => {
 }
 
 .media-title {
-  font-size: 1.1rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: rgba(var(--v-theme-on-surface), 0.87);
 }

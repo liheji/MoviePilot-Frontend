@@ -70,7 +70,7 @@ onActivated(() => {
   </VHover>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use '@layouts/styles/mixins' as layoutsMixins;
 
 .v-card .triangle-bg {

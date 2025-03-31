@@ -266,7 +266,7 @@ onMounted(() => {
   </VDialog>
 </template>
 
-<style type="scss">
+<style type="scss" scoped>
 .heading {
   font-size: 1.5rem;
   font-weight: 700;
