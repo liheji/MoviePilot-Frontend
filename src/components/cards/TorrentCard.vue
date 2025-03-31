@@ -353,7 +353,7 @@ onMounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   color: rgba(var(--v-theme-on-surface), 0.87);
 }
@@ -628,15 +628,7 @@ onMounted(() => {
   opacity: 0.85;
 }
 
-@media (max-width: 600px) {
-  .media-title {
-    font-size: 1rem;
-  }
-
-  .torrent-card {
-    height: 260px;
-  }
-
+@media (max-width: 640px) {
   .resource-tag {
     font-size: 0.75rem;
     padding: 2px 6px;

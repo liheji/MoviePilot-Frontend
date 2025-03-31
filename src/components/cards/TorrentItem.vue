@@ -440,10 +440,6 @@ onMounted(() => {
     padding: 8px;
   }
 
-  .media-title {
-    font-size: 0.95rem;
-  }
-
   .site-icon,
   .site-fallback {
     width: 24px;
@@ -451,19 +447,13 @@ onMounted(() => {
   }
 
   .site-wrapper {
-    min-width: 100px;
+    min-width: 60px;
     flex-wrap: wrap;
     margin-right: 10px;
   }
 
   .site-name {
     font-size: 0.8rem;
-    margin-right: 4px;
-  }
-
-  .season-tag {
-    font-size: 0.75rem;
-    padding: 1px 4px;
     margin-right: 4px;
   }
 
