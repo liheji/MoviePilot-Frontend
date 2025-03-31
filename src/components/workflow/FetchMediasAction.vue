@@ -25,7 +25,7 @@ const innerList = [
     'name': '正在热映',
   },
   {
-    'api_path': 'bangumi/calendar',
+    'api_path': 'recommend/bangumi_calendar',
     'name': 'Bangumi每日放送',
   },
   {

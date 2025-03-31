@@ -20,8 +20,8 @@ const viewList = reactive<{ apipath: string; linkurl: string; title: string }[]>
     title: '正在热映',
   },
   {
-    apipath: 'bangumi/calendar',
-    linkurl: '/browse/bangumi/calendar?title=Bangumi每日放送',
+    apipath: 'recommend/bangumi_calendar',
+    linkurl: '/browse/recommend/bangumi_calendar?title=Bangumi每日放送',
     title: 'Bangumi每日放送',
   },
   {
