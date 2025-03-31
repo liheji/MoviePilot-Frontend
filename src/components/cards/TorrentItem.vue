@@ -56,36 +56,6 @@ async function getSiteIcon() {
   }
 }
 
-// 获取站点颜色
-function getSiteColor(siteId: string | number | undefined) {
-  if (!siteId) return '#3F51B5'
-
-  // 根据站点ID生成不同颜色
-  const colors = [
-    '#3F51B5',
-    '#673AB7',
-    '#9C27B0',
-    '#E91E63',
-    '#F44336',
-    '#FF5722',
-    '#FF9800',
-    '#FFC107',
-    '#4CAF50',
-    '#009688',
-    '#00BCD4',
-    '#03A9F4',
-  ]
-
-  // 简单哈希函数
-  let hash = 0
-  const idStr = String(siteId)
-  for (let i = 0; i < idStr.length; i++) {
-    hash = idStr.charCodeAt(i) + ((hash << 5) - hash)
-  }
-
-  return colors[Math.abs(hash) % colors.length]
-}
-
 // 获取优惠类型样式
 function getPromotionClass(downloadVolumeFactor: number | undefined, uploadVolumeFactor: number | undefined) {
   if (!downloadVolumeFactor) return 'free-discount'
@@ -118,20 +88,6 @@ function openTorrentDetail() {
   window.open(torrent.value?.page_url, '_blank')
 }
 
-// 下载种子文件
-async function downloadTorrentFile() {
-  window.open(torrent.value?.enclosure, '_blank')
-}
-
-// 促销Chip类
-function getVolumeFactorClass(downloadVolume: number | undefined, uploadVolume: number | undefined) {
-  if (!downloadVolume) return 'text-white bg-gray-500'
-  if (downloadVolume === 0) return 'text-white bg-lime-500'
-  else if (downloadVolume < 1) return 'text-white bg-green-500'
-  else if (uploadVolume !== undefined && uploadVolume !== 1) return 'text-white bg-sky-500'
-  else return 'text-white bg-gray-500'
-}
-
 // 装载时查询站点图标
 onMounted(() => {
   getSiteIcon()
@@ -142,7 +98,7 @@ onMounted(() => {
   <div class="list-item-wrapper">
     <VListItem
       :value="props.torrent?.torrent_info?.enclosure"
-      class="torrent-item"
+      class="torrent-item rounded"
       :class="{ 'downloaded-item': downloaded.includes(torrent?.enclosure || '') }"
       @click="handleAddDownload"
     >

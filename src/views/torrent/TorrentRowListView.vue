@@ -361,10 +361,8 @@ function toggleFilterMenu(key: string) {
               density="compact"
               hide-details
               class="sort-select"
+              prepend-icon="mdi-sort"
             >
-              <template v-slot:prepend>
-                <VIcon size="small" icon="mdi-sort"></VIcon>
-              </template>
             </VSelect>
 
             <div class="filter-divider"></div>
@@ -378,7 +376,6 @@ function toggleFilterMenu(key: string) {
               size="small"
               :color="filterForm[key].length > 0 ? 'primary' : undefined"
               :prepend-icon="getFilterIcon(key)"
-              @click="toggleFilterMenu(key)"
               class="filter-btn"
               rounded="pill"
             >
@@ -386,6 +383,37 @@ function toggleFilterMenu(key: string) {
               <VChip v-if="filterForm[key].length > 0" size="small" color="primary" class="ms-1" variant="elevated">
                 {{ filterForm[key].length }}
               </VChip>
+              <VMenu activator="parent" :close-on-content-click="false">
+                <VCard max-width="20rem">
+                  <VCardText class="filter-menu-content">
+                    <div class="text-end">
+                      <VBtn variant="text" size="small" color="primary" @click="selectAll(key)"> 全选 </VBtn>
+                      <VBtn
+                        v-if="filterForm[key].length > 0"
+                        variant="text"
+                        size="small"
+                        color="error"
+                        @click="clearFilter(key)"
+                      >
+                        清除
+                      </VBtn>
+                    </div>
+                    <VChipGroup v-model="filterForm[key]" column multiple class="filter-options">
+                      <VChip
+                        v-for="option in filterOptions[key]"
+                        :key="option"
+                        :value="option"
+                        filter
+                        variant="elevated"
+                        class="ma-1 filter-chip"
+                        size="small"
+                      >
+                        {{ option }}
+                      </VChip>
+                    </VChipGroup>
+                  </VCardText>
+                </VCard>
+              </VMenu>
             </VBtn>
 
             <!-- 清除全部筛选按钮 -->
@@ -489,7 +517,7 @@ function toggleFilterMenu(key: string) {
       <VCard>
         <VCardTitle class="py-2 d-flex align-center">
           <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
-          <span>{{ currentFilterTitle }} 筛选</span>
+          <span>{{ currentFilterTitle }}</span>
           <VSpacer />
           <VBtn
             v-if="filterForm[currentFilter].length > 0"
@@ -680,7 +708,6 @@ function toggleFilterMenu(key: string) {
 .mobile-sort-select {
   min-width: 110px;
   max-width: 130px;
-  font-size: 0.8rem;
 }
 
 .filter-buttons-grid {

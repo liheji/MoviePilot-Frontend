@@ -428,14 +428,44 @@ function loadMore({ done }: { done: any }) {
             size="small"
             :color="filterForm[key].length > 0 ? 'primary' : undefined"
             :prepend-icon="getFilterIcon(key)"
-            @click="toggleFilterMenu(key)"
             class="filter-btn"
             rounded="pill"
           >
             {{ title }}
-            <VChip v-if="filterForm[key].length > 0" size="small" color="primary" class="ms-1" variant="elevated">{{
-              filterForm[key].length
-            }}</VChip>
+            <VChip v-if="filterForm[key].length > 0" size="small" color="primary" class="ms-1" variant="elevated">
+              {{ filterForm[key].length }}
+            </VChip>
+            <VMenu activator="parent" :close-on-content-click="false">
+              <VCard max-width="25rem">
+                <VCardText class="filter-menu-content">
+                  <div class="text-end">
+                    <VBtn variant="text" size="small" color="primary" @click="selectAll(key)"> 全选 </VBtn>
+                    <VBtn
+                      v-if="filterForm[key].length > 0"
+                      variant="text"
+                      size="small"
+                      color="error"
+                      @click="clearFilter(key)"
+                    >
+                      清除
+                    </VBtn>
+                  </div>
+                  <VChipGroup v-model="filterForm[key]" column multiple class="filter-options">
+                    <VChip
+                      v-for="option in filterOptions[key]"
+                      :key="option"
+                      :value="option"
+                      filter
+                      variant="elevated"
+                      class="ma-1 filter-chip"
+                      size="small"
+                    >
+                      {{ option }}
+                    </VChip>
+                  </VChipGroup>
+                </VCardText>
+              </VCard>
+            </VMenu>
           </VBtn>
 
           <!-- 清除全部筛选按钮 -->
@@ -540,7 +570,7 @@ function loadMore({ done }: { done: any }) {
     <VCard>
       <VCardTitle class="py-2 d-flex align-center">
         <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
-        <span>{{ currentFilterTitle }} 筛选</span>
+        <span>{{ currentFilterTitle }}</span>
         <VSpacer />
         <VBtn
           v-if="filterForm[currentFilter].length > 0"
@@ -553,9 +583,7 @@ function loadMore({ done }: { done: any }) {
         </VBtn>
         <VBtn variant="text" size="small" color="primary" @click="selectAll(currentFilter)"> 全选 </VBtn>
       </VCardTitle>
-
       <VDivider />
-
       <VCardText class="filter-menu-content pt-4">
         <VChipGroup v-model="filterForm[currentFilter]" column multiple class="filter-options">
           <VChip
@@ -571,7 +599,6 @@ function loadMore({ done }: { done: any }) {
           </VChip>
         </VChipGroup>
       </VCardText>
-
       <VCardActions>
         <VSpacer />
         <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> 确定 </VBtn>
@@ -651,7 +678,6 @@ function loadMore({ done }: { done: any }) {
 }
 
 .filter-menu-content {
-  max-height: 300px;
   overflow-y: auto;
 }
 
@@ -728,7 +754,6 @@ function loadMore({ done }: { done: any }) {
 .mobile-sort-select {
   min-width: 110px;
   max-width: 130px;
-  font-size: 0.8rem;
 }
 
 .filter-buttons-grid {
