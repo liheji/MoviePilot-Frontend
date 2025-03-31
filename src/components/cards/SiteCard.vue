@@ -122,10 +122,10 @@ const getMaxDataValue = computed(() => {
   // 获取站点数据中的最大值作为基准
   const upload = cardProps.data?.upload || 0
   const download = cardProps.data?.download || 0
-  
+
   // 避免两者都为0的情况
   if (upload === 0 && download === 0) return 1
-  
+
   return Math.max(upload, download)
 })
 
@@ -164,112 +164,78 @@ onMounted(() => {
   getSiteIcon()
   getSiteStats()
 })
-
-// 在 script 部分添加计算速度等级的函数
-function calcSpeedClass(speed: number) {
-  if (speed === undefined || speed <= 0) return 'speed-idle';
-  if (speed < 50 * 1024) return 'speed-low';
-  if (speed < 500 * 1024) return 'speed-medium';
-  return 'speed-high';
-}
 </script>
 
 <template>
   <div>
-    <div 
+    <VCard
       class="site-card relative h-full flex flex-col overflow-hidden group"
       :class="[
         cardProps.site?.is_active ? '' : 'inactive',
         {
           'status-error': statColor === 'error',
           'status-warning': statColor === 'warning',
-          'status-success': statColor === 'success'
-        }
+          'status-success': statColor === 'success',
+        },
       ]"
+      :ripple="false"
       @click="handleResourceBrowse"
     >
       <!-- 装饰性状态指示器 -->
-      <div 
-        v-if="cardProps.site?.is_active" 
-        class="site-status-indicator"
-        :class="statColor"
-      ></div>
-      
+      <div v-if="cardProps.site?.is_active" class="site-status-indicator" :class="statColor"></div>
+
       <!-- 主体部分 -->
       <div class="site-card-content relative flex-1 flex flex-col">
         <!-- 顶部：图标和站点名称 -->
         <div class="flex items-center mb-1">
           <!-- 站点图标 -->
-          <div 
-            class="site-icon-container mr-2.5"
-            @click.stop="siteEditDialog = true"
-          >
-            <img 
-              :src="siteIcon" 
-              class="site-icon" 
-              :alt="cardProps.site?.name"
-            />
+          <div class="site-icon-container mr-2.5" @click.stop="siteEditDialog = true">
+            <img :src="siteIcon" class="site-icon" :alt="cardProps.site?.name" />
             <div class="site-icon-edit-overlay">
               <VIcon icon="mdi-pencil" color="white" size="16" />
             </div>
           </div>
-          
+
           <!-- 拖动图标 -->
-          <VIcon icon="mdi-drag" size="16" class="drag-handle cursor-move opacity-40 mr-1.5 z-10" />
-          
+          <VIcon icon="mdi-drag" size="20" class="drag-handle cursor-move opacity-40 mr-1.5 z-10" />
+
           <!-- 站点名称和特性图标 -->
           <div class="flex-1 min-w-0 flex items-center">
             <h3 class="site-title truncate">{{ cardProps.site?.name }}</h3>
-            
+
             <!-- 站点特性图标 -->
             <div class="site-features flex items-center gap-1 ml-auto">
               <VTooltip>
                 <template #activator="{ props }">
                   <div v-if="cardProps.site?.limit_interval" v-bind="props" class="feature-icon-wrapper">
-                    <VIcon 
-                      icon="mdi-speedometer"
-                      size="16" 
-                      class="site-feature-icon"
-                    />
+                    <VIcon icon="mdi-speedometer" size="16" class="site-feature-icon" />
                   </div>
                 </template>
                 <span>流控</span>
               </VTooltip>
-              
+
               <VTooltip>
                 <template #activator="{ props }">
                   <div v-if="cardProps.site?.proxy === 1" v-bind="props" class="feature-icon-wrapper">
-                    <VIcon 
-                      icon="mdi-network-outline"
-                      size="16" 
-                      class="site-feature-icon"
-                    />
+                    <VIcon icon="mdi-network-outline" size="16" class="site-feature-icon" />
                   </div>
                 </template>
                 <span>代理</span>
               </VTooltip>
-              
+
               <VTooltip>
                 <template #activator="{ props }">
                   <div v-if="cardProps.site?.render === 1" v-bind="props" class="feature-icon-wrapper">
-                    <VIcon 
-                      icon="mdi-apple-safari"
-                      size="16" 
-                      class="site-feature-icon"
-                    />
+                    <VIcon icon="mdi-apple-safari" size="16" class="site-feature-icon" />
                   </div>
                 </template>
                 <span>仿真</span>
               </VTooltip>
-              
+
               <VTooltip>
                 <template #activator="{ props }">
                   <div v-if="cardProps.site?.filter" v-bind="props" class="feature-icon-wrapper">
-                    <VIcon 
-                      icon="mdi-filter-cog-outline"
-                      size="16" 
-                      class="site-feature-icon"
-                    />
+                    <VIcon icon="mdi-filter-cog-outline" size="16" class="site-feature-icon" />
                   </div>
                 </template>
                 <span>过滤</span>
@@ -277,14 +243,14 @@ function calcSpeedClass(speed: number) {
             </div>
           </div>
         </div>
-        
+
         <!-- 中间部分：网址 -->
         <div class="site-meta mb-1.5">
           <div class="site-url truncate" @click.stop="openSitePage">
             {{ cardProps.site?.url }}
           </div>
         </div>
-        
+
         <!-- 底部：数据统计 -->
         <div class="site-stats flex-1 flex flex-col justify-end">
           <!-- 更直观的上传下载数据条 -->
@@ -296,15 +262,12 @@ function calcSpeedClass(speed: number) {
                 <span>{{ formatFileSize(cardProps.data?.upload || 0) }}</span>
               </div>
               <div class="data-progress-bar">
-                <div 
-                  class="progress-filled upload-filled"
-                  :style="`width: ${getUploadPercent}%`"
-                >
+                <div class="progress-filled upload-filled" :style="`width: ${getUploadPercent}%`">
                   <div class="progress-glow"></div>
                 </div>
               </div>
             </div>
-            
+
             <!-- 下载数据 -->
             <div class="data-row download-row">
               <div class="data-label">
@@ -312,10 +275,7 @@ function calcSpeedClass(speed: number) {
                 <span>{{ formatFileSize(cardProps.data?.download || 0) }}</span>
               </div>
               <div class="data-progress-bar">
-                <div 
-                  class="progress-filled download-filled"
-                  :style="`width: ${getDownloadPercent}%`"
-                >
+                <div class="progress-filled download-filled" :style="`width: ${getDownloadPercent}%`">
                   <div class="progress-glow"></div>
                 </div>
               </div>
@@ -323,16 +283,16 @@ function calcSpeedClass(speed: number) {
           </div>
         </div>
       </div>
-      
+
       <!-- 右侧操作按钮区 -->
       <div class="site-card-actions">
         <VTooltip>
           <template #activator="{ props }">
-            <button 
+            <button
               v-bind="props"
-              class="site-action-btn test-btn" 
-              @click.stop="testSite" 
-              :class="{'testing': testButtonDisable}"
+              class="site-action-btn test-btn"
+              @click.stop="testSite"
+              :class="{ 'testing': testButtonDisable }"
             >
               <div class="test-btn-content">
                 <div class="pulse-dot" :class="statColor"></div>
@@ -348,39 +308,28 @@ function calcSpeedClass(speed: number) {
           </template>
           <span>测试站点连通性</span>
         </VTooltip>
-        
+
         <VTooltip>
           <template #activator="{ props }">
-            <button 
-              v-bind="props"
-              class="site-action-btn" 
-              @click.stop="handleSiteUserData" 
-            >
+            <button v-bind="props" class="site-action-btn" @click.stop="handleSiteUserData">
               <VIcon icon="mdi-chart-bell-curve" size="18" />
             </button>
           </template>
           <span>查看站点数据</span>
         </VTooltip>
-        
+
         <VTooltip v-if="!cardProps.site?.public">
           <template #activator="{ props }">
-            <button 
-              v-bind="props"
-              class="site-action-btn" 
-              @click.stop="handleSiteUpdate" 
-            >
+            <button v-bind="props" class="site-action-btn" @click.stop="handleSiteUpdate">
               <VIcon icon="mdi-refresh" size="18" />
             </button>
           </template>
           <span>更新Cookie/UA</span>
         </VTooltip>
-        
+
         <VTooltip>
           <template #activator="{ props }">
-            <button 
-              v-bind="props"
-              class="site-action-btn more-btn"
-            >
+            <button v-bind="props" class="site-action-btn more-btn">
               <VIcon icon="mdi-dots-vertical" size="18" />
               <VMenu activator="parent" close-on-content-click location="left">
                 <VList density="compact" nav class="dropdown-menu">
@@ -403,8 +352,8 @@ function calcSpeedClass(speed: number) {
           <span>更多操作</span>
         </VTooltip>
       </div>
-    </div>
-    
+    </VCard>
+
     <!-- 对话框组件 -->
     <SiteCookieUpdateDialog
       v-if="siteCookieDialog"
@@ -528,7 +477,7 @@ function calcSpeedClass(speed: number) {
 .data-label {
   display: flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 0.8rem;
   color: rgba(var(--v-theme-on-surface), 0.8);
   min-width: 70px;
 }
@@ -577,7 +526,8 @@ function calcSpeedClass(speed: number) {
 }
 
 @keyframes pulse-width {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.85;
   }
   50% {
@@ -617,7 +567,8 @@ function calcSpeedClass(speed: number) {
 }
 
 @keyframes pulse-width {
-  0%, 100% {
+  0%,
+  100% {
     transform: scaleX(0.95);
   }
   50% {
@@ -673,14 +624,14 @@ function calcSpeedClass(speed: number) {
 
 /* 站点标题 */
 .site-title {
-  font-size: 15px;
+  font-size: 1.1rem;
   font-weight: 600;
   line-height: 1.2;
 }
 
 /* 站点网址 */
 .site-url {
-  font-size: 11px;
+  font-size: 0.9rem;
   color: rgba(var(--v-theme-on-surface), 0.6);
   transition: color 0.2s ease;
   cursor: pointer;
@@ -840,8 +791,12 @@ function calcSpeedClass(speed: number) {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
@@ -855,8 +810,12 @@ function calcSpeedClass(speed: number) {
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .pulse-dot {
