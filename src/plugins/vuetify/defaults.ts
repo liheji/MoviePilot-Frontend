@@ -30,7 +30,7 @@ export default {
     color: 'primary',
   },
   VCard: {
-    elevation: 3,
+    elevation: 2,
   },
   VChip: {
     elevation: 0,

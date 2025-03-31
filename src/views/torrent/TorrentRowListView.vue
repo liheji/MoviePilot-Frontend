@@ -553,7 +553,7 @@ function toggleFilterMenu(key: string) {
     </VDialog>
 
     <!-- 资源列表容器 -->
-    <div class="resource-list-container">
+    <VCard class="resource-list-container">
       <!-- 无结果时显示 -->
       <div v-if="dataList.length === 0" class="no-results">
         <VIcon icon="mdi-file-search-outline" size="64" color="grey-lighten-1" />
@@ -567,7 +567,7 @@ function toggleFilterMenu(key: string) {
           <VDivider v-if="index < dataList.length - 1" class="my-2" />
         </div>
       </div>
-    </div>
+    </VCard>
   </div>
 </template>
 
@@ -583,6 +583,7 @@ function toggleFilterMenu(key: string) {
   z-index: 10;
   background-color: rgba(var(--v-theme-background), 0.95);
   backdrop-filter: blur(10px);
+  
 }
 
 .search-header-mobile {
