@@ -56,8 +56,13 @@ const statusItems = [
   { title: '已停用', value: 0 },
 ]
 
+// 扩展User类型以包含note字段
+interface ExtendedUser extends User {
+  nickname?: string;
+}
+
 // 用户编辑表单数据
-const userForm = ref<User>({
+const userForm = ref<ExtendedUser>({
   id: 0,
   name: props.username ?? '',
   password: '',
@@ -74,6 +79,7 @@ const userForm = ref<User>({
     vocechat_userid: null,
     synologychat_userid: null,
   },
+  nickname: '',  // 昵称字段
 })
 
 // 更新头像
@@ -190,6 +196,15 @@ async function updateUser() {
     }
     userForm.value.password = newPassword.value
   }
+  
+  // 将nickname保存到settings中，后端可以直接处理JSON对象
+  if (userForm.value.nickname) {
+    if (!userForm.value.settings) {
+      userForm.value.settings = {};
+    }
+    userForm.value.settings.nickname = userForm.value.nickname;
+  }
+  
   const oldUserName = userForm.value.name
   userForm.value.name = currentUserName.value
   const oldAvatar = userForm.value.avatar
@@ -197,7 +212,11 @@ async function updateUser() {
   isUpdating.value = true
   startNProgress()
   try {
-    const result: { [key: string]: any } = await api.put('user/', userForm.value)
+    // 确保昵称保存，使用一个临时变量存储完整数据
+    const userData = { ...userForm.value };
+    
+    const result: { [key: string]: any } = await api.put('user/', userData)
+    
     if (result.success) {
       if (oldUserName !== currentUserName.value) {
         $toast.success(`【${oldUserName}】更名【${currentUserName.value}】， 更新成功！`)
@@ -229,7 +248,7 @@ async function updateUser() {
     userForm.value.password = ''
   } catch (error) {
     $toast.error(`【${userForm.value?.name}】更新失败！`)
-    console.error(error)
+    console.error('更新失败:', error)
   }
   doneNProgress()
   isUpdating.value = false
@@ -353,6 +372,15 @@ onMounted(() => {
                 clearable
                 label="确认密码"
                 @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <VTextField
+                v-model="userForm.nickname"
+                density="comfortable"
+                clearable
+                label="昵称"
+                placeholder="显示昵称，优先于用户名显示"
               />
             </VCol>
             <VCol cols="12" md="6" v-if="canControl">
