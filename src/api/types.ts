@@ -795,6 +795,8 @@ export interface User {
   permissions: { [key: string]: any }
   // 用户个性化设置 json
   settings: { [key: string]: string | null }
+  // 昵称
+  nickname?: string
 }
 
 // 存储空间
