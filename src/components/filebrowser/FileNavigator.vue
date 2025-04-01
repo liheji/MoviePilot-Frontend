@@ -259,7 +259,7 @@ function getIndentLevel(path: string, ancestorPath: string) {
 </script>
 
 <template>
-  <div class="file-navigator" v-if="!isMobile">
+  <VCard class="file-navigator rounded-t-0 rounded-e-0" v-if="!isMobile">
     <div class="tree-container">
       <!-- 根目录项 -->
       <div
@@ -382,20 +382,19 @@ function getIndentLevel(path: string, ancestorPath: string) {
         </div>
       </template>
     </div>
-  </div>
+  </VCard>
 </template>
 
 <style lang="scss" scoped>
 .file-navigator {
   width: 240px;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  background-color: var(--v-theme-surface);
   flex-shrink: 0;
   border-bottom-left-radius: 12px;
+  background: rgb(var(--v-table-header-background));
 }
 
 .navigator-header {
@@ -403,7 +402,6 @@ function getIndentLevel(path: string, ancestorPath: string) {
   display: flex;
   align-items: center;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: var(--v-theme-surface);
 }
 
 .tree-container {

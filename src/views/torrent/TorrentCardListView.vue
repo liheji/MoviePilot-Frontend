@@ -397,12 +397,11 @@ function loadMore({ done }: { done: any }) {
 <template>
   <div class="search-header d-none d-sm-flex">
     <!-- 页面头部和筛选栏 -->
-    <div class="view-header bg-surface rounded-xl">
+    <VCard class="view-header rounded-xl">
       <div class="d-flex align-center flex-wrap pa-3">
         <VChip color="primary" variant="elevated" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
           {{ props.items?.length || 0 }} 个资源
         </VChip>
-
         <!-- 排序选择 -->
         <div class="sort-container me-4">
           <VSelect
@@ -438,7 +437,7 @@ function loadMore({ done }: { done: any }) {
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard max-width="25rem">
                 <VCardText class="filter-menu-content">
-                  <div class="text-end">
+                  <div class="flex justify-between">
                     <VBtn variant="text" size="small" color="primary" @click="selectAll(key)"> 全选 </VBtn>
                     <VBtn
                       v-if="filterForm[key].length > 0"
@@ -504,13 +503,13 @@ function loadMore({ done }: { done: any }) {
           </template>
         </div>
       </div>
-    </div>
+    </VCard>
   </div>
 
   <!-- 移动端头部和筛选区域 -->
-  <div class="d-block d-sm-none search-header-mobile">
+  <VCard class="d-block d-sm-none search-header-mobile rounded-lg">
     <!-- 移动端头部 -->
-    <div class="view-header mb-2">
+    <div class="view-header">
       <div class="d-flex align-center flex-wrap pa-2">
         <div class="d-flex align-center w-100 mb-2">
           <VChip
@@ -563,7 +562,7 @@ function loadMore({ done }: { done: any }) {
         </div>
       </div>
     </div>
-  </div>
+  </VCard>
 
   <!-- 筛选菜单 -->
   <VDialog v-model="filterMenuOpen" max-width="25rem" max-height="80%" location="center">
@@ -632,7 +631,6 @@ function loadMore({ done }: { done: any }) {
 
 .view-header {
   background-color: rgb(var(--v-theme-surface));
-  border-radius: 12px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   overflow: hidden;
 }

@@ -120,7 +120,7 @@ onMounted(() => {
 <template>
   <VDialog max-width="35rem" scrollable>
     <VCard>
-      <VCardTitle class="py-3">
+      <VCardTitle class="py-3 me-12">
         <VIcon icon="mdi-download" class="me-2" />
         <span v-if="title">{{ torrent?.site_name }} - {{ title }}</span>
         <span v-else>确认下载</span>

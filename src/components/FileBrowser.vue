@@ -187,7 +187,7 @@ const fileListStyle = computed(() => {
 </script>
 
 <template>
-  <VCard class="mx-auto" :loading="loading > 0">
+  <div class="mx-auto" :loading="loading > 0">
     <div v-if="activeStorage && item">
       <FileToolbar
         :item="item"
@@ -229,5 +229,5 @@ const fileListStyle = computed(() => {
         />
       </div>
     </div>
-  </VCard>
+  </div>
 </template>

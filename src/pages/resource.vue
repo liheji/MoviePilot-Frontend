@@ -4,11 +4,6 @@ import api from '@/api'
 import type { Context } from '@/api/types'
 import TorrentCardListView from '@/views/torrent/TorrentCardListView.vue'
 import TorrentRowListView from '@/views/torrent/TorrentRowListView.vue'
-import { useDisplay } from 'vuetify'
-
-// APP
-const display = useDisplay()
-const appMode = inject('pwaMode') && display.mdAndDown.value
 
 // 路由参数
 const route = useRoute()
@@ -80,14 +75,14 @@ function startLoadingProgress() {
       }
     }
   }
-  
+
   // 添加错误处理
   progressEventSource.value.onerror = () => {
     setTimeout(() => {
       stopLoadingProgress()
     }, 1000)
   }
-  
+
   // 添加安全超时，确保不会永远卡住
   setTimeout(() => {
     if (progressEventSource.value && progressValue.value < 100) {
@@ -204,7 +199,7 @@ onUnmounted(() => {
     </VFadeTransition>
 
     <!-- 精简标题栏 -->
-    <div v-if="isRefreshed" class="search-header d-flex align-center mb-4">
+    <VCard v-if="isRefreshed" class="search-header d-flex align-center mb-4">
       <div class="search-info-container d-flex align-center flex-wrap">
         <div class="search-title text-primary">资源搜索结果</div>
         <div class="search-tags d-flex flex-wrap">
@@ -216,9 +211,7 @@ onUnmounted(() => {
           <VChip v-if="season" class="search-tag" color="primary" size="small" variant="flat"> 季: {{ season }} </VChip>
         </div>
       </div>
-
       <VSpacer />
-
       <!-- 重新设计的视图切换按钮 -->
       <div class="view-toggle-container">
         <div class="view-toggle-buttons">
@@ -230,7 +223,7 @@ onUnmounted(() => {
           </button>
         </div>
       </div>
-    </div>
+    </VCard>
 
     <!-- 视图切换加载状态 -->
     <VFadeTransition>
@@ -261,10 +254,7 @@ onUnmounted(() => {
 
     <!-- 无数据显示 -->
     <div v-else-if="isRefreshed && !isViewChanging" class="d-flex flex-column align-center justify-center py-8">
-      <NoDataFound
-        :errorTitle="errorTitle"
-        :errorDescription="errorDescription"
-      />
+      <NoDataFound :errorTitle="errorTitle" :errorDescription="errorDescription" />
       <VBtn class="mt-4" color="primary" prepend-icon="mdi-magnify" to="/"> 返回首页 </VBtn>
     </div>
 
@@ -356,7 +346,6 @@ onUnmounted(() => {
 .search-header {
   padding: 12px 16px;
   background-color: rgb(var(--v-theme-surface));
-  border-radius: 12px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -546,38 +535,38 @@ onUnmounted(() => {
   .search-header {
     padding: 8px 12px;
   }
-  
+
   .search-title {
     font-size: 0.95rem;
     white-space: nowrap;
   }
-  
+
   .search-info-container {
     flex: 1;
     gap: 8px;
     min-width: 0;
     overflow: hidden;
   }
-  
+
   .search-tags {
     overflow-x: auto;
     flex-wrap: nowrap;
     scrollbar-width: none;
     margin-right: 8px;
   }
-  
+
   .search-tags::-webkit-scrollbar {
     display: none;
   }
-  
+
   .view-toggle-container {
     flex-shrink: 0;
   }
-  
+
   .view-toggle-buttons {
     padding: 2px;
   }
-  
+
   .view-toggle-btn {
     width: 36px;
     height: 32px;

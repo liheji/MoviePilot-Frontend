@@ -344,12 +344,11 @@ function toggleFilterMenu(key: string) {
     <!-- 搜索头部容器 - 新增，用于固定在顶部 -->
     <div class="search-header d-none d-sm-block">
       <!-- PC端页面头部和筛选栏 -->
-      <div class="view-header mb-3">
+      <VCard class="view-header mb-3 rounded-lg">
         <div class="d-flex align-center flex-wrap pa-3">
           <VChip color="primary" variant="flat" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
             {{ dataList.length }} 个资源
           </VChip>
-
           <div class="filter-bar">
             <!-- 排序选择 -->
             <VSelect
@@ -364,9 +363,7 @@ function toggleFilterMenu(key: string) {
               prepend-icon="mdi-sort"
             >
             </VSelect>
-
             <div class="filter-divider"></div>
-
             <!-- 筛选按钮 -->
             <VBtn
               v-for="(title, key) in filterTitles"
@@ -430,6 +427,7 @@ function toggleFilterMenu(key: string) {
             </VBtn>
           </div>
         </div>
+
         <!-- 已选择的过滤项显示 -->
         <div v-if="getFilterCount > 0" class="selected-filters">
           <div class="d-flex flex-wrap align-center">
@@ -450,15 +448,15 @@ function toggleFilterMenu(key: string) {
             </template>
           </div>
         </div>
-      </div>
+      </VCard>
     </div>
 
     <!-- 移动端头部和筛选区域 -->
-    <div class="d-block d-sm-none search-header-mobile">
+    <VCard class="d-block d-sm-none search-header-mobile rounded-lg mb-3">
       <!-- 移动端头部 -->
-      <div class="view-header mb-2">
+      <div class="view-header">
         <div class="d-flex align-center flex-wrap pa-2">
-          <div class="d-flex align-center w-100 mb-2">
+          <div class="d-flex align-center w-100">
             <VChip
               color="primary"
               variant="elevated"
@@ -484,7 +482,7 @@ function toggleFilterMenu(key: string) {
           </div>
 
           <!-- 筛选图标按钮区域 -->
-          <div class="filter-buttons-grid w-100">
+          <div class="filter-buttons-grid w-100 mt-2">
             <VBtn
               v-for="(title, key) in filterTitles"
               v-show="filterOptions[key].length > 0"
@@ -509,7 +507,7 @@ function toggleFilterMenu(key: string) {
           </div>
         </div>
       </div>
-    </div>
+    </VCard>
 
     <!-- 筛选菜单 -->
     <VDialog v-model="filterMenuOpen" max-width="25rem" max-height="80%" location="center">
@@ -583,7 +581,6 @@ function toggleFilterMenu(key: string) {
   z-index: 10;
   background-color: rgba(var(--v-theme-background), 0.95);
   backdrop-filter: blur(10px);
-  
 }
 
 .search-header-mobile {
@@ -596,7 +593,6 @@ function toggleFilterMenu(key: string) {
 
 .view-header {
   background-color: rgb(var(--v-theme-surface));
-  border-radius: 12px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   box-shadow: none;
   overflow: hidden;

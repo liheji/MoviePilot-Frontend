@@ -115,7 +115,7 @@ const sortIcon = computed(() => {
 </script>
 
 <template>
-  <VToolbar flat dense>
+  <VToolbar flat dense class="rounded-t-lg border-b">
     <VToolbarItems class="overflow-hidden">
       <VMenu v-if="inProps.storages?.length || 0 > 1" offset-y>
         <template #activator="{ props }">
