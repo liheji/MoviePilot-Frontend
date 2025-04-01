@@ -172,132 +172,141 @@ const resolveProgress = (item: Workflow) => {
 </script>
 <template>
   <div class="h-full">
-    <VCard class="mx-auto h-full" @click="handleFlow(workflow)" :ripple="false" :loading="loading">
-      <VCardItem class="py-3" :class="`bg-${resolveStatusVariant(workflow?.state).color}`">
-        <template #prepend>
-          <VAvatar variant="text" class="me-2">
-            <VIcon
-              v-if="workflow?.state === 'P'"
-              color="success"
-              size="x-large"
-              icon="mdi-play"
-              @click.stop="handleEnable(workflow)"
-            />
-            <VIcon v-else color="warning" icon="mdi-pause" size="x-large" @click.stop="handlePause(workflow)" />
-          </VAvatar>
-        </template>
-        <VCardTitle class="text-white">
-          {{ workflow?.name }}
-        </VCardTitle>
-        <VCardSubtitle class="text-white">{{ workflow?.description }}</VCardSubtitle>
-        <template #append>
-          <IconBtn>
-            <VIcon icon="mdi-vector-polyline-edit" @click.stop="handleFlow(workflow)" />
-          </IconBtn>
-          <IconBtn>
-            <VIcon icon="mdi-dots-vertical" />
-            <VMenu activator="parent" close-on-content-click>
-              <VList>
-                <VListItem variant="plain" base-color="primary" @click="handleEdit(workflow)">
-                  <template #prepend>
-                    <VIcon icon="mdi-note-edit" />
-                  </template>
-                  <VListItemTitle>编辑任务</VListItemTitle>
-                </VListItem>
-                <VListItem
-                  v-if="workflow.current_action"
-                  variant="plain"
-                  base-color="info"
-                  @click="handleRun(workflow, false)"
-                >
-                  <template #prepend>
-                    <VIcon icon="mdi-play-speed" />
-                  </template>
-                  <VListItemTitle>继续执行</VListItemTitle>
-                </VListItem>
-                <VListItem
-                  v-if="workflow.current_action"
-                  variant="plain"
-                  base-color="info"
-                  @click="handleRun(workflow, true)"
-                >
-                  <template #prepend>
-                    <VIcon icon="mdi-replay" />
-                  </template>
-                  <VListItemTitle>重新执行</VListItemTitle>
-                </VListItem>
-                <VListItem v-else variant="plain" base-color="info" @click="handleRun(workflow, true)">
-                  <template #prepend>
-                    <VIcon icon="mdi-run" />
-                  </template>
-                  <VListItemTitle>立即执行</VListItemTitle>
-                </VListItem>
-                <VListItem variant="plain" base-color="warning" @click="handleReset(workflow)">
-                  <template #prepend>
-                    <VIcon icon="mdi-restore-alert" />
-                  </template>
-                  <VListItemTitle>重置任务</VListItemTitle>
-                </VListItem>
-                <VListItem variant="plain" base-color="error" @click="handleDelete(workflow)">
-                  <template #prepend>
-                    <VIcon icon="mdi-delete" />
-                  </template>
-                  <VListItemTitle>删除任务</VListItemTitle>
-                </VListItem>
-              </VList>
-            </VMenu>
-          </IconBtn>
-        </template>
-      </VCardItem>
-      <VDivider />
-      <VCardText>
-        <div class="d-flex flex-column gap-y-4">
-          <div class="d-flex flex-wrap gap-x-6">
-            <div class="flex-1">
-              <div class="mb-1">定时</div>
-              <h5 class="text-h6">{{ workflow?.timer }}</h5>
-            </div>
-            <div class="flex-1">
-              <div class="mb-1">状态</div>
-              <h5 class="text-h6" :class="`text-${resolveStatusVariant(workflow?.state).color}`">
-                {{ resolveStatusVariant(workflow?.state).text }}
-              </h5>
-            </div>
-          </div>
-          <div class="d-flex flex-wrap gap-x-6">
-            <div class="flex-1">
-              <div class="mb-1">动作数</div>
-              <div>
-                <VAvatar size="32" color="primary" variant="tonal">
-                  <span class="text-sm">{{ workflow?.actions?.length }}</span>
-                </VAvatar>
+    <VHover v-slot="hover">
+      <VCard
+        v-bind="hover.props"
+        class="mx-auto h-full"
+        @click="handleFlow(workflow)"
+        :ripple="false"
+        :loading="loading"
+        :class="{ 'transition transform-cpu duration-300 -translate-y-1': hover.isHovering }"
+      >
+        <VCardItem class="py-3" :class="`bg-${resolveStatusVariant(workflow?.state).color}`">
+          <template #prepend>
+            <VAvatar variant="text" class="me-2">
+              <VIcon
+                v-if="workflow?.state === 'P'"
+                color="success"
+                size="x-large"
+                icon="mdi-play"
+                @click.stop="handleEnable(workflow)"
+              />
+              <VIcon v-else color="warning" icon="mdi-pause" size="x-large" @click.stop="handlePause(workflow)" />
+            </VAvatar>
+          </template>
+          <VCardTitle class="text-white">
+            {{ workflow?.name }}
+          </VCardTitle>
+          <VCardSubtitle class="text-white">{{ workflow?.description }}</VCardSubtitle>
+          <template #append>
+            <IconBtn>
+              <VIcon icon="mdi-vector-polyline-edit" @click.stop="handleFlow(workflow)" />
+            </IconBtn>
+            <IconBtn>
+              <VIcon icon="mdi-dots-vertical" />
+              <VMenu activator="parent" close-on-content-click>
+                <VList>
+                  <VListItem variant="plain" base-color="primary" @click="handleEdit(workflow)">
+                    <template #prepend>
+                      <VIcon icon="mdi-note-edit" />
+                    </template>
+                    <VListItemTitle>编辑任务</VListItemTitle>
+                  </VListItem>
+                  <VListItem
+                    v-if="workflow.current_action"
+                    variant="plain"
+                    base-color="info"
+                    @click="handleRun(workflow, false)"
+                  >
+                    <template #prepend>
+                      <VIcon icon="mdi-play-speed" />
+                    </template>
+                    <VListItemTitle>继续执行</VListItemTitle>
+                  </VListItem>
+                  <VListItem
+                    v-if="workflow.current_action"
+                    variant="plain"
+                    base-color="info"
+                    @click="handleRun(workflow, true)"
+                  >
+                    <template #prepend>
+                      <VIcon icon="mdi-replay" />
+                    </template>
+                    <VListItemTitle>重新执行</VListItemTitle>
+                  </VListItem>
+                  <VListItem v-else variant="plain" base-color="info" @click="handleRun(workflow, true)">
+                    <template #prepend>
+                      <VIcon icon="mdi-run" />
+                    </template>
+                    <VListItemTitle>立即执行</VListItemTitle>
+                  </VListItem>
+                  <VListItem variant="plain" base-color="warning" @click="handleReset(workflow)">
+                    <template #prepend>
+                      <VIcon icon="mdi-restore-alert" />
+                    </template>
+                    <VListItemTitle>重置任务</VListItemTitle>
+                  </VListItem>
+                  <VListItem variant="plain" base-color="error" @click="handleDelete(workflow)">
+                    <template #prepend>
+                      <VIcon icon="mdi-delete" />
+                    </template>
+                    <VListItemTitle>删除任务</VListItemTitle>
+                  </VListItem>
+                </VList>
+              </VMenu>
+            </IconBtn>
+          </template>
+        </VCardItem>
+        <VDivider />
+        <VCardText>
+          <div class="d-flex flex-column gap-y-4">
+            <div class="d-flex flex-wrap gap-x-6">
+              <div class="flex-1">
+                <div class="mb-1">定时</div>
+                <h5 class="text-h6">{{ workflow?.timer }}</h5>
+              </div>
+              <div class="flex-1">
+                <div class="mb-1">状态</div>
+                <h5 class="text-h6" :class="`text-${resolveStatusVariant(workflow?.state).color}`">
+                  {{ resolveStatusVariant(workflow?.state).text }}
+                </h5>
               </div>
             </div>
-            <div class="flex-1">
-              <div class="mb-1">已执行次数</div>
-              <h5 class="text-h6">{{ workflow?.run_count }}</h5>
-            </div>
-          </div>
-          <div class="d-flex flex-wrap gap-x-6">
-            <div class="flex-1">
-              <div class="mb-1">进度</div>
-              <div class="d-flex align-center gap-5">
-                <div class="flex-grow-1">
-                  <VProgressLinear color="info" rounded :model-value="resolveProgress(workflow)" />
+            <div class="d-flex flex-wrap gap-x-6">
+              <div class="flex-1">
+                <div class="mb-1">动作数</div>
+                <div>
+                  <VAvatar size="32" color="primary" variant="tonal">
+                    <span class="text-sm">{{ workflow?.actions?.length }}</span>
+                  </VAvatar>
                 </div>
-                <span> {{ resolveProgress(workflow) }}% </span>
+              </div>
+              <div class="flex-1">
+                <div class="mb-1">已执行次数</div>
+                <h5 class="text-h6">{{ workflow?.run_count }}</h5>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-x-6">
+              <div class="flex-1">
+                <div class="mb-1">进度</div>
+                <div class="d-flex align-center gap-5">
+                  <div class="flex-grow-1">
+                    <VProgressLinear color="info" rounded :model-value="resolveProgress(workflow)" />
+                  </div>
+                  <span> {{ resolveProgress(workflow) }}% </span>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-x-6" v-if="workflow?.result">
+              <div class="flex-1">
+                <div class="mb-1">错误信息</div>
+                <div class="text-error">{{ workflow?.result }}</div>
               </div>
             </div>
           </div>
-          <div class="d-flex flex-wrap gap-x-6" v-if="workflow?.result">
-            <div class="flex-1">
-              <div class="mb-1">错误信息</div>
-              <div class="text-error">{{ workflow?.result }}</div>
-            </div>
-          </div>
-        </div>
-      </VCardText>
-    </VCard>
+        </VCardText>
+      </VCard>
+    </VHover>
     <!-- 流程对话框 -->
     <WorkflowActionsDialog
       v-if="flowDialog"

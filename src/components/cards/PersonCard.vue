@@ -79,7 +79,7 @@ function goPersonDetail() {
         :width="personProps.width"
         class="rounded-lg"
         :class="{
-          'transition transform-cpu duration-300 scale-105': hover.isHovering,
+          'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
         }"
         @click.stop="goPersonDetail"
       >

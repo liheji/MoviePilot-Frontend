@@ -37,7 +37,7 @@ const getImgUrl = computed(() => {
         :width="props.width"
         class="ring-gray-500"
         :class="{
-          'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
+          'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
           'ring-1': imageLoaded,
         }"
         @click="goPlay"

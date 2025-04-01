@@ -143,35 +143,42 @@ onUnmounted(() => {
 </script>
 <template>
   <div>
-    <VCard variant="tonal" @click="openDownloaderInfoDialog">
-      <DialogCloseBtn @click="onClose" />
-      <span class="absolute top-3 right-12">
-        <IconBtn>
-          <VIcon class="cursor-move" icon="mdi-drag" />
-        </IconBtn>
-      </span>
-      <VCardText class="flex justify-space-between align-center gap-4">
-        <div class="align-self-start flex-1">
-          <div class="flex items-center">
-            <VBadge
-              v-if="props.downloader.default && props.downloader.enabled"
-              dot
-              inline
-              color="success"
-              class="me-1"
-            />
-            <span class="text-h6">{{ downloader.name }}</span>
+    <VHover v-slot="hover">
+      <VCard
+        v-bind="hover.props"
+        variant="tonal"
+        @click="openDownloaderInfoDialog"
+        :class="{ 'transition transform-cpu duration-300 -translate-y-1': hover.isHovering }"
+      >
+        <DialogCloseBtn @click="onClose" />
+        <span class="absolute top-3 right-12">
+          <IconBtn>
+            <VIcon class="cursor-move" icon="mdi-drag" />
+          </IconBtn>
+        </span>
+        <VCardText class="flex justify-space-between align-center gap-4">
+          <div class="align-self-start flex-1">
+            <div class="flex items-center">
+              <VBadge
+                v-if="props.downloader.default && props.downloader.enabled"
+                dot
+                inline
+                color="success"
+                class="me-1"
+              />
+              <span class="text-h6">{{ downloader.name }}</span>
+            </div>
+            <div class="mt-1 flex flex-wrap text-sm" v-if="props.downloader.enabled">
+              <span class="me-2">{{ `↑ ${formatFileSize(upload_rate, 1)}/s ` }}</span>
+              <span>{{ `↓ ${formatFileSize(download_rate, 1)}/s` }}</span>
+            </div>
           </div>
-          <div class="mt-1 flex flex-wrap text-sm" v-if="props.downloader.enabled">
-            <span class="me-2">{{ `↑ ${formatFileSize(upload_rate, 1)}/s ` }}</span>
-            <span>{{ `↓ ${formatFileSize(download_rate, 1)}/s` }}</span>
+          <div class="h-20">
+            <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" min-width="3rem" />
           </div>
-        </div>
-        <div class="h-20">
-          <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" min-width="3rem" />
-        </div>
-      </VCardText>
-    </VCard>
+        </VCardText>
+      </VCard>
+    </VHover>
     <VDialog v-if="downloaderInfoDialog" v-model="downloaderInfoDialog" scrollable max-width="40rem" persistent>
       <VCard :title="`${props.downloader.name} - 配置`" class="rounded-t">
         <DialogCloseBtn v-model="downloaderInfoDialog" />

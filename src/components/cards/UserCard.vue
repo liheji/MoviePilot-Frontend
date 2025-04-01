@@ -45,6 +45,12 @@ const movieSubscriptions = ref(0)
 // 用户电视剧订阅数量
 const tvShowSubscriptions = ref(0)
 
+// 新增：用户状态背景颜色计算
+const statusClass = computed(() => ({
+  'bg-error-lighten-4': !props.user.is_active, // 假设用户状态使用 is_active 字段
+  'border-error': !props.user.is_active, // 非活跃用户添加红色边框
+}))
+
 // 按用户查询订阅数量
 async function fetchSubscriptions() {
   try {
@@ -98,88 +104,84 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VCard>
-    <VCardText class="text-center pt-10 pb-3">
-      <VAvatar variant="flat" size="100" rounded>
-        <VImg :src="user.avatar || avatar1" alt="avatar" />
-      </VAvatar>
-      <h5 class="text-h5 mt-3">{{ user.name }}</h5>
-      <VChip size="small" class="mt-3" :class="{ 'text-error': user.is_superuser }">
+  <VHover v-slot="hover">
+    <VCard
+      v-bind="hover.props"
+      class="w-full h-full"
+      :class="{ 'transition transform-cpu duration-300 -translate-y-1': hover.isHovering, ...statusClass }"
+      @click.stop="editUser"
+    >
+      <!-- 用户头像 -->
+      <VImg height="12rem" :src="user.avatar ?? avatar1" cover>
+        <div v-if="!user.is_active" class="img-overlay" />
+      </VImg>
+      <div class="flex flex-col">
+        <!-- 用户基本信息 -->
+        <VCardTitle class="pt-2">{{ user.name }}</VCardTitle>
+        <VCardSubtitle v-if="user.email" class="text-wrap">
+          <VIcon size="16">mdi-email</VIcon>
+          {{ user.email }}
+        </VCardSubtitle>
+        <!-- 订阅信息 -->
+        <VCardActions>
+          <div class="mt-3 flex gap-3" dense>
+            <VChip v-if="user.is_otp" size="small" color="error">
+              <VIcon>mdi-lock</VIcon>
+            </VChip>
+            <VChip size="small" color="info">
+              <VIcon left class="me-2">mdi-movie</VIcon>
+              {{ movieSubscriptions }}
+            </VChip>
+            <VChip size="small" color="warning">
+              <VIcon left class="me-2">mdi-television</VIcon>
+              {{ tvShowSubscriptions }}
+            </VChip>
+          </div>
+        </VCardActions>
+      </div>
+      <!-- 管理员标签 -->
+      <VChip
+        variant="elevated"
+        size="small"
+        class="absolute right-2 top-2"
+        :color="user.is_superuser ? 'primary' : 'secondary'"
+      >
         {{ user.is_superuser ? '管理员' : '普通用户' }}
       </VChip>
-    </VCardText>
-    <VCardText class="flex justify-center gap-6 pb-5">
-      <div class="d-flex align-center">
-        <VAvatar size="40" color="primary" rounded variant="tonal" class="me-4">
-          <VIcon size="24" icon="mdi-movie-open-outline"></VIcon>
-        </VAvatar>
-        <div>
-          <div class="text-h6">{{ movieSubscriptions }}</div>
-          <div class="text-sm text-no-wrap">电影订阅</div>
-        </div>
+      <!-- 删除按钮 -->
+      <div class="absolute bottom-2 w-full flex items-center justify-center">
+        <VBtn
+          v-show="hover.isHovering && currentUserIsSuperuser"
+          @click.stop="removeUser"
+          icon="mdi-delete"
+          color="error"
+          size="small"
+          class="shadow-xl"
+        />
       </div>
-      <div class="d-flex align-center">
-        <VAvatar size="40" color="primary" rounded variant="tonal" class="me-4">
-          <VIcon size="24" icon="mdi-television"></VIcon>
-        </VAvatar>
-        <div>
-          <div class="text-h6">{{ tvShowSubscriptions }}</div>
-          <div class="text-sm text-no-wrap">电视剧订阅</div>
-        </div>
-      </div>
-    </VCardText>
-    <VCardText class="pb-6">
-      <VDivider class="my-2">
-        <h5 class="text-h6">详情</h5>
-      </VDivider>
-      <VList lines="one">
-        <VListItem>
-          <VListItemTitle class="text-sm">
-            <span class="font-weight-medium">邮箱：</span><span class="text-body-1"> {{ user.email }}</span>
-          </VListItemTitle>
-        </VListItem>
-        <VListItem>
-          <VListItemTitle class="text-sm">
-            <span class="font-weight-medium">状态：</span
-            ><span class="text-body-1">
-              <VChip size="small" :class="{ 'text-success': user.is_active }" variant="tonal">
-                {{ user.is_active ? '激活' : '已停用' }}
-              </VChip>
-            </span>
-          </VListItemTitle>
-        </VListItem>
-        <VListItem>
-          <VListItemTitle class="text-sm">
-            <span class="font-weight-medium">双重认证：</span
-            ><span class="text-body-1">
-              <VChip size="small" :class="{ 'text-success': user.is_otp }" variant="tonal">
-                {{ user.is_otp ? '已启用' : '未启用' }}
-              </VChip>
-            </span>
-          </VListItemTitle>
-        </VListItem>
-      </VList>
-    </VCardText>
-    <VCardText class="flex flex-row justify-center">
-      <VBtn v-if="currentUserIsSuperuser" color="primary" class="me-4" @click="editUser"> 编辑 </VBtn>
-      <VBtn
-        v-if="currentUserIsSuperuser && props.user.id != currentLoginUserId"
-        color="error"
-        variant="outlined"
-        @click="removeUser"
-      >
-        删除
-      </VBtn>
-    </VCardText>
-  </VCard>
+    </VCard>
+  </VHover>
+
   <!-- 用户编辑弹窗 -->
   <UserAddEditDialog
     v-if="userEditDialog"
     v-model="userEditDialog"
-    :username="props.user?.name"
-    :usernames="props.users.map(item => item.name)"
+    :username="user?.name"
+    :usernames="users.map(item => item.name)"
     oper="edit"
     @save="onUserUpdate"
     @close="userEditDialog = false"
   />
 </template>
+
+<style scoped>
+.img-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+}
+</style>

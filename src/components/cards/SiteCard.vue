@@ -390,14 +390,14 @@ onMounted(() => {
   background: rgba(var(--v-theme-surface), 0.95);
   border-radius: 10px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.09);
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
 }
 
 .site-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   border-color: rgba(var(--v-theme-primary), 0.2);
   box-shadow: 0 3px 12px -6px rgba(0, 0, 0, 0.1);
 }

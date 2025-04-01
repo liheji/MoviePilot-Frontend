@@ -298,7 +298,7 @@ function onSubscribeEditRemove() {
           class="flex flex-col rounded-lg h-full"
           :class="{
             'outline-dashed outline-1': props.media?.best_version && imageLoaded,
-            'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
+            'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
             'opacity-70': subscribeState === 'S',
           }"
           min-height="170"

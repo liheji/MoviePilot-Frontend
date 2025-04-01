@@ -158,7 +158,7 @@ onMounted(async () => {
         :height="props.height"
         :width="props.width"
         :class="{
-          'transition transform-cpu duration-300 scale-105 shadow-lg': hover.isHovering,
+          'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
         }"
         @click="goPlay"
       >

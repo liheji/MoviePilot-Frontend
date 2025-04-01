@@ -335,6 +335,9 @@ watch(
           :height="props.height"
           @click="openPluginDetail"
           class="flex flex-col h-full"
+          :class="{
+            'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
+          }"
         >
           <div
             class="relative flex flex-row items-start pa-3 justify-between grow"
