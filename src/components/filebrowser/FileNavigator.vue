@@ -259,7 +259,7 @@ function getIndentLevel(path: string, ancestorPath: string) {
 </script>
 
 <template>
-  <VCard class="file-navigator rounded-t-0 rounded-e-0" v-if="!isMobile">
+  <VCard class="file-navigator" v-if="!isMobile">
     <div class="tree-container">
       <!-- 根目录项 -->
       <div

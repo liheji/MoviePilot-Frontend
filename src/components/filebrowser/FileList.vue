@@ -533,7 +533,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard class="d-flex flex-column w-full h-full rounded-t-0 rounded-s-0">
+  <VCard class="d-flex flex-column w-full h-full">
     <VToolbar v-if="!loading" density="compact" flat color="gray">
       <VTextField
         v-if="!isFile"
