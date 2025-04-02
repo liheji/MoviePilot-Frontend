@@ -9,7 +9,7 @@ import UserAddEditDialog from '@/components/dialog/UserAddEditDialog.vue'
 
 // 扩展User类型以包含昵称字段
 interface ExtendedUser extends User {
-  nickname?: string;
+  nickname?: string
 }
 
 // 定义输入变量
@@ -61,9 +61,9 @@ const isMobile = ref(window.innerWidth < 600)
 
 // 显示名称 - 如果有昵称则优先显示昵称
 const displayName = computed(() => {
-  const settingsNickname = props.user.settings?.nickname as string | undefined;
-  const nickname = props.user.nickname || settingsNickname;
-  return nickname || props.user.name;
+  const settingsNickname = props.user.settings?.nickname as string | undefined
+  const nickname = props.user.nickname || settingsNickname
+  return nickname || props.user.name
 })
 
 // 计算用户卡片状态类
@@ -136,13 +136,9 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <VCard 
+  <VCard
     class="user-card"
-    :class="[
-      {'user-card-hover': isHovered}, 
-      cardStatusClass,
-      {'mobile-card': isMobile}
-    ]"
+    :class="[{ 'user-card-hover': isHovered }, cardStatusClass, { 'mobile-card': isMobile }]"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
@@ -152,12 +148,16 @@ onUnmounted(() => {
       <div class="decoration-circle"><VIcon icon="mdi-shield-star" size="x-small" color="warning" /></div>
       <div class="decoration-line"></div>
     </div>
-    
+
     <!-- 用户头像和基本信息 -->
-    <div class="user-card-header" :class="{'admin-header': user.is_superuser}">
+    <div class="user-card-header" :class="{ 'admin-header': user.is_superuser }">
       <div class="user-avatar-container">
-        <VAvatar :size="isMobile ? 50 : 74" rounded="lg" class="user-avatar"
-                :class="{'admin-avatar': user.is_superuser, 'inactive-avatar': !user.is_active}">
+        <VAvatar
+          :size="isMobile ? 50 : 74"
+          rounded="lg"
+          class="user-avatar"
+          :class="{ 'admin-avatar': user.is_superuser, 'inactive-avatar': !user.is_active }"
+        >
           <VImg :src="user.avatar || avatar1" :alt="user.name" />
           <div v-if="!user.is_active" class="avatar-overlay">
             <VIcon icon="mdi-account-lock" color="white" size="small" />
@@ -167,48 +167,31 @@ onUnmounted(() => {
           <VIcon icon="mdi-crown" color="warning" size="small" />
         </div>
       </div>
-      
+
       <div class="user-info">
         <div class="user-name-section">
           <div class="name-and-badges">
-            <h3 class="user-name" :class="{'admin-name': user.is_superuser, 'inactive-name': !user.is_active}">
+            <h3 class="user-name" :class="{ 'admin-name': user.is_superuser, 'inactive-name': !user.is_active }">
               {{ displayName }}
-              <VIcon v-if="user.nickname || user.settings?.nickname" icon="mdi-format-quote-close" size="x-small" color="info" class="nickname-icon" />
-            </h3>
-            <div class="user-badges">
-              <VChip
-                v-if="user.is_superuser"
-                size="x-small"
-                color="error"
-                class="user-badge admin-badge"
-              >管理员</VChip>
-              <VChip
-                v-else
-                size="x-small"
-                color="default"
-                class="user-badge"
-              >普通用户</VChip>
-              <VChip
-                size="x-small"
-                :color="user.is_active ? 'success' : 'grey'"
-                variant="tonal"
-                class="user-badge"
-              >
-                {{ user.is_active ? '激活' : '已停用' }}
-              </VChip>
-              <VChip
-                v-if="user.is_otp"
+              <VIcon
+                v-if="user.nickname || user.settings?.nickname"
+                icon="mdi-format-quote-close"
                 size="x-small"
                 color="info"
-                variant="tonal"
-                class="user-badge"
-              >
-                2FA
+                class="nickname-icon"
+              />
+            </h3>
+            <div class="user-badges">
+              <VChip v-if="user.is_superuser" size="x-small" color="error" class="user-badge admin-badge">管理员</VChip>
+              <VChip v-else size="x-small" color="default" class="user-badge">普通用户</VChip>
+              <VChip size="x-small" :color="user.is_active ? 'success' : 'grey'" variant="tonal" class="user-badge">
+                {{ user.is_active ? '激活' : '已停用' }}
               </VChip>
+              <VChip v-if="user.is_otp" size="x-small" color="info" variant="tonal" class="user-badge"> 2FA </VChip>
             </div>
           </div>
         </div>
-        
+
         <!-- 移动端订阅数据信息 -->
         <div v-if="isMobile" class="mobile-stats">
           <div class="mobile-stat-item">
@@ -221,7 +204,7 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-      
+
       <!-- 头部操作按钮 -->
       <div class="user-actions" :class="{ 'mobile-actions': isMobile }">
         <VBtn
@@ -235,7 +218,7 @@ onUnmounted(() => {
           <VIcon icon="mdi-pencil" />
           <VTooltip v-if="!isMobile" activator="parent" location="bottom">编辑用户</VTooltip>
         </VBtn>
-        
+
         <VBtn
           v-if="props.user.id != currentLoginUserId && currentUserIsSuperuser"
           icon
@@ -250,18 +233,18 @@ onUnmounted(() => {
         </VBtn>
       </div>
     </div>
-    
+
     <!-- 独立的邮箱显示 -->
-    <div class="email-container" :class="{'admin-email': user.is_superuser, 'inactive-email': !user.is_active}">
+    <div class="email-container" :class="{ 'admin-email': user.is_superuser, 'inactive-email': !user.is_active }">
       <VIcon icon="mdi-email-outline" size="small" color="primary" class="email-icon" />
       <span class="email-text">{{ user.email || '未设置邮箱' }}</span>
     </div>
-    
+
     <!-- PC端显示订阅统计信息 -->
     <div v-if="!isMobile" class="user-card-body">
       <div class="user-stats-container">
         <div class="stat-item">
-          <div class="stat-icon-container" :class="{'admin-stat': user.is_superuser}">
+          <div class="stat-icon-container" :class="{ 'admin-stat': user.is_superuser }">
             <VIcon :color="user.is_superuser ? 'warning' : 'primary'" icon="mdi-movie-outline" size="20" />
           </div>
           <div class="stat-content">
@@ -269,9 +252,9 @@ onUnmounted(() => {
             <div class="stat-label">电影订阅</div>
           </div>
         </div>
-        
+
         <div class="stat-item">
-          <div class="stat-icon-container" :class="{'admin-stat': user.is_superuser}">
+          <div class="stat-icon-container" :class="{ 'admin-stat': user.is_superuser }">
             <VIcon :color="user.is_superuser ? 'warning' : 'primary'" icon="mdi-television-classic" size="20" />
           </div>
           <div class="stat-content">
@@ -282,7 +265,7 @@ onUnmounted(() => {
       </div>
     </div>
   </VCard>
-  
+
   <!-- 用户编辑弹窗 -->
   <UserAddEditDialog
     v-if="userEditDialog"
@@ -299,57 +282,53 @@ onUnmounted(() => {
 .user-card {
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
   background: rgb(var(--v-theme-surface));
+  transition: all 0.3s ease;
 }
 
 .user-card-hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(var(--v-theme-on-surface), 0.15);
 }
 
 .user-card-admin {
   border: 2px solid transparent;
-  background-image: linear-gradient(rgb(var(--v-theme-surface)), rgb(var(--v-theme-surface))), 
-                    linear-gradient(120deg, rgba(var(--v-theme-warning), 0.5), rgba(var(--v-theme-error), 0.5));
-  background-origin: border-box;
   background-clip: content-box, border-box;
+  background-image: linear-gradient(rgb(var(--v-theme-surface)), rgb(var(--v-theme-surface))),
+    linear-gradient(120deg, rgba(var(--v-theme-warning), 0.5), rgba(var(--v-theme-error), 0.5));
+  background-origin: border-box;
 }
 
 .user-card-inactive {
+  position: relative;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   background-color: rgba(var(--v-theme-surface), 0.95);
   opacity: 0.85;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
-  position: relative;
 }
 
 .user-card-inactive::before {
-  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  backdrop-filter: grayscale(30%);
   z-index: 1;
+  backdrop-filter: grayscale(30%);
+  content: '';
+  inset: 0;
   pointer-events: none;
 }
 
 .admin-decoration {
   position: absolute;
+  z-index: 1;
   display: flex;
   align-items: center;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 4px 12px;
-  z-index: 1;
+  inset-block-start: 0;
+  inset-inline: 0;
+  padding-block: 4px;
+  padding-inline: 12px;
 }
 
 .decoration-line {
   flex: 1;
-  height: 1px;
   background: linear-gradient(90deg, rgba(var(--v-theme-warning), 0.1), rgba(var(--v-theme-warning), 0.7));
+  block-size: 1px;
 }
 
 .decoration-line:last-child {
@@ -357,22 +336,24 @@ onUnmounted(() => {
 }
 
 .decoration-circle {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid rgba(var(--v-theme-warning), 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 8px;
+  border: 1px solid rgba(var(--v-theme-warning), 0.5);
+  border-radius: 50%;
   background: rgb(var(--v-theme-surface));
+  block-size: 18px;
+  inline-size: 18px;
+  margin-block: 0;
+  margin-inline: 8px;
 }
 
 .user-card-header {
-  padding: 20px 16px 12px;
-  display: flex;
   position: relative;
   z-index: 2;
+  display: flex;
+  padding-block: 20px 12px;
+  padding-inline: 16px;
 }
 
 .admin-header {
@@ -381,12 +362,12 @@ onUnmounted(() => {
 
 .user-avatar-container {
   position: relative;
-  margin-right: 16px;
+  margin-inline-end: 16px;
 }
 
 .user-avatar {
-  box-shadow: 0 4px 8px rgba(var(--v-theme-on-surface), 0.1);
   border: 4px solid rgb(var(--v-theme-surface));
+  box-shadow: 0 4px 8px rgba(var(--v-theme-on-surface), 0.1);
   transition: all 0.3s ease;
 }
 
@@ -395,69 +376,65 @@ onUnmounted(() => {
   box-shadow: 0 5px 15px rgba(var(--v-theme-warning), 0.2);
 }
 
-.admin-avatar:after {
-  content: '';
+.admin-avatar::after {
   position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
-  border-radius: 12px;
   border: 1px solid rgba(var(--v-theme-warning), 0.3);
-  pointer-events: none;
+  border-radius: 12px;
   animation: pulse 2.5s infinite;
+  content: '';
+  inset: -5px;
+  pointer-events: none;
 }
 
 @keyframes pulse {
   0% {
-    transform: scale(0.95);
     opacity: 0.6;
+    transform: scale(0.95);
   }
+
   70% {
-    transform: scale(1.05);
     opacity: 0.2;
+    transform: scale(1.05);
   }
+
   100% {
-    transform: scale(0.95);
     opacity: 0.6;
+    transform: scale(0.95);
   }
 }
 
 .inactive-avatar {
+  border-color: rgba(var(--v-theme-on-surface), 0.1);
   filter: grayscale(50%);
   opacity: 0.9;
-  border-color: rgba(var(--v-theme-on-surface), 0.1);
 }
 
 .avatar-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(var(--v-theme-on-surface), 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
   backdrop-filter: blur(1px);
+  background: rgba(var(--v-theme-on-surface), 0.2);
+  inset: 0;
 }
 
 .otp-badge {
   position: absolute;
-  bottom: 0;
-  right: 0;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: glow 2s infinite alternate;
+  inset-block-end: 0;
+  inset-inline-end: 0;
 }
 
 .otp-badge .v-icon {
-  color: #4CAF50 !important;
+  color: #4caf50 !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 40%));
   font-size: 18px;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 
 @keyframes glow {
@@ -465,6 +442,7 @@ onUnmounted(() => {
     opacity: 0.9;
     transform: scale(1);
   }
+
   to {
     opacity: 1;
     transform: scale(1.15);
@@ -472,8 +450,8 @@ onUnmounted(() => {
 }
 
 .mobile-otp {
-  bottom: 0 !important;
-  right: 0 !important;
+  inset-block-end: 0 !important;
+  inset-inline-end: 0 !important;
 }
 
 .mobile-otp .v-icon {
@@ -482,13 +460,13 @@ onUnmounted(() => {
 
 .admin-crown {
   position: absolute;
-  top: -10px;
-  left: -6px;
-  background: transparent;
   z-index: 5;
-  transform: rotate(-25deg);
   animation: float 3s ease-in-out infinite;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+  background: transparent;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 40%));
+  inset-block-start: -10px;
+  inset-inline-start: -6px;
+  transform: rotate(-25deg);
 }
 
 .admin-crown .v-icon {
@@ -498,38 +476,42 @@ onUnmounted(() => {
 
 @keyframes float {
   0% {
-    transform: rotate(-25deg) translateY(0px);
+    transform: rotate(-25deg) translateY(0);
   }
+
   50% {
     transform: rotate(-25deg) translateY(-3px);
   }
+
   100% {
-    transform: rotate(-25deg) translateY(0px);
+    transform: rotate(-25deg) translateY(0);
   }
 }
 
 .nickname-icon {
-  margin-left: 4px;
-  vertical-align: middle;
   animation: pulse-nickname 2s ease infinite;
-  opacity: 0.9;
   filter: brightness(1.1);
+  margin-inline-start: 4px;
+  opacity: 0.9;
+  vertical-align: middle;
 }
 
 @keyframes pulse-nickname {
-  0%, 100% {
-    transform: scale(1);
+  0%,
+  100% {
     opacity: 0.9;
+    transform: scale(1);
   }
+
   50% {
-    transform: scale(1.2);
     opacity: 1;
+    transform: scale(1.2);
   }
 }
 
 .drag-handle {
   cursor: move;
-  margin-right: 6px;
+  margin-inline-end: 6px;
   opacity: 0.3;
   transition: opacity 0.2s ease;
 }
@@ -539,38 +521,39 @@ onUnmounted(() => {
 }
 
 .user-info {
-  flex: 1;
-  min-width: 0;
   display: flex;
+  flex: 1;
   flex-direction: column;
   justify-content: space-between;
+  min-inline-size: 0;
 }
 
 .user-name-section {
-  margin-bottom: 8px;
+  margin-block-end: 8px;
 }
 
 .name-and-badges {
   display: flex;
   flex-direction: column;
-  margin-bottom: 4px;
+  margin-block-end: 4px;
 }
 
 .user-name {
+  display: flex;
+  overflow: hidden;
+  align-items: center;
   font-size: 1.2rem;
   font-weight: 600;
-  margin: 0 0 4px;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  overflow: hidden;
+  margin-block: 0 4px;
+  margin-inline: 0;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-name {
   color: rgb(var(--v-theme-warning));
-  text-shadow: 0 1px 2px rgba(var(--v-theme-warning), 0.1);
   font-weight: 700;
+  text-shadow: 0 1px 2px rgba(var(--v-theme-warning), 0.1);
 }
 
 .inactive-name {
@@ -581,9 +564,9 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: nowrap;
   gap: 4px;
-  margin-bottom: 4px;
-  overflow-x: auto;
+  margin-block-end: 4px;
   -ms-overflow-style: none;
+  overflow-x: auto;
   scrollbar-width: none;
 }
 
@@ -592,33 +575,34 @@ onUnmounted(() => {
 }
 
 .user-badge {
+  flex-shrink: 0;
   font-size: 0.7rem;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .admin-badge {
   border: 1px solid rgba(var(--v-theme-error), 0.3);
 }
 
-.user-account, .user-email {
-  font-size: 0.8rem;
-  color: rgba(var(--v-theme-on-surface), 0.7);
-  margin-top: 4px;
+.user-account,
+.user-email {
   position: absolute;
-  left: 0;
-  top: 100%;
-  width: 100%;
   display: flex;
-  align-items: center;
-  white-space: nowrap;
   overflow: hidden;
+  align-items: center;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 0.8rem;
+  inline-size: 100%;
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+  margin-block-start: 4px;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .account-label {
   color: rgba(var(--v-theme-on-surface), 0.5);
-  margin-right: 4px;
+  margin-inline-end: 4px;
 }
 
 .account-value {
@@ -626,14 +610,14 @@ onUnmounted(() => {
 }
 
 .info-icon {
-  margin-right: 4px;
+  margin-inline-end: 4px;
   opacity: 0.6;
 }
 
 .email-text {
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-actions {
@@ -643,10 +627,10 @@ onUnmounted(() => {
 
 .mobile-actions {
   position: absolute;
-  top: 10px;
-  right: 10px;
   display: flex;
   gap: 4px;
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
 }
 
 .action-btn {
@@ -664,20 +648,21 @@ onUnmounted(() => {
 }
 
 .mobile-stats {
+  position: relative;
+  z-index: 5;
   display: flex;
   justify-content: flex-start;
   gap: 20px;
-  margin-top: 8px;
-  z-index: 5;
-  position: relative;
-  padding: 4px 0;
+  margin-block-start: 8px;
+  padding-block: 4px;
+  padding-inline: 0;
 }
 
 .mobile-stat-item {
   display: flex;
   align-items: center;
-  gap: 6px;
   font-size: 0.95rem;
+  gap: 6px;
 }
 
 .mobile-stat-item .v-icon {
@@ -689,16 +674,17 @@ onUnmounted(() => {
 }
 
 .user-card-body {
-  padding: 0 16px 16px;
+  padding-block: 0 16px;
+  padding-inline: 16px;
 }
 
 .user-stats-container {
   display: flex;
   justify-content: space-around;
-  margin-top: 8px;
-  background-color: rgba(var(--v-theme-on-surface), 0.02);
-  border-radius: 10px;
   padding: 12px;
+  border-radius: 10px;
+  background-color: rgba(var(--v-theme-on-surface), 0.02);
+  margin-block-start: 8px;
 }
 
 .stat-item {
@@ -708,14 +694,14 @@ onUnmounted(() => {
 }
 
 .stat-icon-container {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background-color: rgba(var(--v-theme-primary), 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  block-size: 40px;
   box-shadow: 0 2px 6px rgba(var(--v-theme-on-surface), 0.05);
+  inline-size: 40px;
 }
 
 .admin-stat {
@@ -734,8 +720,8 @@ onUnmounted(() => {
 }
 
 .stat-label {
-  font-size: 0.75rem;
   color: rgba(var(--v-theme-on-surface), 0.6);
+  font-size: 0.75rem;
 }
 
 .menu-item {
@@ -747,13 +733,14 @@ onUnmounted(() => {
 }
 
 .email-container {
-  padding: 8px 16px;
   display: flex;
-  align-items: center;
-  white-space: nowrap;
   overflow: hidden;
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  align-items: center;
   background-color: transparent;
+  border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  padding-block: 8px;
+  padding-inline: 16px;
+  white-space: nowrap;
 }
 
 .admin-email {
@@ -766,21 +753,22 @@ onUnmounted(() => {
 }
 
 .email-container .email-icon {
-  margin-right: 8px;
   flex-shrink: 0;
+  margin-inline-end: 8px;
   opacity: 0.7;
 }
 
 .email-container .email-text {
-  font-size: 0.9rem;
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  white-space: nowrap;
   overflow: hidden;
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 0.9rem;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mobile-card .email-container {
-  padding: 6px 12px;
+  padding-block: 6px;
+  padding-inline: 12px;
 }
 
 .mobile-card .email-container .email-text {
@@ -793,8 +781,8 @@ onUnmounted(() => {
 
 .mobile-card .otp-badge {
   position: absolute;
-  bottom: 0 !important;
-  right: 0 !important;
   z-index: 10;
+  inset-block-end: 0 !important;
+  inset-inline-end: 0 !important;
 }
 </style>

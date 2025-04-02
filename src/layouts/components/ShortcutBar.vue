@@ -118,7 +118,7 @@ onMounted(() => {
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard>
+    <VCard elevation="1">
       <VCardItem class="border-b">
         <VCardTitle>捷径</VCardTitle>
         <template #append>
@@ -138,7 +138,7 @@ onMounted(() => {
               <span class="text-sm">名称识别测试</span>
             </VListItem>
           </VCol>
-          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon border-e" @click="() => {}">
+          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon" @click="() => {}">
             <VListItem class="pa-4" @click="ruleTestDialog = true">
               <VAvatar size="48" variant="tonal">
                 <VIcon icon="mdi-filter-cog-outline" />
@@ -178,7 +178,7 @@ onMounted(() => {
               <span class="text-sm">健康检查</span>
             </VListItem>
           </VCol>
-          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon border-e" @click="() => {}">
+          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon" @click="() => {}">
             <VListItem class="pa-4" @click="messageDialog = true">
               <VAvatar size="48" variant="tonal">
                 <VIcon icon="mdi-message-outline" />

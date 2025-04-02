@@ -24,7 +24,6 @@ function startSSEMessager() {
         const noti: SystemNotification = JSON.parse(event.data)
         notificationList.value.unshift(noti)
         hasNewMessage.value = true
-        // TODO 在顶部显示消息汽泡
       }
     })
   }, 3000)
@@ -54,7 +53,7 @@ onBeforeUnmount(() => {
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard>
+    <VCard elevation="1">
       <VCardItem class="border-b">
         <VCardTitle>通知</VCardTitle>
         <template #append>
