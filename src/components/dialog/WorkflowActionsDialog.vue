@@ -187,7 +187,7 @@ onMounted(() => {
             :edge-updater-radius="10"
             @dragover="onDragOver"
             @dragleave="onDragLeave"
-            delete-key-code="Delete"
+            :delete-key-code="['Delete', 'Backspace']"
             auto-connect
           >
             <MiniMap />
@@ -226,49 +226,51 @@ onMounted(() => {
 }
 
 .dnd-flow {
-  flex-direction: column;
   display: flex;
-  height: 100%;
+  flex-direction: column;
+  block-size: 100%;
 }
 
 .dnd-flow aside {
-  color: #fff;
-  font-weight: 700;
-  border-right: 1px solid #eee;
-  padding: 15px 10px;
-  font-size: 12px;
   background: #10b981bf;
-  -webkit-box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
+  border-inline-end: 1px solid #eee;
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 30%);
   box-shadow: 0 5px 10px #0000004d;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding-block: 15px;
+  padding-inline: 10px;
 }
 
 .dnd-flow aside .nodes > * {
-  margin-bottom: 10px;
+  box-shadow: 5px 5px 10px 2px rgba(0, 0, 0, 25%);
+  box-shadow: 5px 5px 10px 2px #00000040;
   cursor: grab;
   font-weight: 500;
-  -webkit-box-shadow: 5px 5px 10px 2px rgba(0, 0, 0, 0.25);
-  box-shadow: 5px 5px 10px 2px #00000040;
+  margin-block-end: 10px;
 }
 
 .dnd-flow aside .description {
-  margin-bottom: 10px;
-}
-.dnd-flow .vue-flow-wrapper {
-  flex-grow: 1;
-  height: 100%;
+  margin-block-end: 10px;
 }
 
-@media screen and (min-width: 640px) {
+.dnd-flow .vue-flow-wrapper {
+  flex-grow: 1;
+  block-size: 100%;
+}
+
+@media screen and (width >= 640px) {
   .dnd-flow {
     flex-direction: row;
   }
 
   .dnd-flow aside {
-    max-width: 25%;
+    max-inline-size: 25%;
   }
 }
 
-@media screen and (max-width: 639px) {
+@media screen and (width <= 639px) {
   .dnd-flow aside .nodes {
     display: flex;
     flex-direction: row;
@@ -278,27 +280,27 @@ onMounted(() => {
 
 .dropzone-background {
   position: relative;
-  height: 100%;
-  width: 100%;
+  block-size: 100%;
+  inline-size: 100%;
 }
 
 .dropzone-background .overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  block-size: 100%;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
   pointer-events: none;
 }
 
 .vue-flow__handle {
-  height: 24px;
-  width: 8px;
   border-radius: 4px;
+  block-size: 24px;
+  inline-size: 8px;
 }
 
 .vue-flow__edge-path,
