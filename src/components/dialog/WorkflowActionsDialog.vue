@@ -148,6 +148,11 @@ onMounted(() => {
     edges.value = props.workflow.flows ?? []
   }
 })
+
+// 判断是不是MACOS
+const isMacOS = computed(() => {
+  return /Macintosh|MacIntel|MacPPC|Mac68K/.test(navigator.userAgent)
+})
 </script>
 
 <template>
@@ -187,7 +192,7 @@ onMounted(() => {
             :edge-updater-radius="10"
             @dragover="onDragOver"
             @dragleave="onDragLeave"
-            :delete-key-code="['Delete', 'Backspace']"
+            :delete-key-code="isMacOS ? 'Backspace' : 'Delete'"
             auto-connect
           >
             <MiniMap />
