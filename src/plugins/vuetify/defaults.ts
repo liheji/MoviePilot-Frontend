@@ -30,13 +30,20 @@ export default {
     color: 'primary',
   },
   VCard: {
-    elevation: 1,
+    elevation: 0,
+  },
+  VMenu: {
+    elevation: 0,
   },
   VChip: {
     elevation: 0,
   },
+  VBottomSheet: {
+    elevation: 0,
+  },
   VList: {
     color: 'primary',
+    elevation: 1,
   },
   VPagination: {
     activeColor: 'primary',

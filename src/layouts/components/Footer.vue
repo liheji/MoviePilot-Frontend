@@ -29,7 +29,7 @@ const currentPath = computed(() => route.path)
 </script>
 
 <template>
-  <div v-if="appMode" class="w-100">
+  <div class="w-100">
     <VBottomNavigation
       grow
       horizontal

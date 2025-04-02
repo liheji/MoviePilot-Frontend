@@ -87,8 +87,15 @@ onActivated(() => {
 </script>
 
 <template>
-  <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-  <div>
+  <div class="card-list-container">
+    <!-- 页面标题 -->
+    <div class="page-content-header">
+      <div class="page-content-header-title">
+        <VIcon icon="mdi-web" size="large" color="primary" class="page-content-header-title-icon" />
+        <h1 class="page-content-header-title-text">站点管理</h1>
+      </div>
+    </div>
+    <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <draggable
       v-if="siteList.length > 0"
       v-model="siteList"

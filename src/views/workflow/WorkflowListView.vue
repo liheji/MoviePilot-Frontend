@@ -45,7 +45,14 @@ onActivated(() => {
 </script>
 
 <template>
-  <div>
+  <div class="card-list-container">
+    <!-- 页面标题 -->
+    <div class="page-content-header">
+      <div class="page-content-header-title">
+        <VIcon icon="mdi-state-machine" size="large" color="primary" class="page-content-header-title-icon" />
+        <h1 class="page-content-header-title-text">工作流</h1>
+      </div>
+    </div>
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <VRow v-if="workflowList.length > 0" class="match-height">
       <VCol cols="12" md="6" lg="4" v-for="item in workflowList" :key="item.id">
