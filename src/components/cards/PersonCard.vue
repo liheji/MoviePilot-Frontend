@@ -77,7 +77,6 @@ function goPersonDetail() {
         v-bind="hover.props"
         :height="personProps.height"
         :width="personProps.width"
-        class="rounded-lg"
         :class="{
           'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
         }"

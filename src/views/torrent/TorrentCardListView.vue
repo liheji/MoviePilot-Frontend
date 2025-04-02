@@ -507,7 +507,7 @@ function loadMore({ done }: { done: any }) {
   </div>
 
   <!-- 移动端头部和筛选区域 -->
-  <VCard class="d-block d-sm-none search-header-mobile rounded-lg">
+  <VCard class="d-block d-sm-none search-header-mobile">
     <!-- 移动端头部 -->
     <div class="view-header">
       <div class="d-flex align-center flex-wrap pa-2">
@@ -623,32 +623,32 @@ function loadMore({ done }: { done: any }) {
 <style scoped>
 .search-header {
   position: sticky;
-  top: 0;
   z-index: 10;
-  background-color: rgba(var(--v-theme-background), 0.95);
   backdrop-filter: blur(10px);
+  background-color: rgba(var(--v-theme-background), 0.95);
+  inset-block-start: 0;
 }
 
 .view-header {
-  background-color: rgb(var(--v-theme-surface));
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .sort-container {
-  border-right: 1px solid rgba(var(--v-theme-on-surface), 0.12);
-  padding-right: 12px;
+  border-inline-end: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  padding-inline-end: 12px;
 }
 
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
 }
 
 .filter-btn {
-  min-width: 0;
+  min-inline-size: 0;
   transition: transform 0.2s;
 }
 
@@ -658,21 +658,20 @@ function loadMore({ done }: { done: any }) {
 
 .sort-select {
   font-size: 0.9rem;
-  min-width: 120px;
-  max-width: 160px;
   font-weight: 500;
+  max-inline-size: 160px;
+  min-inline-size: 120px;
 }
 
 .sort-select :deep(.v-field__input) {
-  padding-top: 5px;
-  padding-bottom: 5px;
-  min-height: 36px;
+  min-block-size: 36px;
+  padding-block: 5px;
 }
 
 .selected-filters {
-  background-color: rgba(var(--v-theme-surface-variant), 0.08);
-  border-radius: 0 0 12px 12px;
   overflow: hidden;
+  border-radius: 0 0 12px 12px;
+  background-color: rgba(var(--v-theme-surface-variant), 0.08);
 }
 
 .filter-menu-content {
@@ -685,24 +684,24 @@ function loadMore({ done }: { done: any }) {
 }
 
 .filter-chip {
+  border: 1px solid rgba(var(--v-theme-primary), 0.2);
   margin: 4px;
-  transition: all 0.2s ease;
   background-color: rgba(var(--v-theme-primary), 0.1) !important;
   color: rgba(var(--v-theme-on-surface), 0.9) !important;
   font-weight: 500;
-  border: 1px solid rgba(var(--v-theme-primary), 0.2);
+  transition: all 0.2s ease;
 }
 
 .filter-chip:hover {
-  transform: translateY(-2px);
   background-color: rgba(var(--v-theme-primary), 0.15) !important;
+  transform: translateY(-2px);
 }
 
 .filter-chip.v-chip--selected {
   background-color: rgba(var(--v-theme-primary), 0.85) !important;
+  box-shadow: 0 2px 4px rgba(var(--v-theme-primary), 0.3);
   color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(var(--v-theme-primary), 0.3);
 }
 
 .filter-tag {
@@ -722,10 +721,10 @@ function loadMore({ done }: { done: any }) {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .sort-select {
-    min-width: 100px;
-    max-width: 120px;
+    max-inline-size: 120px;
+    min-inline-size: 100px;
   }
 
   .filter-btn {
@@ -733,49 +732,50 @@ function loadMore({ done }: { done: any }) {
   }
 
   .sort-container {
-    border-right: none;
-    padding-right: 0;
-    margin-bottom: 8px;
-    width: 100%;
+    border-inline-end: none;
+    inline-size: 100%;
+    margin-block-end: 8px;
+    padding-inline-end: 0;
   }
 
   .sort-select {
-    width: 100%;
+    inline-size: 100%;
   }
 
   .filter-bar {
-    width: 100%;
-    margin-top: 8px;
+    inline-size: 100%;
+    margin-block-start: 8px;
   }
 }
 
 .mobile-sort-select {
-  min-width: 110px;
-  max-width: 130px;
+  max-inline-size: 130px;
+  min-inline-size: 110px;
 }
 
 .filter-buttons-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 4px;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .filter-btn-mobile {
-  height: auto;
-  min-height: 48px;
-  padding: 4px 0;
-  background-color: rgba(var(--v-theme-surface), 1);
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface), 1);
+  block-size: auto;
+  min-block-size: 48px;
+  padding-block: 4px;
+  padding-inline: 0;
 }
 
 .filter-icon {
-  margin-bottom: 2px;
   font-size: 18px;
+  margin-block-end: 2px;
 }
 
 .filter-label {
@@ -785,9 +785,9 @@ function loadMore({ done }: { done: any }) {
 
 .search-header-mobile {
   position: sticky;
-  top: 0;
   z-index: 10;
-  background-color: rgba(var(--v-theme-background), 0.95);
   backdrop-filter: blur(10px);
+  background-color: rgba(var(--v-theme-background), 0.95);
+  inset-block-start: 0;
 }
 </style>

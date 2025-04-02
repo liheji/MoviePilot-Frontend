@@ -38,26 +38,24 @@ function logout() {
 
 // 执行重启操作
 async function restart() {
-  {
-    restartDialog.value = false
-    // 调用API重启
-    try {
-      // 显示等待框
-      progressDialog.value = true
-      const result: { [key: string]: any } = await api.get('system/restart')
-      if (!result?.success) {
-        // 隐藏等待框
-        progressDialog.value = false
-        // 重启不成功
-        $toast.error(result.message)
-        return
-      }
-    } catch (error) {
-      console.error(error)
+  restartDialog.value = false
+  // 调用API重启
+  try {
+    // 显示等待框
+    progressDialog.value = true
+    const result: { [key: string]: any } = await api.get('system/restart')
+    if (!result?.success) {
+      // 隐藏等待框
+      progressDialog.value = false
+      // 重启不成功
+      $toast.error(result.message)
+      return
     }
-    // 注销
-    logout()
+  } catch (error) {
+    console.error(error)
   }
+  // 注销
+  logout()
 }
 
 // 显示重启确认对话框
@@ -88,7 +86,7 @@ const userLevel = computed(() => userStore.level)
     <VImg :src="avatar" />
 
     <VMenu activator="parent" width="230" location="bottom end" offset="14px">
-      <VList>
+      <VList elevation="1">
         <!-- 👉 User Avatar & Name -->
         <VListItem>
           <template #prepend>

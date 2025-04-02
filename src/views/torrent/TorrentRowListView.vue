@@ -344,7 +344,7 @@ function toggleFilterMenu(key: string) {
     <!-- 搜索头部容器 - 新增，用于固定在顶部 -->
     <div class="search-header d-none d-sm-block">
       <!-- PC端页面头部和筛选栏 -->
-      <VCard class="view-header mb-3 rounded-lg">
+      <VCard class="view-header mb-3">
         <div class="d-flex align-center flex-wrap pa-3">
           <VChip color="primary" variant="flat" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
             {{ dataList.length }} 个资源
@@ -452,7 +452,7 @@ function toggleFilterMenu(key: string) {
     </div>
 
     <!-- 移动端头部和筛选区域 -->
-    <VCard class="d-block d-sm-none search-header-mobile rounded-lg mb-3">
+    <VCard class="d-block d-sm-none search-header-mobile mb-3">
       <!-- 移动端头部 -->
       <div class="view-header">
         <div class="d-flex align-center flex-wrap pa-2">
@@ -572,30 +572,30 @@ function toggleFilterMenu(key: string) {
 <style scoped>
 .torrent-view {
   position: relative;
-  height: 100%;
+  block-size: 100%;
 }
 
 .search-header {
   position: sticky;
-  top: 0;
   z-index: 10;
-  background-color: rgba(var(--v-theme-background), 0.95);
   backdrop-filter: blur(10px);
+  background-color: rgba(var(--v-theme-background), 0.95);
+  inset-block-start: 0;
 }
 
 .search-header-mobile {
   position: sticky;
-  top: 0;
   z-index: 10;
-  background-color: rgba(var(--v-theme-background), 0.95);
   backdrop-filter: blur(10px);
+  background-color: rgba(var(--v-theme-background), 0.95);
+  inset-block-start: 0;
 }
 
 .view-header {
-  background-color: rgb(var(--v-theme-surface));
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  box-shadow: none;
   overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  background-color: rgb(var(--v-theme-surface));
+  box-shadow: none;
 }
 
 .search-count {
@@ -605,19 +605,20 @@ function toggleFilterMenu(key: string) {
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
   align-items: center;
+  gap: 4px;
 }
 
 .filter-divider {
-  width: 1px;
-  height: 24px;
   background-color: rgba(var(--v-theme-on-surface), 0.12);
-  margin: 0 8px;
+  block-size: 24px;
+  inline-size: 1px;
+  margin-block: 0;
+  margin-inline: 8px;
 }
 
 .filter-btn {
-  min-width: 0;
+  min-inline-size: 0;
   transition: transform 0.2s;
 }
 
@@ -627,12 +628,12 @@ function toggleFilterMenu(key: string) {
 
 .sort-select {
   font-size: 0.875rem;
-  min-width: 100px;
-  max-width: 120px;
+  max-inline-size: 120px;
+  min-inline-size: 100px;
 }
 
 .filter-menu-content {
-  max-height: 50vh;
+  max-block-size: 50vh;
   overflow-y: auto;
 }
 
@@ -642,24 +643,24 @@ function toggleFilterMenu(key: string) {
 }
 
 .filter-chip {
+  border: 1px solid rgba(var(--v-theme-primary), 0.2);
   margin: 4px;
-  transition: all 0.2s ease;
   background-color: rgba(var(--v-theme-primary), 0.1) !important;
   color: rgba(var(--v-theme-on-surface), 0.9) !important;
   font-weight: 500;
-  border: 1px solid rgba(var(--v-theme-primary), 0.2);
+  transition: all 0.2s ease;
 }
 
 .filter-chip:hover {
-  transform: translateY(-2px);
   background-color: rgba(var(--v-theme-primary), 0.15) !important;
+  transform: translateY(-2px);
 }
 
 .filter-chip.v-chip--selected {
   background-color: rgba(var(--v-theme-primary), 0.85) !important;
+  box-shadow: 0 2px 4px rgba(var(--v-theme-primary), 0.3);
   color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(var(--v-theme-primary), 0.3);
 }
 
 .filter-tag {
@@ -672,16 +673,17 @@ function toggleFilterMenu(key: string) {
 }
 
 .selected-filters {
-  background-color: rgba(var(--v-theme-surface-variant), 0.08);
-  padding: 8px 12px;
   overflow: hidden;
+  background-color: rgba(var(--v-theme-surface-variant), 0.08);
+  padding-block: 8px;
+  padding-inline: 12px;
 }
 
 .resource-list-container {
+  padding: 8px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   border-radius: 12px;
   background-color: rgb(var(--v-theme-surface));
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  padding: 8px;
 }
 
 .resource-list {
@@ -695,36 +697,37 @@ function toggleFilterMenu(key: string) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  min-block-size: 300px;
 }
 
 .mobile-sort-select {
-  min-width: 110px;
-  max-width: 130px;
+  max-inline-size: 130px;
+  min-inline-size: 110px;
 }
 
 .filter-buttons-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 4px;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .filter-btn-mobile {
-  height: auto;
-  min-height: 48px;
-  padding: 4px 0;
-  background-color: rgba(var(--v-theme-surface), 1);
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface), 1);
+  block-size: auto;
+  min-block-size: 48px;
+  padding-block: 4px;
+  padding-inline: 0;
 }
 
 .filter-icon {
-  margin-bottom: 2px;
   font-size: 18px;
+  margin-block-end: 2px;
 }
 
 .filter-label {
@@ -732,9 +735,9 @@ function toggleFilterMenu(key: string) {
   text-align: center;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .sort-select {
-    min-width: 100px;
+    min-inline-size: 100px;
   }
 }
 </style>

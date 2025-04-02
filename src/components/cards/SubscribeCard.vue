@@ -295,7 +295,7 @@ function onSubscribeEditRemove() {
         <VCard
           v-bind="hover.props"
           :key="props.media?.id"
-          class="flex flex-col rounded-lg h-full"
+          class="flex flex-col h-full"
           :class="{
             'outline-dashed outline-1': props.media?.best_version && imageLoaded,
             'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,

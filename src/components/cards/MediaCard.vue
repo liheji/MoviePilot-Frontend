@@ -530,7 +530,7 @@ function onRemoveSubscribe() {
           v-bind="hover.props"
           :height="props.height"
           :width="props.width"
-          class="outline-none shadow ring-gray-500 rounded-lg"
+          class="outline-none shadow ring-gray-500"
           :class="{
             'transition transform-cpu duration-300  -translate-y-1 shadow-lg': hover.isHovering,
             'ring-1': isImageLoaded,

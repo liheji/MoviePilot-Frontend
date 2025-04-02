@@ -1,5 +1,3 @@
-import { VCard } from 'vuetify/lib/components/index.mjs'
-
 export default {
   IconBtn: {
     icon: true,
@@ -31,6 +29,7 @@ export default {
   },
   VCard: {
     elevation: 0,
+    rounded: 'lg',
   },
   VMenu: {
     elevation: 0,
@@ -41,9 +40,12 @@ export default {
   VBottomSheet: {
     elevation: 0,
   },
+  VExpansionPanels: {
+    elevation: 0,
+  },
   VList: {
     color: 'primary',
-    elevation: 1,
+    elevation: 0,
   },
   VPagination: {
     activeColor: 'primary',

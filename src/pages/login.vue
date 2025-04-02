@@ -228,7 +228,7 @@ onUnmounted(() => {
     </div>
     <!-- 登录表单 -->
     <div class="auth-wrapper d-flex align-center justify-center">
-      <VCard class="auth-card px-7 py-3 w-full h-full rounded-lg opacity-85" max-width="24rem">
+      <VCard class="auth-card px-7 py-3 w-full h-full opacity-85" max-width="24rem">
         <VCardItem class="justify-center">
           <template #prepend>
             <div class="d-flex pe-0">
@@ -289,7 +289,7 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@use '@core/scss/pages/page-auth.scss';
+@use '@core/scss/pages/page-auth';
 
 .v-card-item__prepend {
   padding-inline-end: 0 !important;
