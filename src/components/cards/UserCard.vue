@@ -299,9 +299,7 @@ onUnmounted(() => {
 .user-card {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(var(--v-theme-on-surface), 0.08);
   background: rgb(var(--v-theme-surface));
 }
 

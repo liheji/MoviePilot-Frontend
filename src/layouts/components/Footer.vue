@@ -29,7 +29,7 @@ const currentPath = computed(() => route.path)
 </script>
 
 <template>
-  <div class="w-100">
+  <div v-if="appMode" class="w-100">
     <VBottomNavigation
       grow
       horizontal
@@ -61,7 +61,6 @@ const currentPath = computed(() => route.path)
           :color="moreActiveState ? 'primary' : ''"
         />
         <VMenu v-model="moreMenuDialog" close-on-content-click activator="parent">
-          <VDivider />
           <VList class="font-bold" lines="one">
             <VListSubheader class="bg-transparent"> 更多 </VListSubheader>
             <VListItem
