@@ -56,10 +56,14 @@ onActivated(() => {
 <template>
   <div class="card-list-container">
     <!-- 页面标题 -->
-    <div class="page-content-header">
-      <div class="page-content-header-title">
-        <VIcon icon="mdi-account-group" size="large" color="primary" class="page-content-header-title-icon" />
-        <h1 class="page-content-header-title-text">用户管理</h1>
+    <div class="my-3 md:flex md:items-center md:justify-between">
+      <div class="min-w-0 flex-1 mx-0 flex align-middle">
+        <h2
+          class="mb-3 ms-2 truncate text-2xl font-bold leading-7 text-gray-100 sm:overflow-visible sm:text-3xl sm:leading-9 md:mb-0"
+          data-testid="page-header"
+        >
+          <span class="text-moviepilot">用户管理</span>
+        </h2>
       </div>
     </div>
 
@@ -67,7 +71,7 @@ onActivated(() => {
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
 
     <!-- 用户卡片网格 -->
-    <div v-if="allUsers.length > 0 && isRefreshed" class="grid gap-3 grid-user-card">
+    <div v-if="allUsers.length > 0 && isRefreshed" class="grid gap- grid-user-card">
       <!-- 普通用户卡片 -->
       <UserCard
         v-for="user in allUsers"
@@ -108,14 +112,14 @@ onActivated(() => {
 
 <style scoped>
 .add-user-card {
-  height: 100%;
-  min-height: 160px;
-  background-color: rgba(var(--v-theme-surface), 1);
-  border: 1.5px dashed rgba(var(--v-theme-primary), 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1.5px dashed rgba(var(--v-theme-primary), 0.4);
+  background-color: rgba(var(--v-theme-surface), 1);
+  block-size: 100%;
   cursor: pointer;
+  min-block-size: 160px;
   transition: all 0.3s ease;
 }
 
@@ -132,8 +136,8 @@ onActivated(() => {
 }
 
 .add-user-text {
-  font-size: 1.05rem;
   color: rgba(var(--v-theme-primary), 0.8);
+  font-size: 1.05rem;
   font-weight: 500;
 }
 </style>

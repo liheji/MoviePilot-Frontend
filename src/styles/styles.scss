@@ -12,22 +12,22 @@ html.v-overlay-scroll-blocked body {
   --v-body-scroll-y: 0px !important;
 }
 
-@media (max-width: 768px){
+@media (width <= 768px){
   html.v-overlay-scroll-blocked {
     position: relative;
   }
 }
 
 @mixin hide-scrollbar {
-  scrollbar-width: none;
   -ms-overflow-style: none;
+  scrollbar-width: none;
   
   &::-webkit-scrollbar {
     display: none;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   html,body {
     @include hide-scrollbar;
   }
@@ -39,9 +39,9 @@ html.v-overlay-scroll-blocked body {
 }
 
 #nprogress .peg {
-  width: 5px;
   box-shadow: 0 0 10px rgb(var(--v-theme-primary)), 0 0 5px rgb(var(--v-theme-primary)) !important;
-      transform: rotate(0deg) translate(0, 0px);
+  inline-size: 5px;
+      transform: rotate(0deg) translate(0, 0);
 }
 
 .v-toast--bottom {
@@ -222,28 +222,28 @@ html.v-overlay-scroll-blocked body {
   padding-block-end: 1rem;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .user-list-container {
     padding: 12px;
   }
 
   .grid-user-card {
+    gap: 1rem;
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 }
 
-@media (min-width: 601px) and (max-width: 960px) {
+@media (width >= 601px) and (width <= 960px) {
   .grid-user-card{
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 }
 
-@media (min-width: 961px) {
+@media (width >= 961px) {
   .grid-user-card {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
 }
 
@@ -293,36 +293,4 @@ html.v-overlay-scroll-blocked body {
   background: rgba(29, 39, 59, 48%);
   content: '';
   inset: 0;
-}
-
-
-.card-list-container {
-  padding: 20px;
-  margin: 0 auto;
-}
-
-@media (max-width: 600px) {
-  .card-list-container {
-    padding: 12px;
-  }
-}
-
-.page-content-header {
-  margin-bottom: 24px;
-}
-
-.page-content-header-title {
-  display: flex;
-  align-items: center;
-}
-
-.page-content-header-title-icon {
-  margin-right: 12px;
-}
-
-.page-content-header-title-text {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: rgba(var(--v-theme-on-surface), 0.87);
-  margin: 0;
 }

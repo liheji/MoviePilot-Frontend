@@ -110,7 +110,7 @@ async function fetchData({ done }: { done: any }) {
   <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-hidden" @load="fetchData">
     <template #loading />
     <template #empty />
-    <div v-if="dataList.length > 0" class="grid gap-4 grid-media-card mx-3" tabindex="0">
+    <div v-if="dataList.length > 0" class="grid gap-4 grid-media-card" tabindex="0">
       <div v-for="data in dataList" :key="data.tmdb_id || data.douban_id">
         <MediaCard :media="data" />
         <div v-if="data.popularity" class="mt-2 flex flex-row justify-center align-center text-subtitle-2">

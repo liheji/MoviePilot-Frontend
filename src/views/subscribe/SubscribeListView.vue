@@ -151,7 +151,7 @@ onActivated(async () => {
     handle=".cursor-move"
     item-key="id"
     tag="div"
-    :component-data="{ class: 'mx-3 grid gap-4 grid-subscribe-card p-1' }"
+    :component-data="{ class: 'grid gap-4 grid-subscribe-card p-1' }"
   >
     <template #item="{ element }">
       <SubscribeCard :key="element.id" :media="element" @remove="fetchData" @save="fetchData" />

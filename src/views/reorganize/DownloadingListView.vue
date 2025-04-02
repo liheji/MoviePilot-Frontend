@@ -74,7 +74,7 @@ onUnmounted(() => {
 <template>
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
   <VPullToRefresh v-model="loading" @load="onRefresh" :pull-down-threshold="64">
-    <div v-if="filteredDataList.length > 0" class="grid gap-3 grid-downloading-card">
+    <div v-if="filteredDataList.length > 0" class="grid gap-4 grid-downloading-card">
       <DownloadingCard v-for="data in filteredDataList" :key="data.hash" :info="data" />
     </div>
     <NoDataFound

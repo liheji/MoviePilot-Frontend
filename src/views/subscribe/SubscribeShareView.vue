@@ -109,7 +109,7 @@ function removeData(id: number) {
   <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-hidden" @load="fetchData">
     <template #loading />
     <template #empty />
-    <div v-if="dataList.length > 0" class="grid gap-4 grid-subscribe-card mx-3" tabindex="0">
+    <div v-if="dataList.length > 0" class="grid gap-4 grid-subscribe-card" tabindex="0">
       <div v-for="data in dataList" :key="data.id">
         <SubscribeShareCard :media="data" @delete="removeData(data.id || 0)" />
       </div>

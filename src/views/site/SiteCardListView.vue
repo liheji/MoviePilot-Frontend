@@ -89,10 +89,14 @@ onActivated(() => {
 <template>
   <div class="card-list-container">
     <!-- 页面标题 -->
-    <div class="page-content-header">
-      <div class="page-content-header-title">
-        <VIcon icon="mdi-web" size="large" color="primary" class="page-content-header-title-icon" />
-        <h1 class="page-content-header-title-text">站点管理</h1>
+    <div class="my-3 md:flex md:items-center md:justify-between">
+      <div class="min-w-0 flex-1 mx-0 flex align-middle">
+        <h2
+          class="mb-3 ms-2 truncate text-2xl font-bold leading-7 text-gray-100 sm:overflow-visible sm:text-3xl sm:leading-9 md:mb-0"
+          data-testid="page-header"
+        >
+          <span class="text-moviepilot">站点管理</span>
+        </h2>
       </div>
     </div>
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
@@ -103,7 +107,7 @@ onActivated(() => {
       handle=".cursor-move"
       item-key="id"
       tag="div"
-      :component-data="{ 'class': 'grid gap-3 grid-site-card' }"
+      :component-data="{ 'class': 'grid gap-4 grid-site-card' }"
     >
       <template #item="{ element }">
         <SiteCard :site="element" :data="getUserData(element.domain)" @remove="fetchData" @update="fetchData" />

@@ -609,7 +609,7 @@ function loadMore({ done }: { done: any }) {
   <VInfiniteScroll mode="intersect" side="end" :items="displayDataList" class="overflow-hidden" @load="loadMore">
     <template #loading />
     <template #empty />
-    <div class="grid gap-3 grid-torrent-card items-start">
+    <div class="grid gap- grid-torrent-card items-start">
       <TorrentCard
         v-for="item in displayDataList"
         :key="`${item.torrent_info.page_url}`"

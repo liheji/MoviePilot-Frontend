@@ -113,7 +113,7 @@ async function fetchData({ done }: { done: any }) {
   <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-hidden" @load="fetchData">
     <template #loading />
     <template #empty />
-    <div v-if="dataList.length > 0" class="grid gap-4 grid-media-card mx-3" tabindex="0">
+    <div v-if="dataList.length > 0" class="grid gap-4 grid-media-card" tabindex="0">
       <PersonCard v-for="data in dataList" :key="data.id" :person="data" />
     </div>
     <NoDataFound
