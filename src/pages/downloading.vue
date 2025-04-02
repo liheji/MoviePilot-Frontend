@@ -37,9 +37,9 @@ onActivated(async () => {
 
 <template>
   <div v-if="downloaders.length > 0">
-    <VTabs v-model="activeTab">
-      <VTab v-for="item in downloaders" :value="item.name" @to="jumpTab(item.name)">
-        <span class="min-w-24">{{ item.name }}</span>
+    <VTabs v-model="activeTab" show-arrows stacked>
+      <VTab v-for="item in downloaders" :value="item.name" @to="jumpTab(item.name)" class="px-10 rounded-t-lg">
+        {{ item.name }}
       </VTab>
     </VTabs>
 

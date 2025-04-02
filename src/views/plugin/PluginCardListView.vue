@@ -397,12 +397,10 @@ onMounted(async () => {
 
 <template>
   <div>
-    <VTabs v-model="activeTab" show-arrows>
-      <VTab v-for="item in PluginTabs" :value="item.tab">
-        <div class="flex align-center min-w-24">
-          <VIcon size="20" start :icon="item.icon" />
-          {{ item.title }}
-        </div>
+    <VTabs v-model="activeTab" show-arrows stacked>
+      <VTab v-for="item in PluginTabs" :value="item.tab" class="px-10 rounded-t-lg">
+        <VIcon size="x-large" start :icon="item.icon" />
+        {{ item.title }}
       </VTab>
     </VTabs>
 

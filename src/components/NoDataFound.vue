@@ -25,17 +25,17 @@ interface Props {
       </div>
       <div class="pulse-ring"></div>
     </div>
-    
+
     <!-- 标题 -->
     <div class="error-title">
       {{ props.errorTitle || '暂无数据' }}
     </div>
-    
+
     <!-- 描述 -->
     <div class="error-description">
       {{ props.errorDescription || '没有找到相关内容' }}
     </div>
-    
+
     <!-- 按钮插槽 -->
     <div class="actions-container">
       <slot name="button" />
@@ -45,149 +45,153 @@ interface Props {
 
 <style scoped>
 .no-data-container {
-  width: 100%;
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 3rem 1rem;
-  min-height: 300px;
+  justify-content: center;
+  inline-size: 100%;
+  min-block-size: 300px;
+  padding-block: 3rem;
+  padding-inline: 1rem;
   text-align: center;
-  position: relative;
 }
 
 /* 图标样式 */
 .icon-wrapper {
   position: relative;
-  margin: 0 auto 2rem;
-  width: 100px;
-  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
+  block-size: 100px;
+  inline-size: 100px;
+  margin-block: 0 2rem;
+  margin-inline: auto;
 }
 
 .icon-glow {
   position: absolute;
-  width: 80px;
-  height: 80px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--v-theme-primary), 0.8) 0%, rgba(var(--v-theme-primary), 0) 70%);
-  filter: blur(15px);
-  opacity: 0.8;
   animation: pulse 3s infinite ease-in-out;
+  background: radial-gradient(circle, rgba(var(--v-theme-primary), 0.8) 0%, rgba(var(--v-theme-primary), 0) 70%);
+  block-size: 80px;
+  filter: blur(15px);
+  inline-size: 80px;
+  opacity: 0.8;
 }
 
 .icon-container {
   position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.9), rgba(var(--v-theme-secondary), 0.8));
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.3),
-              0 2px 5px rgba(0, 0, 0, 0.1),
-              inset 0 1px 1px rgba(255, 255, 255, 0.2);
-  z-index: 2;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.9), rgba(var(--v-theme-secondary), 0.8));
+  block-size: 80px;
+  inline-size: 80px;
 }
 
 .main-icon {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   animation: slight-bounce 3s infinite ease-in-out;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 30%));
 }
 
 .pulse-ring {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 2px solid rgba(var(--v-theme-primary), 0.5);
-  opacity: 0;
   z-index: 1;
+  border: 2px solid rgba(var(--v-theme-primary), 0.5);
+  border-radius: 50%;
   animation: ripple 2s infinite ease-out;
+  block-size: 100px;
+  inline-size: 100px;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%);
 }
 
 .pulse-ring::before {
-  content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 85px;
-  height: 85px;
-  border-radius: 50%;
   border: 2px solid rgba(var(--v-theme-primary), 0.3);
+  border-radius: 50%;
   animation: ripple 2s infinite 0.5s ease-out;
+  block-size: 85px;
+  content: '';
+  inline-size: 85px;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
 }
 
 @keyframes ripple {
   0% {
-    transform: translate(-50%, -50%) scale(0.9);
     opacity: 1;
+    transform: translate(-50%, -50%) scale(0.9);
   }
+
   100% {
-    transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
   }
 }
 
 @keyframes pulse {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 0.5;
     transform: scale(0.8);
   }
-  50% { 
+
+  50% {
     opacity: 1;
     transform: scale(1.1);
   }
 }
 
 @keyframes slight-bounce {
-  0%, 100% { 
+  0%,
+  100% {
     transform: translateY(0);
   }
-  50% { 
+
+  50% {
     transform: translateY(-3px);
   }
 }
 
 /* 文字样式 */
 .error-title {
+  position: relative;
+  color: rgba(var(--v-theme-on-surface), 0.95);
   font-size: 1.75rem;
   font-weight: 700;
-  margin-bottom: 0.75rem;
-  color: rgba(var(--v-theme-on-surface), 0.95);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  position: relative;
+  margin-block-end: 0.75rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 5%);
 }
 
 .error-title::after {
-  content: '';
   display: block;
-  width: 40px;
-  height: 3px;
-  background: linear-gradient(90deg, rgba(var(--v-theme-primary), 0.8), rgba(var(--v-theme-primary), 0.2));
   border-radius: 3px;
-  margin: 0.5rem auto 0;
+  background: linear-gradient(90deg, rgba(var(--v-theme-primary), 0.8), rgba(var(--v-theme-primary), 0.2));
+  block-size: 3px;
+  content: '';
+  inline-size: 40px;
+  margin-block: 0.5rem 0;
+  margin-inline: auto;
 }
 
 .error-description {
-  font-size: 1.1rem;
   color: rgba(var(--v-theme-on-surface), 0.75);
-  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
   line-height: 1.6;
-  max-width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  margin-block-end: 1.5rem;
+  margin-inline: auto;
+  max-inline-size: 80%;
 }
 
 .actions-container {
-  margin-top: 1.5rem;
+  margin-block-start: 1.5rem;
 }
 
 .actions-container :deep(.v-btn) {
@@ -200,41 +204,41 @@ interface Props {
 }
 
 /* 响应式调整 */
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .no-data-container {
-    padding: 2rem 1rem;
+    padding-block: 2rem;
+    padding-inline: 1rem;
   }
-  
+
   .icon-wrapper {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 1.5rem;
+    block-size: 80px;
+    inline-size: 80px;
+    margin-block-end: 1.5rem;
   }
-  
+
   .icon-container {
-    width: 70px;
-    height: 70px;
+    block-size: 70px;
+    inline-size: 70px;
   }
-  
+
   .icon-glow {
-    width: 70px;
-    height: 70px;
+    block-size: 70px;
+    inline-size: 70px;
   }
-  
+
   .pulse-ring,
   .pulse-ring::before {
-    width: 80px;
-    height: 80px;
+    block-size: 80px;
+    inline-size: 80px;
   }
-  
+
   .error-title {
     font-size: 1.4rem;
   }
-  
+
   .error-description {
     font-size: 0.95rem;
-    max-width: 90%;
+    max-inline-size: 90%;
   }
 }
 </style>
-

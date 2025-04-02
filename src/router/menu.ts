@@ -187,7 +187,7 @@ export const SubscribeMovieTabs = [
   {
     title: '我的订阅',
     tab: 'mysub',
-    icon: 'mdi-heart',
+    icon: 'mdi-bell-check',
   },
   {
     title: '热门订阅',
@@ -201,7 +201,7 @@ export const SubscribeTvTabs = [
   {
     title: '我的订阅',
     tab: 'mysub',
-    icon: 'mdi-heart',
+    icon: 'mdi-bell-check',
   },
   {
     title: '热门订阅',
@@ -225,7 +225,7 @@ export const PluginTabs = [
   {
     title: '插件市场',
     tab: 'market',
-    icon: 'mdi-store',
+    icon: 'mdi-shopping',
   },
 ]
 

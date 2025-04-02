@@ -118,14 +118,11 @@ onActivated(async () => {
 
 <template>
   <div>
-    <VTabs v-model="activeTab" show-arrows>
-      <draggable v-model="discoverTabs" handle=".cursor-move" item-key="tab" tag="div" @end="saveTabOrder">
+    <VTabs v-model="activeTab" show-arrows stacked>
+      <draggable v-model="discoverTabs" handle=".tab-move" item-key="tab" tag="div" @end="saveTabOrder">
         <template #item="{ element }">
-          <VTab :key="element.mediaid_prefix" :value="element.mediaid_prefix">
-            <div><VIcon class="cursor-move" start icon="mdi-drag" /></div>
-            <div class="min-w-24">
-              <div>{{ element.name }}</div>
-            </div>
+          <VTab :key="element.mediaid_prefix" :value="element.mediaid_prefix" class="px-10 rounded-t-lg">
+            <span class="tab-move">{{ element.name }}</span>
           </VTab>
         </template>
       </draggable>

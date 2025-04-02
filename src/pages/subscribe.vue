@@ -18,25 +18,33 @@ function jumpTab(tab: string) {
 
 <template>
   <div>
-    <VTabs v-model="activeTab" show-arrows>
-      <VTab v-if="subType == '电影'" v-for="item in SubscribeMovieTabs" :value="item.tab" @to="jumpTab(item.tab)">
-        <div class="flex align-center min-w-24">
-          <VIcon size="20" start :icon="item.icon" />
-          {{ item.title }}
-        </div>
+    <VTabs v-model="activeTab" show-arrows stacked>
+      <VTab
+        v-if="subType == '电影'"
+        v-for="item in SubscribeMovieTabs"
+        :value="item.tab"
+        @to="jumpTab(item.tab)"
+        class="px-10 rounded-t-lg"
+      >
+        <VIcon size="x-large" start :icon="item.icon" />
+        {{ item.title }}
       </VTab>
-      <VTab v-if="subType == '电视剧'" v-for="item in SubscribeTvTabs" :value="item.tab" @to="jumpTab(item.tab)">
-        <div class="flex align-center min-w-24">
-          <VIcon size="20" start :icon="item.icon" />
-          {{ item.title }}
-        </div>
+      <VTab
+        v-if="subType == '电视剧'"
+        v-for="item in SubscribeTvTabs"
+        :value="item.tab"
+        @to="jumpTab(item.tab)"
+        class="px-10 rounded-t-lg"
+      >
+        <VIcon size="x-large" start :icon="item.icon" />
+        {{ item.title }}
       </VTab>
     </VTabs>
 
-    <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
+    <VWindow v-model="activeTab" class="disable-tab-transition" :touch="false">
       <VWindowItem value="mysub">
         <transition name="fade-slide" appear>
-          <div>
+          <div class="mt-4">
             <SubscribeListView :type="subType" :subid="subId" />
           </div>
         </transition>
