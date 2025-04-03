@@ -379,8 +379,8 @@ function formatTime(timestape: number) {
 }
 
 // 切换文件树显示
-function switchFileTree() {
-  emit('switch-tree', inProps.showTree)
+function switchFileTree(state: boolean) {
+  emit('switch-tree', state)
 }
 
 // 监听refreshPending变化
@@ -549,8 +549,9 @@ onMounted(() => {
 <template>
   <VCard class="d-flex flex-column w-full h-full">
     <VToolbar v-if="!loading" density="compact" flat color="gray">
-      <IconBtn>
-        <VIcon :icon="showTree ? 'mdi-file-tree' : 'mdi-file-tree-outline'" @@click="switchFileTree" />
+      <IconBtn v-if="display.mdAndUp.value">
+        <VIcon v-if="showTree" icon="mdi-file-tree" @click="switchFileTree(false)" />
+        <VIcon v-else icon="mdi-file-tree-outline" @click="switchFileTree(true)" />
       </IconBtn>
       <VTextField
         v-if="!isFile"

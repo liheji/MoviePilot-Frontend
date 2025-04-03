@@ -168,7 +168,7 @@ function sortChanged(s: string) {
 
 // 切换目录树
 function switchDirTree(state: boolean) {
-  showDirTree.value = !state
+  showDirTree.value = state
 }
 
 // 文件列表
@@ -210,18 +210,15 @@ const fileListStyle = computed(() => {
         @sortchanged="sortChanged"
       />
       <div class="flex" :style="scrollStyle">
-        <VSlideXTransition v-if="showDirTree">
-          <div>
-            <FileNavigator
-              :storage="activeStorage"
-              :currentPath="item.path"
-              :items="fileListItems"
-              :endpoints="endpoints"
-              :axios="axios"
-              @navigate="pathChanged"
-            />
-          </div>
-        </VSlideXTransition>
+        <FileNavigator
+          v-if="showDirTree"
+          :storage="activeStorage"
+          :currentPath="item.path"
+          :items="fileListItems"
+          :endpoints="endpoints"
+          :axios="axios"
+          @navigate="pathChanged"
+        />
         <FileList
           class="flex-grow"
           :item="item"
