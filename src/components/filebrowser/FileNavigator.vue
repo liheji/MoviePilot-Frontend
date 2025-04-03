@@ -259,7 +259,7 @@ function getIndentLevel(path: string, ancestorPath: string) {
 </script>
 
 <template>
-  <VCard class="file-navigator" v-if="!isMobile">
+  <VCard class="file-navigator rounded-e-0 rounded-t-0" v-if="!isMobile">
     <div class="tree-container">
       <!-- 根目录项 -->
       <div
@@ -387,41 +387,41 @@ function getIndentLevel(path: string, ancestorPath: string) {
 
 <style lang="scss" scoped>
 .file-navigator {
-  width: 240px;
   display: flex;
-  flex-direction: column;
-  height: 100%;
   overflow: hidden;
+  flex-direction: column;
   flex-shrink: 0;
-  border-bottom-left-radius: 12px;
   background: rgb(var(--v-table-header-background));
+  block-size: 100%;
+  border-end-start-radius: 12px;
+  inline-size: 240px;
 }
 
 .navigator-header {
-  padding: 12px 16px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-block-end: 1px solid rgba(0, 0, 0, 8%);
+  padding-block: 12px;
+  padding-inline: 16px;
 }
 
 .tree-container {
+  overflow: hidden auto;
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .tree-item-container {
-  width: 100%;
+  inline-size: 100%;
 }
 
 .tree-item {
   display: flex;
+  box-sizing: border-box;
   align-items: center;
   cursor: pointer;
+  max-inline-size: 100%;
+  min-inline-size: 100%;
   transition: background-color 0.2s ease;
-  min-width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
 
   &:hover {
     background-color: rgba(var(--v-theme-primary), 0.05);
@@ -433,25 +433,27 @@ function getIndentLevel(path: string, ancestorPath: string) {
 }
 
 .folder-toggle {
-  width: 16px;
-  height: 16px;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  margin-right: 4px;
-  flex-shrink: 0;
-  padding: 6px 0px 6px 12px;
+  block-size: 16px;
+  inline-size: 16px;
+  margin-inline-end: 4px;
+  padding-block: 6px;
+  padding-inline: 12px 0;
 }
 
 .folder-content {
   display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
   overflow: hidden;
-  white-space: nowrap;
+  flex: 1;
+  align-items: center;
+  min-inline-size: 0;
+  padding-block: 6px;
+  padding-inline: 8px 16px;
   text-overflow: ellipsis;
-  padding: 6px 16px 6px 8px;
+  white-space: nowrap;
 }
 
 .root-item {
@@ -459,25 +461,26 @@ function getIndentLevel(path: string, ancestorPath: string) {
 }
 
 .folder-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px;
   display: inline-block;
+  overflow: hidden;
+  max-inline-size: 150px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .subdirectory-container {
-  width: 100%;
+  inline-size: 100%;
 }
 
 .tree-loading {
   display: flex;
   align-items: center;
-  padding: 4px 16px;
   color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+  padding-block: 4px;
+  padding-inline: 16px;
 }
 
 .pl-8 {
-  padding-left: 20px !important;
+  padding-inline-start: 20px !important;
 }
 </style>

@@ -547,7 +547,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard class="d-flex flex-column w-full h-full">
+  <VCard class="d-flex flex-column w-full h-full rounded-t-0" :class="{ 'rounded-s-0': showTree }">
     <VToolbar v-if="!loading" density="compact" flat color="gray">
       <IconBtn v-if="display.mdAndUp.value">
         <VIcon v-if="showTree" icon="mdi-file-tree" @click="switchFileTree(false)" />
