@@ -9,6 +9,7 @@ import api from '@/api'
 import type { Site, SiteStatistic, SiteUserData } from '@/api/types'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { formatFileSize } from '@/@core/utils/formatters'
+import { useConfirm } from 'vuetify-use-dialog'
 
 // 输入参数
 const cardProps = defineProps({
@@ -18,6 +19,9 @@ const cardProps = defineProps({
 
 // 定义触发的自定义事件
 const emit = defineEmits(['update', 'remove'])
+
+// 确认框
+const createConfirm = useConfirm()
 
 // 图标
 const siteIcon = ref<string>('')
@@ -101,6 +105,25 @@ async function handleSiteUserData() {
 // 打开站点页面
 function openSitePage() {
   window.open(cardProps.site?.url, '_blank')
+}
+
+// 调用API删除站点信息
+async function deleteSiteInfo() {
+  const isConfirmed = await createConfirm({
+    title: '确认',
+    content: `是否确认删除站点？`,
+  })
+
+  if (!isConfirmed) return
+
+  try {
+    const result: { [key: string]: any } = await api.delete(`site/${cardProps.site?.id}`)
+    if (result.success) emit('remove')
+    else $toast.error(`${cardProps.site?.name} 删除失败：${result.message}`)
+  } catch (error) {
+    $toast.error(`${cardProps.site?.name} 删除失败！`)
+    console.error(error)
+  }
 }
 
 // 根据站点状态显示不同的状态图标
@@ -309,7 +332,6 @@ onMounted(() => {
           </template>
           <span>测试站点连通性</span>
         </VTooltip>
-
         <VTooltip>
           <template #activator="{ props }">
             <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUserData">
@@ -318,7 +340,6 @@ onMounted(() => {
           </template>
           <span>查看站点数据</span>
         </VTooltip>
-
         <VTooltip v-if="!cardProps.site?.public">
           <template #activator="{ props }">
             <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUpdate">
@@ -327,7 +348,6 @@ onMounted(() => {
           </template>
           <span>更新Cookie/UA</span>
         </VTooltip>
-
         <VTooltip>
           <template #activator="{ props }">
             <IconBtn v-bind="props" elevation="0" class="site-action-btn more-btn">
@@ -340,7 +360,7 @@ onMounted(() => {
                     </template>
                     <VListItemTitle>编辑站点</VListItemTitle>
                   </VListItem>
-                  <VListItem variant="plain" @click.stop="emit('remove')">
+                  <VListItem variant="plain" @click.stop="deleteSiteInfo">
                     <template #prepend>
                       <VIcon icon="mdi-delete-outline" size="small" color="error" />
                     </template>
@@ -666,9 +686,8 @@ onMounted(() => {
 
 /* 数据统计 */
 .site-stats {
-  border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.05);
   margin-block-start: auto;
-  padding-block-start: 6px;
+  padding-block-start: 1rem;
 }
 
 .site-data-values {
@@ -960,12 +979,12 @@ onMounted(() => {
   border: none;
   border-radius: 8px;
   background-color: rgba(var(--v-theme-surface), 1);
-  block-size: 36px;
+  block-size: 32px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 5%);
   color: rgba(var(--v-theme-on-surface), 0.8);
   cursor: pointer;
   inline-size: 36px;
-  margin-block-end: 8px;
+  margin-block-end: 4px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
