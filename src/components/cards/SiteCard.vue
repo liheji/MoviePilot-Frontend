@@ -312,25 +312,25 @@ onMounted(() => {
 
         <VTooltip>
           <template #activator="{ props }">
-            <button v-bind="props" class="site-action-btn" @click.stop="handleSiteUserData">
+            <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUserData">
               <VIcon icon="mdi-chart-bell-curve" size="18" />
-            </button>
+            </IconBtn>
           </template>
           <span>查看站点数据</span>
         </VTooltip>
 
         <VTooltip v-if="!cardProps.site?.public">
           <template #activator="{ props }">
-            <button v-bind="props" class="site-action-btn" @click.stop="handleSiteUpdate">
+            <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUpdate">
               <VIcon icon="mdi-refresh" size="18" />
-            </button>
+            </IconBtn>
           </template>
           <span>更新Cookie/UA</span>
         </VTooltip>
 
         <VTooltip>
           <template #activator="{ props }">
-            <button v-bind="props" class="site-action-btn more-btn">
+            <IconBtn v-bind="props" elevation="0" class="site-action-btn more-btn">
               <VIcon icon="mdi-dots-vertical" size="18" />
               <VMenu activator="parent" close-on-content-click location="left">
                 <VList density="compact" nav class="dropdown-menu">
@@ -348,7 +348,7 @@ onMounted(() => {
                   </VListItem>
                 </VList>
               </VMenu>
-            </button>
+            </IconBtn>
           </template>
           <span>更多操作</span>
         </VTooltip>
