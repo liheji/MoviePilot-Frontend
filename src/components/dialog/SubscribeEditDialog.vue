@@ -61,6 +61,17 @@ const $toast = useToast()
 // 下载器选项
 const downloaderOptions = ref<{ title: string; value: string }[]>([])
 
+// 剧集组选项
+const episodeGroupOptions = ref<{ title: string; subtitle: string; value: number }[]>([])
+
+// 剧集组选项属性
+function episodeGroupItemProps(item: { title: string; subtitle: string }) {
+  return {
+    title: item.title,
+    subtitle: item.subtitle,
+  }
+}
+
 async function loadDownloaderSetting() {
   try {
     const downloaders: DownloaderConf[] = await api.get('download/clients')
@@ -178,6 +189,19 @@ async function getSubscribeInfo() {
     subscribeForm.value = result
     subscribeForm.value.best_version = subscribeForm.value.best_version === 1
     subscribeForm.value.search_imdbid = subscribeForm.value.search_imdbid === 1
+
+    // 从result.episode_groups中获取剧集组
+    if (result?.episode_groups) {
+      episodeGroupOptions.value = (result?.episode_groups as { id: number; name: string; episode_count: number }[]).map(
+        item => {
+          return {
+            title: item.name,
+            subtitle: `${item.episode_count} 集`,
+            value: item.id,
+          }
+        },
+      )
+    }
   } catch (e) {
     console.log(e)
   }
@@ -317,7 +341,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard
       :title="`${
         props.default
@@ -480,7 +504,7 @@ onMounted(() => {
                   </VCol>
                 </VRow>
                 <VRow>
-                  <VCol cols="12" md="6">
+                  <VCol cols="12">
                     <VSelect
                       v-model="subscribeForm.filter_groups"
                       :items="filterRuleGroupOptions"
@@ -489,6 +513,16 @@ onMounted(() => {
                       clearable
                       label="优先级规则组"
                       hint="按选定的过滤规则组对订阅进行过滤"
+                      persistent-hint
+                    />
+                  </VCol>
+                  <VCol v-if="!props.default && subscribeForm.type === '电视剧'" cols="12" md="6">
+                    <VSelect
+                      v-model="subscribeForm.episode_group"
+                      :items="episodeGroupOptions"
+                      :item-props="episodeGroupItemProps"
+                      label="指定剧集组"
+                      hint="按特定剧集组识别和刮削"
                       persistent-hint
                     />
                   </VCol>

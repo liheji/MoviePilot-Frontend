@@ -77,7 +77,11 @@ export interface Subscribe {
   // 过滤规则组
   filter_groups?: string[]
   // 下载器
-  downloader: string
+  downloader?: string
+  // 可选剧集组
+  episode_groups?: Record<string, any>[]
+  // 自定义剧集组
+  episode_group?: string
 }
 
 // 订阅分享
@@ -138,6 +142,8 @@ export interface SubscribeShare {
   media_category?: string
   // 复用次数
   count?: number
+  // 自定义剧集组
+  episode_group?: string
 }
 
 // 历史记录
@@ -1214,6 +1220,8 @@ export interface TransferForm {
   library_type_folder?: boolean
   // 媒体库类别子目录
   library_category_folder?: boolean
+  // 剧集组编号
+  episode_group?: string
 }
 
 // 整理队列
