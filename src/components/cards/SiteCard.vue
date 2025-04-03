@@ -354,13 +354,13 @@ onMounted(() => {
               <VIcon icon="mdi-dots-vertical" size="18" />
               <VMenu activator="parent" close-on-content-click location="left">
                 <VList density="compact" nav class="dropdown-menu">
-                  <VListItem variant="plain" @click.stop="siteEditDialog = true" base-color="info">
+                  <VListItem variant="plain" @click="siteEditDialog = true" base-color="info">
                     <template #prepend>
                       <VIcon icon="mdi-file-edit-outline" size="small" />
                     </template>
                     <VListItemTitle>编辑站点</VListItemTitle>
                   </VListItem>
-                  <VListItem variant="plain" @click.stop="deleteSiteInfo">
+                  <VListItem variant="plain" @click="deleteSiteInfo">
                     <template #prepend>
                       <VIcon icon="mdi-delete-outline" size="small" color="error" />
                     </template>
