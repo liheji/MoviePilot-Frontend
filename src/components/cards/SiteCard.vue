@@ -332,7 +332,7 @@ onMounted(() => {
           </template>
           <span>测试站点连通性</span>
         </VTooltip>
-        <VTooltip>
+        <VTooltip v-if="!cardProps.site?.public">
           <template #activator="{ props }">
             <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUserData">
               <VIcon icon="mdi-chart-bell-curve" size="18" />

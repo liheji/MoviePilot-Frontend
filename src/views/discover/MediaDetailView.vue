@@ -8,9 +8,10 @@ import NoDataFound from '@/components/NoDataFound.vue'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { formatSeason } from '@/@core/utils/formatters'
 import router from '@/router'
-import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { useUserStore } from '@/stores'
+import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
+import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 
 // 输入参数
 const mediaProps = defineProps({
@@ -68,17 +69,8 @@ const selectedSites = ref<number[]>([])
 // 搜索方式 title/imdbid
 const searchType = ref('title')
 
-// 全选/全不选按钮文字
-const checkAllText = computed(() => (selectedSites.value.length === allSites.value.length ? '全不选' : '全选'))
-
-// 全选/全不选
-function checkAllSitesorNot() {
-  if (selectedSites.value.length === allSites.value.length) {
-    selectedSites.value = []
-  } else {
-    selectedSites.value = allSites.value.map(item => item.id)
-  }
-}
+// 选择站点对话框
+const chooseSiteDialog = ref(false)
 
 // 查询所有站点
 async function querySites() {
@@ -503,10 +495,20 @@ function onSubscribeEditRemove() {
 }
 
 // 点击搜索
-async function clickSearch() {
-  if (allSites.value?.length > 0) return
-  querySites()
-  querySelectedSites()
+async function clickSearch(type: string) {
+  searchType.value = type
+  if (allSites.value?.length == 0) {
+    querySites()
+    querySelectedSites()
+  }
+  chooseSiteDialog.value = true
+}
+
+// 搜索多站点
+function searchSites(sites: number[]) {
+  chooseSiteDialog.value = false
+  selectedSites.value = sites
+  handleSearch()
 }
 
 onBeforeMount(() => {
@@ -570,42 +572,18 @@ onBeforeMount(() => {
             variant="tonal"
             color="info"
             class="mb-2"
-            @click="clickSearch"
           >
             <template #prepend>
               <VIcon icon="mdi-magnify" />
             </template>
             搜索资源
-            <VMenu activator="parent" close-on-content-click max-width="450">
+            <VMenu activator="parent" close-on-content-click>
               <VList>
-                <VListItem>
-                  <VBtnToggle v-model="searchType" color="primary" @click.stop>
-                    <VBtn value="title">标题</VBtn>
-                    <VBtn value="imdbid" v-show="mediaDetail.imdb_id">IMDB链接</VBtn>
-                  </VBtnToggle>
+                <VListItem @click="clickSearch('title')">
+                  <VListItemTitle>标题</VListItemTitle>
                 </VListItem>
-                <VListItem>
-                  <VChipGroup v-model="selectedSites" column multiple @click.stop>
-                    <VChip
-                      v-for="site in allSites"
-                      :key="site.id"
-                      :color="selectedSites.includes(site.id) ? 'primary' : ''"
-                      filter
-                      variant="outlined"
-                      :value="site.id"
-                      size="small"
-                    >
-                      {{ site.name }}
-                    </VChip>
-                  </VChipGroup>
-                  <div>
-                    <VBtn size="small" variant="text" @click.stop="checkAllSitesorNot">
-                      {{ checkAllText }}
-                    </VBtn>
-                  </div>
-                </VListItem>
-                <VListItem>
-                  <VBtn @click="handleSearch" block>搜索</VBtn>
+                <VListItem @click="clickSearch('imdb')">
+                  <VListItemTitle>IMDB链接</VListItemTitle>
                 </VListItem>
               </VList>
             </VMenu>
@@ -973,6 +951,15 @@ onBeforeMount(() => {
     @close="subscribeEditDialog = false"
     @save="subscribeEditDialog = false"
     @remove="onSubscribeEditRemove"
+  />
+  <!-- 站点选择对话框 -->
+  <SearchSiteDialog
+    v-if="chooseSiteDialog"
+    v-model="chooseSiteDialog"
+    :sites="allSites"
+    :selected="selectedSites"
+    @search="searchSites"
+    @close="chooseSiteDialog = false"
   />
 </template>
 

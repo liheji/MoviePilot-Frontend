@@ -143,7 +143,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VDialog scrollable :close-on-back="false" eager max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable :close-on-back="false" eager max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard
       :title="`${props.oper === 'add' ? '新增' : '编辑'}站点${props.oper !== 'add' ? ` - ${siteForm.name}` : ''}`"
       class="rounded-t"

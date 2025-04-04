@@ -58,7 +58,7 @@ const statusItems = [
 
 // 扩展User类型以包含note字段
 interface ExtendedUser extends User {
-  nickname?: string;
+  nickname?: string
 }
 
 // 用户编辑表单数据
@@ -79,7 +79,7 @@ const userForm = ref<ExtendedUser>({
     vocechat_userid: null,
     synologychat_userid: null,
   },
-  nickname: '',  // 昵称字段
+  nickname: '', // 昵称字段
 })
 
 // 更新头像
@@ -196,15 +196,15 @@ async function updateUser() {
     }
     userForm.value.password = newPassword.value
   }
-  
+
   // 将nickname保存到settings中，后端可以直接处理JSON对象
   if (userForm.value.nickname) {
     if (!userForm.value.settings) {
-      userForm.value.settings = {};
+      userForm.value.settings = {}
     }
-    userForm.value.settings.nickname = userForm.value.nickname;
+    userForm.value.settings.nickname = userForm.value.nickname
   }
-  
+
   const oldUserName = userForm.value.name
   userForm.value.name = currentUserName.value
   const oldAvatar = userForm.value.avatar
@@ -213,10 +213,10 @@ async function updateUser() {
   startNProgress()
   try {
     // 确保昵称保存，使用一个临时变量存储完整数据
-    const userData = { ...userForm.value };
-    
+    const userData = { ...userForm.value }
+
     const result: { [key: string]: any } = await api.put('user/', userData)
-    
+
     if (result.success) {
       if (oldUserName !== currentUserName.value) {
         $toast.success(`【${oldUserName}】更名【${currentUserName.value}】， 更新成功！`)
@@ -286,7 +286,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VDialog scrollable :close-on-back="false" eager max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable :close-on-back="false" eager max-width="40rem" :fullscreen="!display.mdAndUp.value">
     <VCard
       :title="`${props.oper === 'add' ? '新增' : '编辑'}用户${props.oper !== 'add' ? ` - ${userName}` : ''}`"
       class="rounded-t"

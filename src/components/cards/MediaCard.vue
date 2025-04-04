@@ -12,6 +12,7 @@ import tmdbImage from '@images/logos/tmdb.png'
 import doubanImage from '@images/logos/douban-black.png'
 import bangumiImage from '@images/logos/bangumi.png'
 import { useUserStore } from '@/stores'
+import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 
 // 输入参数
 const props = defineProps({
@@ -84,8 +85,8 @@ const selectedSites = ref<number[]>([])
 // 搜索菜单显示状态
 const searchMenuShow = ref(false)
 
-// 全选/全不选按钮文字
-const checkAllText = computed(() => (selectedSites.value.length === allSites.value.length ? '全不选' : '全选'))
+// 选择站点对话框
+const chooseSiteDialog = ref(false)
 
 // 全选/全不选
 function checkAllSitesorNot() {
@@ -423,9 +424,11 @@ function goMediaDetail(isHovering = false) {
 
 // 点击搜索
 async function clickSearch() {
-  if (allSites.value?.length > 0) return
-  querySites()
-  querySelectedSites()
+  if (allSites.value?.length == 0) {
+    querySites()
+    querySelectedSites()
+  }
+  chooseSiteDialog.value = true
 }
 
 // 开始搜索
@@ -442,6 +445,13 @@ function handleSearch() {
       sites: selectedSites.value.join(','),
     },
   })
+}
+
+// 搜索多站点
+function searchSites(sites: number[]) {
+  chooseSiteDialog.value = false
+  selectedSites.value = sites
+  handleSearch()
 }
 
 // 懒加载检查
@@ -566,36 +576,7 @@ function onRemoveSubscribe() {
             </p>
             <div v-if="props.media?.collection_id" class="mb-3" @click.stop=""></div>
             <div v-else class="flex align-center justify-between">
-              <VMenu close-on-content-click v-model="searchMenuShow" max-width="450">
-                <template v-slot:activator="{ props }">
-                  <IconBtn v-bind="props" icon="mdi-magnify" color="white" @click.stop="clickSearch" />
-                </template>
-                <VList>
-                  <VListItem>
-                    <VChipGroup v-model="selectedSites" column multiple @click.stop>
-                      <VChip
-                        v-for="site in allSites"
-                        :key="site.id"
-                        :color="selectedSites.includes(site.id) ? 'primary' : ''"
-                        filter
-                        variant="outlined"
-                        :value="site.id"
-                        size="small"
-                      >
-                        {{ site.name }}
-                      </VChip>
-                    </VChipGroup>
-                    <div>
-                      <VBtn size="small" variant="text" @click.stop="checkAllSitesorNot">
-                        {{ checkAllText }}
-                      </VBtn>
-                    </div>
-                  </VListItem>
-                  <VListItem>
-                    <VBtn @click="handleSearch" block>搜索</VBtn>
-                  </VListItem>
-                </VList>
-              </VMenu>
+              <IconBtn icon="mdi-magnify" color="white" @click.stop="clickSearch" />
               <IconBtn icon="mdi-heart" :color="isSubscribed ? 'error' : 'white'" @click.stop="handleSubscribe" />
             </div>
           </VCardText>
@@ -700,5 +681,14 @@ function onRemoveSubscribe() {
     @close="subscribeEditDialog = false"
     @save="subscribeEditDialog = false"
     @remove="onRemoveSubscribe"
+  />
+  <!-- 站点选择对话框 -->
+  <SearchSiteDialog
+    v-if="chooseSiteDialog"
+    v-model="chooseSiteDialog"
+    :sites="allSites"
+    :selected="selectedSites"
+    @search="searchSites"
+    @close="chooseSiteDialog = false"
   />
 </template>

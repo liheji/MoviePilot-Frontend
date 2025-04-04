@@ -87,6 +87,7 @@ const transferForm = reactive<TransferForm>({
 
 // 所有媒体库目录
 const directories = ref<TransferDirectoryConf[]>([])
+
 // 查询目录
 async function loadDirectories() {
   try {

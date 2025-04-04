@@ -64,6 +64,14 @@ const downloaderOptions = ref<{ title: string; value: string }[]>([])
 // 剧集组选项
 const episodeGroupOptions = ref<{ title: string; subtitle: string; value: number }[]>([])
 
+// 生成1到100季的下拉框选项
+const seasonItems = ref(
+  Array.from({ length: 101 }, (_, i) => i).map(item => ({
+    title: `第 ${item} 季`,
+    value: item,
+  })),
+)
+
 // 剧集组选项属性
 function episodeGroupItemProps(item: { title: string; subtitle: string }) {
   return {
@@ -526,7 +534,16 @@ onMounted(() => {
                       persistent-hint
                     />
                   </VCol>
-                  <VCol cols="12" md="6" v-if="!props.default">
+                  <VCol v-if="!props.default && subscribeForm.type === '电视剧'" cols="12" md="6">
+                    <VSelect
+                      v-model="subscribeForm.season"
+                      :items="seasonItems"
+                      label="指定季"
+                      hint="指定任意季订阅"
+                      persistent-hint
+                    />
+                  </VCol>
+                  <VCol cols="12" v-if="!props.default">
                     <VTextField
                       v-model="subscribeForm.media_category"
                       label="自定义类别"
