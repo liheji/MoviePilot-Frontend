@@ -79,6 +79,9 @@ const searchMenuShow = ref(false)
 // 选择站点对话框
 const chooseSiteDialog = ref(false)
 
+// 选择的剧集组
+const episodeGroup = ref('')
+
 // 查询所有站点
 async function querySites() {
   try {
@@ -146,6 +149,7 @@ async function addSubscribe(season: number = 0, best_version: number = 0) {
       mediaid: props.media?.media_id ? `${props.media?.mediaid_prefix}:${props.media?.media_id}` : '',
       season,
       best_version,
+      episode_group: episodeGroup.value,
     })
 
     // 订阅状态
@@ -288,8 +292,9 @@ function handleSubscribe() {
 }
 
 // 订阅多季
-function subscribeSeasons(seasons: MediaSeason[], seasonNoExists: { [key: number]: number }) {
+function subscribeSeasons(seasons: MediaSeason[], seasonNoExists: { [key: number]: number }, groudId: string) {
   subscribeSeasonDialog.value = false
+  episodeGroup.value = groudId
   seasonsSelected.value = seasons || []
   seasonsSelected.value.forEach(season => {
     let best_version = 0

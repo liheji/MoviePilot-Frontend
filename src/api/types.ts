@@ -78,8 +78,6 @@ export interface Subscribe {
   filter_groups?: string[]
   // 下载器
   downloader?: string
-  // 可选剧集组
-  episode_groups?: Record<string, any>[]
   // 自定义剧集组
   episode_group?: string
 }

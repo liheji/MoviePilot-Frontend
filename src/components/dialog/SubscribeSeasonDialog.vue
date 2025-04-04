@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import api from '@/api'
-import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { MediaInfo, MediaSeason, NotExistMediaInfo } from '@/api/types'
 import { PropType } from 'vue'
 import NoDataFound from '@/components/NoDataFound.vue'
@@ -32,6 +31,40 @@ const seasonsNotExisted = ref<{ [key: number]: number }>({})
 // 是否刷新过
 const isRefreshed = ref(false)
 
+// 所有剧集组
+const episodeGroups = ref<{ [key: string]: any }[]>([])
+
+// 当前选择剧集组
+const episodeGroup = ref(0)
+
+// 剧集组选项属性
+function episodeGroupItemProps(item: { title: string; subtitle: string }) {
+  return {
+    title: item.title,
+    subtitle: item.subtitle,
+  }
+}
+
+// 剧集组选项
+const episodeGroupOptions = computed(() => {
+  let options = (episodeGroups.value as { id: number; name: string; group_count: number; episode_count: number }[]).map(
+    item => {
+      return {
+        title: item.name,
+        subtitle: `${item.group_count} 季 • ${item.episode_count} 集`,
+        value: item.id,
+      }
+    },
+  )
+  // 添加不使用选项
+  options.unshift({
+    title: '默认',
+    subtitle: `${seasonInfos.value.length} 季`,
+    value: 0,
+  })
+  return options
+})
+
 // 获得mediaid
 function getMediaId() {
   if (props.media?.tmdb_id) return `tmdb:${props.media?.tmdb_id}`
@@ -40,9 +73,17 @@ function getMediaId() {
   else return `${props.media?.mediaid_prefix}:${props.media?.media_id}`
 }
 
+// 查询所有剧集组
+async function getEpisodeGroups() {
+  try {
+    episodeGroups.value = await api.get(`media/groups/${props.media?.tmdb_id}`)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 // 查询TMDB的所有季信息
 async function getMediaSeasons() {
-  startNProgress()
   try {
     seasonInfos.value = await api.get('media/seasons', {
       params: {
@@ -56,13 +97,23 @@ async function getMediaSeasons() {
   } catch (error) {
     console.error(error)
   }
-  doneNProgress()
+}
+
+// 查询剧集组的剧集
+async function getGroupSeasons() {
+  if (!episodeGroup.value) return
+  isRefreshed.value = false
+  try {
+    seasonInfos.value = await api.get(`media/group/seasons/${episodeGroup.value}`)
+  } catch (error) {
+    console.error(error)
+  }
+  isRefreshed.value = true
 }
 
 // 检查所有季的缺失状态（数据库）
 async function checkSeasonsNotExists() {
   // 开始处理
-  startNProgress()
   try {
     const result: NotExistMediaInfo[] = await api.post('mediaserver/notexists', props.media)
     if (result) {
@@ -76,9 +127,6 @@ async function checkSeasonsNotExists() {
     }
   } catch (error) {
     console.error(error)
-  } finally {
-    // 处理完成
-    doneNProgress()
   }
 }
 
@@ -104,7 +152,7 @@ function getExistText(season: number) {
 
 // 拼装季图片地址
 function getSeasonPoster(posterPath: string) {
-  if (!posterPath) return ''
+  if (!posterPath) return props.media?.poster_path
   return `https://${globalSettings.TMDB_IMAGE_DOMAIN}/t/p/w500${posterPath}`
 }
 
@@ -123,11 +171,17 @@ function getYear(airDate: string) {
 }
 
 function subscribeSeasons() {
-  emit('subscribe', seasonsSelected.value, seasonsNotExisted.value)
+  emit('subscribe', seasonsSelected.value, seasonsNotExisted.value, episodeGroup.value)
 }
+
+watchEffect(() => {
+  if (episodeGroup.value) getGroupSeasons()
+  else getMediaSeasons()
+})
 
 onMounted(async () => {
   getMediaSeasons()
+  getEpisodeGroups()
   checkSeasonsNotExists()
 })
 </script>
@@ -141,53 +195,57 @@ onMounted(async () => {
       </VCardItem>
       <VDivider />
       <VCardText>
+        <VSelect
+          v-model="episodeGroup"
+          :items="episodeGroupOptions"
+          :item-props="episodeGroupItemProps"
+          label="选择剧集组"
+          persistent-hint
+        />
         <LoadingBanner v-if="!isRefreshed" class="mt-5" />
-        <VList
-          v-else-if="seasonInfos.length > 0"
-          v-model:selected="seasonsSelected"
-          lines="three"
-          select-strategy="classic"
-        >
-          <VListItem v-for="(item, i) in seasonInfos" :key="i" :value="item">
-            <template #prepend>
-              <VImg
-                height="90"
-                width="60"
-                :src="getSeasonPoster(item.poster_path || '')"
-                aspect-ratio="2/3"
-                class="object-cover rounded shadow ring-gray-500 me-3"
-                cover
-              >
-                <template #placeholder>
-                  <div class="w-full h-full">
-                    <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
-                  </div>
-                </template>
-              </VImg>
-            </template>
-            <VListItemTitle> 第 {{ item.season_number }} 季 </VListItemTitle>
-            <VListItemSubtitle class="mt-1 me-2">
-              <VChip v-if="item.vote_average" color="primary" size="small" class="mb-1">
-                <VIcon icon="mdi-star" /> {{ item.vote_average }}
-              </VChip>
-              {{ getYear(item.air_date || '') }} • {{ item.episode_count }} 集
-            </VListItemSubtitle>
-            <VListItemSubtitle>
-              《{{ media?.title }}》第 {{ item.season_number }} 季于 {{ formatAirDate(item.air_date || '') }} 首播。
-            </VListItemSubtitle>
-            <VListItemSubtitle>
-              <VChip v-if="noexists" class="mt-2" size="small" :color="getExistColor(item.season_number || 0)">
-                {{ getExistText(item.season_number || 0) }}
-              </VChip>
-            </VListItemSubtitle>
-            <template #append="{ isSelected }">
-              <VListItemAction start>
-                <VSwitch :model-value="isSelected" />
-              </VListItemAction>
-            </template>
-          </VListItem>
-        </VList>
-        <NoDataFound v-else errorTitle="出错啦！" :errorDescription="`${props.media?.title} 无法识别TMDB媒体信息！`" />
+        <div v-else-if="seasonInfos.length > 0">
+          <VList v-model:selected="seasonsSelected" lines="three" select-strategy="classic">
+            <VListItem v-for="(item, i) in seasonInfos" :key="i" :value="item">
+              <template #prepend>
+                <VImg
+                  height="90"
+                  width="60"
+                  :src="getSeasonPoster(item.poster_path || '')"
+                  aspect-ratio="2/3"
+                  class="object-cover rounded shadow ring-gray-500 me-3"
+                  cover
+                >
+                  <template #placeholder>
+                    <div class="w-full h-full">
+                      <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
+                    </div>
+                  </template>
+                </VImg>
+              </template>
+              <VListItemTitle> 第 {{ item.season_number }} 季 </VListItemTitle>
+              <VListItemSubtitle class="mt-1 me-2">
+                <VChip v-if="item.vote_average" color="primary" size="small" class="mb-1">
+                  <VIcon icon="mdi-star" /> {{ item.vote_average }}
+                </VChip>
+                {{ getYear(item.air_date || '') }} • {{ item.episode_count }} 集
+              </VListItemSubtitle>
+              <VListItemSubtitle>
+                《{{ media?.title }}》第 {{ item.season_number }} 季于 {{ formatAirDate(item.air_date || '') }} 首播。
+              </VListItemSubtitle>
+              <VListItemSubtitle>
+                <VChip v-if="noexists" class="mt-2" size="small" :color="getExistColor(item.season_number || 0)">
+                  {{ getExistText(item.season_number || 0) }}
+                </VChip>
+              </VListItemSubtitle>
+              <template #append="{ isSelected }">
+                <VListItemAction start>
+                  <VSwitch :model-value="isSelected" />
+                </VListItemAction>
+              </template>
+            </VListItem>
+          </VList>
+        </div>
+        <NoDataFound v-else errorTitle="出错啦！" :errorDescription="`${props.media?.title} 未查询到季集信息`" />
       </VCardText>
       <div class="my-2 text-center">
         <VBtn :disabled="seasonsSelected.length === 0" width="30%" @click="subscribeSeasons">

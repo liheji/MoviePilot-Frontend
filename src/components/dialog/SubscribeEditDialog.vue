@@ -5,7 +5,6 @@ import api from '@/api'
 import type { DownloaderConf, FilterRuleGroup, Site, Subscribe, TransferDirectoryConf } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import { useConfirm } from 'vuetify-use-dialog'
-import { VTextarea, VTextField } from 'vuetify/lib/components/index.mjs'
 
 // 显示器宽度
 const display = useDisplay()
@@ -53,6 +52,7 @@ const subscribeForm = ref<Subscribe>({
   downloader: '',
   date: '',
   show_edit_dialog: false,
+  episode_group: '',
 })
 
 // 提示框
@@ -61,8 +61,21 @@ const $toast = useToast()
 // 下载器选项
 const downloaderOptions = ref<{ title: string; value: string }[]>([])
 
+// 所有剧集组
+const episodeGroups = ref<{ [key: string]: any }[]>([])
+
 // 剧集组选项
-const episodeGroupOptions = ref<{ title: string; subtitle: string; value: number }[]>([])
+const episodeGroupOptions = computed(() => {
+  return (episodeGroups.value as { id: number; name: string; group_count: number; episode_count: number }[]).map(
+    item => {
+      return {
+        title: item.name,
+        subtitle: `${item.group_count} 季 • ${item.episode_count} 集`,
+        value: item.id,
+      }
+    },
+  )
+})
 
 // 生成1到100季的下拉框选项
 const seasonItems = ref(
@@ -77,6 +90,15 @@ function episodeGroupItemProps(item: { title: string; subtitle: string }) {
   return {
     title: item.title,
     subtitle: item.subtitle,
+  }
+}
+
+// 查询所有剧集组
+async function getEpisodeGroups() {
+  try {
+    episodeGroups.value = await api.get(`media/groups/${subscribeForm.value.tmdbid}`)
+  } catch (error) {
+    console.error(error)
   }
 }
 
@@ -197,19 +219,8 @@ async function getSubscribeInfo() {
     subscribeForm.value = result
     subscribeForm.value.best_version = subscribeForm.value.best_version === 1
     subscribeForm.value.search_imdbid = subscribeForm.value.search_imdbid === 1
-
-    // 从result.episode_groups中获取剧集组
-    if (result?.episode_groups) {
-      episodeGroupOptions.value = (result?.episode_groups as { id: number; name: string; episode_count: number }[]).map(
-        item => {
-          return {
-            title: item.name,
-            subtitle: `${item.episode_count} 集`,
-            value: item.id,
-          }
-        },
-      )
-    }
+    // 加载剧集组
+    if (subscribeForm.value.type == '电视剧') getEpisodeGroups()
   } catch (e) {
     console.log(e)
   }
