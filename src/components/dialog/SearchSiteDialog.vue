@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Site, Plugin, Subscribe } from '@/api/types'
-import { PropType } from 'vue'
+import { popScopeId, PropType } from 'vue'
 
 const props = defineProps({
   sites: {
@@ -22,6 +22,12 @@ const siteFilter = ref('')
 
 // 已选择站点
 const selectedSites = ref<any[]>(props.selected || [])
+
+watchEffect(() => {
+  if (!selectedSites.value && props.selected){
+    selectedSites.value = props.selected
+  }
+})
 
 // 全选/全不选按钮文字
 const checkAllText = computed(() => {

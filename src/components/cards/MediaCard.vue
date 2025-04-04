@@ -88,15 +88,6 @@ const searchMenuShow = ref(false)
 // 选择站点对话框
 const chooseSiteDialog = ref(false)
 
-// 全选/全不选
-function checkAllSitesorNot() {
-  if (selectedSites.value.length === allSites.value.length) {
-    selectedSites.value = []
-  } else {
-    selectedSites.value = allSites.value.map(item => item.id)
-  }
-}
-
 // 查询所有站点
 async function querySites() {
   try {
@@ -113,7 +104,6 @@ async function querySites() {
 async function querySelectedSites() {
   try {
     const result: { [key: string]: any } = await api.get('system/setting/IndexerSites')
-
     selectedSites.value = result.data?.value ?? []
   } catch (error) {
     console.log(error)
