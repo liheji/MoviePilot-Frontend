@@ -506,7 +506,7 @@ function onRemoveSubscribe() {
     v-model="subscribeSeasonDialog"
     :media="media"
     @subscribe="subscribeSeasons"
-    @close="subscribeEditDialog = false"
+    @close="subscribeSeasonDialog = false"
   />
   <!-- 订阅编辑弹窗 -->
   <SubscribeEditDialog

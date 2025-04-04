@@ -3,6 +3,7 @@ import api from '@/api'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { MediaInfo, MediaSeason, NotExistMediaInfo } from '@/api/types'
 import { PropType } from 'vue'
+import NoDataFound from '@/components/NoDataFound.vue'
 
 // 定义事件
 const emit = defineEmits(['subscribe', 'close'])
@@ -142,7 +143,7 @@ onMounted(async () => {
       <VCardText>
         <LoadingBanner v-if="!isRefreshed" class="mt-5" />
         <VList
-          v-if="isRefreshed && seasonInfos.length > 0"
+          v-else-if="seasonInfos.length > 0"
           v-model:selected="seasonsSelected"
           lines="three"
           select-strategy="classic"
