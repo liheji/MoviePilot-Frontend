@@ -10,10 +10,6 @@ const emit = defineEmits(['subscribe', 'close'])
 // 定义输入
 const props = defineProps({
   media: Object as PropType<MediaInfo>,
-  noexists: {
-    type: Object as PropType<{ [key: number]: number }>,
-    default: {},
-  },
 })
 
 // 从 provide 中获取全局设置
@@ -35,7 +31,7 @@ const isRefreshed = ref(false)
 const episodeGroups = ref<{ [key: string]: any }[]>([])
 
 // 当前选择剧集组
-const episodeGroup = ref(0)
+const episodeGroup = ref('')
 
 // 剧集组选项属性
 function episodeGroupItemProps(item: { title: string; subtitle: string }) {
@@ -47,7 +43,7 @@ function episodeGroupItemProps(item: { title: string; subtitle: string }) {
 
 // 剧集组选项
 const episodeGroupOptions = computed(() => {
-  let options = (episodeGroups.value as { id: number; name: string; group_count: number; episode_count: number }[]).map(
+  let options = (episodeGroups.value as { id: string; name: string; group_count: number; episode_count: number }[]).map(
     item => {
       return {
         title: item.name,
@@ -60,7 +56,7 @@ const episodeGroupOptions = computed(() => {
   options.unshift({
     title: '默认',
     subtitle: `${seasonInfos.value.length} 季`,
-    value: 0,
+    value: '',
   })
   return options
 })
@@ -115,7 +111,10 @@ async function getGroupSeasons() {
 async function checkSeasonsNotExists() {
   // 开始处理
   try {
-    const result: NotExistMediaInfo[] = await api.post('mediaserver/notexists', props.media)
+    let tmpMedia = props.media ?? { episode_group: '' }
+    if (episodeGroup.value) tmpMedia.episode_group = episodeGroup.value
+    else tmpMedia.episode_group = ''
+    const result: NotExistMediaInfo[] = await api.post('mediaserver/notexists', tmpMedia)
     if (result) {
       result.forEach(item => {
         // 0-已入库 1-部分缺失 2-全部缺失
@@ -132,7 +131,7 @@ async function checkSeasonsNotExists() {
 
 // 计算存在状态的颜色
 function getExistColor(season: number) {
-  const state = props.noexists[season]
+  const state = seasonsNotExisted.value[season]
   if (!state) return 'success'
 
   if (state === 1) return 'warning'
@@ -142,7 +141,7 @@ function getExistColor(season: number) {
 
 // 计算存在状态的文本
 function getExistText(season: number) {
-  const state = props.noexists[season]
+  const state = seasonsNotExisted.value[season]
   if (!state) return '已入库'
 
   if (state === 1) return '部分缺失'
@@ -177,6 +176,7 @@ function subscribeSeasons() {
 watchEffect(() => {
   if (episodeGroup.value) getGroupSeasons()
   else getMediaSeasons()
+  checkSeasonsNotExists()
 })
 
 onMounted(async () => {
@@ -233,7 +233,12 @@ onMounted(async () => {
                 《{{ media?.title }}》第 {{ item.season_number }} 季于 {{ formatAirDate(item.air_date || '') }} 首播。
               </VListItemSubtitle>
               <VListItemSubtitle>
-                <VChip v-if="noexists" class="mt-2" size="small" :color="getExistColor(item.season_number || 0)">
+                <VChip
+                  v-if="seasonsNotExisted"
+                  class="mt-2"
+                  size="small"
+                  :color="getExistColor(item.season_number || 0)"
+                >
                   {{ getExistText(item.season_number || 0) }}
                 </VChip>
               </VListItemSubtitle>

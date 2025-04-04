@@ -290,6 +290,8 @@ export interface MediaInfo {
   next_episode_to_air?: object
   // 别名
   names?: string[]
+  // 剧集组
+  episode_group?: string
 }
 
 // 季信息

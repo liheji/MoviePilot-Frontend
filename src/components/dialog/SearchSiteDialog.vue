@@ -24,7 +24,7 @@ const siteFilter = ref('')
 const selectedSites = ref<any[]>(props.selected || [])
 
 watchEffect(() => {
-  if (!selectedSites.value && props.selected){
+  if (selectedSites.value.length == 0 && props.selected) {
     selectedSites.value = props.selected
   }
 })
@@ -52,7 +52,7 @@ const filteredSites = computed(() => {
 </script>
 <template>
   <!-- 手动整理进度框 -->
-  <VDialog max-width="40rem" persistent fullscreen-mobile>
+  <VDialog max-width="40rem" fullscreen-mobile>
     <VCard class="site-dialog">
       <VCardTitle class="d-flex align-center pa-4">
         <span class="text-h6 font-weight-medium">选择搜索站点</span>
