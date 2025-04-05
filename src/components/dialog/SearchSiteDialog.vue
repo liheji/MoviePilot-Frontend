@@ -23,9 +23,9 @@ const siteFilter = ref('')
 // 已选择站点
 const selectedSites = ref<any[]>(props.selected || [])
 
-watchEffect(() => {
-  if (selectedSites.value.length == 0 && props.selected) {
-    selectedSites.value = props.selected
+watch(() => props.selected, value => {
+  if (selectedSites.value.length == 0 && value) {
+    selectedSites.value = value
   }
 })
 
