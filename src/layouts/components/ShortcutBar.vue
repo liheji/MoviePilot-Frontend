@@ -15,6 +15,9 @@ const display = useDisplay()
 // App捷径
 const appsMenu = ref(false)
 
+// 菜单最大宽度
+const menuMaxWidth = ref(480)
+
 // 名称测试弹窗
 const nameTestDialog = ref(false)
 
@@ -40,14 +43,13 @@ const user_message = ref('')
 const sendButtonDisabled = ref(false)
 
 // 聊天容器
-const chatContainer = ref<HTMLDivElement>()
+const chatContainer = ref<HTMLElement>()
 
 // 滚动到底部
 function scrollMessageToEnd() {
   nextTick(() => {
     if (chatContainer.value) {
-      const scrollDiv = chatContainer.value.$el
-      scrollDiv.scrollTop = scrollDiv.scrollHeight
+      chatContainer.value.scrollTop = chatContainer.value.scrollHeight
     }
   })
 }
@@ -103,91 +105,99 @@ onMounted(() => {
 <template>
   <VMenu
     v-model="appsMenu"
-    max-width="600"
-    width="340"
+    :max-width="menuMaxWidth"
+    width="100%"
     max-height="560"
     location="top end"
     origin="top end"
     transition="scale-transition"
-    close-on-content-click
+    :close-on-content-click="false"
+    :close-on-back="true"
   >
     <!-- Menu Activator -->
     <template #activator="{ props }">
       <IconBtn class="ms-2" v-bind="props">
-        <VIcon icon="mdi-checkbox-multiple-blank-outline" />
+        <VIcon icon="mdi-apps" />
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard elevation="1">
-      <VCardItem class="border-b">
-        <VCardTitle>捷径</VCardTitle>
+    <VCard elevation="1" class="shortcut-menu-card">
+      <VCardItem class="shortcut-header border-b">
+        <VCardTitle class="font-weight-medium text-primary">捷径</VCardTitle>
         <template #append>
-          <IconBtn @click="() => {}">
-            <VIcon icon="mdi-checkbox-multiple-blank-outline" />
+          <IconBtn @click="appsMenu = false" class="shortcut-close-btn">
+            <VIcon icon="mdi-close" />
           </IconBtn>
         </template>
       </VCardItem>
-      <div class="ps ps--active-y">
-        <VRow class="ma-0 mt-n1">
-          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon border-e">
-            <VListItem class="pa-4" @click="nameTestDialog = true">
-              <VAvatar size="48" variant="tonal">
-                <VIcon icon="mdi-text-recognition" />
-              </VAvatar>
-              <h6 class="text-base font-weight-medium mt-2 mb-0">识别</h6>
-              <span class="text-sm">名称识别测试</span>
-            </VListItem>
-          </VCol>
-          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon" @click="() => {}">
-            <VListItem class="pa-4" @click="ruleTestDialog = true">
-              <VAvatar size="48" variant="tonal">
-                <VIcon icon="mdi-filter-cog-outline" />
-              </VAvatar>
-              <h6 class="text-base font-weight-medium mt-2 mb-0">规则</h6>
-              <span class="text-sm">规则测试</span>
-            </VListItem>
-          </VCol>
-        </VRow>
-        <VRow class="ma-0 mt-n1 border-t">
-          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon border-e" @click="() => {}">
-            <VListItem class="pa-4" @click="loggingDialog = true">
-              <VAvatar size="48" variant="tonal">
-                <VIcon icon="mdi-file-document-outline" />
-              </VAvatar>
-              <h6 class="text-base font-weight-medium mt-2 mb-0">日志</h6>
-              <span class="text-sm">实时日志</span>
-            </VListItem>
-          </VCol>
-          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon" @click="() => {}">
-            <VListItem class="pa-4" @click="netTestDialog = true">
-              <VAvatar size="48" variant="tonal">
-                <VIcon icon="mdi-network-outline" />
-              </VAvatar>
-              <h6 class="text-base font-weight-medium mt-2 mb-0">网络</h6>
-              <span class="text-sm">网速连通性测试</span>
-            </VListItem>
-          </VCol>
-        </VRow>
-        <VRow class="ma-0 mt-n1 border-t">
-          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon border-e" @click="() => {}">
-            <VListItem class="pa-4" @click="systemTestDialog = true">
-              <VAvatar size="48" variant="tonal">
-                <VIcon icon="mdi-cog-outline" />
-              </VAvatar>
-              <h6 class="text-base font-weight-medium mt-2 mb-0">系统</h6>
-              <span class="text-sm">健康检查</span>
-            </VListItem>
-          </VCol>
-          <VCol cols="6" class="text-center cursor-pointer pa-0 shortcut-icon" @click="() => {}">
-            <VListItem class="pa-4" @click="messageDialog = true">
-              <VAvatar size="48" variant="tonal">
-                <VIcon icon="mdi-message-outline" />
-              </VAvatar>
-              <h6 class="text-base font-weight-medium mt-2 mb-0">消息</h6>
-              <span class="text-sm">消息中心</span>
-            </VListItem>
-          </VCol>
-        </VRow>
+      <div class="ps ps--active-y shortcut-menu-container">
+        <div class="shortcut-grid">
+          <!-- 识别 -->
+          <div class="shortcut-item" @click="nameTestDialog = true">
+            <div class="shortcut-icon-wrapper">
+              <VIcon icon="mdi-text-recognition" size="24" />
+            </div>
+            <div class="shortcut-text">
+              <div class="shortcut-title">识别</div>
+              <div class="shortcut-subtitle">名称识别测试</div>
+            </div>
+          </div>
+
+          <!-- 规则 -->
+          <div class="shortcut-item" @click="ruleTestDialog = true">
+            <div class="shortcut-icon-wrapper">
+              <VIcon icon="mdi-filter-cog" size="24" />
+            </div>
+            <div class="shortcut-text">
+              <div class="shortcut-title">规则</div>
+              <div class="shortcut-subtitle">规则测试</div>
+            </div>
+          </div>
+
+          <!-- 日志 -->
+          <div class="shortcut-item" @click="loggingDialog = true">
+            <div class="shortcut-icon-wrapper">
+              <VIcon icon="mdi-file-document" size="24" />
+            </div>
+            <div class="shortcut-text">
+              <div class="shortcut-title">日志</div>
+              <div class="shortcut-subtitle">实时日志</div>
+            </div>
+          </div>
+
+          <!-- 网络 -->
+          <div class="shortcut-item" @click="netTestDialog = true">
+            <div class="shortcut-icon-wrapper">
+              <VIcon icon="mdi-network" size="24" />
+            </div>
+            <div class="shortcut-text">
+              <div class="shortcut-title">网络</div>
+              <div class="shortcut-subtitle">网速连通性测试</div>
+            </div>
+          </div>
+
+          <!-- 系统 -->
+          <div class="shortcut-item" @click="systemTestDialog = true">
+            <div class="shortcut-icon-wrapper">
+              <VIcon icon="mdi-cog" size="24" />
+            </div>
+            <div class="shortcut-text">
+              <div class="shortcut-title">系统</div>
+              <div class="shortcut-subtitle">健康检查</div>
+            </div>
+          </div>
+
+          <!-- 消息 -->
+          <div class="shortcut-item" @click="messageDialog = true">
+            <div class="shortcut-icon-wrapper">
+              <VIcon icon="mdi-message" size="24" />
+            </div>
+            <div class="shortcut-text">
+              <div class="shortcut-title">消息</div>
+              <div class="shortcut-subtitle">消息中心</div>
+            </div>
+          </div>
+        </div>
       </div>
     </VCard>
   </VMenu>
@@ -289,3 +299,119 @@ onMounted(() => {
     </VCard>
   </VDialog>
 </template>
+
+<style lang="scss" scoped>
+.shortcut-menu-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(var(--v-theme-on-surface), 0.12), 0 4px 12px rgba(var(--v-theme-on-surface), 0.08) !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+}
+
+.shortcut-header {
+  background: linear-gradient(to right, rgba(var(--v-theme-primary), 0.04), rgba(var(--v-theme-primary), 0.01));
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  padding: 12px 16px;
+}
+
+.shortcut-close-btn {
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: rotate(90deg);
+  }
+}
+
+.shortcut-menu-container {
+  padding: 16px;
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  background-color: rgba(var(--v-theme-surface));
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.08) 0%, rgba(var(--v-theme-primary), 0) 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(var(--v-theme-on-surface), 0.12);
+    border-color: rgba(var(--v-theme-primary), 0.15);
+    
+    &::before {
+      opacity: 1;
+    }
+    
+    .shortcut-icon-wrapper {
+      transform: scale(1.1);
+      background-color: rgba(var(--v-theme-primary), 0.12);
+      
+      .v-icon {
+        transform: scale(1.2);
+      }
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(var(--v-theme-on-surface), 0.08);
+  }
+}
+
+.shortcut-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  margin-right: 16px;
+  transition: all 0.3s ease;
+  
+  .v-icon {
+    transition: transform 0.3s ease;
+    color: rgba(var(--v-theme-primary), 1);
+  }
+}
+
+.shortcut-text {
+  flex: 1;
+}
+
+.shortcut-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 4px;
+  color: rgba(var(--v-theme-on-surface), 0.95);
+}
+
+.shortcut-subtitle {
+  font-size: 0.8rem;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+}
+</style>

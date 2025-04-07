@@ -39,8 +39,79 @@ onBeforeUnmount(() => {
   if (eventSource) eventSource.close()
 })
 </script>
+
+<style lang="scss" scoped>
+.notification-header {
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  padding: 16px;
+  
+  .v-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(var(--v-theme-primary), 0.9);
+  }
+}
+
+.notification-list {
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.notification-item {
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.03);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(var(--v-theme-on-surface), 0.06);
+  }
+  
+  .notification-avatar {
+    background-color: rgba(var(--v-theme-primary), 0.1);
+    box-shadow: 0 4px 8px rgba(var(--v-theme-primary), 0.15);
+  }
+  
+  .notification-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  
+  .notification-text {
+    font-size: 0.85rem;
+    color: rgba(var(--v-theme-on-surface), 0.75);
+    margin-top: 6px;
+  }
+  
+  .notification-time {
+    font-size: 0.8rem;
+    color: rgba(var(--v-theme-primary), 0.8);
+    margin-top: 6px;
+  }
+}
+
+.no-notification {
+  padding: 30px 0;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  font-size: 0.95rem;
+}
+
+.mark-read-btn {
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.1);
+    transform: scale(1.05);
+  }
+}
+</style>
+
 <template>
-  <VMenu v-model="appsMenu" width="400" transition="scale-transition" close-on-content-click>
+  <VMenu v-model="appsMenu" width="400" transition="scale-transition" close-on-content-click class="notification-menu">
     <!-- Menu Activator -->
     <template #activator="{ props }">
       <VBadge v-if="hasNewMessage" dot color="error" :offset-x="5" :offset-y="5" v-bind="props">
@@ -53,13 +124,14 @@ onBeforeUnmount(() => {
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard elevation="1">
-      <VCardItem class="border-b">
-        <VCardTitle>通知</VCardTitle>
+    <VCard elevation="0">
+      <VCardItem class="notification-header">
+        <VCardTitle>通知中心</VCardTitle>
         <template #append>
           <VTooltip text="设为已读">
             <template #activator="{ props }">
               <IconBtn
+                class="mark-read-btn"
                 v-bind="props"
                 @click="
                   () => {
@@ -68,33 +140,36 @@ onBeforeUnmount(() => {
                   }
                 "
               >
-                <VIcon icon="mdi-email-mark-as-unread" />
+                <VIcon icon="mdi-email-check-outline" size="20" />
               </IconBtn>
             </template>
           </VTooltip>
         </template>
       </VCardItem>
-      <VList lines="two" v-if="notificationList.length > 0" max-height="600">
-        <VListItem v-for="(item, i) in notificationList" :key="i">
+      <div v-if="notificationList.length > 0" class="notification-list">
+        <VListItem v-for="(item, i) in notificationList" :key="i" lines="two" class="notification-item">
           <template #prepend>
-            <VAvatar rounded>
+            <VAvatar rounded class="notification-avatar">
               <VIcon v-if="item.type === 'user'" icon="mdi-account-alert" size="large"></VIcon>
-              <VIcon v-else-if="item.type === 'plugin'" icon="mdi-robot-happy" size="large"></VIcon>
+              <VIcon v-else-if="item.type === 'plugin'" icon="mdi-robot" size="large"></VIcon>
               <VIcon v-else icon="mdi-laptop" size="large"></VIcon>
             </VAvatar>
           </template>
-          <VListItemTitle class="overflow-visiable break-words whitespace-break-spaces">
-            {{ item.title }}
-          </VListItemTitle>
-          <VListItemSubtitle class="mt-2">{{ item.text }}</VListItemSubtitle>
-          <VListItemSubtitle class="mt-2">{{ formatDateDifference(item.date) }}</VListItemSubtitle>
+          <div class="notification-content">
+            <div class="notification-title overflow-visiable break-words whitespace-break-spaces">
+              {{ item.title }}
+            </div>
+            <div class="notification-text">{{ item.text }}</div>
+            <div class="notification-time">{{ formatDateDifference(item.date) }}</div>
+          </div>
         </VListItem>
-      </VList>
-      <VList v-else>
-        <VListItem>
-          <VListItemTitle class="text-center">暂无通知</VListItemTitle>
-        </VListItem>
-      </VList>
+      </div>
+      <div v-else class="no-notification">
+        <div class="text-center">
+          <VIcon icon="mdi-bell-sleep-outline" size="40" class="mb-3 text-primary" />
+          <div>暂无通知</div>
+        </div>
+      </div>
     </VCard>
   </VMenu>
 </template>
