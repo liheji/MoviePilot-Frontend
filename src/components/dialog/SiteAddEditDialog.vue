@@ -5,13 +5,9 @@ import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { numberValidator, requiredValidator } from '@/@validators'
 import api from '@/api'
 import { useDisplay } from 'vuetify'
-import { useConfirm } from 'vuetify-use-dialog'
 
 // 显示器宽度
 const display = useDisplay()
-
-// 确认框
-const createConfirm = useConfirm()
 
 // 输入参数
 const props = defineProps({
@@ -108,25 +104,6 @@ async function addSite() {
   doneNProgress()
 }
 
-// 调用API删除站点信息
-async function deleteSiteInfo() {
-  const isConfirmed = await createConfirm({
-    title: '确认',
-    content: `是否确认删除站点？`,
-  })
-
-  if (!isConfirmed) return
-
-  try {
-    const result: { [key: string]: any } = await api.delete(`site/${siteForm.value?.id}`)
-    if (result.success) emit('remove')
-    else $toast.error(`${siteForm.value?.name} 删除失败：${result.message}`)
-  } catch (error) {
-    $toast.error(`${siteForm.value?.name} 删除失败！`)
-    console.error(error)
-  }
-}
-
 // 调用API更新站点信息
 async function updateSiteInfo() {
   startNProgress()
@@ -166,7 +143,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VDialog scrollable :close-on-back="false" eager max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable :close-on-back="false" eager max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard
       :title="`${props.oper === 'add' ? '新增' : '编辑'}站点${props.oper !== 'add' ? ` - ${siteForm.name}` : ''}`"
       class="rounded-t"
@@ -338,9 +315,6 @@ onMounted(async () => {
         </VForm>
       </VCardText>
       <VCardActions class="pt-3">
-        <VBtn v-if="props.oper !== 'add'" color="error" @click="deleteSiteInfo" variant="outlined" class="me-3">
-          删除
-        </VBtn>
         <VSpacer />
         <VBtn
           v-if="props.oper === 'add'"

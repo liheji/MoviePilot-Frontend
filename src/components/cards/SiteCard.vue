@@ -9,6 +9,7 @@ import api from '@/api'
 import type { Site, SiteStatistic, SiteUserData } from '@/api/types'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { formatFileSize } from '@/@core/utils/formatters'
+import { useConfirm } from 'vuetify-use-dialog'
 
 // 输入参数
 const cardProps = defineProps({
@@ -18,6 +19,9 @@ const cardProps = defineProps({
 
 // 定义触发的自定义事件
 const emit = defineEmits(['update', 'remove'])
+
+// 确认框
+const createConfirm = useConfirm()
 
 // 图标
 const siteIcon = ref<string>('')
@@ -101,6 +105,25 @@ async function handleSiteUserData() {
 // 打开站点页面
 function openSitePage() {
   window.open(cardProps.site?.url, '_blank')
+}
+
+// 调用API删除站点信息
+async function deleteSiteInfo() {
+  const isConfirmed = await createConfirm({
+    title: '确认',
+    content: `是否确认删除站点？`,
+  })
+
+  if (!isConfirmed) return
+
+  try {
+    const result: { [key: string]: any } = await api.delete(`site/${cardProps.site?.id}`)
+    if (result.success) emit('remove')
+    else $toast.error(`${cardProps.site?.name} 删除失败：${result.message}`)
+  } catch (error) {
+    $toast.error(`${cardProps.site?.name} 删除失败！`)
+    console.error(error)
+  }
 }
 
 // 根据站点状态显示不同的状态图标
@@ -288,8 +311,9 @@ onMounted(() => {
       <div class="site-card-actions">
         <VTooltip>
           <template #activator="{ props }">
-            <button
+            <IconBtn
               v-bind="props"
+              elevation="0"
               class="site-action-btn test-btn"
               @click.stop="testSite"
               :class="{ 'testing': testButtonDisable }"
@@ -304,42 +328,39 @@ onMounted(() => {
                 </div>
                 <span class="loading-text">测试中</span>
               </div>
-            </button>
+            </IconBtn>
           </template>
           <span>测试站点连通性</span>
         </VTooltip>
-
-        <VTooltip>
+        <VTooltip v-if="!cardProps.site?.public">
           <template #activator="{ props }">
-            <button v-bind="props" class="site-action-btn" @click.stop="handleSiteUserData">
+            <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUserData">
               <VIcon icon="mdi-chart-bell-curve" size="18" />
-            </button>
+            </IconBtn>
           </template>
           <span>查看站点数据</span>
         </VTooltip>
-
         <VTooltip v-if="!cardProps.site?.public">
           <template #activator="{ props }">
-            <button v-bind="props" class="site-action-btn" @click.stop="handleSiteUpdate">
+            <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUpdate">
               <VIcon icon="mdi-refresh" size="18" />
-            </button>
+            </IconBtn>
           </template>
           <span>更新Cookie/UA</span>
         </VTooltip>
-
         <VTooltip>
           <template #activator="{ props }">
-            <button v-bind="props" class="site-action-btn more-btn">
+            <IconBtn v-bind="props" elevation="0" class="site-action-btn more-btn">
               <VIcon icon="mdi-dots-vertical" size="18" />
               <VMenu activator="parent" close-on-content-click location="left">
                 <VList density="compact" nav class="dropdown-menu">
-                  <VListItem variant="plain" @click.stop="siteEditDialog = true" base-color="info">
+                  <VListItem variant="plain" @click="siteEditDialog = true" base-color="info">
                     <template #prepend>
                       <VIcon icon="mdi-file-edit-outline" size="small" />
                     </template>
                     <VListItemTitle>编辑站点</VListItemTitle>
                   </VListItem>
-                  <VListItem variant="plain" @click.stop="emit('remove')">
+                  <VListItem variant="plain" @click="deleteSiteInfo">
                     <template #prepend>
                       <VIcon icon="mdi-delete-outline" size="small" color="error" />
                     </template>
@@ -347,7 +368,7 @@ onMounted(() => {
                   </VListItem>
                 </VList>
               </VMenu>
-            </button>
+            </IconBtn>
           </template>
           <span>更多操作</span>
         </VTooltip>
@@ -387,19 +408,19 @@ onMounted(() => {
 
 <style scoped>
 .site-card {
-  background: rgba(var(--v-theme-surface), 0.95);
-  border-radius: 10px;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.09);
-  transition: all 0.3s ease;
-  cursor: pointer;
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.09);
+  border-radius: 10px;
+  background: rgba(var(--v-theme-surface), 0.95);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .site-card:hover {
-  transform: translateY(-4px);
   border-color: rgba(var(--v-theme-primary), 0.2);
-  box-shadow: 0 3px 12px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 12px -6px rgba(0, 0, 0, 10%);
+  transform: translateY(-4px);
 }
 
 .inactive {
@@ -408,19 +429,19 @@ onMounted(() => {
 
 .site-card-content {
   z-index: 1;
-  padding: 10px 12px 10px;
+  padding-block: 10px;
+  padding-inline: 12px;
 }
 
 /* 站点状态指示器 - 更精致的渐变指示 */
 .site-status-indicator {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  opacity: 0.5;
   z-index: 1;
-  transition: height 0.3s ease, opacity 0.3s ease;
+  block-size: 2px;
+  inset-block-start: 0;
+  inset-inline: 0;
+  opacity: 0.5;
+  transition: block-size 0.3s ease, opacity 0.3s ease;
 }
 
 .site-status-indicator.error {
@@ -445,7 +466,7 @@ onMounted(() => {
 
 /* 站点卡片悬停时状态指示器变化 */
 .site-card:hover .site-status-indicator {
-  height: 2px;
+  block-size: 2px;
   opacity: 0.8;
 }
 
@@ -457,9 +478,9 @@ onMounted(() => {
 
 /* 数据显示相关样式 */
 .data-transfer-stats {
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  margin-block-start: 6px;
+  padding-block-start: 6px;
 }
 
 .data-row {
@@ -467,62 +488,59 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 6px;
+  margin-block-end: 6px;
 }
 
 .data-row:last-child {
-  margin-bottom: 0;
+  margin-block-end: 0;
 }
 
 .data-label {
   display: flex;
   align-items: center;
-  font-size: 0.8rem;
   color: rgba(var(--v-theme-on-surface), 0.8);
-  min-width: 70px;
+  font-size: 0.8rem;
+  min-inline-size: 70px;
 }
 
 .data-progress-bar {
   position: relative;
-  height: 4px;
   overflow: hidden;
+  flex-grow: 1;
   border-radius: 4px;
   background: rgba(var(--v-theme-on-surface), 0.08);
-  flex-grow: 1;
+  block-size: 4px;
 }
 
 .progress-filled {
   position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  min-width: 3px;
-  border-radius: 4px;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  border-radius: 4px;
+  block-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  min-inline-size: 3px;
+  transition: inline-size 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .upload-filled {
-  background: linear-gradient(90deg, #4d79ff, #0077ff);
-  box-shadow: 0 0 4px rgba(0, 119, 255, 0.5);
   animation: pulse-width 2s infinite;
+  background: linear-gradient(90deg, #4d79ff, #07f);
+  box-shadow: 0 0 4px rgba(0, 119, 255, 50%);
 }
 
 .download-filled {
-  background: linear-gradient(90deg, #42d392, #00b77e);
-  box-shadow: 0 0 4px rgba(0, 183, 126, 0.5);
   animation: pulse-width 2s infinite;
+  background: linear-gradient(90deg, #42d392, #00b77e);
+  box-shadow: 0 0 4px rgba(0, 183, 126, 50%);
 }
 
 .progress-glow {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-  background-size: 200% 100%;
   animation: shimmer 1.5s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 50%), transparent);
+  background-size: 200% 100%;
+  inset: 0;
 }
 
 @keyframes pulse-width {
@@ -530,6 +548,7 @@ onMounted(() => {
   100% {
     opacity: 0.85;
   }
+
   50% {
     opacity: 1;
   }
@@ -539,6 +558,7 @@ onMounted(() => {
   0% {
     background-position: -100% 0;
   }
+
   100% {
     background-position: 100% 0;
   }
@@ -546,24 +566,24 @@ onMounted(() => {
 
 /* 速度等级样式 */
 .speed-idle {
-  width: 5% !important;
-  opacity: 0.5;
   animation: none !important;
+  inline-size: 5% !important;
+  opacity: 0.5;
 }
 
 .speed-low {
-  width: 30% !important;
   animation-duration: 6s !important;
+  inline-size: 30% !important;
 }
 
 .speed-medium {
-  width: 50% !important;
   animation-duration: 4s !important;
+  inline-size: 50% !important;
 }
 
 .speed-high {
-  width: 70% !important;
   animation-duration: 2s !important;
+  inline-size: 70% !important;
 }
 
 @keyframes pulse-width {
@@ -571,6 +591,7 @@ onMounted(() => {
   100% {
     transform: scaleX(0.95);
   }
+
   50% {
     transform: scaleX(1.05);
   }
@@ -580,6 +601,7 @@ onMounted(() => {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -587,14 +609,14 @@ onMounted(() => {
 
 /* 站点图标 */
 .site-icon-container {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  overflow: hidden;
   position: relative;
-  transition: transform 0.2s ease;
+  overflow: hidden;
+  border-radius: 8px;
+  block-size: 38px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 6%);
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  inline-size: 38px;
+  transition: transform 0.2s ease;
 }
 
 .site-icon-container:hover {
@@ -602,18 +624,18 @@ onMounted(() => {
 }
 
 .site-icon {
-  width: 100%;
-  height: 100%;
+  block-size: 100%;
+  inline-size: 100%;
   object-fit: cover;
 }
 
 .site-icon-edit-overlay {
   position: absolute;
-  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 50%);
+  inset: 0;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -631,10 +653,10 @@ onMounted(() => {
 
 /* 站点网址 */
 .site-url {
-  font-size: 0.9rem;
   color: rgba(var(--v-theme-on-surface), 0.6);
-  transition: color 0.2s ease;
   cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
 }
 
 .site-url:hover {
@@ -643,46 +665,46 @@ onMounted(() => {
 
 /* 站点特性图标 */
 .site-feature-icon {
-  opacity: 0.85;
   color: rgba(var(--v-theme-primary), 0.95);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 5%));
+  margin-block: 0;
+  margin-inline: 1px;
+  opacity: 0.85;
   transition: all 0.2s ease;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
-  margin: 0 1px;
 }
 
 .site-feature-icon:hover {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 10%));
   opacity: 1;
   transform: translateY(-1px);
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
 }
 
 /* 特性标签 */
 .site-features {
-  margin-top: 0;
+  margin-block-start: 0;
 }
 
 /* 数据统计 */
 .site-stats {
-  margin-top: auto;
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  padding-top: 6px;
+  margin-block-start: auto;
+  padding-block-start: 1rem;
 }
 
 .site-data-values {
-  font-size: 12px;
   color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 12px;
 }
 
 .site-data-bar {
-  height: 3px;
-  border-radius: 1.5px;
   overflow: hidden;
+  border-radius: 1.5px;
+  block-size: 3px;
 }
 
 .site-data-bar-bg {
   position: absolute;
-  inset: 0;
   background-color: rgba(var(--v-theme-on-surface), 0.05);
+  inset: 0;
 }
 
 .site-data-bar-upload {
@@ -709,103 +731,101 @@ onMounted(() => {
 /* 操作按钮 */
 .site-card-actions {
   position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  z-index: 20;
   display: flex;
   flex-direction: column;
-  padding: 8px 4px;
   background: rgba(var(--v-theme-surface), 0.97);
+  border-inline-start: 1px solid rgba(var(--v-theme-on-surface), 0.06);
+  inset-block: 0;
+  inset-inline-end: 0;
+  padding-block: 8px;
+  padding-inline: 4px;
   transform: translateX(100%);
   transition: transform 0.2s ease;
-  z-index: 20;
-  border-left: 1px solid rgba(var(--v-theme-on-surface), 0.06);
 }
 
 /* 测试按钮特殊样式 */
 .test-btn {
-  width: 40px !important;
-  min-width: 40px;
-  height: 40px !important;
-  padding: 0;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  padding: 0;
   border-radius: 50% !important;
-  margin-bottom: 12px;
+  block-size: 40px !important;
+  inline-size: 40px !important;
+  margin-block-end: 12px;
+  min-inline-size: 40px;
 }
 
 .test-btn-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  block-size: 100%;
+  inline-size: 100%;
 }
 
 .loading-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(var(--v-theme-surface), 0.95);
   border-radius: 50%;
-  z-index: 10;
   animation: fade-in 0.2s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: rgba(var(--v-theme-surface), 0.95);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 10%);
+  inset: 0;
 }
 
 .loading-spinner {
   position: relative;
-  width: 24px;
-  height: 24px;
+  block-size: 24px;
+  inline-size: 24px;
 }
 
 .spinner-circle {
   position: absolute;
-  width: 100%;
-  height: 100%;
   border: 2px solid rgba(var(--v-theme-primary), 0.2);
-  border-top-color: rgba(var(--v-theme-primary), 1);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  block-size: 100%;
+  border-block-start-color: rgba(var(--v-theme-primary), 1);
+  inline-size: 100%;
 }
 
 .spinner-circle-dot {
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  margin-left: -2px;
-  margin-top: -2px;
-  background-color: rgba(var(--v-theme-primary), 1);
   border-radius: 50%;
   animation: spin 0.8s linear infinite reverse;
+  background-color: rgba(var(--v-theme-primary), 1);
+  block-size: 4px;
+  inline-size: 4px;
+  inset-block-start: 0;
+  inset-inline-start: 50%;
+  margin-block-start: -2px;
+  margin-inline-start: -2px;
 }
 
 @keyframes spin {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
 
 .loading-text {
+  position: absolute;
+  color: rgba(var(--v-theme-primary), 1);
   font-size: 12px;
   font-weight: 500;
-  margin-top: 4px;
-  color: rgba(var(--v-theme-primary), 1);
-  position: absolute;
-  bottom: -20px;
+  inset-block-end: -20px;
+  margin-block-start: 4px;
   white-space: nowrap;
 }
 
@@ -813,40 +833,41 @@ onMounted(() => {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 .pulse-dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
   position: relative;
+  border-radius: 50%;
   background-color: transparent;
+  block-size: 22px;
   box-shadow: inset 0 0 0 2px rgba(var(--v-theme-on-surface), 0.1);
+  inline-size: 22px;
 }
 
 .pulse-dot::before {
-  content: '';
   position: absolute;
-  width: 70%;
-  height: 70%;
-  top: 15%;
-  left: 15%;
-  border-radius: 50%;
   z-index: 1;
+  border-radius: 50%;
+  block-size: 70%;
+  content: '';
+  inline-size: 70%;
+  inset-block-start: 15%;
+  inset-inline-start: 15%;
 }
 
 .pulse-dot::after {
-  content: '';
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  border-radius: 50%;
   z-index: 2;
+  border-radius: 50%;
+  block-size: 100%;
+  content: '';
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
 }
 
 .pulse-dot.error::before {
@@ -855,8 +876,8 @@ onMounted(() => {
 }
 
 .pulse-dot.error::after {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-error), 0.3);
   animation: pulse-animation-error 2s infinite;
+  box-shadow: 0 0 0 2px rgba(var(--v-theme-error), 0.3);
 }
 
 .pulse-dot.warning::before {
@@ -865,8 +886,8 @@ onMounted(() => {
 }
 
 .pulse-dot.warning::after {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-warning), 0.3);
   animation: pulse-animation-warning 2s infinite;
+  box-shadow: 0 0 0 2px rgba(var(--v-theme-warning), 0.3);
 }
 
 .pulse-dot.success::before {
@@ -875,8 +896,8 @@ onMounted(() => {
 }
 
 .pulse-dot.success::after {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-success), 0.3);
   animation: pulse-animation-success 2s infinite;
+  box-shadow: 0 0 0 2px rgba(var(--v-theme-success), 0.3);
 }
 
 .pulse-dot.secondary::before {
@@ -885,17 +906,19 @@ onMounted(() => {
 }
 
 .pulse-dot.secondary::after {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-secondary), 0.3);
   animation: pulse-animation-secondary 2s infinite;
+  box-shadow: 0 0 0 2px rgba(var(--v-theme-secondary), 0.3);
 }
 
 @keyframes pulse-animation-error {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.6);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-error), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
   }
@@ -905,9 +928,11 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0.6);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-warning), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0);
   }
@@ -917,9 +942,11 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-success), 0.6);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-success), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-success), 0);
   }
@@ -929,9 +956,11 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-secondary), 0.6);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-secondary), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-secondary), 0);
   }
@@ -942,37 +971,37 @@ onMounted(() => {
 }
 
 .site-action-btn {
-  width: 36px;
-  height: 36px;
+  position: relative;
   display: flex;
+  overflow: hidden;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  background-color: rgba(var(--v-theme-surface), 1);
-  color: rgba(var(--v-theme-on-surface), 0.8);
   border: none;
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface), 1);
+  block-size: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 5%);
+  color: rgba(var(--v-theme-on-surface), 0.8);
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
+  inline-size: 36px;
+  margin-block-end: 4px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .site-action-btn::before {
-  content: '';
   position: absolute;
-  inset: 0;
   background: radial-gradient(circle at center, rgba(var(--v-theme-primary), 0.1), transparent 70%);
+  content: '';
+  inset: 0;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .site-action-btn:hover {
   background-color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 10%);
   color: rgba(var(--v-theme-primary), 1);
   transform: translateY(-2px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .site-action-btn:hover::before {
@@ -987,31 +1016,32 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.4);
   }
+
   70% {
     box-shadow: 0 0 0 6px rgba(var(--v-theme-primary), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0);
   }
 }
 
 .site-action-btn.more-btn {
-  margin-bottom: 0;
-  margin-top: auto;
+  margin-block: auto 0;
 }
 
 .dropdown-menu {
-  border-radius: 8px;
   overflow: hidden;
+  border-radius: 8px;
 }
 
 .feature-icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
   border-radius: 4px;
+  block-size: 24px;
+  inline-size: 24px;
   transition: background-color 0.2s ease;
 }
 

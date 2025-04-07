@@ -30,10 +30,19 @@ const inProps = defineProps({
   },
   sort: String,
   listStyle: String,
+  showTree: Boolean,
 })
 
 // 对外事件
-const emit = defineEmits(['loading', 'pathchanged', 'refreshed', 'filedeleted', 'renamed', 'items-updated'])
+const emit = defineEmits([
+  'loading',
+  'pathchanged',
+  'refreshed',
+  'filedeleted',
+  'renamed',
+  'items-updated',
+  'switch-tree',
+])
 
 // 确认框
 const createConfirm = useConfirm()
@@ -369,6 +378,11 @@ function formatTime(timestape: number) {
   return new Date(timestape * 1000).toLocaleString()
 }
 
+// 切换文件树显示
+function switchFileTree(state: boolean) {
+  emit('switch-tree', state)
+}
+
 // 监听refreshPending变化
 watch(
   () => inProps.refreshpending,
@@ -533,8 +547,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard class="d-flex flex-column w-full h-full">
+  <VCard class="d-flex flex-column w-full h-full rounded-t-0" :class="{ 'rounded-s-0': showTree }">
     <VToolbar v-if="!loading" density="compact" flat color="gray">
+      <IconBtn v-if="display.mdAndUp.value">
+        <VIcon v-if="showTree" icon="mdi-file-tree" @click="switchFileTree(false)" />
+        <VIcon v-else icon="mdi-file-tree-outline" @click="switchFileTree(true)" />
+      </IconBtn>
       <VTextField
         v-if="!isFile"
         v-model="filter"

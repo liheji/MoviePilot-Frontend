@@ -1,17 +1,18 @@
 <script lang="ts" setup>
-import type { PropType, Ref } from 'vue'
-import { useToast } from 'vue-toast-notification'
-import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
-import { formatSeason, formatRating } from '@/@core/utils/formatters'
-import api from '@/api'
-import { doneNProgress, startNProgress } from '@/api/nprogress'
-import type { MediaInfo, NotExistMediaInfo, Subscribe, MediaSeason, Site } from '@/api/types'
-import router, { registerAbortController } from '@/router'
 import noImage from '@images/no-image.jpeg'
 import tmdbImage from '@images/logos/tmdb.png'
 import doubanImage from '@images/logos/douban-black.png'
 import bangumiImage from '@images/logos/bangumi.png'
+import api from '@/api'
+import { useToast } from 'vue-toast-notification'
+import { formatSeason, formatRating } from '@/@core/utils/formatters'
+import { doneNProgress, startNProgress } from '@/api/nprogress'
+import type { MediaInfo, Subscribe, MediaSeason, Site } from '@/api/types'
+import router, { registerAbortController } from '@/router'
 import { useUserStore } from '@/stores'
+import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
+import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
+import SubscribeSeasonDialog from '../dialog/SubscribeSeasonDialog.vue'
 
 // 输入参数
 const props = defineProps({
@@ -35,17 +36,11 @@ const isImageLoaded = ref(false)
 // 图片加载失败
 const imageLoadError = ref(false)
 
-// TMDB识别标志
-const tmdbFlag = ref(true)
-
 // 当前订阅状态
 const isSubscribed = ref(false)
 
 // 本地存在状态
 const isExists = ref(false)
-
-// 各季缺失状态：0-已入库 1-部分缺失 2-全部缺失，没有数据也是已入库
-const seasonsNotExisted = ref<{ [key: number]: number }>({})
 
 // 订阅季弹窗
 const subscribeSeasonDialog = ref(false)
@@ -55,9 +50,6 @@ const subscribeEditDialog = ref(false)
 
 // 订阅ID
 const subscribeId = ref<number>()
-
-// 季详情
-const seasonInfos = ref<MediaSeason[]>([])
 
 // 选中的订阅季
 const seasonsSelected = ref<MediaSeason[]>([])
@@ -84,17 +76,11 @@ const selectedSites = ref<number[]>([])
 // 搜索菜单显示状态
 const searchMenuShow = ref(false)
 
-// 全选/全不选按钮文字
-const checkAllText = computed(() => (selectedSites.value.length === allSites.value.length ? '全不选' : '全选'))
+// 选择站点对话框
+const chooseSiteDialog = ref(false)
 
-// 全选/全不选
-function checkAllSitesorNot() {
-  if (selectedSites.value.length === allSites.value.length) {
-    selectedSites.value = []
-  } else {
-    selectedSites.value = allSites.value.map(item => item.id)
-  }
-}
+// 选择的剧集组
+const episodeGroup = ref('')
 
 // 查询所有站点
 async function querySites() {
@@ -112,7 +98,6 @@ async function querySites() {
 async function querySelectedSites() {
   try {
     const result: { [key: string]: any } = await api.get('system/setting/IndexerSites')
-
     selectedSites.value = result.data?.value ?? []
   } catch (error) {
     console.log(error)
@@ -127,14 +112,6 @@ function getMediaId() {
   else return `${props.media?.mediaid_prefix}:${props.media?.media_id}`
 }
 
-// 订阅弹窗选择的多季
-function subscribeSeasons() {
-  subscribeSeasonDialog.value = false
-  seasonsSelected.value.forEach(season => {
-    addSubscribe(season.season_number)
-  })
-}
-
 // 角标颜色
 function getChipColor(type: string) {
   if (type === '电影') return 'border-blue-500 bg-blue-600'
@@ -145,24 +122,9 @@ function getChipColor(type: string) {
 // 添加订阅处理
 async function handleAddSubscribe() {
   if (props.media?.type === '电视剧') {
-    // 查询所有季信息
-    await getMediaSeasons()
-    if (!seasonInfos.value || seasonInfos.value.length === 0) {
-      $toast.error(`${props.media?.title} 查询剧集信息失败！`)
-      return
-    }
-    // 检查各季的缺失状态
-    await checkSeasonsNotExists()
-    if (!tmdbFlag.value) return
-
-    if (seasonInfos.value.length === 1) {
-      // 添加订阅
-      addSubscribe(1)
-    } else {
-      // 弹出季选择列表，支持多选
-      seasonsSelected.value = []
-      subscribeSeasonDialog.value = true
-    }
+    // 弹出季选择列表，支持多选
+    seasonsSelected.value = []
+    subscribeSeasonDialog.value = true
   } else {
     // 电影
     addSubscribe()
@@ -170,15 +132,12 @@ async function handleAddSubscribe() {
 }
 
 // 调用API添加订阅，电视剧的话需要指定季
-async function addSubscribe(season = 0) {
+async function addSubscribe(season: number = 0, best_version: number = 0) {
   // 开始处理
   startNProgress()
   try {
     // 是否洗版
-    let best_version = isExists.value ? 1 : 0
-    if (season && props.media?.tmdb_id)
-      // 全部存在时洗版
-      best_version = !seasonsNotExisted.value[season] ? 1 : 0
+    if (!best_version && props.media?.type == '电影') best_version = isExists.value ? 1 : 0
     // 请求API
     const result: { [key: string]: any } = await api.post('subscribe/', {
       name: props.media?.title,
@@ -190,6 +149,7 @@ async function addSubscribe(season = 0) {
       mediaid: props.media?.media_id ? `${props.media?.mediaid_prefix}:${props.media?.media_id}` : '',
       season,
       best_version,
+      episode_group: episodeGroup.value,
     })
 
     // 订阅状态
@@ -309,48 +269,6 @@ async function checkSubscribe(season = 0) {
   return null
 }
 
-// 检查所有季的缺失状态（数据库）
-async function checkSeasonsNotExists() {
-  // 开始处理
-  startNProgress()
-  try {
-    const result: NotExistMediaInfo[] = await api.post('mediaserver/notexists', props.media)
-    if (result) {
-      result.forEach(item => {
-        // 0-已入库 1-部分缺失 2-全部缺失
-        let state = 0
-        if (item.episodes.length === 0) state = 2
-        else if (item.episodes.length < item.total_episode) state = 1
-        seasonsNotExisted.value[item.season] = state
-      })
-    }
-  } catch (error) {
-    $toast.error(`${props.media?.title}无法识别TMDB媒体信息！`)
-    tmdbFlag.value = false
-  } finally {
-    // 处理完成
-    doneNProgress()
-  }
-}
-
-// 查询TMDB的所有季信息
-async function getMediaSeasons() {
-  startNProgress()
-  try {
-    seasonInfos.value = await api.get('media/seasons', {
-      params: {
-        mediaid: getMediaId(),
-        title: props.media?.title,
-        year: props.media?.year,
-        season: props.media?.season,
-      },
-    })
-  } catch (error) {
-    console.error(error)
-  }
-  doneNProgress()
-}
-
 // 查询订阅弹窗规则
 async function queryDefaultSubscribeConfig() {
   // 非管理员不显示
@@ -359,9 +277,7 @@ async function queryDefaultSubscribeConfig() {
     let subscribe_config_url = ''
     if (props.media?.type === '电影') subscribe_config_url = 'system/setting/DefaultMovieSubscribeConfig'
     else subscribe_config_url = 'system/setting/DefaultTvSubscribeConfig'
-
     const result: { [key: string]: any } = await api.get(subscribe_config_url)
-
     if (result.data?.value) return result.data.value.show_edit_dialog
   } catch (error) {
     console.log(error)
@@ -375,24 +291,18 @@ function handleSubscribe() {
   else handleAddSubscribe()
 }
 
-// 计算存在状态的颜色
-function getExistColor(season: number) {
-  const state = seasonsNotExisted.value[season]
-  if (!state) return 'success'
-
-  if (state === 1) return 'warning'
-  else if (state === 2) return 'error'
-  else return 'success'
-}
-
-// 计算存在状态的文本
-function getExistText(season: number) {
-  const state = seasonsNotExisted.value[season]
-  if (!state) return '已入库'
-
-  if (state === 1) return '部分缺失'
-  else if (state === 2) return '缺失'
-  else return '已入库'
+// 订阅多季
+function subscribeSeasons(seasons: MediaSeason[], seasonNoExists: { [key: number]: number }, groudId: string) {
+  subscribeSeasonDialog.value = false
+  episodeGroup.value = groudId
+  seasonsSelected.value = seasons || []
+  seasonsSelected.value.forEach(season => {
+    let best_version = 0
+    if (season && props.media?.tmdb_id)
+      // 全部存在时洗版
+      best_version = !seasonNoExists[season.season_number || 0] ? 1 : 0
+    addSubscribe(season.season_number, best_version)
+  })
 }
 
 // 打开详情页
@@ -423,9 +333,11 @@ function goMediaDetail(isHovering = false) {
 
 // 点击搜索
 async function clickSearch() {
-  if (allSites.value?.length > 0) return
-  querySites()
-  querySelectedSites()
+  if (allSites.value?.length == 0) {
+    querySites()
+    querySelectedSites()
+  }
+  chooseSiteDialog.value = true
 }
 
 // 开始搜索
@@ -442,6 +354,13 @@ function handleSearch() {
       sites: selectedSites.value.join(','),
     },
   })
+}
+
+// 搜索多站点
+function searchSites(sites: number[]) {
+  chooseSiteDialog.value = false
+  selectedSites.value = sites
+  handleSearch()
 }
 
 // 懒加载检查
@@ -496,26 +415,6 @@ const getImgUrl: Ref<string> = computed(() => {
   return url
 })
 
-// 拼装季图片地址
-function getSeasonPoster(posterPath: string) {
-  if (!posterPath) return ''
-  return `https://${globalSettings.TMDB_IMAGE_DOMAIN}/t/p/w500${posterPath}`
-}
-
-// 将yyyy-mm-dd转换为yyyy年mm月dd日
-function formatAirDate(airDate: string) {
-  if (!airDate) return ''
-  const date = new Date(airDate.replaceAll(/-/g, '/'))
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
-}
-
-// 从yyyy-mm-dd中提取年份
-function getYear(airDate: string) {
-  if (!airDate) return ''
-  const date = new Date(airDate.replaceAll(/-/g, '/'))
-  return date.getFullYear()
-}
-
 // 移除订阅
 function onRemoveSubscribe() {
   subscribeEditDialog.value = false
@@ -566,36 +465,7 @@ function onRemoveSubscribe() {
             </p>
             <div v-if="props.media?.collection_id" class="mb-3" @click.stop=""></div>
             <div v-else class="flex align-center justify-between">
-              <VMenu close-on-content-click v-model="searchMenuShow" max-width="450">
-                <template v-slot:activator="{ props }">
-                  <IconBtn v-bind="props" icon="mdi-magnify" color="white" @click.stop="clickSearch" />
-                </template>
-                <VList>
-                  <VListItem>
-                    <VChipGroup v-model="selectedSites" column multiple @click.stop>
-                      <VChip
-                        v-for="site in allSites"
-                        :key="site.id"
-                        :color="selectedSites.includes(site.id) ? 'primary' : ''"
-                        filter
-                        variant="outlined"
-                        :value="site.id"
-                        size="small"
-                      >
-                        {{ site.name }}
-                      </VChip>
-                    </VChipGroup>
-                    <div>
-                      <VBtn size="small" variant="text" @click.stop="checkAllSitesorNot">
-                        {{ checkAllText }}
-                      </VBtn>
-                    </div>
-                  </VListItem>
-                  <VListItem>
-                    <VBtn @click="handleSearch" block>搜索</VBtn>
-                  </VListItem>
-                </VList>
-              </VMenu>
+              <IconBtn icon="mdi-magnify" color="white" @click.stop="clickSearch" />
               <IconBtn icon="mdi-heart" :color="isSubscribed ? 'error' : 'white'" @click.stop="handleSubscribe" />
             </div>
           </VCardText>
@@ -636,62 +506,13 @@ function onRemoveSubscribe() {
     </template>
   </VHover>
   <!-- 订阅季弹窗 -->
-  <VBottomSheet v-if="subscribeSeasonDialog" v-model="subscribeSeasonDialog" inset scrollable>
-    <VCard class="rounded-t">
-      <DialogCloseBtn @click="subscribeSeasonDialog = false" />
-      <VCardItem>
-        <VCardTitle class="pe-10"> 订阅 - {{ props.media?.title }} </VCardTitle>
-      </VCardItem>
-      <VDivider />
-      <VCardText>
-        <VList v-model:selected="seasonsSelected" lines="three" select-strategy="classic">
-          <VListItem v-for="(item, i) in seasonInfos" :key="i" :value="item">
-            <template #prepend>
-              <VImg
-                height="90"
-                width="60"
-                :src="getSeasonPoster(item.poster_path || '')"
-                aspect-ratio="2/3"
-                class="object-cover rounded shadow ring-gray-500 me-3"
-                cover
-              >
-                <template #placeholder>
-                  <div class="w-full h-full">
-                    <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
-                  </div>
-                </template>
-              </VImg>
-            </template>
-            <VListItemTitle> 第 {{ item.season_number }} 季 </VListItemTitle>
-            <VListItemSubtitle class="mt-1 me-2">
-              <VChip v-if="item.vote_average" color="primary" size="small" class="mb-1">
-                <VIcon icon="mdi-star" /> {{ item.vote_average }}
-              </VChip>
-              {{ getYear(item.air_date || '') }} • {{ item.episode_count }} 集
-            </VListItemSubtitle>
-            <VListItemSubtitle>
-              《{{ media?.title }}》第 {{ item.season_number }} 季于 {{ formatAirDate(item.air_date || '') }} 首播。
-            </VListItemSubtitle>
-            <VListItemSubtitle>
-              <VChip v-if="seasonsNotExisted" class="mt-2" size="small" :color="getExistColor(item.season_number || 0)">
-                {{ getExistText(item.season_number || 0) }}
-              </VChip>
-            </VListItemSubtitle>
-            <template #append="{ isSelected }">
-              <VListItemAction start>
-                <VSwitch :model-value="isSelected" />
-              </VListItemAction>
-            </template>
-          </VListItem>
-        </VList>
-      </VCardText>
-      <div class="my-2 text-center">
-        <VBtn size="large" :disabled="seasonsSelected.length === 0" width="30%" @click="subscribeSeasons">
-          {{ seasonsSelected.length === 0 ? '请选择订阅季' : '提交订阅' }}
-        </VBtn>
-      </div>
-    </VCard>
-  </VBottomSheet>
+  <subscribeSeasonDialog
+    v-if="subscribeSeasonDialog"
+    v-model="subscribeSeasonDialog"
+    :media="media"
+    @subscribe="subscribeSeasons"
+    @close="subscribeSeasonDialog = false"
+  />
   <!-- 订阅编辑弹窗 -->
   <SubscribeEditDialog
     v-if="subscribeEditDialog"
@@ -700,5 +521,14 @@ function onRemoveSubscribe() {
     @close="subscribeEditDialog = false"
     @save="subscribeEditDialog = false"
     @remove="onRemoveSubscribe"
+  />
+  <!-- 站点选择对话框 -->
+  <SearchSiteDialog
+    v-if="chooseSiteDialog"
+    v-model="chooseSiteDialog"
+    :sites="allSites"
+    :selected="selectedSites"
+    @search="searchSites"
+    @close="chooseSiteDialog = false"
   />
 </template>

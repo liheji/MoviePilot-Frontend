@@ -134,6 +134,9 @@ const refreshPending = ref(false)
 // 排序
 const sort = ref('name')
 
+// 是否显示目录树
+const showDirTree = ref(false)
+
 // 计算属性
 const storagesArray = computed(() => {
   const storageCodes = props.storages?.map(item => item.type)
@@ -161,6 +164,11 @@ function pathChanged(item: FileItem) {
 function sortChanged(s: string) {
   sort.value = s
   refreshPending.value = true
+}
+
+// 切换目录树
+function switchDirTree(state: boolean) {
+  showDirTree.value = state
 }
 
 // 文件列表
@@ -203,6 +211,7 @@ const fileListStyle = computed(() => {
       />
       <div class="flex" :style="scrollStyle">
         <FileNavigator
+          v-if="showDirTree"
           :storage="activeStorage"
           :currentPath="item.path"
           :items="fileListItems"
@@ -220,12 +229,14 @@ const fileListStyle = computed(() => {
           :refreshpending="refreshPending"
           :sort="sort"
           :listStyle="fileListStyle"
+          :showTree="showDirTree"
           @pathchanged="pathChanged"
           @loading="loadingChanged"
           @refreshed="refreshPending = false"
           @filedeleted="refreshPending = true"
           @renamed="refreshPending = true"
           @items-updated="fileListUpdated"
+          @switch-tree="switchDirTree"
         />
       </div>
     </div>

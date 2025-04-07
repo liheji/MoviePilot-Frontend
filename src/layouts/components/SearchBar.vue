@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Mousetrap from 'mousetrap'
-import SearchBarView from '@/views/system/SearchBarView.vue'
+import SearchBarDialog from '@/components/dialog/SearchBarDialog.vue'
 import { useDisplay } from 'vuetify'
 
 const display = useDisplay()
@@ -36,7 +36,7 @@ const metaKey = computed(() => (isMac() ? '⌘+K' : 'Ctrl+K'))
     </span>
   </div>
   <!-- 搜索弹窗 -->
-  <SearchBarView v-model="searchDialog" v-if="searchDialog" @close="searchDialog = false" />
+  <SearchBarDialog v-model="searchDialog" v-if="searchDialog" @close="searchDialog = false" />
 </template>
 <style type="scss" scoped>
 .meta-key {

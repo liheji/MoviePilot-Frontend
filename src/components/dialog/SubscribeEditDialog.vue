@@ -5,7 +5,6 @@ import api from '@/api'
 import type { DownloaderConf, FilterRuleGroup, Site, Subscribe, TransferDirectoryConf } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import { useConfirm } from 'vuetify-use-dialog'
-import { VTextarea, VTextField } from 'vuetify/lib/components/index.mjs'
 
 // 显示器宽度
 const display = useDisplay()
@@ -53,6 +52,7 @@ const subscribeForm = ref<Subscribe>({
   downloader: '',
   date: '',
   show_edit_dialog: false,
+  episode_group: '',
 })
 
 // 提示框
@@ -60,6 +60,47 @@ const $toast = useToast()
 
 // 下载器选项
 const downloaderOptions = ref<{ title: string; value: string }[]>([])
+
+// 所有剧集组
+const episodeGroups = ref<{ [key: string]: any }[]>([])
+
+// 剧集组选项
+const episodeGroupOptions = computed(() => {
+  return (episodeGroups.value as { id: number; name: string; group_count: number; episode_count: number }[]).map(
+    item => {
+      return {
+        title: item.name,
+        subtitle: `${item.group_count} 季 • ${item.episode_count} 集`,
+        value: item.id,
+      }
+    },
+  )
+})
+
+// 生成1到100季的下拉框选项
+const seasonItems = ref(
+  Array.from({ length: 101 }, (_, i) => i).map(item => ({
+    title: `第 ${item} 季`,
+    value: item,
+  })),
+)
+
+// 剧集组选项属性
+function episodeGroupItemProps(item: { title: string; subtitle: string }) {
+  return {
+    title: item.title,
+    subtitle: item.subtitle,
+  }
+}
+
+// 查询所有剧集组
+async function getEpisodeGroups() {
+  try {
+    episodeGroups.value = await api.get(`media/groups/${subscribeForm.value.tmdbid}`)
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 async function loadDownloaderSetting() {
   try {
@@ -178,6 +219,8 @@ async function getSubscribeInfo() {
     subscribeForm.value = result
     subscribeForm.value.best_version = subscribeForm.value.best_version === 1
     subscribeForm.value.search_imdbid = subscribeForm.value.search_imdbid === 1
+    // 加载剧集组
+    if (subscribeForm.value.type == '电视剧') getEpisodeGroups()
   } catch (e) {
     console.log(e)
   }
@@ -317,7 +360,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard
       :title="`${
         props.default
@@ -480,7 +523,7 @@ onMounted(() => {
                   </VCol>
                 </VRow>
                 <VRow>
-                  <VCol cols="12" md="6">
+                  <VCol cols="12">
                     <VSelect
                       v-model="subscribeForm.filter_groups"
                       :items="filterRuleGroupOptions"
@@ -492,7 +535,26 @@ onMounted(() => {
                       persistent-hint
                     />
                   </VCol>
-                  <VCol cols="12" md="6" v-if="!props.default">
+                  <VCol v-if="!props.default && subscribeForm.type === '电视剧'" cols="12" md="6">
+                    <VSelect
+                      v-model="subscribeForm.episode_group"
+                      :items="episodeGroupOptions"
+                      :item-props="episodeGroupItemProps"
+                      label="指定剧集组"
+                      hint="按特定剧集组识别和刮削"
+                      persistent-hint
+                    />
+                  </VCol>
+                  <VCol v-if="!props.default && subscribeForm.type === '电视剧'" cols="12" md="6">
+                    <VSelect
+                      v-model="subscribeForm.season"
+                      :items="seasonItems"
+                      label="指定季"
+                      hint="指定任意季订阅"
+                      persistent-hint
+                    />
+                  </VCol>
+                  <VCol cols="12" v-if="!props.default">
                     <VTextField
                       v-model="subscribeForm.media_category"
                       label="自定义类别"

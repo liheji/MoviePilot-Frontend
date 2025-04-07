@@ -87,6 +87,7 @@ const transferForm = reactive<TransferForm>({
 
 // 所有媒体库目录
 const directories = ref<TransferDirectoryConf[]>([])
+
 // 查询目录
 async function loadDirectories() {
   try {
@@ -221,7 +222,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard :title="dialogTitle" class="rounded-t">
       <DialogCloseBtn @click="emit('close')" />
       <VDivider />
@@ -263,7 +264,7 @@ onUnmounted(() => {
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="12" md="4">
+            <VCol cols="12" md="6">
               <VSelect
                 v-model="transferForm.type_name"
                 label="类型"
@@ -276,7 +277,7 @@ onUnmounted(() => {
                 persistent-hint
               />
             </VCol>
-            <VCol cols="12" md="4">
+            <VCol cols="12" md="6">
               <VTextField
                 v-if="mediaSource === 'themoviedb'"
                 v-model="transferForm.tmdbid"
@@ -302,19 +303,37 @@ onUnmounted(() => {
                 @click:append-inner="mediaSelectorDialog = true"
               />
             </VCol>
-            <VCol cols="12" md="4">
-              <VSelect
-                v-show="transferForm.type_name === '电视剧'"
-                v-model.number="transferForm.season"
-                label="季"
-                :items="seasonItems"
-                hint="指定季数"
+          </VRow>
+          <VRow v-show="transferForm.type_name === '电视剧'">
+            <VCol cols="12" md="6">
+              <VTextField
+                v-model="transferForm.episode_group"
+                label="剧集组编号"
+                placeholder="手动查询剧集组"
+                hint="指定剧集组"
                 persistent-hint
               />
             </VCol>
-          </VRow>
-          <VRow>
-            <VCol cols="12" md="8">
+            <VCol cols="12" md="3">
+              <VSelect
+                v-model.number="transferForm.season"
+                label="季"
+                :items="seasonItems"
+                hint="第几季"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="3">
+              <VTextField
+                v-model="transferForm.episode_detail"
+                :disabled="disableEpisodeDetail"
+                label="集"
+                placeholder="起始集,终止集"
+                hint="集数或范围，如1或1,2"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="6">
               <VTextField
                 v-model="transferForm.episode_format"
                 label="集数定位"
@@ -323,26 +342,7 @@ onUnmounted(() => {
                 persistent-hint
               />
             </VCol>
-            <VCol cols="12" md="4">
-              <VTextField
-                v-model="transferForm.episode_detail"
-                :disabled="disableEpisodeDetail"
-                label="指定集数"
-                placeholder="起始集,终止集，如1或1,2"
-                hint="指定集数或范围，如1或1,2"
-                persistent-hint
-              />
-            </VCol>
-            <VCol cols="12" md="4">
-              <VTextField
-                v-model="transferForm.episode_part"
-                label="指定Part"
-                placeholder="如part1"
-                hint="指定Part，如part1"
-                persistent-hint
-              />
-            </VCol>
-            <VCol cols="12" md="4">
+            <VCol cols="12" md="6">
               <VTextField
                 v-model="transferForm.episode_offset"
                 label="集数偏移"
@@ -351,7 +351,18 @@ onUnmounted(() => {
                 persistent-hint
               />
             </VCol>
-            <VCol cols="12" md="4">
+          </VRow>
+          <VRow>
+            <VCol cols="12" md="6">
+              <VTextField
+                v-model="transferForm.episode_part"
+                label="指定Part"
+                placeholder="如part1"
+                hint="指定Part，如part1"
+                persistent-hint
+              />
+            </VCol>
+            <VCol cols="12" md="6">
               <VTextField
                 v-model.number="transferForm.min_filesize"
                 label="最小文件大小（MB）"
