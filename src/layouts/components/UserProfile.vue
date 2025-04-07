@@ -85,75 +85,84 @@ const userLevel = computed(() => userStore.level)
   <VAvatar class="cursor-pointer ms-3" color="primary" variant="tonal">
     <VImg :src="avatar" />
 
-    <VMenu activator="parent" width="230" location="bottom end" offset="14px">
-      <VList elevation="1">
+    <VMenu activator="parent" width="230" location="bottom end" offset="14px" class="user-menu">
+      <VList elevation="0" class="user-profile-list px-2">
         <!-- 👉 User Avatar & Name -->
-        <VListItem>
-          <template #prepend>
-            <VListItemAction start>
-              <VAvatar color="primary" variant="tonal">
-                <VImg :src="avatar" />
-              </VAvatar>
-            </VListItemAction>
-          </template>
-
-          <VListItemTitle class="font-weight-semibold">
-            {{ superUser ? '管理员' : '普通用户' }}
-          </VListItemTitle>
-          <VListItemSubtitle>{{ userName }}</VListItemSubtitle>
-        </VListItem>
-
-        <VDivider class="my-2" />
+        <div class="user-profile-header px-2 py-4 mb-2">
+          <div class="d-flex align-center">
+            <VAvatar size="60" class="user-avatar" color="primary" rounded="sm">
+              <VImg :src="avatar" />
+            </VAvatar>
+            <div class="ms-4">
+              <div class="user-role">
+                {{ superUser ? '管理员' : '普通用户' }}
+              </div>
+              <div class="user-name">
+                {{ userName }}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- 👉 Profile -->
-        <VListItem link @click="router.push('/profile')">
+        <VListItem link @click="router.push('/profile')" class="user-menu-item mb-1">
           <template #prepend>
-            <VIcon class="me-2" icon="mdi-account-outline" size="22" />
+            <div class="user-menu-icon">
+              <VIcon icon="mdi-account-outline" />
+            </div>
           </template>
           <VListItemTitle>个人信息</VListItemTitle>
         </VListItem>
 
-        <VListItem link @click="router.push('/apps')">
+        <VListItem link @click="router.push('/apps')" class="user-menu-item mb-1">
           <template #prepend>
-            <VIcon class="me-2" icon="mdi-view-grid-outline" size="22" />
+            <div class="user-menu-icon">
+              <VIcon icon="mdi-view-grid-outline" />
+            </div>
           </template>
           <VListItemTitle>功能视图</VListItemTitle>
         </VListItem>
 
         <!-- 👉 Site Auth -->
-        <VListItem v-if="userLevel < 2 && superUser" link @click="showSiteAuthDialog">
+        <VListItem v-if="userLevel < 2 && superUser" link @click="showSiteAuthDialog" class="user-menu-item mb-1">
           <template #prepend>
-            <VIcon class="me-2" icon="mdi-lock-check-outline" size="22" />
+            <div class="user-menu-icon">
+              <VIcon icon="mdi-lock-check-outline" />
+            </div>
           </template>
           <VListItemTitle>用户认证</VListItemTitle>
         </VListItem>
 
         <!-- 👉 FAQ -->
-        <VListItem href="https://wiki.movie-pilot.org" target="_blank">
+        <VListItem href="https://wiki.movie-pilot.org" target="_blank" class="user-menu-item mb-1">
           <template #prepend>
-            <VIcon class="me-2" icon="mdi-help-circle-outline" size="22" />
+            <div class="user-menu-icon">
+              <VIcon icon="mdi-help-circle-outline" />
+            </div>
           </template>
           <VListItemTitle>帮助文档</VListItemTitle>
         </VListItem>
 
         <!-- Divider -->
-        <VDivider v-if="superUser" class="my-2" />
+        <VDivider v-if="superUser" class="my-3" />
 
         <!-- 👉 restart -->
-        <VListItem v-if="superUser" @click="showRestartDialog">
+        <VListItem v-if="superUser" @click="showRestartDialog" class="user-menu-item mb-1">
           <template #prepend>
-            <VIcon class="me-2" icon="mdi-restart" size="22" />
+            <div class="user-menu-icon restart-icon">
+              <VIcon icon="mdi-restart" />
+            </div>
           </template>
           <VListItemTitle>重启</VListItemTitle>
         </VListItem>
 
         <!-- 👉 Logout -->
-        <VListItem @click="logout">
-          <VBtn color="error" block>
-            <template #append> <VIcon size="small" icon="mdi-logout" /> </template>
+        <div class="px-2 mt-3 mb-2">
+          <VBtn color="error" block class="logout-btn" @click="logout">
+            <template #prepend> <VIcon icon="mdi-logout" /> </template>
             退出登录
           </VBtn>
-        </VListItem>
+        </div>
       </VList>
     </VMenu>
     <!-- !SECTION -->
@@ -184,3 +193,71 @@ const userLevel = computed(() => userStore.level)
     </VCard>
   </VDialog>
 </template>
+
+<style lang="scss" scoped>
+.user-profile-header {
+  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.05), rgba(var(--v-theme-primary), 0.02));
+  border-radius: 12px;
+}
+
+.user-role {
+  font-size: 0.875rem;
+  color: rgba(var(--v-theme-primary), 0.9);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.user-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgba(var(--v-theme-on-surface), 0.9);
+}
+
+.user-avatar {
+  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.2);
+  border: 2px solid rgba(var(--v-theme-on-surface), 0.1);
+}
+
+.user-menu-item {
+  border-radius: 8px;
+  margin: 4px 0;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.06);
+    transform: translateX(4px);
+  }
+}
+
+.user-menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  margin-right: 12px;
+  transition: all 0.2s ease;
+  
+  .v-icon {
+    color: rgba(var(--v-theme-primary), 0.9);
+  }
+}
+
+.restart-icon {
+  background-color: rgba(var(--v-theme-error), 0.1);
+  
+  .v-icon {
+    color: rgba(var(--v-theme-error), 0.9);
+  }
+}
+
+.logout-btn {
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(var(--v-theme-error), 0.2);
+}
+</style>

@@ -18,10 +18,12 @@ const { name: themeName, global: globalTheme } = useTheme()
 
 const savedTheme = ref(localStorage.getItem('theme') ?? themeName)
 
-const { state: currentThemeName, next: getNextThemeName } = useCycleList(
-  props.themes.map(t => t.name),
-  { initialValue: savedTheme.value },
-)
+const currentThemeName = ref(savedTheme.value)
+const getNextThemeName = () => {
+  const currentIndex = props.themes.findIndex(t => t.name === currentThemeName.value)
+  const nextIndex = (currentIndex + 1) % props.themes.length
+  return props.themes[nextIndex].name
+}
 
 const $toast = useToast()
 
@@ -187,25 +189,47 @@ onMounted(() => {
 </script>
 
 <template>
-  <VMenu v-if="props.themes">
+  <VMenu v-if="props.themes" class="theme-menu">
     <template v-slot:activator="{ props }">
       <IconBtn v-bind="props">
         <VIcon :icon="getThemeIcon" />
       </IconBtn>
     </template>
-    <VList>
-      <VListItem v-for="theme in props.themes" :key="theme.name" @click="changeTheme(theme.name)">
-        <template #prepend>
-          <VIcon :icon="theme.icon" />
-        </template>
-        <VListItemTitle>{{ theme.title }}</VListItemTitle>
-      </VListItem>
-      <VListItem @click="cssDialog = true">
-        <template #prepend>
-          <VIcon icon="mdi-palette" />
-        </template>
-        <VListItemTitle>自定义</VListItemTitle>
-      </VListItem>
+    <VList elevation="0" class="theme-switcher-list">
+      <div class="theme-switcher-header px-3 py-3 mb-2">
+        <div class="text-primary text-h6 font-weight-medium">主题选择</div>
+      </div>
+      
+      <div class="theme-switcher-options px-2">
+        <VListItem 
+          v-for="theme in props.themes" 
+          :key="theme.name" 
+          @click="changeTheme(theme.name)"
+          class="theme-option"
+          :class="{ 'theme-option-active': currentThemeName === theme.name }"
+        >
+          <template #prepend>
+            <div class="theme-icon-wrapper">
+              <VIcon :icon="theme.icon" />
+            </div>
+          </template>
+          <VListItemTitle>{{ theme.title }}</VListItemTitle>
+          <template #append v-if="currentThemeName === theme.name">
+            <VIcon icon="mdi-check" color="primary" size="small" />
+          </template>
+        </VListItem>
+        
+        <VDivider class="my-2" />
+        
+        <VListItem @click="cssDialog = true" class="theme-option custom-theme-option">
+          <template #prepend>
+            <div class="theme-icon-wrapper custom-theme-icon">
+              <VIcon icon="mdi-palette" />
+            </div>
+          </template>
+          <VListItemTitle>自定义主题</VListItemTitle>
+        </VListItem>
+      </div>
     </VList>
   </VMenu>
   <!-- 自定义 CSS -- -->
@@ -232,18 +256,68 @@ onMounted(() => {
   </VDialog>
 </template>
 
-<style lang="sass">
-// Theme transition
-.app-copy
-  position: fixed !important
-  z-index: -1 !important
-  pointer-events: none !important
-  contain: size style !important
-  overflow: clip !important
+<style lang="scss">
+.theme-switcher-header {
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+}
 
-.app-transition
-  --clip-size: 0
-  --clip-pos: 0 0
-  clip-path: circle(var(--clip-size) at var(--clip-pos))
-  transition: clip-path .35s ease-out
+.theme-switcher-options {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.theme-option {
+  border-radius: 8px;
+  margin: 4px 0;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.04);
+    transform: translateX(4px);
+  }
+  
+  &.theme-option-active {
+    background-color: rgba(var(--v-theme-primary), 0.08);
+  }
+}
+
+.theme-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  margin-right: 12px;
+  transition: all 0.2s ease;
+  
+  .v-icon {
+    color: rgba(var(--v-theme-primary), 0.9);
+  }
+}
+
+.custom-theme-icon {
+  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.15), rgba(var(--v-theme-info), 0.15));
+  
+  .v-icon {
+    color: rgba(var(--v-theme-primary), 0.9);
+  }
+}
+
+// Theme transition
+.app-copy {
+  position: fixed !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  contain: size style !important;
+  overflow: clip !important;
+}
+
+.app-transition {
+  --clip-size: 0;
+  --clip-pos: 0 0;
+  clip-path: circle(var(--clip-size) at var(--clip-pos));
+  transition: clip-path .35s ease-out;
+}
 </style>

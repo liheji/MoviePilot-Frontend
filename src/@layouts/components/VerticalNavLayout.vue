@@ -116,7 +116,7 @@ export default defineComponent({
 
   .layout-navbar {
     position: fixed;
-    width: calc(100vw - variables.$layout-vertical-nav-width - 0.5rem);
+    width: calc(100vw - variables.$layout-vertical-nav-width - 1rem);
     z-index: variables.$layout-vertical-nav-layout-navbar-z-index;
     inset-block-start: 0;
 
@@ -171,7 +171,7 @@ export default defineComponent({
   }
 
   &:not(.layout-overlay-nav) .layout-content-wrapper {
-    padding-inline-start: variables.$layout-vertical-nav-width;
+    padding-inline-start: calc(variables.$layout-vertical-nav-width + 8px);
   }
 
   // Adjust right column pl when vertical nav is collapsed
@@ -203,7 +203,16 @@ export default defineComponent({
 
 .layout-wrapper.layout-nav-type-vertical.layout-overlay-nav {
   .layout-navbar {
-    width: 100%;
+    width: calc(100% - 0px);
+    margin-left: 8px;
+    padding-left: 0;
   }
+}
+
+.layout-page-content {
+  margin-top: calc(variables.$layout-vertical-nav-navbar-height - 42px);
+  padding-top: 0px;
+  position: relative;
+  z-index: 1;
 }
 </style>

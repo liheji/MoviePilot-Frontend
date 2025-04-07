@@ -98,6 +98,11 @@ function handleNavScroll(evt: Event) {
   transition: transform 0.25s ease-in-out, inline-size 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
   visibility: hidden;
   will-change: transform, inline-size;
+  background-color: rgb(var(--v-theme-surface));
+  box-shadow: 0 2px 8px rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 0 8px 8px 0;
+  margin: 8px 0 8px 8px;
+  max-height: calc(100% - 16px);
 
   &:not(.overlay-nav) {
     visibility: visible;

@@ -18,6 +18,9 @@ $header: ".layout-navbar";
     // Add transition
     #{$header} {
       transition: padding 0.2s ease, background-color 0.18s ease;
+      @extend %default-layout-vertical-nav-scrolled-sticky-elevated-nav;
+      @extend %default-layout-vertical-nav-floating-navbar-and-sticky-elevated-navbar-scrolled;
+      margin-bottom: 16px;
     }
 
     // If navbar is contained => Add border radius to header
@@ -27,21 +30,20 @@ $header: ".layout-navbar";
       }
     }
 
-    // Scrolled styles for sticky navbar
+    .navbar-blur#{$header} {
+      @extend %blurry-bg;
+    }
+
+    // Scrolled styles for sticky navbar (保留原有逻辑，但现在默认就会显示)
     @at-root {
-      /* ℹ️ This html selector with not selector is required when:
-        dialog is opened and window don't have any scroll. This removes window-scrolled class from layout and out style broke
-    */
       html.v-overlay-scroll-blocked:not([style*="--v-body-scroll-y: 0px;"]) .layout-navbar-fixed,
       &.window-scrolled.layout-navbar-fixed {
-
         #{$header} {
-          @extend %default-layout-vertical-nav-scrolled-sticky-elevated-nav;
-          @extend %default-layout-vertical-nav-floating-navbar-and-sticky-elevated-navbar-scrolled;
+          // 原有样式已在上面默认应用
         }
 
         .navbar-blur#{$header} {
-          @extend %blurry-bg;
+          // 原有样式已在上面默认应用
         }
       }
     }
@@ -56,19 +58,12 @@ $header: ".layout-navbar";
       }
     }
 
-    &:not(.layout-navbar-fixed) {
-      #{$header} {
-        margin-block-start: variables.$vertical-nav-floating-navbar-top;
-      }
-    }
-
     #{$header} {
       @if variables.$layout-vertical-nav-navbar-is-contained {
         border-radius: variables.$default-layout-with-vertical-nav-navbar-footer-roundness;
       }
 
       background-color: rgb(var(--v-theme-surface));
-
       @extend %default-layout-vertical-nav-floating-navbar-and-sticky-elevated-navbar-scrolled;
     }
 

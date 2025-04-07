@@ -19,7 +19,7 @@
       }
     }
 
-    background-color: variables.$vertical-nav-background-color;
+    background-color: rgb(var(--v-theme-surface)) !important;
 
     // 👉 Nav header
     .nav-header {
@@ -60,9 +60,9 @@
       z-index: 1;
       background:
         linear-gradient(
-          rgb(#{variables.$vertical-nav-background-color-rgb}) 5%,
-          rgba(#{variables.$vertical-nav-background-color-rgb}, 75%) 45%,
-          rgba(#{variables.$vertical-nav-background-color-rgb}, 20%) 80%,
+          rgb(var(--v-theme-surface)) 5%,
+          rgba(var(--v-theme-surface), 75%) 45%,
+          rgba(var(--v-theme-surface), 20%) 80%,
           transparent
         );
       block-size: 55px;
