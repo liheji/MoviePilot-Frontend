@@ -1265,6 +1265,8 @@ export interface RecommendSource {
   name: string
   // 媒体数据源API地址
   api_path: string
+  // 类型
+  type: string
 }
 
 // 站点资源分类

@@ -234,8 +234,14 @@ onMounted(() => {
   </VMenu>
   <!-- 自定义 CSS -- -->
   <VDialog v-if="cssDialog" v-model="cssDialog" max-width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
-    <VCard title="自定义主题风格">
-      <DialogCloseBtn @click="cssDialog = false" />
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-palette" class="me-2" />
+          自定义主题风格
+        </VCardTitle>
+        <DialogCloseBtn @click="cssDialog = false" />
+      </VCardItem>
       <VDivider />
       <VAceEditor
         v-model:value="customCSS"

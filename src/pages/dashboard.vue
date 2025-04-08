@@ -343,29 +343,44 @@ onDeactivated(() => {
   <VDialog v-if="dialog" v-model="dialog" max-width="35rem" scrollable>
     <VCard>
       <VCardItem>
-        <VCardTitle>设置仪表板</VCardTitle>
+        <VCardTitle>
+          <VIcon icon="mdi-tune" size="small" class="me-2" />
+          设置仪表板
+        </VCardTitle>
       </VCardItem>
       <VDivider />
       <VCardText>
-        <VRow>
-          <VCol
+        <p class="settings-hint">选择您想在页面显示的内容</p>
+        <div class="settings-grid">
+          <div
             v-for="item in dashboardConfigs"
             :key="buildPluginDashboardId(item.id, item.key)"
-            cols="6"
-            md="4"
-            sm="4"
+            class="setting-item"
+            :class="{
+              'enabled': enableConfig[buildPluginDashboardId(item.id, item.key)],
+            }"
+            @click="
+              enableConfig[buildPluginDashboardId(item.id, item.key)] =
+                !enableConfig[buildPluginDashboardId(item.id, item.key)]
+            "
           >
-            <VCheckbox
-              v-model="enableConfig[buildPluginDashboardId(item.id, item.key)]"
-              :label="item.attrs?.title ?? item.name"
-            />
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="12" md="6">
-            <VSwitch v-model="isElevated" label="自适应组件高度" />
-          </VCol>
-        </VRow>
+            <div class="setting-item-inner">
+              <div class="setting-check">
+                <VIcon
+                  :icon="
+                    enableConfig[buildPluginDashboardId(item.id, item.key)] ? 'mdi-check-circle' : 'mdi-circle-outline'
+                  "
+                  :color="enableConfig[buildPluginDashboardId(item.id, item.key)] ? 'primary' : undefined"
+                  size="small"
+                />
+              </div>
+              <span class="setting-label">{{ item.attrs?.title ?? item.name }}</span>
+            </div>
+          </div>
+        </div>
+        <p class="mt-3">
+          <VSwitch v-model="isElevated" label="自适应组件高度" />
+        </p>
       </VCardText>
       <VDivider />
       <VCardText class="pt-5 text-end">
@@ -381,3 +396,79 @@ onDeactivated(() => {
     </VCard>
   </VDialog>
 </template>
+<style lang="scss" scoped>
+.settings-card {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.settings-card-header {
+  background-color: rgba(var(--v-theme-primary), 0.03);
+}
+
+.settings-hint {
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  font-size: 0.9rem;
+  margin-block-end: 16px;
+}
+
+.settings-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+.setting-item-inner {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface), 1);
+  padding-block: 10px;
+  padding-inline: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.setting-item {
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.enabled {
+    .setting-item-inner {
+      border-color: rgba(var(--v-theme-primary), 0.2);
+      background-color: rgba(var(--v-theme-primary), 0.08);
+    }
+  }
+
+  &.电影 .setting-item-inner {
+    border-inline-start: 3px solid #3b82f6;
+  }
+
+  &.电视剧 .setting-item-inner {
+    border-inline-start: 3px solid #6366f1;
+  }
+
+  &.动漫 .setting-item-inner {
+    border-inline-start: 3px solid #a855f7;
+  }
+
+  &.榜单 .setting-item-inner {
+    border-inline-start: 3px solid #f59e0b;
+  }
+}
+
+.setting-check {
+  margin-inline-end: 8px;
+}
+
+.setting-label {
+  overflow: hidden;
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

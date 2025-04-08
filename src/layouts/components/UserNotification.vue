@@ -126,13 +126,11 @@ onBeforeUnmount(() => {
 
   &:hover {
     background-color: rgba(var(--v-theme-primary), 0.03);
-    box-shadow: 0 4px 8px rgba(var(--v-theme-on-surface), 0.06);
     transform: translateY(-2px);
   }
 
   .notification-avatar {
     background-color: rgba(var(--v-theme-primary), 0.1);
-    box-shadow: 0 4px 8px rgba(var(--v-theme-primary), 0.15);
   }
 
   .notification-title {

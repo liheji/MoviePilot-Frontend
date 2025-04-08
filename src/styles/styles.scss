@@ -281,6 +281,7 @@ html.v-overlay-scroll-blocked body {
 }
 
 .v-overlay__content {
+  padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
   transition: opacity 0.2s ease !important;
 }
 
