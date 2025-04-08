@@ -188,6 +188,8 @@ export interface TransferHistory {
   errmsg?: string
   // 日期
   date?: string
+  // 源文件项
+  src_fileitem?: FileItem
 }
 
 // 媒体信息

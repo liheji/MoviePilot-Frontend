@@ -86,7 +86,7 @@ const userLevel = computed(() => userStore.level)
     <VImg :src="avatar" />
 
     <VMenu activator="parent" width="230" location="bottom end" offset="14px" class="user-menu">
-      <VList elevation="0" class="user-profile-list px-2">
+      <VList elevation="0" class="overflow-hidden">
         <!-- 👉 User Avatar & Name -->
         <div class="user-profile-header px-2 py-4 mb-2">
           <div class="d-flex align-center">
@@ -103,59 +103,59 @@ const userLevel = computed(() => userStore.level)
             </div>
           </div>
         </div>
+        <div class="px-2">
+          <!-- 👉 Profile -->
+          <VListItem link @click="router.push('/profile')" class="user-menu-item mb-1">
+            <template #prepend>
+              <div class="user-menu-icon">
+                <VIcon icon="mdi-account-outline" />
+              </div>
+            </template>
+            <VListItemTitle>个人信息</VListItemTitle>
+          </VListItem>
 
-        <!-- 👉 Profile -->
-        <VListItem link @click="router.push('/profile')" class="user-menu-item mb-1">
-          <template #prepend>
-            <div class="user-menu-icon">
-              <VIcon icon="mdi-account-outline" />
-            </div>
-          </template>
-          <VListItemTitle>个人信息</VListItemTitle>
-        </VListItem>
+          <VListItem link @click="router.push('/apps')" class="user-menu-item mb-1">
+            <template #prepend>
+              <div class="user-menu-icon">
+                <VIcon icon="mdi-view-grid-outline" />
+              </div>
+            </template>
+            <VListItemTitle>功能视图</VListItemTitle>
+          </VListItem>
 
-        <VListItem link @click="router.push('/apps')" class="user-menu-item mb-1">
-          <template #prepend>
-            <div class="user-menu-icon">
-              <VIcon icon="mdi-view-grid-outline" />
-            </div>
-          </template>
-          <VListItemTitle>功能视图</VListItemTitle>
-        </VListItem>
+          <!-- 👉 Site Auth -->
+          <VListItem v-if="userLevel < 2 && superUser" link @click="showSiteAuthDialog" class="user-menu-item mb-1">
+            <template #prepend>
+              <div class="user-menu-icon">
+                <VIcon icon="mdi-lock-check-outline" />
+              </div>
+            </template>
+            <VListItemTitle>用户认证</VListItemTitle>
+          </VListItem>
 
-        <!-- 👉 Site Auth -->
-        <VListItem v-if="userLevel < 2 && superUser" link @click="showSiteAuthDialog" class="user-menu-item mb-1">
-          <template #prepend>
-            <div class="user-menu-icon">
-              <VIcon icon="mdi-lock-check-outline" />
-            </div>
-          </template>
-          <VListItemTitle>用户认证</VListItemTitle>
-        </VListItem>
+          <!-- 👉 FAQ -->
+          <VListItem href="https://wiki.movie-pilot.org" target="_blank" class="user-menu-item mb-1">
+            <template #prepend>
+              <div class="user-menu-icon">
+                <VIcon icon="mdi-help-circle-outline" />
+              </div>
+            </template>
+            <VListItemTitle>帮助文档</VListItemTitle>
+          </VListItem>
 
-        <!-- 👉 FAQ -->
-        <VListItem href="https://wiki.movie-pilot.org" target="_blank" class="user-menu-item mb-1">
-          <template #prepend>
-            <div class="user-menu-icon">
-              <VIcon icon="mdi-help-circle-outline" />
-            </div>
-          </template>
-          <VListItemTitle>帮助文档</VListItemTitle>
-        </VListItem>
+          <!-- Divider -->
+          <VDivider v-if="superUser" class="my-3" />
 
-        <!-- Divider -->
-        <VDivider v-if="superUser" class="my-3" />
-
-        <!-- 👉 restart -->
-        <VListItem v-if="superUser" @click="showRestartDialog" class="user-menu-item mb-1">
-          <template #prepend>
-            <div class="user-menu-icon restart-icon">
-              <VIcon icon="mdi-restart" />
-            </div>
-          </template>
-          <VListItemTitle>重启</VListItemTitle>
-        </VListItem>
-
+          <!-- 👉 restart -->
+          <VListItem v-if="superUser" @click="showRestartDialog" class="user-menu-item mb-1">
+            <template #prepend>
+              <div class="user-menu-icon restart-icon">
+                <VIcon icon="mdi-restart" />
+              </div>
+            </template>
+            <VListItemTitle>重启</VListItemTitle>
+          </VListItem>
+        </div>
         <!-- 👉 Logout -->
         <div class="px-2 mt-3 mb-2">
           <VBtn color="error" block class="logout-btn" @click="logout">

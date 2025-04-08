@@ -106,8 +106,10 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .notification-header {
-  padding: 16px;
+  background: linear-gradient(to right, rgba(var(--v-theme-primary), 0.04), rgba(var(--v-theme-primary), 0.01));
   border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  padding-block: 12px;
+  padding-inline: 16px;
 }
 
 .notification-list {

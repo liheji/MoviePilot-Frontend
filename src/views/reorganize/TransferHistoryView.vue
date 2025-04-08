@@ -10,6 +10,7 @@ import { useRoute } from 'vue-router'
 import router from '@/router'
 import { useDisplay } from 'vuetify'
 import { storageDict } from '@/api/constants'
+import { formatFileSize } from '@/@core/utils/formatters'
 
 // APP
 const display = useDisplay()
@@ -58,6 +59,11 @@ const headers = [
     sortable: true,
   },
   {
+    title: '大小',
+    key: 'size',
+    sortable: true,
+  },
+  {
     title: '时间',
     key: 'date',
     sortable: true,
@@ -89,6 +95,11 @@ const groupHeaders = [
   {
     title: '转移方式',
     key: 'mode',
+    sortable: true,
+  },
+  {
+    title: '大小',
+    key: 'size',
     sortable: true,
   },
   {
@@ -415,7 +426,7 @@ onMounted(fetchData)
 </script>
 
 <template>
-  <VCard>
+  <VCard class="bg-transparent">
     <VCardItem>
       <VCardTitle>
         <VRow>
@@ -523,6 +534,9 @@ onMounted(fetchData)
           </template>
         </VTooltip>
       </template>
+      <template #item.size="{ item }">
+        <small>{{ formatFileSize(item?.src_fileitem?.size || 0) }}</small>
+      </template>
       <template #item.date="{ item }">
         <small>{{ item?.date }}</small>
       </template>
@@ -607,6 +621,9 @@ onMounted(fetchData)
           </template>
         </VTooltip>
       </template>
+      <template #item.size="{ item }">
+        <small>{{ formatFileSize(item?.src_fileitem?.size || 0) }}</small>
+      </template>
       <template #item.date="{ item }">
         <small>{{ item?.date }}</small>
       </template>
@@ -633,11 +650,9 @@ onMounted(fetchData)
       </template>
       <template #no-data> 没有数据 </template>
     </VDataTableVirtual>
-    <!-- 分页 -->
-    <VDivider />
     <div class="flex items-center justify-between">
       <div class="w-auto">
-        <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" variant="solo" flat />
+        <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" variant="plain" flat />
       </div>
       <div class="w-auto text-sm">{{ pageTip.begin }} - {{ pageTip.end }} / {{ totalItems }}</div>
       <VPagination

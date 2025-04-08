@@ -101,6 +101,13 @@ export default defineComponent({
 @use '@layouts/styles/placeholders';
 @use '@layouts/styles/mixins';
 
+.layout-page-content {
+  position: relative;
+  z-index: 1;
+  margin-block-start: 0;
+  padding-block-start: 0;
+}
+
 .layout-wrapper.layout-nav-type-vertical {
   // TODO(v2): Check why we need height in vertical nav & min-height in horizontal nav
   block-size: 100%;
@@ -207,12 +214,5 @@ export default defineComponent({
     margin-inline-start: 8px;
     padding-inline-start: 0;
   }
-}
-
-.layout-page-content {
-  position: relative;
-  z-index: 1;
-  margin-block-start: calc(variables.$layout-vertical-nav-navbar-height - 42px);
-  padding-block-start: 0;
 }
 </style>

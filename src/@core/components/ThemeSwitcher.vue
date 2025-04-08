@@ -196,9 +196,9 @@ onMounted(() => {
       </IconBtn>
     </template>
     <VList elevation="0" class="theme-switcher-list">
-      <div class="theme-switcher-header py-1 mb-2">
+      <VCardItem class="theme-switcher-header">
         <VCardTitle class="font-weight-medium text-primary">主题选择</VCardTitle>
-      </div>
+      </VCardItem>
 
       <div class="theme-switcher-options px-2">
         <VListItem
@@ -258,7 +258,10 @@ onMounted(() => {
 
 <style lang="scss">
 .theme-switcher-header {
-  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  background: linear-gradient(to right, rgba(var(--v-theme-primary), 0.04), rgba(var(--v-theme-primary), 0.01));
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  padding-block: 12px;
+  padding-inline: 16px;
 }
 
 .theme-switcher-options {
