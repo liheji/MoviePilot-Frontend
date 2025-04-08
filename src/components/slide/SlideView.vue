@@ -1,27 +1,29 @@
 <script lang="ts" setup>
 import SlideViewTitle from '@/components/slide/SlideViewTitle.vue'
+import { ref, onMounted, onUnmounted, inject, computed } from 'vue';
 
 // 元素
-const slideview_content = ref()
-const sliderContainer = ref()
+const slideview_content = ref<HTMLElement | null>(null);
+const sliderContainer = ref<HTMLElement | null>(null);
 // 分页切换状态: 0-左边不可用 1-两边可用 2-右边不可用 3-两边都不可用
-const disabled = ref(0)
+const disabled = ref(0);
 // 记录滚动值
-const slideview_scrollLeft = ref(0)
+const slideview_scrollLeft = ref(0);
 // 所有卡片数量
-let slide_card_length: number
+let slide_card_length: number;
 // 卡片间距
-let slide_gap_px: number
+let slide_gap_px: number;
 // 卡片宽度
-let card_width: number
+let card_width: number;
 // 容器最多显示N张卡片
-let card_max: number
+let card_max: number;
 // 当前定位
-let card_current: number
-// 是否鼠标悬停在容器上
-const isHovering = ref(false)
+let card_current: number;
 // 获取传入的链接地址
-const props: any = inject('rankingPropsKey', { linkurl: '', title: '' })
+const props: any = inject('rankingPropsKey', { linkurl: '', title: '' });
+const isScrolling = ref(false);
+let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+const scrollTimeoutDuration = 1500; // 滚动停止后延迟时间 (ms)
 
 // 分页切换
 function slideNext(next: boolean) {
@@ -29,18 +31,27 @@ function slideNext(next: boolean) {
   if (next) {
     const card_index = card_current + card_max
     run_to_left_px = card_index * card_width
-    if (run_to_left_px >= slideview_content.value.scrollWidth - slideview_content.value.clientWidth)
-      run_to_left_px = slideview_content.value.scrollWidth - slideview_content.value.clientWidth
+    if (run_to_left_px >= slideview_content.value!.scrollWidth - slideview_content.value!.clientWidth)
+      run_to_left_px = slideview_content.value!.scrollWidth - slideview_content.value!.clientWidth
   } else {
     const card_index = card_current - card_max
     run_to_left_px = card_index * card_width
     if (run_to_left_px <= 0) run_to_left_px = 0
   }
-  slideview_content.value.scrollTo({
+  slideview_content.value!.scrollTo({
     top: 0,
     left: run_to_left_px,
     behavior: 'smooth',
   })
+
+  // 点击后强制显示并重置计时器
+  isScrolling.value = true;
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout);
+  }
+  scrollTimeout = setTimeout(() => {
+    isScrolling.value = false;
+  }, scrollTimeoutDuration);
 }
 
 // 计算最大显示数量
@@ -54,8 +65,25 @@ function countMaxNumber() {
   countDisabled()
 }
 
-// 修改分页切换按钮状态
-function countDisabled() {
+// 修改分页切换按钮状态 & 处理滚动状态
+function handleContentScroll() {
+  if (!slideview_content.value) return;
+  // 更新按钮禁用状态
+  countDisabled(); 
+
+  // 更新滚动状态并重置计时器
+  isScrolling.value = true;
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout);
+  }
+  scrollTimeout = setTimeout(() => {
+    isScrolling.value = false;
+  }, scrollTimeoutDuration); // 使用常量
+}
+
+// 原始的 countDisabled 逻辑，现在由 handleContentScroll 调用
+function countDisabled() { 
+  if (!slideview_content.value) return;
   slideview_scrollLeft.value = slideview_content.value.scrollLeft
   card_current =
     slideview_content.value.scrollLeft === 0
@@ -69,16 +97,6 @@ function countDisabled() {
   )
     disabled.value = 2
   else disabled.value = 1
-}
-
-// 处理鼠标进入
-function handleMouseEnter() {
-  isHovering.value = true
-}
-
-// 处理鼠标离开
-function handleMouseLeave() {
-  isHovering.value = false
 }
 
 // 组件加载完成
@@ -96,13 +114,17 @@ onUnmounted(() => {
 
 onActivated(() => {
   if (slideview_scrollLeft.value !== 0) {
-    slideview_content.value.scrollLeft = slideview_scrollLeft.value
+    slideview_content.value!.scrollLeft = slideview_scrollLeft.value
   }
 })
 </script>
 
 <template>
-  <div ref="sliderContainer" class="slider-container" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+  <div 
+    ref="sliderContainer" 
+    class="slider-container" 
+    :class="{ 'is-scrolling': isScrolling }"
+  >
     <div class="slider-header">
       <slot name="title">
         <SlideViewTitle />
@@ -119,7 +141,12 @@ onActivated(() => {
 
     <div class="slider-content-wrapper">
       <div class="slider-content-container">
-        <div ref="slideview_content" class="slider-content" tabindex="0" @scroll="countDisabled">
+        <div 
+          ref="slideview_content" 
+          class="slider-content" 
+          tabindex="0" 
+          @scroll="handleContentScroll"
+        >
           <slot name="content" />
         </div>
       </div>
@@ -128,7 +155,7 @@ onActivated(() => {
       <button
         class="nav-button nav-button-left"
         @click.stop="slideNext(false)"
-        v-show="isHovering && disabled !== 0 && disabled !== 3"
+        v-show="disabled !== 0 && disabled !== 3"
       >
         <svg width="24" height="24" viewBox="0 0 24 24">
           <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
@@ -139,7 +166,7 @@ onActivated(() => {
       <button
         class="nav-button nav-button-right"
         @click.stop="slideNext(true)"
-        v-show="isHovering && disabled !== 2 && disabled !== 3"
+        v-show="disabled !== 2 && disabled !== 3"
       >
         <svg width="24" height="24" viewBox="0 0 24 24">
           <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
@@ -172,30 +199,33 @@ onActivated(() => {
 
 .view-all-button {
   .arrow-svg {
-    fill: currentcolor;
+    fill: currentColor;
     transition: transform 0.3s ease;
+    margin-left: 2px;
   }
 
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
-  border-radius: 16px;
-  background-color: rgba(var(--v-theme-primary), 0.1);
+  border-radius: 8px;
+  padding: 5px 12px;
+  background-color: transparent;
+  border: 1px solid rgba(var(--v-theme-primary), 0.3);
   color: rgb(var(--v-theme-primary));
   font-size: 0.85rem;
   font-weight: 500;
-  padding-block: 4px;
-  padding-inline: 10px;
   text-decoration: none;
   transition: all 0.25s ease;
+  box-shadow: none;
 
   &:hover {
-    background-color: rgba(var(--v-theme-primary), 0.15);
-    box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.1);
+    background-color: rgba(var(--v-theme-primary), 0.08);
+    border-color: rgba(var(--v-theme-primary), 0.5);
     transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(var(--v-theme-primary), 0.1);
 
     .arrow-svg {
-      transform: translateX(2px);
+      transform: translateX(3px);
     }
   }
 
@@ -217,38 +247,43 @@ onActivated(() => {
 
 .nav-button {
   position: absolute;
-  z-index: 20;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: rgba(var(--v-theme-background), 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-  border-radius: 50%;
-  backdrop-filter: blur(5px);
-  background-color: rgba(var(--v-theme-surface), 0.9);
-  block-size: 38px;
   cursor: pointer;
-  inline-size: 38px;
-  inset-block-start: 50%;
+  z-index: 20;
+  color: rgb(var(--v-theme-on-surface));
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-50%);
-  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease,
-    box-shadow 0.3s ease;
-
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  
   svg {
-    block-size: 22px;
-    fill: rgb(var(--v-theme-on-surface));
-    inline-size: 22px;
-    opacity: 0.8;
+    fill: currentColor;
+    opacity: 0.7;
     transition: all 0.3s ease;
+    width: 22px;
+    height: 22px;
+    filter: none;
   }
-
+  
   &:hover {
+    background-color: rgba(var(--v-theme-background), 0.95);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     border-color: rgba(var(--v-theme-on-surface), 0.15);
-    background-color: rgba(var(--v-theme-surface), 1);
-    transform: translateY(-50%) scale(1.1);
-
+    color: rgb(var(--v-theme-primary));
+    
     svg {
       opacity: 1;
     }
@@ -256,11 +291,11 @@ onActivated(() => {
 }
 
 .nav-button-left {
-  inset-inline-start: -14px; // 半径
+  left: 8px;
 }
 
 .nav-button-right {
-  inset-inline-end: -14px; // 半径
+  right: 8px;
 }
 
 .slider-content {
@@ -282,14 +317,25 @@ onActivated(() => {
   }
 }
 
-.slider-container:hover .nav-button,
-.slider-container:hover .nav-button[style*='display: none;'] ~ .nav-button {
+// 触摸设备：滚动时显示 (通过 JS 添加的类控制)
+// 这个规则会在不支持 hover 的设备上生效
+.slider-container.is-scrolling .nav-button {
   opacity: 1;
   pointer-events: auto;
 }
 
-.nav-button[style*='display: none;'] {
-  opacity: 0 !important;
-  pointer-events: none !important;
+// 桌面设备：悬停时显示
+@media (hover: hover) {
+  .slider-container:hover .nav-button {
+    // 这个规则会覆盖 .is-scrolling 的效果 (如果同时存在)
+    // 或者在非 scrolling 状态下，hover 时也能显示
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  // 在 hover 设备上，即使在滚动，如果鼠标不悬停，按钮也应该隐藏
+  // 因此，基础 .nav-button 的 opacity: 0 规则在这里仍然是必要的
+  // (之前错误地以为 hover 会完全覆盖，但滚动时 class 和 hover 可能同时存在)
+  // .nav-button { opacity: 0; pointer-events: none; } // 这行其实不需要重复，默认就是这样
 }
 </style>

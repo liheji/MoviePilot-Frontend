@@ -3,6 +3,7 @@ import api from '@/api'
 import { useDisplay } from 'vuetify'
 import { RecommendSource } from '@/api/types'
 import MediaCardSlideView from '@/views/discover/MediaCardSlideView.vue'
+import { ref, onMounted, onUnmounted, computed, reactive, watch, nextTick } from 'vue';
 
 // APP
 const display = useDisplay()
@@ -168,12 +169,74 @@ const categoryIcons: Record<string, string> = {
   榜单: 'mdi-trophy',
 }
 
+// 控制回到顶部按钮的可见性
+const showScrollToTop = ref(false);
+const scrollThreshold = 200; // 滚动多少像素后显示按钮
+
+// 滚动事件处理函数
+const handleScroll = () => {
+  showScrollToTop.value = window.scrollY > scrollThreshold;
+};
+
+// 回到顶部函数 (如果需要，可以从VScrollToTopBtn或其他地方引入)
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// Ref for the tabs container
+const tabsContainerRef = ref<HTMLElement | null>(null);
+// State for showing the scroll indicator
+const showTabsScrollIndicator = ref(false);
+
+// Function to check and update the indicator state
+const updateTabsIndicator = () => {
+  const el = tabsContainerRef.value;
+  if (!el) return;
+  
+  const tolerance = 1; // Allow 1px tolerance
+  const hasOverflow = el.scrollWidth > el.clientWidth + tolerance;
+  const isScrolledToEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - tolerance;
+  
+  showTabsScrollIndicator.value = hasOverflow && !isScrolledToEnd;
+};
+
+// Debounce resize handler
+let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+const handleResize = () => {
+  if (resizeTimeout) clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    updateTabsIndicator();
+  }, 150);
+};
+
 onBeforeMount(async () => {
   await loadConfig()
 })
 
 onMounted(async () => {
   await loadExtraRecommendSources()
+  // Add scroll event listener
+  window.addEventListener('scroll', handleScroll);
+  // Initial check for scroll-to-top
+  handleScroll(); 
+  
+  // Add resize listener for tabs indicator
+  window.addEventListener('resize', handleResize);
+  // Initial check for tabs indicator after DOM update
+  await nextTick(); // Ensure element is rendered
+  updateTabsIndicator();
+  
+  // Listen for scroll events specifically on the tabs container
+  tabsContainerRef.value?.addEventListener('scroll', updateTabsIndicator, { passive: true });
+})
+
+onUnmounted(() => {
+  // Remove scroll event listener
+  window.removeEventListener('scroll', handleScroll);
+  // Remove resize listener
+  window.removeEventListener('resize', handleResize);
+  // Remove tabs scroll listener
+  tabsContainerRef.value?.removeEventListener('scroll', updateTabsIndicator);
 })
 
 onActivated(async () => {
@@ -193,8 +256,12 @@ watch(currentCategory, () => {
 <template>
   <div class="mp-recommend">
     <!-- 页面顶部控制栏 -->
-    <div v-if="display.mdAndUp.value" class="recommend-header">
-      <div class="header-tabs">
+    <div class="recommend-header">
+      <div 
+        ref="tabsContainerRef" 
+        class="header-tabs" 
+        :class="{ 'show-indicator': showTabsScrollIndicator }"
+      >
         <div
           v-for="(icon, category) in categoryIcons"
           :key="category"
@@ -206,14 +273,14 @@ watch(currentCategory, () => {
           <span>{{ category }}</span>
         </div>
       </div>
-      <button class="tune-button" @click="dialog = true">
-        <div class="tune-icon">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <span class="tune-text">显示设置</span>
-      </button>
+      <VBtn
+        icon="mdi-tune"
+        variant="text"
+        color="primary"
+        size="default"
+        class="settings-icon-button"
+        @click="dialog = true"
+      />
     </div>
 
     <!-- 滚动内容区域 -->
@@ -230,7 +297,7 @@ watch(currentCategory, () => {
     </div>
 
     <!-- 设置面板 -->
-    <VDialog v-model="dialog" width="40rem" class="settings-dialog" scrollable>
+    <VDialog v-model="dialog" width="500" class="settings-dialog" scrollable>
       <VCard class="settings-card">
         <VCardItem class="settings-card-header">
           <VCardTitle>
@@ -288,7 +355,19 @@ watch(currentCategory, () => {
     </VDialog>
 
     <!-- 快速滚动到顶部按钮 -->
-    <VScrollToTopBtn />
+    <div class="global-action-buttons">
+      <Transition name="scroll-fade">
+        <button 
+          v-show="showScrollToTop" 
+          class="global-action-button"
+          @click="scrollToTop"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </Transition>
+    </div>
   </div>
 </template>
 
@@ -296,100 +375,138 @@ watch(currentCategory, () => {
 .mp-recommend {
   position: relative;
   padding: 0;
-  max-inline-size: 100%;
+  max-width: 100%;
 }
 
 .recommend-header {
   position: sticky;
+  top: 0;
   z-index: 10;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  border-radius: 8px;
+  align-items: center;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  background-color: rgba(var(--v-theme-background), 0.8);
   backdrop-filter: blur(10px);
-  background-color: rgba(var(--v-theme-primary), 0.02);
-  border-block-end: 1px solid rgba(var(--v-theme-primary), 0.1);
-  inset-block-start: 0;
-  margin-block-end: 16px;
-  padding-block: 12px;
-  padding-inline: 16px;
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  gap: 16px; // 为按钮留出空间
 }
 
 .header-tabs {
+  position: relative; // Needed for pseudo-element positioning
   display: flex;
-  padding: 4px;
   gap: 12px;
   overflow-x: auto;
   scrollbar-width: none;
+  padding: 4px 0;
+  flex-grow: 1;
+  min-width: 0;
+  // Add padding-right to make space for the indicator visually
+  padding-right: 20px; 
+  // Clip content that overflows, useful with padding
+  -webkit-mask-image: linear-gradient(to right, black 95%, transparent 100%);
+  mask-image: linear-gradient(to right, black 95%, transparent 100%);
 
   &::-webkit-scrollbar {
     display: none;
   }
-}
-
-.header-tab-icon {
-  color: rgba(var(--v-theme-on-background), 0.6);
-  margin-inline-end: 6px;
-  transition: color 0.2s ease;
+  
+  // Gradient indicator pseudo-element
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 40px; // Width of the fade effect
+    background: linear-gradient(to left, rgba(var(--v-theme-background), 1) 30%, transparent);
+    pointer-events: none; // Allow interaction with content behind it
+    opacity: 0; // Hidden by default
+    transition: opacity 0.2s ease-in-out;
+    z-index: 1; // Ensure it's above the tabs but below other header elements if needed
+  }
+  
+  // Show the indicator when the class is present
+  &.show-indicator::after {
+    opacity: 1;
+  }
 }
 
 .header-tab {
-  position: relative;
   display: flex;
   align-items: center;
+  padding: 6px 14px;
   border-radius: 20px;
-  background-color: transparent;
-  color: rgba(var(--v-theme-on-background), 0.7);
-  cursor: pointer;
-  font-size: 0.9rem;
   font-weight: 600;
-  padding-block: 6px;
-  padding-inline: 14px;
-  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  cursor: pointer;
   white-space: nowrap;
-
+  transition: all 0.2s ease;
+  background-color: transparent;
+  position: relative;
+  color: rgba(var(--v-theme-on-background), 0.7);
+  
   &::after {
-    position: absolute;
-    border-radius: 3px;
-    background-color: rgb(var(--v-theme-primary));
-    block-size: 3px;
     content: '';
-    inline-size: 70%;
-    inset-block-end: -4px;
-    inset-inline-start: 50%;
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
     transform: translateX(-50%) scaleX(0);
+    width: 70%;
+    height: 3px;
+    background-color: rgb(var(--v-theme-primary));
+    border-radius: 3px;
     transition: transform 0.2s ease;
   }
-
+  
   &.active {
     color: rgb(var(--v-theme-primary));
-
+    
     &::after {
       transform: translateX(-50%) scaleX(1);
     }
-
+    
     .header-tab-icon {
       color: rgb(var(--v-theme-primary));
     }
   }
-
+  
   &:hover:not(.active) {
-    background-color: rgba(var(--v-theme-primary), 0.05);
     color: rgba(var(--v-theme-on-background), 1);
+    background-color: rgba(var(--v-theme-primary), 0.05);
   }
 }
 
-.settings-btn {
-  border-radius: 50%;
-  block-size: 48px;
-  inline-size: 48px;
-  min-inline-size: auto;
+.header-tab-icon {
+  margin-right: 6px;
+  transition: color 0.2s ease;
+  color: rgba(var(--v-theme-on-background), 0.6);
+}
+
+.settings-icon-button {
+  min-width: auto;
+  flex-shrink: 0;
 }
 
 .recommend-content {
-  min-block-size: 300px;
-  padding-block: 0;
-  padding-inline: 8px;
+  padding: 0 16px;
+}
+
+/* Fade transition for content groups */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.content-group {
+  margin-bottom: 24px;
+  transition: opacity 0.3s ease;
 }
 
 .empty-category {
@@ -397,197 +514,145 @@ watch(currentCategory, () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px dashed rgba(var(--v-theme-on-surface), 0.1);
-  border-radius: 12px;
-  background-color: rgba(var(--v-theme-surface), 0.5);
-  block-size: 300px;
-  margin-block: 20px;
-  margin-inline: 0;
+  padding: 40px;
+  text-align: center;
+  color: rgba(var(--v-theme-on-surface), 0.6);
 }
 
 .empty-icon {
-  margin-block-end: 12px;
+  margin-bottom: 16px;
   opacity: 0.5;
 }
 
 .empty-text {
-  color: rgba(var(--v-theme-on-surface), 0.6);
-  margin-block-end: 16px;
+  margin-bottom: 16px;
+  font-size: 1rem;
 }
 
-.content-group {
-  margin-block-end: 24px;
-}
-
-.settings-card {
-  overflow: hidden;
+/* Settings Dialog Styles */
+.settings-dialog .v-card {
   border-radius: 12px;
 }
 
 .settings-card-header {
-  background-color: rgba(var(--v-theme-primary), 0.03);
+  padding: 16px 20px;
 }
 
 .settings-hint {
-  color: rgba(var(--v-theme-on-surface), 0.6);
   font-size: 0.9rem;
-  margin-block-end: 16px;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  margin-bottom: 16px;
 }
 
 .settings-grid {
   display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.setting-item {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(var(--v-theme-surface-variant), 0.3);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+  }
+
+  &.电影::before { background-color: #4CAF50; } // Green
+  &.电视剧::before { background-color: #2196F3; } // Blue
+  &.动漫::before { background-color: #FF9800; } // Orange
+  &.榜单::before { background-color: #9C27B0; } // Purple
+  
+  &:hover {
+    background-color: rgba(var(--v-theme-surface-variant), 0.6);
+    border-color: rgba(var(--v-theme-on-surface), 0.15);
+  }
+  
+  &.enabled {
+    border-color: rgba(var(--v-theme-primary), 0.5);
+    background-color: rgba(var(--v-theme-primary), 0.05);
+    
+    .setting-label {
+      color: rgb(var(--v-theme-primary));
+      font-weight: 500;
+    }
+  }
 }
 
 .setting-item-inner {
   display: flex;
   align-items: center;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-  border-radius: 8px;
-  background-color: rgba(var(--v-theme-surface), 1);
-  padding-block: 10px;
-  padding-inline: 12px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-}
-
-.setting-item {
-  cursor: pointer;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &.enabled {
-    .setting-item-inner {
-      border-color: rgba(var(--v-theme-primary), 0.2);
-      background-color: rgba(var(--v-theme-primary), 0.08);
-    }
-  }
-
-  &.电影 .setting-item-inner {
-    border-inline-start: 3px solid #3b82f6;
-  }
-
-  &.电视剧 .setting-item-inner {
-    border-inline-start: 3px solid #6366f1;
-  }
-
-  &.动漫 .setting-item-inner {
-    border-inline-start: 3px solid #a855f7;
-  }
-
-  &.榜单 .setting-item-inner {
-    border-inline-start: 3px solid #f59e0b;
-  }
 }
 
 .setting-check {
-  margin-inline-end: 8px;
+  margin-right: 8px;
 }
 
 .setting-label {
-  overflow: hidden;
   font-size: 0.9rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  transition: color 0.2s ease;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.fade-move {
-  transition: transform 0.5s ease;
-}
-
-.fade-transition {
-  animation: fadeInOut 0.5s ease;
-}
-
-@keyframes fadeinout {
-  0% {
-    opacity: 0.5;
-    transform: translateY(10px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.tune-button {
+/* Global Action Button Styles (FAB) */
+.global-action-buttons {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 100;
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.global-action-button {
+  width: 44px;
+  height: 44px;
+  background-color: rgba(var(--v-theme-background), 0.8);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+  display: flex;
+  justify-content: center;
   align-items: center;
-  border: none;
-  border-radius: 30px;
-  background: rgba(var(--v-theme-primary), 0.1);
-  color: rgb(var(--v-theme-primary));
   cursor: pointer;
-  padding-block: 8px;
-  padding-inline: 16px;
-  transition: all 0.3s ease;
-
+  color: rgb(var(--v-theme-on-surface));
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
   &:hover {
-    background: rgba(var(--v-theme-primary), 0.2);
-    transform: translateY(-2px);
+    background-color: rgba(var(--v-theme-background), 0.95);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    color: rgb(var(--v-theme-primary));
   }
-
-  .tune-icon {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    block-size: 16px;
-    inline-size: 16px;
-
-    span {
-      display: block;
-      border-radius: 2px;
-      background-color: rgb(var(--v-theme-primary));
-      block-size: 2px;
-      transition: all 0.3s ease;
-
-      &:nth-child(1) {
-        inline-size: 60%;
-      }
-
-      &:nth-child(2) {
-        inline-size: 80%;
-      }
-
-      &:nth-child(3) {
-        inline-size: 40%;
-      }
-    }
-  }
-
-  .tune-text {
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-inline-start: 8px;
-  }
-
-  &:hover .tune-icon span {
-    &:nth-child(1) {
-      inline-size: 100%;
-    }
-
-    &:nth-child(2) {
-      inline-size: 60%;
-    }
-
-    &:nth-child(3) {
-      inline-size: 80%;
-    }
+  
+  svg {
+    transition: all 0.3s ease;
+    width: 20px;
+    height: 20px;
   }
 }
+
+/* Remove old tune button styles if they exist */
+.tune-button {
+  display: none; // Hide the old button definitively
+}
+
 </style>
+
+
