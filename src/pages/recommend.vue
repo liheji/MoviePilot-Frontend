@@ -1,103 +1,93 @@
 <script setup lang="ts">
 import api from '@/api'
+import { useDisplay } from 'vuetify'
 import { RecommendSource } from '@/api/types'
 import MediaCardSlideView from '@/views/discover/MediaCardSlideView.vue'
+
+// APP
+const display = useDisplay()
 
 // 当前选择的分类
 const currentCategory = ref('全部')
 
-// 定义分类类型
-type CategoryType = '全部' | '电影' | '电视剧' | '动漫' | '榜单'
-type CategoryMap = Record<CategoryType, Array<{ apipath: string; linkurl: string; title: string }>>
-
-// 预处理的分类视图数据
-const categoryViewsMap = reactive<CategoryMap>({
-  全部: [],
-  电影: [],
-  电视剧: [],
-  动漫: [],
-  榜单: [],
-})
-
-// 按分类过滤视图的映射
-const getCategoryForView = (title: string): CategoryType => {
-  if (title.includes('电影') || title.includes('热映') || (title.includes('TOP250') && !title.includes('剧集'))) {
-    return '电影'
-  } else if (title.includes('电视剧') || (title.includes('剧集') && !title.includes('动漫'))) {
-    return '电视剧'
-  } else if (title.includes('动漫') || title.includes('Bangumi')) {
-    return '动漫'
-  } else if (title.includes('TOP') || title.includes('榜') || title.includes('趋势')) {
-    return '榜单'
-  }
-  return '电影' // 默认分类
-}
-
-const viewList = reactive<{ apipath: string; linkurl: string; title: string }[]>([
+const viewList = reactive<{ apipath: string; linkurl: string; title: string; type: string }[]>([
   {
     apipath: 'recommend/tmdb_trending',
     linkurl: '/browse/recommend/tmdb_trending?title=流行趋势',
     title: '流行趋势',
+    type: '榜单',
   },
   {
     apipath: 'recommend/douban_showing',
     linkurl: '/browse/recommend/douban_showing?title=正在热映',
     title: '正在热映',
+    type: '电影',
   },
   {
     apipath: 'recommend/bangumi_calendar',
     linkurl: '/browse/recommend/bangumi_calendar?title=Bangumi每日放送',
     title: 'Bangumi每日放送',
+    type: '动漫',
   },
   {
     apipath: 'recommend/tmdb_movies',
     linkurl: '/browse/recommend/tmdb_movies?title=TMDB热门电影',
     title: 'TMDB热门电影',
+    type: '电影',
   },
   {
     apipath: 'recommend/tmdb_tvs?with_original_language=zh|en|ja|ko',
     linkurl: '/browse/recommend/tmdb_tvs??with_original_language=zh|en|ja|ko&title=TMDB热门电视剧',
     title: 'TMDB热门电视剧',
+    type: '电视剧',
   },
   {
     apipath: 'recommend/douban_movie_hot',
     linkurl: '/browse/recommend/douban_movie_hot?title=豆瓣热门电影',
     title: '豆瓣热门电影',
+    type: '电影',
   },
   {
     apipath: 'recommend/douban_tv_hot',
     linkurl: '/browse/recommend/douban_tv_hot?title=豆瓣热门电视剧',
     title: '豆瓣热门电视剧',
+    type: '电视剧',
   },
   {
     apipath: 'recommend/douban_tv_animation',
     linkurl: '/browse/recommend/douban_tv_animation?title=豆瓣热门动漫',
     title: '豆瓣热门动漫',
+    type: '动漫',
   },
   {
     apipath: 'recommend/douban_movies',
     linkurl: '/browse/recommend/douban_movies?title=豆瓣最新电影',
     title: '豆瓣最新电影',
+    type: '电影',
   },
   {
     apipath: 'recommend/douban_tvs',
     linkurl: '/browse/recommend/douban_tvs?title=豆瓣最新电视剧',
     title: '豆瓣最新电视剧',
+    type: '电视剧',
   },
   {
     apipath: 'recommend/douban_movie_top250',
     linkurl: '/browse/recommend/douban_movie_top250?title=电影TOP250',
     title: '豆瓣电影TOP250',
+    type: '榜单',
   },
   {
     apipath: 'recommend/douban_tv_weekly_chinese',
     linkurl: '/browse/recommend/douban_tv_weekly_chinese?title=豆瓣国产剧集榜',
     title: '豆瓣国产剧集榜',
+    type: '榜单',
   },
   {
     apipath: 'recommend/douban_tv_weekly_global',
     linkurl: '/browse/recommend/douban_tv_weekly_global?title=豆瓣全球剧集榜',
     title: '豆瓣全球剧集榜',
+    type: '榜单',
   },
 ])
 
@@ -106,7 +96,7 @@ const filteredViews = computed(() => {
   if (currentCategory.value === '全部') {
     return viewList.filter(item => enableConfig.value[item.title])
   }
-  return categoryViewsMap[currentCategory.value as CategoryType]
+  return viewList.filter(item => enableConfig.value[item.title] && item.type === currentCategory.value)
 })
 
 // 榜单启用配置， 以title为key
@@ -120,21 +110,6 @@ const dialog = ref(false)
 // 额外的数据源
 const extraRecommendSources = ref<RecommendSource[]>([])
 
-// 分类视图
-function updateCategoryViews() {
-  // 清空所有分类
-  ;(Object.keys(categoryViewsMap) as CategoryType[]).forEach(category => {
-    categoryViewsMap[category] = []
-  })
-
-  // 先把所有启用的视图按照分类归类
-  const enabledViews = viewList.filter(item => enableConfig.value[item.title])
-  enabledViews.forEach(view => {
-    const category = getCategoryForView(view.title)
-    categoryViewsMap[category].push(view)
-  })
-}
-
 // 加载额外的发现数据源
 async function loadExtraRecommendSources() {
   try {
@@ -145,10 +120,9 @@ async function loadExtraRecommendSources() {
           apipath: source.api_path,
           linkurl: `/browse/recommend/${source.api_path}?title=${source.name}`,
           title: source.name,
+          type: source.type,
         })),
       )
-      // 添加新视图后更新分类
-      updateCategoryViews()
     }
   } catch (error) {
     console.log(error)
@@ -168,8 +142,6 @@ async function loadConfig() {
       localStorage.setItem('MP_RECOMMEND', JSON.stringify(response.data.value))
     }
   }
-  // 配置加载后更新分类
-  updateCategoryViews()
 }
 
 // 设置项目
@@ -185,13 +157,10 @@ async function saveConfig() {
     console.error(error)
   }
   dialog.value = false
-
-  // 保存后更新分类
-  updateCategoryViews()
 }
 
 // 标签图标映射
-const categoryIcons: Record<CategoryType, string> = {
+const categoryIcons: Record<string, string> = {
   全部: 'mdi-filmstrip-box-multiple',
   电影: 'mdi-movie',
   电视剧: 'mdi-television-classic',
@@ -224,20 +193,19 @@ watch(currentCategory, () => {
 <template>
   <div class="mp-recommend">
     <!-- 页面顶部控制栏 -->
-    <div class="recommend-header">
+    <div v-if="display.mdAndUp.value" class="recommend-header">
       <div class="header-tabs">
         <div
-          v-for="(category, idx) in ['全部', '电影', '电视剧', '动漫', '榜单']"
-          :key="idx"
+          v-for="(icon, category) in categoryIcons"
+          :key="category"
           class="header-tab"
           :class="{ 'active': currentCategory === category }"
           @click="currentCategory = category"
         >
-          <VIcon :icon="categoryIcons[category as CategoryType]" size="small" class="header-tab-icon" />
+          <VIcon :icon="icon" size="small" class="header-tab-icon" />
           <span>{{ category }}</span>
         </div>
       </div>
-
       <button class="tune-button" @click="dialog = true">
         <div class="tune-icon">
           <span></span>
@@ -283,7 +251,7 @@ watch(currentCategory, () => {
               class="setting-item"
               :class="{
                 'enabled': enableConfig[item.title],
-                [getCategoryForView(item.title)]: true,
+                [item.type]: true,
               }"
               @click="enableConfig[item.title] = !enableConfig[item.title]"
             >
@@ -301,7 +269,7 @@ watch(currentCategory, () => {
           </div>
         </VCardText>
         <VDivider />
-        <VCardActions class="mt-3">
+        <VCardActions class="pt-5">
           <VBtn variant="text" @click="Object.keys(enableConfig).forEach(key => (enableConfig[key] = true))">
             全选
           </VBtn>
@@ -309,8 +277,12 @@ watch(currentCategory, () => {
             全不选
           </VBtn>
           <VSpacer />
-          <VBtn variant="text" @click="dialog = false">取消</VBtn>
-          <VBtn color="primary" variant="tonal" class="px-3" @click="saveConfig"> 保存设置 </VBtn>
+          <VBtn @click="saveConfig" variant="elevated" color="primary" class="px-5">
+            <template #prepend>
+              <VIcon icon="mdi-content-save" />
+            </template>
+            保存
+          </VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
@@ -333,6 +305,7 @@ watch(currentCategory, () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-radius: 8px;
   backdrop-filter: blur(10px);
   background-color: rgba(var(--v-theme-primary), 0.02);
   border-block-end: 1px solid rgba(var(--v-theme-primary), 0.1);
@@ -575,7 +548,6 @@ watch(currentCategory, () => {
     justify-content: space-between;
     block-size: 16px;
     inline-size: 16px;
-    margin-inline-end: 8px;
 
     span {
       display: block;
@@ -601,6 +573,7 @@ watch(currentCategory, () => {
   .tune-text {
     font-size: 0.9rem;
     font-weight: 500;
+    margin-inline-start: 8px;
   }
 
   &:hover .tune-icon span {

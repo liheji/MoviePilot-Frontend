@@ -15,30 +15,30 @@ const props: any = inject('rankingPropsKey')
 <style lang="scss" scoped>
 .title-wrapper {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  justify-content: space-between;
+  inline-size: 100%;
 }
 
 .title-section {
+  position: relative;
   display: flex;
   align-items: center;
-  position: relative;
 }
 
 .title-badge {
-  width: 3px;
-  height: 16px;
-  background-color: rgb(var(--v-theme-primary));
-  margin-right: 8px;
   border-radius: 2px;
+  background-color: rgb(var(--v-theme-primary));
+  block-size: 16px;
+  inline-size: 3px;
+  margin-inline-end: 8px;
 }
 
 .title-text {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: rgba(var(--v-theme-on-background), 0.95);
-  margin: 0;
   padding: 0;
+  margin: 0;
+  color: rgba(var(--v-theme-on-background), 0.95);
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 </style>
