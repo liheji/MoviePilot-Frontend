@@ -114,6 +114,7 @@ onActivated(async () => {
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
 })
+
 </script>
 
 <template>
@@ -158,5 +159,7 @@ onActivated(async () => {
         </transition>
       </VWindowItem>
     </VWindow>
+    <!-- 快速滚动到顶部按钮 -->
+    <VScrollToTopBtn />
   </div>
 </template>

@@ -27,6 +27,7 @@ import VueApexCharts from 'vue3-apexcharts'
 
 // 6. 注册自定义组件
 import DialogCloseBtn from '@/@core/components/DialogCloseBtn.vue'
+import ScrollToTopBtn from '@/@core/components/ScrollToTopBtn.vue'
 import MediaCard from './components/cards/MediaCard.vue'
 import PosterCard from './components/cards/PosterCard.vue'
 import BackdropCard from './components/cards/BackdropCard.vue'
@@ -82,6 +83,7 @@ initializeApp().then(() => {
     .component('VApexChart', VueApexCharts)
     .component('VCronVuetify', CronVuetify)
     .component('VDialogCloseBtn', DialogCloseBtn)
+    .component('VScrollToTopBtn', ScrollToTopBtn)
     .component('VMediaCard', MediaCard)
     .component('VPosterCard', PosterCard)
     .component('VBackdropCard', BackdropCard)

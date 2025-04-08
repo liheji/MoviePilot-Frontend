@@ -1,9 +1,5 @@
 <script lang="ts" setup>
 import SlideViewTitle from '@/components/slide/SlideViewTitle.vue'
-import { useDisplay } from 'vuetify'
-
-// 显示器宽度
-const display = useDisplay()
 
 // 元素
 const slideview_content = ref()
@@ -85,11 +81,6 @@ function handleMouseLeave() {
   isHovering.value = false
 }
 
-// 检测是否有足够内容可显示
-const hasEnoughContent = computed(() => {
-  return slide_card_length > card_max
-})
-
 // 组件加载完成
 onMounted(() => {
   // 初次获取元素参数
@@ -111,44 +102,30 @@ onActivated(() => {
 </script>
 
 <template>
-  <div 
-    ref="sliderContainer"
-    class="slider-container"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
+  <div ref="sliderContainer" class="slider-container" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
     <div class="slider-header">
       <slot name="title">
         <SlideViewTitle />
       </slot>
-      
+
       <!-- 查看全部按钮 -->
-      <RouterLink
-        v-if="props.linkurl"
-        :to="props.linkurl"
-        class="view-all-button"
-      >
+      <RouterLink v-if="props.linkurl" :to="props.linkurl" class="view-all-button">
         <span>全部</span>
         <svg width="16" height="16" viewBox="0 0 24 24" class="arrow-svg">
           <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
         </svg>
       </RouterLink>
     </div>
-    
+
     <div class="slider-content-wrapper">
       <div class="slider-content-container">
-        <div
-          ref="slideview_content"
-          class="slider-content"
-          tabindex="0"
-          @scroll="countDisabled"
-        >
+        <div ref="slideview_content" class="slider-content" tabindex="0" @scroll="countDisabled">
           <slot name="content" />
         </div>
       </div>
-      
+
       <!-- 左侧导航按钮 -->
-      <button 
+      <button
         class="nav-button nav-button-left"
         @click.stop="slideNext(false)"
         v-show="isHovering && disabled !== 0 && disabled !== 3"
@@ -157,9 +134,9 @@ onActivated(() => {
           <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
         </svg>
       </button>
-      
+
       <!-- 右侧导航按钮 -->
-      <button 
+      <button
         class="nav-button nav-button-right"
         @click.stop="slideNext(true)"
         v-show="isHovering && disabled !== 2 && disabled !== 3"
@@ -175,104 +152,103 @@ onActivated(() => {
 <style lang="scss" scoped>
 .slider-container {
   position: relative;
-  margin-bottom: 24px;
-  // 移除padding，按钮放置在外部
+  margin-block-end: 24px;
 }
 
 .slider-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding: 0 8px;
+  justify-content: space-between;
   gap: 16px;
-  
+  margin-block-end: 12px;
+  padding-block: 0;
+  padding-inline: 8px;
+
   & > :first-child {
     flex-grow: 1;
-    min-width: 0;
+    min-inline-size: 0;
   }
 }
 
 .view-all-button {
+  .arrow-svg {
+    fill: currentcolor;
+    transition: transform 0.3s ease;
+  }
+
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
-  text-decoration: none;
+  border-radius: 16px;
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  color: rgb(var(--v-theme-primary));
   font-size: 0.85rem;
   font-weight: 500;
-  color: rgb(var(--v-theme-primary));
-  background-color: rgba(var(--v-theme-primary), 0.1);
-  padding: 4px 10px;
-  border-radius: 16px;
+  padding-block: 4px;
+  padding-inline: 10px;
+  text-decoration: none;
   transition: all 0.25s ease;
-  flex-shrink: 0;
-  
+
   &:hover {
     background-color: rgba(var(--v-theme-primary), 0.15);
     box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.1);
     transform: translateY(-1px);
-    
+
     .arrow-svg {
       transform: translateX(2px);
     }
   }
-  
+
   span {
-    margin-right: 4px;
-  }
-  
-  .arrow-svg {
-    transition: transform 0.3s ease;
-    fill: currentColor;
+    margin-inline-end: 4px;
   }
 }
 
 .slider-content-wrapper {
   position: relative;
-  width: 100%;
+  inline-size: 100%;
 }
 
 .slider-content-container {
   position: relative;
-  width: 100%;
   overflow: hidden;
+  inline-size: 100%;
 }
 
 .nav-button {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background-color: rgba(var(--v-theme-surface), 0.9);
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 20;
-  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease, box-shadow 0.3s ease;
   padding: 0;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  border-radius: 50%;
+  backdrop-filter: blur(5px);
+  background-color: rgba(var(--v-theme-surface), 0.9);
+  block-size: 38px;
+  cursor: pointer;
+  inline-size: 38px;
+  inset-block-start: 50%;
   opacity: 0;
   pointer-events: none;
-  
+  transform: translateY(-50%);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease,
+    box-shadow 0.3s ease;
+
   svg {
+    block-size: 22px;
     fill: rgb(var(--v-theme-on-surface));
+    inline-size: 22px;
     opacity: 0.8;
     transition: all 0.3s ease;
-    width: 22px;
-    height: 22px;
   }
-  
+
   &:hover {
-    transform: translateY(-50%) scale(1.1);
-    background-color: rgba(var(--v-theme-surface), 1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
     border-color: rgba(var(--v-theme-on-surface), 0.15);
-    
+    background-color: rgba(var(--v-theme-surface), 1);
+    transform: translateY(-50%) scale(1.1);
+
     svg {
       opacity: 1;
     }
@@ -280,38 +256,39 @@ onActivated(() => {
 }
 
 .nav-button-left {
-  left: -19px; // 半径
+  inset-inline-start: -14px; // 半径
 }
 
 .nav-button-right {
-  right: -19px; // 半径
+  inset-inline-end: -14px; // 半径
 }
 
 .slider-content {
   display: grid;
-  grid-template-rows: 1fr;
-  grid-auto-flow: column;
+  overflow: scroll hidden !important;
   justify-content: start;
   gap: 16px;
-  padding: 8px 12px;
-  overflow: scroll hidden !important;
+  grid-auto-flow: column;
+  grid-template-rows: 1fr;
   -ms-overflow-style: none !important;
   overscroll-behavior-x: contain !important;
-  scrollbar-width: none !important;
+  padding-block: 8px;
+  padding-inline: 12px;
   scroll-behavior: smooth;
-  
+  scrollbar-width: none !important;
+
   &::-webkit-scrollbar {
     display: none;
   }
 }
 
-.slider-container:hover .nav-button[style*="display: none;"] ~ .nav-button,
-.slider-container:hover .nav-button {
+.slider-container:hover .nav-button,
+.slider-container:hover .nav-button[style*='display: none;'] ~ .nav-button {
   opacity: 1;
   pointer-events: auto;
 }
 
-.nav-button[style*="display: none;"] {
+.nav-button[style*='display: none;'] {
   opacity: 0 !important;
   pointer-events: none !important;
 }

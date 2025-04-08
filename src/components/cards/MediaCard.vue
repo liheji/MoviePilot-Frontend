@@ -431,7 +431,7 @@ function onRemoveSubscribe() {
           :width="props.width"
           class="outline-none shadow ring-gray-500 media-card"
           :class="{
-            'transition transform-cpu duration-300  -translate-y-1 shadow-lg': hover.isHovering,
+            'transition transform-cpu duration-300  -translate-y-1': hover.isHovering,
             'ring-1': isImageLoaded,
           }"
           @click.stop="goMediaDetail(hover.isHovering ?? false)"
@@ -450,7 +450,7 @@ function onRemoveSubscribe() {
               </div>
             </template>
           </VImg>
-          
+
           <!-- 详情 -->
           <VCardText
             v-show="hover.isHovering || imageLoadError || searchMenuShow"
@@ -533,15 +533,3 @@ function onRemoveSubscribe() {
     @close="chooseSiteDialog = false"
   />
 </template>
-
-<style lang="scss" scoped>
-.media-card {
-  position: relative;
-  transition: transform 0.2s ease;
-  
-  &:hover {
-    transform: scale(1.03);
-    z-index: 2;
-  }
-}
-</style>

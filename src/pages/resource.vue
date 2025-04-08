@@ -270,42 +270,43 @@ onUnmounted(() => {
         <div class="initial-loading-text">搜索中</div>
       </div>
     </div>
+    <!-- 滚动到顶部按钮 -->
+    <VScrollToTopBtn />
   </div>
 </template>
 
 <style scoped>
 .search-progress-container {
   position: fixed;
-  top: env(safe-area-inset-top);
-  left: 0;
-  right: 0;
   z-index: 100;
   display: flex;
   justify-content: center;
-  padding-top: 4rem;
+  inset-block-start: env(safe-area-inset-top);
+  inset-inline: 0;
+  padding-block-start: 4rem;
 }
 
 .search-progress-card {
-  max-width: 400px;
-  width: 90%;
-  background-color: rgb(var(--v-theme-surface));
-  border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   border: 1px solid rgba(var(--v-theme-primary), 0.1);
+  border-radius: 12px;
   backdrop-filter: blur(10px);
+  background-color: rgb(var(--v-theme-surface));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 12%);
+  inline-size: 90%;
+  max-inline-size: 400px;
 }
 
 .progress-header {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-block-end: 12px;
 }
 
 .progress-title {
+  color: rgb(var(--v-theme-on-surface));
   font-size: 0.9rem;
   font-weight: 500;
-  color: rgb(var(--v-theme-on-surface));
 }
 
 .progress-bar-container {
@@ -315,39 +316,40 @@ onUnmounted(() => {
 }
 
 .progress-bar-wrapper {
-  flex: 1;
-  height: 4px;
-  background-color: rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: 4px;
   overflow: hidden;
+  flex: 1;
+  border-radius: 4px;
+  background-color: rgba(var(--v-theme-on-surface), 0.08);
+  block-size: 4px;
 }
 
 .progress-bar {
-  height: 100%;
+  border-radius: 4px;
   background: linear-gradient(
     90deg,
     rgb(var(--v-theme-primary)) 0%,
     rgb(var(--v-theme-primary)) 70%,
     rgba(var(--v-theme-primary), 0.8) 100%
   );
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  block-size: 100%;
+  transition: inline-size 0.3s ease;
 }
 
 .progress-percentage {
+  color: rgb(var(--v-theme-primary));
   font-size: 0.8rem;
   font-weight: 600;
-  color: rgb(var(--v-theme-primary));
-  min-width: 36px;
-  text-align: right;
+  min-inline-size: 36px;
+  text-align: end;
 }
 
 /* 精简标题栏样式 */
 .search-header {
-  padding: 12px 16px;
-  background-color: rgb(var(--v-theme-surface));
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: rgb(var(--v-theme-surface));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 5%);
+  padding-block: 12px;
+  padding-inline: 16px;
 }
 
 .search-info-container {
@@ -374,27 +376,27 @@ onUnmounted(() => {
 
 .view-toggle-buttons {
   display: flex;
-  background-color: rgba(var(--v-theme-surface-variant), 0.1);
-  border-radius: 8px;
   padding: 4px;
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface-variant), 0.1);
 }
 
 .view-toggle-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 36px;
   border: none;
-  background: transparent;
-  cursor: pointer;
   border-radius: 6px;
+  background: transparent;
+  block-size: 36px;
+  cursor: pointer;
+  inline-size: 40px;
   transition: all 0.2s ease;
 }
 
 .view-toggle-btn.active {
   background-color: rgb(var(--v-theme-surface));
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 10%);
 }
 
 .view-toggle-btn:hover:not(.active) {
@@ -404,16 +406,13 @@ onUnmounted(() => {
 /* 视图切换加载状态 */
 .view-changing-container {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(var(--v-theme-background), 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   backdrop-filter: blur(8px);
+  background-color: rgba(var(--v-theme-background), 0.7);
+  inset: 0;
 }
 
 .view-changing-content {
@@ -429,11 +428,11 @@ onUnmounted(() => {
 }
 
 .pulse-circle {
-  width: 12px;
-  height: 12px;
   border-radius: 50%;
-  background-color: rgb(var(--v-theme-primary));
   animation: pulse 1.2s ease-in-out infinite;
+  background-color: rgb(var(--v-theme-primary));
+  block-size: 12px;
+  inline-size: 12px;
 }
 
 .pulse-circle:nth-child(2) {
@@ -447,28 +446,29 @@ onUnmounted(() => {
 @keyframes pulse {
   0%,
   100% {
-    transform: scale(0.8);
     opacity: 0.5;
+    transform: scale(0.8);
   }
+
   50% {
-    transform: scale(1.2);
     opacity: 1;
+    transform: scale(1.2);
   }
 }
 
 .view-changing-text {
+  color: rgb(var(--v-theme-primary));
   font-size: 0.9rem;
   font-weight: 500;
-  color: rgb(var(--v-theme-primary));
   letter-spacing: 1px;
 }
 
 /* 初始的加载状态 */
 .initial-loading-container {
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 50vh;
+  justify-content: center;
+  min-block-size: 50vh;
 }
 
 .initial-loading-content {
@@ -481,16 +481,16 @@ onUnmounted(() => {
 .wave-loader {
   display: flex;
   align-items: center;
+  block-size: 40px;
   gap: 6px;
-  height: 40px;
 }
 
 .wave-dot {
-  width: 8px;
-  height: 8px;
   border-radius: 50%;
-  background-color: rgb(var(--v-theme-primary));
   animation: wave 1.5s ease-in-out infinite;
+  background-color: rgb(var(--v-theme-primary));
+  block-size: 8px;
+  inline-size: 8px;
 }
 
 .wave-dot:nth-child(1) {
@@ -514,26 +514,28 @@ onUnmounted(() => {
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-15px);
   }
 }
 
 .initial-loading-text {
+  color: rgb(var(--v-theme-primary));
   font-size: 0.9rem;
   font-weight: 500;
-  color: rgb(var(--v-theme-primary));
   letter-spacing: 1px;
 }
 
 .search-results-container {
-  min-height: 50vh;
   position: relative;
+  min-block-size: 50vh;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .search-header {
-    padding: 8px 12px;
+    padding-block: 8px;
+    padding-inline: 12px;
   }
 
   .search-title {
@@ -542,17 +544,17 @@ onUnmounted(() => {
   }
 
   .search-info-container {
+    overflow: hidden;
     flex: 1;
     gap: 8px;
-    min-width: 0;
-    overflow: hidden;
+    min-inline-size: 0;
   }
 
   .search-tags {
-    overflow-x: auto;
     flex-wrap: nowrap;
+    margin-inline-end: 8px;
+    overflow-x: auto;
     scrollbar-width: none;
-    margin-right: 8px;
   }
 
   .search-tags::-webkit-scrollbar {
@@ -568,8 +570,8 @@ onUnmounted(() => {
   }
 
   .view-toggle-btn {
-    width: 36px;
-    height: 32px;
+    block-size: 32px;
+    inline-size: 36px;
   }
 }
 </style>

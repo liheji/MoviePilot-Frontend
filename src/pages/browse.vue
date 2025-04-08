@@ -39,5 +39,6 @@ function getApiPath(paths: string[] | string) {
     </div>
     <PersonCardListView v-if="type === 'person'" :apipath="getApiPath(props.paths || '')" :params="route.query" />
     <MediaCardListView v-else :apipath="getApiPath(props.paths || '')" :params="route.query" />
+    <VScrollToTopBtn />
   </div>
 </template>
