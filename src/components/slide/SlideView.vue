@@ -1,29 +1,29 @@
 <script lang="ts" setup>
 import SlideViewTitle from '@/components/slide/SlideViewTitle.vue'
-import { ref, onMounted, onUnmounted, inject, computed } from 'vue';
+import { ref, onMounted, onUnmounted, inject, computed } from 'vue'
 
 // 元素
-const slideview_content = ref<HTMLElement | null>(null);
-const sliderContainer = ref<HTMLElement | null>(null);
+const slideview_content = ref<HTMLElement | null>(null)
+const sliderContainer = ref<HTMLElement | null>(null)
 // 分页切换状态: 0-左边不可用 1-两边可用 2-右边不可用 3-两边都不可用
-const disabled = ref(0);
+const disabled = ref(0)
 // 记录滚动值
-const slideview_scrollLeft = ref(0);
+const slideview_scrollLeft = ref(0)
 // 所有卡片数量
-let slide_card_length: number;
+let slide_card_length: number
 // 卡片间距
-let slide_gap_px: number;
+let slide_gap_px: number
 // 卡片宽度
-let card_width: number;
+let card_width: number
 // 容器最多显示N张卡片
-let card_max: number;
+let card_max: number
 // 当前定位
-let card_current: number;
+let card_current: number
 // 获取传入的链接地址
-const props: any = inject('rankingPropsKey', { linkurl: '', title: '' });
-const isScrolling = ref(false);
-let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
-const scrollTimeoutDuration = 1500; // 滚动停止后延迟时间 (ms)
+const props: any = inject('rankingPropsKey', { linkurl: '', title: '' })
+const isScrolling = ref(false)
+let scrollTimeout: ReturnType<typeof setTimeout> | null = null
+const scrollTimeoutDuration = 1500 // 滚动停止后延迟时间 (ms)
 
 // 分页切换
 function slideNext(next: boolean) {
@@ -45,13 +45,13 @@ function slideNext(next: boolean) {
   })
 
   // 点击后强制显示并重置计时器
-  isScrolling.value = true;
+  isScrolling.value = true
   if (scrollTimeout) {
-    clearTimeout(scrollTimeout);
+    clearTimeout(scrollTimeout)
   }
   scrollTimeout = setTimeout(() => {
-    isScrolling.value = false;
-  }, scrollTimeoutDuration);
+    isScrolling.value = false
+  }, scrollTimeoutDuration)
 }
 
 // 计算最大显示数量
@@ -67,23 +67,23 @@ function countMaxNumber() {
 
 // 修改分页切换按钮状态 & 处理滚动状态
 function handleContentScroll() {
-  if (!slideview_content.value) return;
+  if (!slideview_content.value) return
   // 更新按钮禁用状态
-  countDisabled(); 
+  countDisabled()
 
   // 更新滚动状态并重置计时器
-  isScrolling.value = true;
+  isScrolling.value = true
   if (scrollTimeout) {
-    clearTimeout(scrollTimeout);
+    clearTimeout(scrollTimeout)
   }
   scrollTimeout = setTimeout(() => {
-    isScrolling.value = false;
-  }, scrollTimeoutDuration); // 使用常量
+    isScrolling.value = false
+  }, scrollTimeoutDuration) // 使用常量
 }
 
 // 原始的 countDisabled 逻辑，现在由 handleContentScroll 调用
-function countDisabled() { 
-  if (!slideview_content.value) return;
+function countDisabled() {
+  if (!slideview_content.value) return
   slideview_scrollLeft.value = slideview_content.value.scrollLeft
   card_current =
     slideview_content.value.scrollLeft === 0
@@ -120,19 +120,14 @@ onActivated(() => {
 </script>
 
 <template>
-  <div 
-    ref="sliderContainer" 
-    class="slider-container" 
-    :class="{ 'is-scrolling': isScrolling }"
-  >
+  <div ref="sliderContainer" class="slider-container" :class="{ 'is-scrolling': isScrolling }">
     <div class="slider-header">
       <slot name="title">
         <SlideViewTitle />
       </slot>
-
       <!-- 查看全部按钮 -->
       <RouterLink v-if="props.linkurl" :to="props.linkurl" class="view-all-button">
-        <span>全部</span>
+        <span>更多</span>
         <svg width="16" height="16" viewBox="0 0 24 24" class="arrow-svg">
           <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
         </svg>
@@ -141,12 +136,7 @@ onActivated(() => {
 
     <div class="slider-content-wrapper">
       <div class="slider-content-container">
-        <div 
-          ref="slideview_content" 
-          class="slider-content" 
-          tabindex="0" 
-          @scroll="handleContentScroll"
-        >
+        <div ref="slideview_content" class="slider-content" tabindex="0" @scroll="handleContentScroll">
           <slot name="content" />
         </div>
       </div>
@@ -210,7 +200,6 @@ onActivated(() => {
   border-radius: 8px;
   padding: 5px 12px;
   background-color: transparent;
-  border: 1px solid rgba(var(--v-theme-primary), 0.3);
   color: rgb(var(--v-theme-primary));
   font-size: 0.85rem;
   font-weight: 500;
@@ -266,8 +255,9 @@ onActivated(() => {
   color: rgb(var(--v-theme-on-surface));
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease,
+    box-shadow 0.3s ease, border-color 0.3s ease;
+
   svg {
     fill: currentColor;
     opacity: 0.7;
@@ -276,14 +266,14 @@ onActivated(() => {
     height: 22px;
     filter: none;
   }
-  
+
   &:hover {
     background-color: rgba(var(--v-theme-background), 0.95);
     transform: translateY(-50%) scale(1.05);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     border-color: rgba(var(--v-theme-on-surface), 0.15);
     color: rgb(var(--v-theme-primary));
-    
+
     svg {
       opacity: 1;
     }
@@ -332,7 +322,7 @@ onActivated(() => {
     opacity: 1;
     pointer-events: auto;
   }
-  
+
   // 在 hover 设备上，即使在滚动，如果鼠标不悬停，按钮也应该隐藏
   // 因此，基础 .nav-button 的 opacity: 0 规则在这里仍然是必要的
   // (之前错误地以为 hover 会完全覆盖，但滚动时 class 和 hover 可能同时存在)

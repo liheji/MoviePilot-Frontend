@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import api from '@/api'
-import { useDisplay } from 'vuetify'
 import { RecommendSource } from '@/api/types'
 import MediaCardSlideView from '@/views/discover/MediaCardSlideView.vue'
-import { ref, onMounted, onUnmounted, computed, reactive, watch, nextTick } from 'vue';
-
-// APP
-const display = useDisplay()
+import { ref, onMounted, onUnmounted, computed, reactive, watch, nextTick } from 'vue'
 
 // 当前选择的分类
 const currentCategory = ref('全部')
@@ -169,45 +165,31 @@ const categoryIcons: Record<string, string> = {
   榜单: 'mdi-trophy',
 }
 
-// 控制回到顶部按钮的可见性
-const showScrollToTop = ref(false);
-const scrollThreshold = 200; // 滚动多少像素后显示按钮
-
-// 滚动事件处理函数
-const handleScroll = () => {
-  showScrollToTop.value = window.scrollY > scrollThreshold;
-};
-
-// 回到顶部函数 (如果需要，可以从VScrollToTopBtn或其他地方引入)
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
 // Ref for the tabs container
-const tabsContainerRef = ref<HTMLElement | null>(null);
+const tabsContainerRef = ref<HTMLElement | null>(null)
 // State for showing the scroll indicator
-const showTabsScrollIndicator = ref(false);
+const showTabsScrollIndicator = ref(false)
 
 // Function to check and update the indicator state
 const updateTabsIndicator = () => {
-  const el = tabsContainerRef.value;
-  if (!el) return;
-  
-  const tolerance = 1; // Allow 1px tolerance
-  const hasOverflow = el.scrollWidth > el.clientWidth + tolerance;
-  const isScrolledToEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - tolerance;
-  
-  showTabsScrollIndicator.value = hasOverflow && !isScrolledToEnd;
-};
+  const el = tabsContainerRef.value
+  if (!el) return
+
+  const tolerance = 1 // Allow 1px tolerance
+  const hasOverflow = el.scrollWidth > el.clientWidth + tolerance
+  const isScrolledToEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - tolerance
+
+  showTabsScrollIndicator.value = hasOverflow && !isScrolledToEnd
+}
 
 // Debounce resize handler
-let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+let resizeTimeout: ReturnType<typeof setTimeout> | null = null
 const handleResize = () => {
-  if (resizeTimeout) clearTimeout(resizeTimeout);
+  if (resizeTimeout) clearTimeout(resizeTimeout)
   resizeTimeout = setTimeout(() => {
-    updateTabsIndicator();
-  }, 150);
-};
+    updateTabsIndicator()
+  }, 150)
+}
 
 onBeforeMount(async () => {
   await loadConfig()
@@ -215,28 +197,22 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   await loadExtraRecommendSources()
-  // Add scroll event listener
-  window.addEventListener('scroll', handleScroll);
-  // Initial check for scroll-to-top
-  handleScroll(); 
-  
+
   // Add resize listener for tabs indicator
-  window.addEventListener('resize', handleResize);
+  window.addEventListener('resize', handleResize)
   // Initial check for tabs indicator after DOM update
-  await nextTick(); // Ensure element is rendered
-  updateTabsIndicator();
-  
+  await nextTick() // Ensure element is rendered
+  updateTabsIndicator()
+
   // Listen for scroll events specifically on the tabs container
-  tabsContainerRef.value?.addEventListener('scroll', updateTabsIndicator, { passive: true });
+  tabsContainerRef.value?.addEventListener('scroll', updateTabsIndicator, { passive: true })
 })
 
 onUnmounted(() => {
-  // Remove scroll event listener
-  window.removeEventListener('scroll', handleScroll);
   // Remove resize listener
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener('resize', handleResize)
   // Remove tabs scroll listener
-  tabsContainerRef.value?.removeEventListener('scroll', updateTabsIndicator);
+  tabsContainerRef.value?.removeEventListener('scroll', updateTabsIndicator)
 })
 
 onActivated(async () => {
@@ -257,11 +233,7 @@ watch(currentCategory, () => {
   <div class="mp-recommend">
     <!-- 页面顶部控制栏 -->
     <div class="recommend-header">
-      <div 
-        ref="tabsContainerRef" 
-        class="header-tabs" 
-        :class="{ 'show-indicator': showTabsScrollIndicator }"
-      >
+      <div ref="tabsContainerRef" class="header-tabs" :class="{ 'show-indicator': showTabsScrollIndicator }">
         <div
           v-for="(icon, category) in categoryIcons"
           :key="category"
@@ -355,19 +327,7 @@ watch(currentCategory, () => {
     </VDialog>
 
     <!-- 快速滚动到顶部按钮 -->
-    <div class="global-action-buttons">
-      <Transition name="scroll-fade">
-        <button 
-          v-show="showScrollToTop" 
-          class="global-action-button"
-          @click="scrollToTop"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </Transition>
-    </div>
+    <VScrollToTopBtn />
   </div>
 </template>
 
@@ -404,7 +364,7 @@ watch(currentCategory, () => {
   flex-grow: 1;
   min-width: 0;
   // Add padding-right to make space for the indicator visually
-  padding-right: 20px; 
+  padding-right: 20px;
   // Clip content that overflows, useful with padding
   -webkit-mask-image: linear-gradient(to right, black 95%, transparent 100%);
   mask-image: linear-gradient(to right, black 95%, transparent 100%);
@@ -412,7 +372,7 @@ watch(currentCategory, () => {
   &::-webkit-scrollbar {
     display: none;
   }
-  
+
   // Gradient indicator pseudo-element
   &::after {
     content: '';
@@ -427,7 +387,7 @@ watch(currentCategory, () => {
     transition: opacity 0.2s ease-in-out;
     z-index: 1; // Ensure it's above the tabs but below other header elements if needed
   }
-  
+
   // Show the indicator when the class is present
   &.show-indicator::after {
     opacity: 1;
@@ -447,7 +407,7 @@ watch(currentCategory, () => {
   background-color: transparent;
   position: relative;
   color: rgba(var(--v-theme-on-background), 0.7);
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -460,19 +420,19 @@ watch(currentCategory, () => {
     border-radius: 3px;
     transition: transform 0.2s ease;
   }
-  
+
   &.active {
     color: rgb(var(--v-theme-primary));
-    
+
     &::after {
       transform: translateX(-50%) scaleX(1);
     }
-    
+
     .header-tab-icon {
       color: rgb(var(--v-theme-primary));
     }
   }
-  
+
   &:hover:not(.active) {
     color: rgba(var(--v-theme-on-background), 1);
     background-color: rgba(var(--v-theme-primary), 0.05);
@@ -559,7 +519,7 @@ watch(currentCategory, () => {
   position: relative;
   overflow: hidden;
   background-color: rgba(var(--v-theme-surface-variant), 0.3);
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -571,20 +531,28 @@ watch(currentCategory, () => {
     transition: background-color 0.3s ease;
   }
 
-  &.电影::before { background-color: #4CAF50; } // Green
-  &.电视剧::before { background-color: #2196F3; } // Blue
-  &.动漫::before { background-color: #FF9800; } // Orange
-  &.榜单::before { background-color: #9C27B0; } // Purple
-  
+  &.电影::before {
+    background-color: #4caf50;
+  } // Green
+  &.电视剧::before {
+    background-color: #2196f3;
+  } // Blue
+  &.动漫::before {
+    background-color: #ff9800;
+  } // Orange
+  &.榜单::before {
+    background-color: #9c27b0;
+  } // Purple
+
   &:hover {
     background-color: rgba(var(--v-theme-surface-variant), 0.6);
     border-color: rgba(var(--v-theme-on-surface), 0.15);
   }
-  
+
   &.enabled {
     border-color: rgba(var(--v-theme-primary), 0.5);
     background-color: rgba(var(--v-theme-primary), 0.05);
-    
+
     .setting-label {
       color: rgb(var(--v-theme-primary));
       font-weight: 500;
@@ -607,52 +575,8 @@ watch(currentCategory, () => {
   transition: color 0.2s ease;
 }
 
-/* Global Action Button Styles (FAB) */
-.global-action-buttons {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.global-action-button {
-  width: 44px;
-  height: 44px;
-  background-color: rgba(var(--v-theme-background), 0.8);
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  border-radius: 50%;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  color: rgb(var(--v-theme-on-surface));
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  
-  &:hover {
-    background-color: rgba(var(--v-theme-background), 0.95);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-    color: rgb(var(--v-theme-primary));
-  }
-  
-  svg {
-    transition: all 0.3s ease;
-    width: 20px;
-    height: 20px;
-  }
-}
-
 /* Remove old tune button styles if they exist */
 .tune-button {
   display: none; // Hide the old button definitively
 }
-
 </style>
-
-
