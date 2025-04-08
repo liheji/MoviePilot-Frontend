@@ -90,7 +90,7 @@ export const SystemNavMenus = [
   },
   {
     title: '插件',
-    icon: 'mdi-apps',
+    icon: 'mdi-puzzle-outline',
     to: '/plugins',
     header: '系统',
     admin: true,
@@ -104,7 +104,7 @@ export const SystemNavMenus = [
   },
   {
     title: '用户管理',
-    icon: 'mdi-account-group',
+    icon: 'mdi-account-group-outline',
     to: '/user',
     header: '系统',
     admin: true,

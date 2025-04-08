@@ -54,18 +54,6 @@ html.v-overlay-scroll-blocked body {
   margin-block-start: env(safe-area-inset-top);
 }
 
-.v-dialog > .v-overlay__content {
-  margin-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
-}
-
-.v-bottom-sheet > .v-bottom-sheet__content.v-overlay__content > .v-card {
-  padding-block-end: env(safe-area-inset-bottom);
-}
-
-.v-dialog--fullscreen > .v-overlay__content > .v-card {
-  padding-block-end: calc(env(safe-area-inset-top) + env(safe-area-inset-bottom));
-}
-
 /* router view transition fade-slide */
 .fade-slide-leave-active,
 .fade-slide-enter-active {
@@ -260,24 +248,6 @@ html.v-overlay-scroll-blocked body {
   padding-block-end: env(safe-area-inset-bottom);
 }
 
-.v-overlay__content .v-list{
-  background-color: rgb(var(--v-theme-surface)) !important;
-  border-radius: 8px !important;
-  box-shadow: none !important;
-  padding: 4px !important;
-  margin: 0 !important;
-}
-
-.v-overlay__content .v-card:not(.bg-primary){
-  background-color: rgb(var(--v-theme-surface)) !important;
-  border-radius: 8px !important;
-  box-shadow: none !important;
-
-  .v-list, .v-table {
-    background-color: transparent !important;
-  }
-}
-
 .text-shadow {
   text-shadow: 1px 1px #777;
 }
@@ -292,10 +262,9 @@ html.v-overlay-scroll-blocked body {
   inset: 0;
 }
 
-/* 菜单项样式 */
 .v-list-item {
-  border-radius: 4px !important;
-  margin: 2px 0 !important;
+  margin-block: 2px !important;
+  margin-inline: 0 !important;
   transition: background-color 0.15s ease;
 }
 
@@ -303,33 +272,6 @@ html.v-overlay-scroll-blocked body {
   background-color: rgba(var(--v-theme-on-surface), 0.04) !important;
 }
 
-/* 下拉菜单整体样式 */
-.v-menu > .v-overlay__content {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-on-surface), 0.08) !important;
-  overflow: hidden;
-}
-
-/* 通知弹窗样式 */
-.notification-menu .v-overlay__content {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-on-surface), 0.08) !important;
-  overflow: hidden;
-}
-
-/* 主题切换菜单样式 */
-.theme-menu .v-overlay__content {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-on-surface), 0.08) !important;
-}
-
-/* 用户菜单样式 */
-.user-menu .v-overlay__content {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-on-surface), 0.08) !important;
-}
-
-/* 菜单按钮交互效果 */
 .v-btn.v-btn--icon {
   transition: opacity 0.15s ease;
 }
@@ -338,26 +280,36 @@ html.v-overlay-scroll-blocked body {
   opacity: 0.85;
 }
 
-/* 菜单弹出动画优化 */
 .v-overlay__content {
   transition: opacity 0.2s ease !important;
 }
 
-/* 菜单卡片和列表 */
 .v-overlay__content .v-list{
-  background-color: rgb(var(--v-theme-surface)) !important;
-  border-radius: 8px !important;
-  box-shadow: none !important;
   padding: 4px !important;
   margin: 0 !important;
+  background-color: rgb(var(--v-theme-surface)) !important;
 }
 
 .v-overlay__content .v-card:not(.bg-primary){
   background-color: rgb(var(--v-theme-surface)) !important;
-  border-radius: 8px !important;
-  box-shadow: none !important;
 
   .v-list, .v-table {
     background-color: transparent !important;
   }
+}
+
+.v-menu > .v-overlay__content {
+  overflow: hidden;
+}
+
+.v-dialog--fullscreen > .v-overlay__content > .v-card {
+  padding-block-end: calc(env(safe-area-inset-top) + env(safe-area-inset-bottom));
+}
+
+.v-dialog > .v-overlay__content {
+  margin-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
+}
+
+.v-bottom-sheet > .v-bottom-sheet__content.v-overlay__content > .v-card {
+  padding-block-end: env(safe-area-inset-bottom);
 }

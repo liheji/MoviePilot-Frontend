@@ -111,8 +111,8 @@ onMounted(() => {
     location="top end"
     origin="top end"
     transition="scale-transition"
-    :close-on-content-click="false"
-    :close-on-back="true"
+    close-on-content-click
+    close-on-back
   >
     <!-- Menu Activator -->
     <template #activator="{ props }">
@@ -302,20 +302,19 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .shortcut-menu-card {
-  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(var(--v-theme-on-surface), 0.12), 0 4px 12px rgba(var(--v-theme-on-surface), 0.08) !important;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
 }
 
 .shortcut-header {
   background: linear-gradient(to right, rgba(var(--v-theme-primary), 0.04), rgba(var(--v-theme-primary), 0.01));
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  padding: 12px 16px;
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  padding-block: 12px;
+  padding-inline: 16px;
 }
 
 .shortcut-close-btn {
   transition: transform 0.3s ease;
+
   &:hover {
     transform: rotate(90deg);
   }
@@ -327,58 +326,54 @@ onMounted(() => {
 
 .shortcut-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .shortcut-item {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  background-color: rgba(var(--v-theme-surface));
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
   position: relative;
   z-index: 1;
+  display: flex;
   overflow: hidden;
-  
+  align-items: center;
+  padding: 16px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  border-radius: 12px;
+  background-color: rgba(var(--v-theme-surface));
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
   &::before {
-    content: '';
     position: absolute;
     z-index: -1;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.08) 0%, rgba(var(--v-theme-primary), 0) 60%);
+    content: '';
+    inset: 0;
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  
+
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(var(--v-theme-on-surface), 0.12);
     border-color: rgba(var(--v-theme-primary), 0.15);
-    
+    transform: translateY(-4px);
+
     &::before {
       opacity: 1;
     }
-    
+
     .shortcut-icon-wrapper {
-      transform: scale(1.1);
       background-color: rgba(var(--v-theme-primary), 0.12);
-      
+      transform: scale(1.1);
+
       .v-icon {
         transform: scale(1.2);
       }
     }
   }
-  
+
   &:active {
-    transform: translateY(0);
     box-shadow: 0 3px 10px rgba(var(--v-theme-on-surface), 0.08);
+    transform: translateY(0);
   }
 }
 
@@ -386,16 +381,16 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
   border-radius: 12px;
   background-color: rgba(var(--v-theme-primary), 0.08);
-  margin-right: 16px;
+  block-size: 48px;
+  inline-size: 48px;
+  margin-inline-end: 16px;
   transition: all 0.3s ease;
-  
+
   .v-icon {
-    transition: transform 0.3s ease;
     color: rgba(var(--v-theme-primary), 1);
+    transition: transform 0.3s ease;
   }
 }
 
@@ -404,14 +399,14 @@ onMounted(() => {
 }
 
 .shortcut-title {
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 4px;
   color: rgba(var(--v-theme-on-surface), 0.95);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-block-end: 4px;
 }
 
 .shortcut-subtitle {
-  font-size: 0.8rem;
   color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 0.8rem;
 }
 </style>

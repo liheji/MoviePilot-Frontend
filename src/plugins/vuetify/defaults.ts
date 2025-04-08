@@ -47,6 +47,9 @@ export default {
     color: 'primary',
     elevation: 0,
   },
+  VListItem: {
+    rounded: 'md',
+  },
   VPagination: {
     activeColor: 'primary',
   },

@@ -116,8 +116,8 @@ export default defineComponent({
 
   .layout-navbar {
     position: fixed;
-    width: calc(100vw - variables.$layout-vertical-nav-width - 1rem);
     z-index: variables.$layout-vertical-nav-layout-navbar-z-index;
+    inline-size: calc(100vw - variables.$layout-vertical-nav-width - 1rem);
     inset-block-start: 0;
 
     .navbar-content-container {
@@ -203,16 +203,16 @@ export default defineComponent({
 
 .layout-wrapper.layout-nav-type-vertical.layout-overlay-nav {
   .layout-navbar {
-    width: calc(100% - 0px);
-    margin-left: 8px;
-    padding-left: 0;
+    inline-size: calc(100% - 0px);
+    margin-inline-start: 8px;
+    padding-inline-start: 0;
   }
 }
 
 .layout-page-content {
-  margin-top: calc(variables.$layout-vertical-nav-navbar-height - 42px);
-  padding-top: 0px;
   position: relative;
   z-index: 1;
+  margin-block-start: calc(variables.$layout-vertical-nav-navbar-height - 42px);
+  padding-block-start: 0;
 }
 </style>

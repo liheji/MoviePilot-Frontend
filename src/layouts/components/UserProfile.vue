@@ -197,32 +197,32 @@ const userLevel = computed(() => userStore.level)
 <style lang="scss" scoped>
 .user-profile-header {
   background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.05), rgba(var(--v-theme-primary), 0.02));
-  border-radius: 12px;
 }
 
 .user-role {
-  font-size: 0.875rem;
   color: rgba(var(--v-theme-primary), 0.9);
+  font-size: 0.875rem;
   font-weight: 500;
-  margin-bottom: 4px;
+  margin-block-end: 4px;
 }
 
 .user-name {
+  color: rgba(var(--v-theme-on-surface), 0.9);
   font-size: 1.125rem;
   font-weight: 600;
-  color: rgba(var(--v-theme-on-surface), 0.9);
 }
 
 .user-avatar {
-  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.2);
   border: 2px solid rgba(var(--v-theme-on-surface), 0.1);
+  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.2);
 }
 
 .user-menu-item {
   border-radius: 8px;
-  margin: 4px 0;
+  margin-block: 4px;
+  margin-inline: 0;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background-color: rgba(var(--v-theme-primary), 0.06);
     transform: translateX(4px);
@@ -233,13 +233,13 @@ const userLevel = computed(() => userStore.level)
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
   border-radius: 8px;
   background-color: rgba(var(--v-theme-primary), 0.08);
-  margin-right: 12px;
+  block-size: 36px;
+  inline-size: 36px;
+  margin-inline-end: 12px;
   transition: all 0.2s ease;
-  
+
   .v-icon {
     color: rgba(var(--v-theme-primary), 0.9);
   }
@@ -247,17 +247,22 @@ const userLevel = computed(() => userStore.level)
 
 .restart-icon {
   background-color: rgba(var(--v-theme-error), 0.1);
-  
+
   .v-icon {
     color: rgba(var(--v-theme-error), 0.9);
   }
 }
 
 .logout-btn {
-  border-radius: 10px;
   padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(var(--v-theme-error), 0.2);
   font-weight: 500;
   letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-error), 0.2);
+}
+
+.user-menu .v-overlay__content {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(var(--v-theme-on-surface), 0.08) !important;
 }
 </style>

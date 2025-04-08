@@ -4,13 +4,10 @@
 
 %default-layout-vertical-nav-scrolled-sticky-elevated-nav {
   background-color: rgb(var(--v-theme-surface));
-  border-radius: 12px;
-  margin: 8px 8px 8px 0;
 }
 
 %default-layout-vertical-nav-floating-navbar-and-sticky-elevated-navbar-scrolled {
   @include mixins.elevation(variables.$vertical-nav-navbar-elevation);
-  box-shadow: 0 4px 16px rgba(var(--v-theme-on-surface), 0.08);
 
   // If navbar is contained => Squeeze navbar content on scroll
   @if variables.$layout-vertical-nav-navbar-is-contained {

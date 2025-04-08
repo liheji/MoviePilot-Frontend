@@ -40,76 +40,6 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-.notification-header {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  padding: 16px;
-  
-  .v-card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: rgba(var(--v-theme-primary), 0.9);
-  }
-}
-
-.notification-list {
-  max-height: 500px;
-  overflow-y: auto;
-  padding: 8px;
-}
-
-.notification-item {
-  border-radius: 12px;
-  margin-bottom: 8px;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  
-  &:hover {
-    background-color: rgba(var(--v-theme-primary), 0.03);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(var(--v-theme-on-surface), 0.06);
-  }
-  
-  .notification-avatar {
-    background-color: rgba(var(--v-theme-primary), 0.1);
-    box-shadow: 0 4px 8px rgba(var(--v-theme-primary), 0.15);
-  }
-  
-  .notification-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-  
-  .notification-text {
-    font-size: 0.85rem;
-    color: rgba(var(--v-theme-on-surface), 0.75);
-    margin-top: 6px;
-  }
-  
-  .notification-time {
-    font-size: 0.8rem;
-    color: rgba(var(--v-theme-primary), 0.8);
-    margin-top: 6px;
-  }
-}
-
-.no-notification {
-  padding: 30px 0;
-  color: rgba(var(--v-theme-on-surface), 0.6);
-  font-size: 0.95rem;
-}
-
-.mark-read-btn {
-  transition: all 0.2s ease;
-  border-radius: 8px;
-  
-  &:hover {
-    background-color: rgba(var(--v-theme-primary), 0.1);
-    transform: scale(1.05);
-  }
-}
-</style>
-
 <template>
   <VMenu v-model="appsMenu" width="400" transition="scale-transition" close-on-content-click class="notification-menu">
     <!-- Menu Activator -->
@@ -126,7 +56,7 @@ onBeforeUnmount(() => {
     <!-- Menu Content -->
     <VCard elevation="0">
       <VCardItem class="notification-header">
-        <VCardTitle>通知中心</VCardTitle>
+        <VCardTitle class="font-weight-medium text-primary">通知中心</VCardTitle>
         <template #append>
           <VTooltip text="设为已读">
             <template #activator="{ props }">
@@ -173,3 +103,72 @@ onBeforeUnmount(() => {
     </VCard>
   </VMenu>
 </template>
+
+<style lang="scss" scoped>
+.notification-header {
+  padding: 16px;
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.notification-list {
+  padding: 8px;
+  max-block-size: 500px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  border-radius: 12px;
+  margin-block-end: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.03);
+    box-shadow: 0 4px 8px rgba(var(--v-theme-on-surface), 0.06);
+    transform: translateY(-2px);
+  }
+
+  .notification-avatar {
+    background-color: rgba(var(--v-theme-primary), 0.1);
+    box-shadow: 0 4px 8px rgba(var(--v-theme-primary), 0.15);
+  }
+
+  .notification-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .notification-text {
+    color: rgba(var(--v-theme-on-surface), 0.75);
+    font-size: 0.85rem;
+    margin-block-start: 6px;
+  }
+
+  .notification-time {
+    color: rgba(var(--v-theme-primary), 0.8);
+    font-size: 0.8rem;
+    margin-block-start: 6px;
+  }
+}
+
+.no-notification {
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  font-size: 0.95rem;
+  padding-block: 30px;
+  padding-inline: 0;
+}
+
+.mark-read-btn {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.1);
+    transform: scale(1.05);
+  }
+}
+
+.notification-menu .v-overlay__content {
+  overflow: hidden;
+}
+</style>

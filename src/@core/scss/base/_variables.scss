@@ -40,7 +40,7 @@ $theme-colors-name: (
 $default-layout-with-vertical-nav-navbar-footer-roundness: 10px !default;
 
 // 👉 Vertical nav
-$vertical-nav-background-color-rgb: var(--v-theme-surface) !default;
+$vertical-nav-background-color-rgb: var(--v-theme-background) !default;
 $vertical-nav-background-color: rgb(#{$vertical-nav-background-color-rgb}) !default;
 
 // ℹ️ This is used to keep consistency between nav items and nav header left & right margin

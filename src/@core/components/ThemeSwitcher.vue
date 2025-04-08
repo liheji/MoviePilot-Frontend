@@ -196,14 +196,14 @@ onMounted(() => {
       </IconBtn>
     </template>
     <VList elevation="0" class="theme-switcher-list">
-      <div class="theme-switcher-header px-3 py-3 mb-2">
-        <div class="text-primary text-h6 font-weight-medium">主题选择</div>
+      <div class="theme-switcher-header py-1 mb-2">
+        <VCardTitle class="font-weight-medium text-primary">主题选择</VCardTitle>
       </div>
-      
+
       <div class="theme-switcher-options px-2">
-        <VListItem 
-          v-for="theme in props.themes" 
-          :key="theme.name" 
+        <VListItem
+          v-for="theme in props.themes"
+          :key="theme.name"
           @click="changeTheme(theme.name)"
           class="theme-option"
           :class="{ 'theme-option-active': currentThemeName === theme.name }"
@@ -218,9 +218,9 @@ onMounted(() => {
             <VIcon icon="mdi-check" color="primary" size="small" />
           </template>
         </VListItem>
-        
+
         <VDivider class="my-2" />
-        
+
         <VListItem @click="cssDialog = true" class="theme-option custom-theme-option">
           <template #prepend>
             <div class="theme-icon-wrapper custom-theme-icon">
@@ -258,24 +258,25 @@ onMounted(() => {
 
 <style lang="scss">
 .theme-switcher-header {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.05);
 }
 
 .theme-switcher-options {
-  max-height: 300px;
+  max-block-size: 300px;
   overflow-y: auto;
 }
 
 .theme-option {
   border-radius: 8px;
-  margin: 4px 0;
+  margin-block: 4px;
+  margin-inline: 0;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background-color: rgba(var(--v-theme-primary), 0.04);
     transform: translateX(4px);
   }
-  
+
   &.theme-option-active {
     background-color: rgba(var(--v-theme-primary), 0.08);
   }
@@ -285,13 +286,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
   border-radius: 8px;
   background-color: rgba(var(--v-theme-primary), 0.08);
-  margin-right: 12px;
+  block-size: 36px;
+  inline-size: 36px;
+  margin-inline-end: 12px;
   transition: all 0.2s ease;
-  
+
   .v-icon {
     color: rgba(var(--v-theme-primary), 0.9);
   }
@@ -299,7 +300,7 @@ onMounted(() => {
 
 .custom-theme-icon {
   background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.15), rgba(var(--v-theme-info), 0.15));
-  
+
   .v-icon {
     color: rgba(var(--v-theme-primary), 0.9);
   }
@@ -309,15 +310,16 @@ onMounted(() => {
 .app-copy {
   position: fixed !important;
   z-index: -1 !important;
-  pointer-events: none !important;
-  contain: size style !important;
   overflow: clip !important;
+  contain: size style !important;
+  pointer-events: none !important;
 }
 
 .app-transition {
   --clip-size: 0;
   --clip-pos: 0 0;
+
   clip-path: circle(var(--clip-size) at var(--clip-pos));
-  transition: clip-path .35s ease-out;
+  transition: clip-path 0.35s ease-out;
 }
 </style>
