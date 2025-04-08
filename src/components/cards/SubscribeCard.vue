@@ -341,7 +341,7 @@ function onSubscribeEditRemove() {
           <div>
             <VCardText class="flex items-center">
               <div class="h-auto w-12 flex-shrink-0 overflow-hidden rounded-md shadow-lg" v-if="imageLoaded">
-                <VImg :src="posterUrl" aspect-ratio="2/3" cover @click.stop="viewMediaDetail">
+                <VImg :src="posterUrl" aspect-ratio="2/3" cover>
                   <template #placeholder>
                     <div class="w-full h-full">
                       <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />

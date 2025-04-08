@@ -330,6 +330,23 @@ onMounted(() => {
   grid-template-columns: repeat(2, 1fr);
 }
 
+.shortcut-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  block-size: 48px;
+  inline-size: 48px;
+  margin-inline-end: 16px;
+  transition: all 0.3s ease;
+
+  .v-icon {
+    color: rgba(var(--v-theme-primary), 1);
+    transition: transform 0.3s ease;
+  }
+}
+
 .shortcut-item {
   position: relative;
   z-index: 1;
@@ -374,23 +391,6 @@ onMounted(() => {
   &:active {
     box-shadow: 0 3px 10px rgba(var(--v-theme-on-surface), 0.08);
     transform: translateY(0);
-  }
-}
-
-.shortcut-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background-color: rgba(var(--v-theme-primary), 0.08);
-  block-size: 48px;
-  inline-size: 48px;
-  margin-inline-end: 16px;
-  transition: all 0.3s ease;
-
-  .v-icon {
-    color: rgba(var(--v-theme-primary), 1);
-    transition: transform 0.3s ease;
   }
 }
 
