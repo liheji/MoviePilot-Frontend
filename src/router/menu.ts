@@ -111,7 +111,7 @@ export const SystemNavMenus = [
   },
   {
     title: '设定',
-    icon: 'mdi-cog',
+    icon: 'mdi-cog-outline',
     to: '/setting',
     header: '系统',
     admin: true,
