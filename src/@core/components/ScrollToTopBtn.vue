@@ -26,7 +26,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="global-action-buttons">
+  <div class="global-action-buttons d-none d-sm-block">
     <Transition name="scroll-fade">
       <button v-show="showScrollToTop" class="global-action-button" @click="scrollToTop">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
