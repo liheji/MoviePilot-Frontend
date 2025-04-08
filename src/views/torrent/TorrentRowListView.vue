@@ -1,11 +1,6 @@
 <script lang="ts" setup>
 import type { Context } from '@/api/types'
 import TorrentItem from '@/components/cards/TorrentItem.vue'
-import { useDisplay } from 'vuetify'
-
-// 设备模式
-const display = useDisplay()
-const appMode = inject('pwaMode') && display.mdAndDown.value
 
 // 定义输入参数
 const props = defineProps({
@@ -184,6 +179,9 @@ const sortField = ref('default')
 // 数据列表
 const dataList = ref<Array<Context>>([])
 
+// 显示用的数据列表
+const displayDataList = ref<Array<Context>>([])
+
 // 计算已选择的过滤条件数量
 const getFilterCount = computed(() => {
   let count = 0
@@ -253,6 +251,7 @@ watchEffect(() => {
 watchEffect(() => {
   // 清空列表
   dataList.value = []
+  displayDataList.value = []
   // 匹配过滤函数
   const match = (filter: Array<string>, value: string | undefined) =>
     filter.length === 0 || (value && filter.includes(value))
@@ -263,6 +262,9 @@ watchEffect(() => {
     props.items.forEach(data => {
       initOptions(data)
     })
+
+    // 筛选数据
+    const filteredData: Context[] = []
 
     // 然后根据过滤条件筛选数据
     props.items.forEach(data => {
@@ -283,9 +285,13 @@ watchEffect(() => {
         // 质量过滤
         match(filterForm.edition, meta_info.edition)
       ) {
-        dataList.value.push(data)
+        filteredData.push(data)
       }
     })
+    // 显示前20个
+    displayDataList.value = filteredData.slice(0, 20)
+    // 保存剩余数据
+    dataList.value = filteredData.slice(20)
   }
 })
 
@@ -336,6 +342,13 @@ function toggleFilterMenu(key: string) {
     currentFilter.value = key
     filterMenuOpen.value = true
   }
+}
+
+function loadMore({ done }: { done: any }) {
+  // 从 dataList 中获取最前面的 20 个元素
+  const itemsToMove = dataList.value.splice(0, 20)
+  displayDataList.value.push(...itemsToMove)
+  done('ok')
 }
 </script>
 
@@ -553,18 +566,26 @@ function toggleFilterMenu(key: string) {
     <!-- 资源列表容器 -->
     <VCard class="resource-list-container">
       <!-- 无结果时显示 -->
-      <div v-if="dataList.length === 0" class="no-results">
+      <div v-if="displayDataList.length === 0" class="no-results">
         <VIcon icon="mdi-file-search-outline" size="64" color="grey-lighten-1" />
         <div class="text-h6 text-grey mt-4">暂无符合条件的资源</div>
       </div>
-
       <!-- 资源列表 -->
-      <div v-else class="resource-list">
-        <div v-for="(item, index) in dataList" :key="`${item.torrent_info?.enclosure || ''}-${index}`">
+      <VInfiniteScroll
+        v-else
+        mode="intersect"
+        side="end"
+        :items="displayDataList"
+        class="resource-list"
+        @load="loadMore"
+      >
+        <template #loading />
+        <template #empty />
+        <div v-for="(item, index) in displayDataList" :key="`${item.torrent_info?.enclosure || ''}-${index}`">
           <TorrentItem :torrent="item" />
-          <VDivider v-if="index < dataList.length - 1" class="my-2" />
+          <VDivider v-if="index < displayDataList.length - 1" class="my-2" />
         </div>
-      </div>
+      </VInfiniteScroll>
     </VCard>
   </div>
 </template>

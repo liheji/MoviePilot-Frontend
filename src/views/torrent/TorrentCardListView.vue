@@ -64,6 +64,7 @@ const filterOptions: Record<string, string[]> = reactive({
 
 // 完整的数据列表
 let dataList: SearchTorrent[]
+
 // 显示用的数据列表
 const displayDataList = ref<Array<SearchTorrent>>([])
 
@@ -328,16 +329,6 @@ function toggleFilterMenu(key: string) {
   }
 }
 
-// 切换过滤器选项
-function toggleFilter(key: string, value: string) {
-  const index = filterForm[key].indexOf(value)
-  if (index === -1) {
-    filterForm[key].push(value)
-  } else {
-    filterForm[key].splice(index, 1)
-  }
-}
-
 // 清除所有过滤条件
 function clearAllFilters() {
   for (const key in filterForm) {
@@ -388,7 +379,8 @@ function removeFilter(key: string, value: string) {
 }
 
 function loadMore({ done }: { done: any }) {
-  const itemsToMove = dataList.splice(0, 20) // 从 dataList 中获取最前面的 20 个元素
+  // 从 dataList 中获取最前面的 20 个元素
+  const itemsToMove = dataList.splice(0, 20) 
   displayDataList.value.push(...itemsToMove)
   done('ok')
 }
