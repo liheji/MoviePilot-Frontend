@@ -21,7 +21,7 @@ const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
 
 // 当前标签
-const activeTab = ref(route.query.tab)
+const activeTab = ref('我的插件')
 
 // 插件ID参数
 const pluginId = ref(route.query.id)
@@ -397,16 +397,22 @@ onMounted(async () => {
 
 <template>
   <div>
-    <VTabs v-model="activeTab" show-arrows stacked>
-      <VTab v-for="item in PluginTabs" :value="item.tab" class="px-10 rounded-t-lg">
-        <VIcon size="x-large" start :icon="item.icon" />
-        {{ item.title }}
-      </VTab>
-    </VTabs>
+    <VHeaderTab :items="PluginTabs" v-model="activeTab">
+      <template #append>
+        <VBtn
+          icon="mdi-store-cog"
+          variant="text"
+          color="primary"
+          size="default"
+          class="settings-icon-button"
+          @click="MarketSettingDialog = true"
+        />
+      </template>
+    </VHeaderTab>
 
     <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
       <!-- 我的插件 -->
-      <VWindowItem value="installed">
+      <VWindowItem value="我的插件">
         <transition name="fade-slide" appear>
           <div>
             <LoadingBanner v-if="!isRefreshed" class="mt-12" />
@@ -440,7 +446,7 @@ onMounted(async () => {
         </transition>
       </VWindowItem>
       <!-- 插件市场 -->
-      <VWindowItem value="market">
+      <VWindowItem value="插件市场">
         <transition name="fade-slide" appear>
           <div>
             <LoadingBanner v-if="!isAppMarketLoaded" class="mt-12" />
@@ -519,18 +525,6 @@ onMounted(async () => {
       app
       appear
       @click="SearchDialog = true"
-      :class="appMode ? 'mb-28' : 'mb-16'"
-    />
-    <!-- 插件市场设置图标 -->
-    <VFab
-      icon="mdi-store-cog"
-      color="warning"
-      location="bottom"
-      size="x-large"
-      fixed
-      app
-      appear
-      @click="MarketSettingDialog = true"
       :class="{ 'mb-12': appMode }"
     />
   </div>

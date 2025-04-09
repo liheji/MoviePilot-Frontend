@@ -2,11 +2,6 @@
 import api from '@/api'
 import { useToast } from 'vue-toast-notification'
 
-// 输入参数
-const props = defineProps({
-  title: String,
-})
-
 const $toast = useToast()
 
 // 插件仓库设置字符串
@@ -47,8 +42,14 @@ onMounted(() => {
 
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
-    <VCard title="插件仓库设置" class="rounded-t">
-      <DialogCloseBtn @click="emit('close')" />
+    <VCard class="rounded-t">
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-store-cog" class="me-2" />
+          插件仓库设置
+        </VCardTitle>
+        <DialogCloseBtn @click="emit('close')" />
+      </VCardItem>
       <VCardText class="pt-2">
         <VTextarea
           v-model="repoString"

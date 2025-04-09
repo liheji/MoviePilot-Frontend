@@ -4,7 +4,6 @@ import api from '@/api'
 import type { Subscribe } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import SubscribeCard from '@/components/cards/SubscribeCard.vue'
-import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
 import SubscribeHistoryDialog from '@/components/dialog/SubscribeHistoryDialog.vue'
 import { useUserStore } from '@/stores'
 import { useDisplay } from 'vuetify'
@@ -34,9 +33,6 @@ const loading = ref(false)
 
 // 数据列表
 const dataList = ref<Subscribe[]>([])
-
-// 弹窗
-const subscribeEditDialog = ref(false)
 
 // 历史记录弹窗
 const historyDialog = ref(false)
@@ -167,21 +163,10 @@ onActivated(async () => {
   <div v-if="isRefreshed">
     <VFab
       v-if="userStore.superUser"
-      icon="mdi-clipboard-edit"
-      location="bottom"
-      size="x-large"
-      fixed
-      app
-      appear
-      @click="subscribeEditDialog = true"
-      :class="{ 'mb-12': appMode }"
-    />
-    <VFab
-      v-if="userStore.superUser"
       icon="mdi-history"
       color="info"
       location="bottom"
-      :class="appMode ? 'mb-28' : 'mb-16'"
+      :class="{ 'mb-12': appMode }"
       size="x-large"
       fixed
       app
@@ -189,15 +174,6 @@ onActivated(async () => {
       @click="historyDialog = true"
     />
   </div>
-  <!-- 订阅编辑弹窗 -->
-  <SubscribeEditDialog
-    v-if="subscribeEditDialog"
-    v-model="subscribeEditDialog"
-    :default="true"
-    :type="props.type"
-    @save="subscribeEditDialog = false"
-    @close="subscribeEditDialog = false"
-  />
   <!-- 历史记录弹窗 -->
   <SubscribeHistoryDialog
     v-if="historyDialog"

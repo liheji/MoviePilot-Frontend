@@ -305,11 +305,6 @@ watch(currentCategory, () => {
   max-inline-size: 100%;
 }
 
-.settings-icon-button {
-  flex-shrink: 0;
-  min-inline-size: auto;
-}
-
 .recommend-content {
   padding-block: 0;
   padding-inline: 16px;

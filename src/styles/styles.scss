@@ -314,3 +314,8 @@ html.v-overlay-scroll-blocked body {
 .v-bottom-sheet > .v-bottom-sheet__content.v-overlay__content > .v-card {
   padding-block-end: env(safe-area-inset-bottom);
 }
+
+.settings-icon-button {
+  flex-shrink: 0;
+  min-inline-size: auto;
+}

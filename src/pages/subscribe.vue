@@ -2,8 +2,9 @@
 import SubscribeListView from '@/views/subscribe/SubscribeListView.vue'
 import SubscribePopularView from '@/views/subscribe/SubscribePopularView.vue'
 import SubscribeShareView from '@/views/subscribe/SubscribeShareView.vue'
+import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
+
 import { SubscribeMovieTabs, SubscribeTvTabs } from '@/router/menu'
-import router from '@/router'
 
 const route = useRoute()
 
@@ -11,52 +12,41 @@ const subType = route.meta.subType?.toString()
 const subId = ref(route.query.id as string)
 const activeTab = ref(route.query.tab)
 
-function jumpTab(tab: string) {
-  router.push('/subscribe/movie?tab=' + tab)
-}
+// 弹窗
+const subscribeEditDialog = ref(false)
 </script>
 
 <template>
   <div>
-    <VTabs v-model="activeTab" show-arrows stacked>
-      <VTab
-        v-if="subType == '电影'"
-        v-for="item in SubscribeMovieTabs"
-        :value="item.tab"
-        @to="jumpTab(item.tab)"
-        class="px-10 rounded-t-lg"
-      >
-        <VIcon size="x-large" start :icon="item.icon" />
-        {{ item.title }}
-      </VTab>
-      <VTab
-        v-if="subType == '电视剧'"
-        v-for="item in SubscribeTvTabs"
-        :value="item.tab"
-        @to="jumpTab(item.tab)"
-        class="px-10 rounded-t-lg"
-      >
-        <VIcon size="x-large" start :icon="item.icon" />
-        {{ item.title }}
-      </VTab>
-    </VTabs>
+    <VHeaderTab :items="subType == '电影' ? SubscribeMovieTabs : SubscribeTvTabs" v-model="activeTab">
+      <template #append>
+        <VBtn
+          icon="mdi-clipboard-edit"
+          variant="text"
+          color="primary"
+          size="default"
+          class="settings-icon-button"
+          @click="subscribeEditDialog = true"
+        />
+      </template>
+    </VHeaderTab>
 
     <VWindow v-model="activeTab" class="disable-tab-transition" :touch="false">
-      <VWindowItem value="mysub">
+      <VWindowItem value="我的订阅">
         <transition name="fade-slide" appear>
           <div class="mt-4">
             <SubscribeListView :type="subType" :subid="subId" />
           </div>
         </transition>
       </VWindowItem>
-      <VWindowItem value="popular">
+      <VWindowItem value="热门订阅">
         <transition name="fade-slide" appear>
           <div>
             <SubscribePopularView :type="subType" />
           </div>
         </transition>
       </VWindowItem>
-      <VWindowItem value="share">
+      <VWindowItem value="订阅分享">
         <transition name="fade-slide" appear>
           <div>
             <SubscribeShareView />
@@ -64,5 +54,15 @@ function jumpTab(tab: string) {
         </transition>
       </VWindowItem>
     </VWindow>
+
+    <!-- 订阅编辑弹窗 -->
+    <SubscribeEditDialog
+      v-if="subscribeEditDialog"
+      v-model="subscribeEditDialog"
+      :default="true"
+      :type="subType"
+      @save="subscribeEditDialog = false"
+      @close="subscribeEditDialog = false"
+    />
   </div>
 </template>
