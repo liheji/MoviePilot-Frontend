@@ -2,7 +2,6 @@
 import api from '@/api'
 import { RecommendSource } from '@/api/types'
 import MediaCardSlideView from '@/views/discover/MediaCardSlideView.vue'
-import { ref, onMounted, onUnmounted, computed, reactive, watch, nextTick } from 'vue'
 
 // 当前选择的分类
 const currentCategory = ref('全部')
@@ -157,39 +156,33 @@ async function saveConfig() {
 }
 
 // 标签图标映射
-const categoryIcons: Record<string, string> = {
-  全部: 'mdi-filmstrip-box-multiple',
-  电影: 'mdi-movie',
-  电视剧: 'mdi-television-classic',
-  动漫: 'mdi-animation',
-  榜单: 'mdi-trophy',
-}
-
-// Ref for the tabs container
-const tabsContainerRef = ref<HTMLElement | null>(null)
-// State for showing the scroll indicator
-const showTabsScrollIndicator = ref(false)
-
-// Function to check and update the indicator state
-const updateTabsIndicator = () => {
-  const el = tabsContainerRef.value
-  if (!el) return
-
-  const tolerance = 1 // Allow 1px tolerance
-  const hasOverflow = el.scrollWidth > el.clientWidth + tolerance
-  const isScrolledToEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - tolerance
-
-  showTabsScrollIndicator.value = hasOverflow && !isScrolledToEnd
-}
-
-// Debounce resize handler
-let resizeTimeout: ReturnType<typeof setTimeout> | null = null
-const handleResize = () => {
-  if (resizeTimeout) clearTimeout(resizeTimeout)
-  resizeTimeout = setTimeout(() => {
-    updateTabsIndicator()
-  }, 150)
-}
+const categoryItems: Record<string, string>[] = [
+  {
+    title: '全部',
+    icon: 'mdi-filmstrip-box-multiple',
+    key: 'all',
+  },
+  {
+    title: '电影',
+    icon: 'mdi-movie',
+    key: 'movie',
+  },
+  {
+    title: '电视剧',
+    icon: 'mdi-television-classic',
+    key: 'tv',
+  },
+  {
+    title: '动漫',
+    icon: 'mdi-animation',
+    key: 'anime',
+  },
+  {
+    title: '榜单',
+    icon: 'mdi-trophy',
+    key: 'rank',
+  },
+]
 
 onBeforeMount(async () => {
   await loadConfig()
@@ -197,22 +190,6 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   await loadExtraRecommendSources()
-
-  // Add resize listener for tabs indicator
-  window.addEventListener('resize', handleResize)
-  // Initial check for tabs indicator after DOM update
-  await nextTick() // Ensure element is rendered
-  updateTabsIndicator()
-
-  // Listen for scroll events specifically on the tabs container
-  tabsContainerRef.value?.addEventListener('scroll', updateTabsIndicator, { passive: true })
-})
-
-onUnmounted(() => {
-  // Remove resize listener
-  window.removeEventListener('resize', handleResize)
-  // Remove tabs scroll listener
-  tabsContainerRef.value?.removeEventListener('scroll', updateTabsIndicator)
 })
 
 onActivated(async () => {
@@ -232,28 +209,18 @@ watch(currentCategory, () => {
 <template>
   <div class="mp-recommend">
     <!-- 页面顶部控制栏 -->
-    <div class="recommend-header">
-      <div ref="tabsContainerRef" class="header-tabs" :class="{ 'show-indicator': showTabsScrollIndicator }">
-        <div
-          v-for="(icon, category) in categoryIcons"
-          :key="category"
-          class="header-tab"
-          :class="{ 'active': currentCategory === category }"
-          @click="currentCategory = category"
-        >
-          <VIcon :icon="icon" size="small" class="header-tab-icon" />
-          <span>{{ category }}</span>
-        </div>
-      </div>
-      <VBtn
-        icon="mdi-tune"
-        variant="text"
-        color="primary"
-        size="default"
-        class="settings-icon-button"
-        @click="dialog = true"
-      />
-    </div>
+    <VHeaderTab :items="categoryItems" v-model="currentCategory">
+      <template #append>
+        <VBtn
+          icon="mdi-tune"
+          variant="text"
+          color="primary"
+          size="default"
+          class="settings-icon-button"
+          @click="dialog = true"
+        />
+      </template>
+    </VHeaderTab>
 
     <!-- 滚动内容区域 -->
     <div class="recommend-content">
@@ -335,123 +302,17 @@ watch(currentCategory, () => {
 .mp-recommend {
   position: relative;
   padding: 0;
-  max-width: 100%;
-}
-
-.recommend-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  margin-bottom: 16px;
-  background-color: rgba(var(--v-theme-background), 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  gap: 16px; // 为按钮留出空间
-}
-
-.header-tabs {
-  position: relative; // Needed for pseudo-element positioning
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 4px 0;
-  flex-grow: 1;
-  min-width: 0;
-  // Add padding-right to make space for the indicator visually
-  padding-right: 20px;
-  // Clip content that overflows, useful with padding
-  -webkit-mask-image: linear-gradient(to right, black 95%, transparent 100%);
-  mask-image: linear-gradient(to right, black 95%, transparent 100%);
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  // Gradient indicator pseudo-element
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: 40px; // Width of the fade effect
-    background: linear-gradient(to left, rgba(var(--v-theme-background), 1) 30%, transparent);
-    pointer-events: none; // Allow interaction with content behind it
-    opacity: 0; // Hidden by default
-    transition: opacity 0.2s ease-in-out;
-    z-index: 1; // Ensure it's above the tabs but below other header elements if needed
-  }
-
-  // Show the indicator when the class is present
-  &.show-indicator::after {
-    opacity: 1;
-  }
-}
-
-.header-tab {
-  display: flex;
-  align-items: center;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  background-color: transparent;
-  position: relative;
-  color: rgba(var(--v-theme-on-background), 0.7);
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 50%;
-    transform: translateX(-50%) scaleX(0);
-    width: 70%;
-    height: 3px;
-    background-color: rgb(var(--v-theme-primary));
-    border-radius: 3px;
-    transition: transform 0.2s ease;
-  }
-
-  &.active {
-    color: rgb(var(--v-theme-primary));
-
-    &::after {
-      transform: translateX(-50%) scaleX(1);
-    }
-
-    .header-tab-icon {
-      color: rgb(var(--v-theme-primary));
-    }
-  }
-
-  &:hover:not(.active) {
-    color: rgba(var(--v-theme-on-background), 1);
-    background-color: rgba(var(--v-theme-primary), 0.05);
-  }
-}
-
-.header-tab-icon {
-  margin-right: 6px;
-  transition: color 0.2s ease;
-  color: rgba(var(--v-theme-on-background), 0.6);
+  max-inline-size: 100%;
 }
 
 .settings-icon-button {
-  min-width: auto;
   flex-shrink: 0;
+  min-inline-size: auto;
 }
 
 .recommend-content {
-  padding: 0 16px;
+  padding-block: 0;
+  padding-inline: 16px;
 }
 
 /* Fade transition for content groups */
@@ -459,13 +320,14 @@ watch(currentCategory, () => {
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
 
 .content-group {
-  margin-bottom: 24px;
+  margin-block-end: 24px;
   transition: opacity 0.3s ease;
 }
 
@@ -475,18 +337,18 @@ watch(currentCategory, () => {
   align-items: center;
   justify-content: center;
   padding: 40px;
-  text-align: center;
   color: rgba(var(--v-theme-on-surface), 0.6);
+  text-align: center;
 }
 
 .empty-icon {
-  margin-bottom: 16px;
+  margin-block-end: 16px;
   opacity: 0.5;
 }
 
 .empty-text {
-  margin-bottom: 16px;
   font-size: 1rem;
+  margin-block-end: 16px;
 }
 
 /* Settings Dialog Styles */
@@ -495,39 +357,47 @@ watch(currentCategory, () => {
 }
 
 .settings-card-header {
-  padding: 16px 20px;
+  padding-block: 16px;
+  padding-inline: 20px;
 }
 
 .settings-hint {
-  font-size: 0.9rem;
   color: rgba(var(--v-theme-on-surface), 0.7);
-  margin-bottom: 16px;
+  font-size: 0.9rem;
+  margin-block-end: 16px;
 }
 
 .settings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.setting-label {
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
 }
 
 .setting-item {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-  border-radius: 8px;
-  padding: 10px 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  border-radius: 8px;
   background-color: rgba(var(--v-theme-surface-variant), 0.3);
+  cursor: pointer;
+  padding-block: 10px;
+  padding-inline: 12px;
+  transition: all 0.2s ease;
 
   &::before {
-    content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
     background-color: transparent;
+    block-size: 100%;
+    content: '';
+    inline-size: 4px;
+    inset-block-start: 0;
+    inset-inline-start: 0;
     transition: background-color 0.3s ease;
   }
 
@@ -545,8 +415,8 @@ watch(currentCategory, () => {
   } // Purple
 
   &:hover {
-    background-color: rgba(var(--v-theme-surface-variant), 0.6);
     border-color: rgba(var(--v-theme-on-surface), 0.15);
+    background-color: rgba(var(--v-theme-surface-variant), 0.6);
   }
 
   &.enabled {
@@ -566,13 +436,7 @@ watch(currentCategory, () => {
 }
 
 .setting-check {
-  margin-right: 8px;
-}
-
-.setting-label {
-  font-size: 0.9rem;
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  transition: color 0.2s ease;
+  margin-inline-end: 8px;
 }
 
 /* Remove old tune button styles if they exist */

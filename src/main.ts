@@ -37,6 +37,7 @@ import TorrentCard from './components/cards/TorrentCard.vue'
 import MediaIdSelector from './components/misc/MediaIdSelector.vue'
 import CronField from './components/field/CronField.vue'
 import PathField from './components/field/PathField.vue'
+import HeaderTab from './layouts/components/HeaderTab.vue'
 
 // 7. 样式文件
 import '@core/scss/template/libs/vuetify/index.scss'
@@ -93,6 +94,7 @@ initializeApp().then(() => {
     .component('VMediaIdSelector', MediaIdSelector)
     .component('VCronField', CronField)
     .component('VPathField', PathField)
+    .component('VHeaderTab', HeaderTab)
 
   // 5. 注册其他插件
   app
