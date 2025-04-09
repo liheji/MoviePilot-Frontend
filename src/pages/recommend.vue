@@ -305,7 +305,6 @@ watch(currentCategory, () => {
 
 .recommend-content {
   padding-block: 0;
-  padding-inline: 16px;
 }
 
 /* Fade transition for content groups */
