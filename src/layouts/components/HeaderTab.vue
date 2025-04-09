@@ -73,14 +73,14 @@ onUnmounted(() => {
   <div class="tab-header">
     <div ref="tabsContainerRef" class="header-tabs" :class="{ 'show-indicator': showTabsScrollIndicator }">
       <div
-        v-for="(category, index) in items"
+        v-for="(item, index) in items"
         :key="index"
         class="header-tab"
-        :class="{ 'active': currentValue === category.title }"
-        @click="currentValue = category.title"
+        :class="{ 'active': currentValue === item.title }"
+        @click="currentValue = item.title"
       >
-        <VIcon :icon="category.icon" size="small" class="header-tab-icon" />
-        <span>{{ category.title }}</span>
+        <VIcon v-if="item.icon" :icon="item.icon" size="small" class="header-tab-icon" />
+        <span>{{ item.title }}</span>
       </div>
     </div>
     <slot name="append" />

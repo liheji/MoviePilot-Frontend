@@ -236,16 +236,14 @@ watch(currentCategory, () => {
     </div>
 
     <!-- 设置面板 -->
-    <VDialog v-model="dialog" width="500" class="settings-dialog" scrollable>
+    <VDialog v-model="dialog" width="35rem" class="settings-dialog" scrollable>
       <VCard class="settings-card">
         <VCardItem class="settings-card-header">
           <VCardTitle>
             <VIcon icon="mdi-tune" size="small" class="me-2" />
             自定义内容
           </VCardTitle>
-          <template #append>
-            <VBtn icon="mdi-close" variant="text" @click="dialog = false" />
-          </template>
+          <DialogCloseBtn @click="dialog = false" />
         </VCardItem>
         <VDivider />
         <VCardText>
@@ -347,10 +345,6 @@ watch(currentCategory, () => {
 }
 
 /* Settings Dialog Styles */
-.settings-dialog .v-card {
-  border-radius: 12px;
-}
-
 .settings-card-header {
   padding-block: 16px;
   padding-inline: 20px;
@@ -365,7 +359,7 @@ watch(currentCategory, () => {
 .settings-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
 .setting-label {

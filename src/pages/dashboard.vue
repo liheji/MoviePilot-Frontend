@@ -347,6 +347,7 @@ onDeactivated(() => {
           <VIcon icon="mdi-tune" size="small" class="me-2" />
           设置仪表板
         </VCardTitle>
+        <DialogCloseBtn @click="dialog = false" />
       </VCardItem>
       <VDivider />
       <VCardText>
@@ -385,7 +386,6 @@ onDeactivated(() => {
       <VDivider />
       <VCardText class="pt-5 text-end">
         <VSpacer />
-        <VBtn variant="outlined" color="secondary" class="me-4" @click="dialog = false"> 关闭 </VBtn>
         <VBtn @click="saveDashboardConfig">
           <template #prepend>
             <VIcon icon="mdi-content-save" />
@@ -397,78 +397,73 @@ onDeactivated(() => {
   </VDialog>
 </template>
 <style lang="scss" scoped>
-.settings-card {
-  overflow: hidden;
-  border-radius: 12px;
-}
-
 .settings-card-header {
-  background-color: rgba(var(--v-theme-primary), 0.03);
+  padding-block: 16px;
+  padding-inline: 20px;
 }
 
 .settings-hint {
-  color: rgba(var(--v-theme-on-surface), 0.6);
+  color: rgba(var(--v-theme-on-surface), 0.7);
   font-size: 0.9rem;
   margin-block-end: 16px;
 }
 
 .settings-grid {
   display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.setting-label {
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.setting-item {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface-variant), 0.3);
+  cursor: pointer;
+  padding-block: 10px;
+  padding-inline: 12px;
+  transition: all 0.2s ease;
+
+  &::before {
+    position: absolute;
+    background-color: transparent;
+    block-size: 100%;
+    content: '';
+    inline-size: 4px;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    transition: background-color 0.3s ease;
+  }
+
+  &:hover {
+    border-color: rgba(var(--v-theme-on-surface), 0.15);
+    background-color: rgba(var(--v-theme-surface-variant), 0.6);
+  }
+
+  &.enabled {
+    border-color: rgba(var(--v-theme-primary), 0.5);
+    background-color: rgba(var(--v-theme-primary), 0.05);
+
+    .setting-label {
+      color: rgb(var(--v-theme-primary));
+      font-weight: 500;
+    }
+  }
 }
 
 .setting-item-inner {
   display: flex;
   align-items: center;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
-  border-radius: 8px;
-  background-color: rgba(var(--v-theme-surface), 1);
-  padding-block: 10px;
-  padding-inline: 12px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-}
-
-.setting-item {
-  cursor: pointer;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &.enabled {
-    .setting-item-inner {
-      border-color: rgba(var(--v-theme-primary), 0.2);
-      background-color: rgba(var(--v-theme-primary), 0.08);
-    }
-  }
-
-  &.电影 .setting-item-inner {
-    border-inline-start: 3px solid #3b82f6;
-  }
-
-  &.电视剧 .setting-item-inner {
-    border-inline-start: 3px solid #6366f1;
-  }
-
-  &.动漫 .setting-item-inner {
-    border-inline-start: 3px solid #a855f7;
-  }
-
-  &.榜单 .setting-item-inner {
-    border-inline-start: 3px solid #f59e0b;
-  }
 }
 
 .setting-check {
   margin-inline-end: 8px;
-}
-
-.setting-label {
-  overflow: hidden;
-  font-size: 0.9rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>

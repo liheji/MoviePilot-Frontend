@@ -21,7 +21,7 @@ const subscribeEditDialog = ref(false)
     <VHeaderTab :items="subType == '电影' ? SubscribeMovieTabs : SubscribeTvTabs" v-model="activeTab">
       <template #append>
         <VBtn
-          icon="mdi-clipboard-edit"
+          icon="mdi-clipboard-edit-outline"
           variant="text"
           color="primary"
           size="default"
