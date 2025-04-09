@@ -426,7 +426,7 @@ onMounted(fetchData)
 </script>
 
 <template>
-  <VCard class="bg-transparent">
+  <VCard>
     <VCardItem>
       <VCardTitle>
         <VRow>
@@ -442,22 +442,19 @@ onMounted(fetchData)
               label="搜索整理记录"
               prepend-inner-icon="mdi-magnify"
               variant="solo-filled"
+              max-width="25rem"
               single-line
               hide-details
               flat
-              rounded
+              rounded="pill"
               clearable
             />
           </VCol>
           <VCol cols="4" md="6" class="text-end">
-            <VBtn
-              color="primary"
-              prepend-icon="mdi-tray-full"
-              append-icon="mdi-dots-horizontal"
-              @click="transferQueueDialog = true"
-            >
-              <span v-if="display.mdAndUp.value" class="ms-2">整理队列</span>
-            </VBtn>
+            <VBtnGroup variant="outlined" divided rounded>
+              <VBtn icon="mdi-timer-sand-paused" @click="transferQueueDialog = true" />
+              <VBtn :icon="group ? 'mdi-format-list-bulleted' : 'mdi-format-list-group'" @click="group = !group" />
+            </VBtnGroup>
           </VCol>
         </VRow>
       </VCardTitle>
@@ -650,9 +647,10 @@ onMounted(fetchData)
       </template>
       <template #no-data> 没有数据 </template>
     </VDataTableVirtual>
+    <VDivider />
     <div class="flex items-center justify-between">
       <div class="w-auto">
-        <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" variant="plain" flat />
+        <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" variant="tonal" flat />
       </div>
       <div class="w-auto text-sm">{{ pageTip.begin }} - {{ pageTip.end }} / {{ totalItems }}</div>
       <VPagination
@@ -678,10 +676,10 @@ onMounted(fetchData)
       app
       appear
       @click="removeHistoryBatch"
-      :class="{ 'mb-12': appMode }"
+      :class="appMode ? 'mb-28' : 'mb-16'"
     />
     <VFab
-      :class="appMode ? 'mb-28' : 'mb-16'"
+      :class="appMode ? 'mb-44' : 'mb-32'"
       icon="mdi-redo-variant"
       location="bottom"
       size="x-large"
@@ -689,19 +687,6 @@ onMounted(fetchData)
       app
       appear
       @click="retransferBatch"
-    />
-  </div>
-  <div v-else-if="isRefreshed">
-    <VFab
-      :icon="group ? 'mdi-format-list-bulleted' : 'mdi-format-list-group'"
-      color="primary"
-      location="bottom"
-      size="x-large"
-      fixed
-      app
-      appear
-      @click="group = !group"
-      :class="{ 'mb-12': appMode }"
     />
   </div>
   <!-- 底部弹窗 -->
@@ -741,5 +726,9 @@ onMounted(fetchData)
 <style lang="scss">
 .v-table th {
   white-space: nowrap;
+}
+
+.v-table__wrapper {
+  border-radius: 0;
 }
 </style>
