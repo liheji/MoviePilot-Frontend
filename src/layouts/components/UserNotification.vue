@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard elevation="0">
+    <VCard>
       <VCardItem class="notification-header">
         <VCardTitle class="font-weight-medium text-primary">通知中心</VCardTitle>
         <template #append>

@@ -64,7 +64,7 @@ const currentPath = computed(() => route.path)
           <VList class="font-bold" lines="one" elevation="1">
             <VListSubheader class="bg-transparent"> 更多 </VListSubheader>
             <VListItem
-              class="pe-20"
+              class="pe-20 ps-5"
               v-for="(menu, index) in moreMemus"
               :key="index"
               :prepend-icon="menu.icon"

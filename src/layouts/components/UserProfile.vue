@@ -86,7 +86,7 @@ const userLevel = computed(() => userStore.level)
     <VImg :src="avatar" />
 
     <VMenu activator="parent" width="230" location="bottom end" offset="14px" class="user-menu">
-      <VList elevation="0" class="overflow-hidden">
+      <VList class="overflow-hidden">
         <!-- 👉 User Avatar & Name -->
         <div class="user-profile-header px-2 py-4 mb-2">
           <div class="d-flex align-center">
