@@ -195,15 +195,6 @@ onMounted(async () => {
 onActivated(async () => {
   loadExtraRecommendSources()
 })
-
-// 监听分类变更，平滑过渡
-watch(currentCategory, () => {
-  // 当分类变更时，应用渐变动画
-  const contentGroups = document.querySelectorAll('.content-group')
-  contentGroups.forEach(group => {
-    group.classList.add('fade-transition')
-  })
-})
 </script>
 
 <template>
