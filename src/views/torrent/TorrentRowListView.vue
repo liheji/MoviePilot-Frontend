@@ -233,22 +233,11 @@ function initOptions(data: Context) {
   optionValue(filterOptions.resolution, meta_info?.resource_pix)
 }
 
-// 监听数据列表，进行排序
-watchEffect(() => {
-  const list = dataList.value
-  if (sortField.value === 'default') {
-    dataList.value = list.sort((a, b) => b.torrent_info.pri_order - a.torrent_info.pri_order)
-  } else if (sortField.value === 'site') {
-    dataList.value = list.sort((a, b) => (a.torrent_info.site_name || '').localeCompare(b.torrent_info.site_name || ''))
-  } else if (sortField.value === 'size') {
-    dataList.value = list.sort((a, b) => b.torrent_info.size - a.torrent_info.size)
-  } else if (sortField.value === 'seeder') {
-    dataList.value = list.sort((a, b) => b.torrent_info.seeders - a.torrent_info.seeders)
-  }
-})
+// 修改watch监听，同时监听排序字段的变化
+watch([filterForm, sortField], filterData)
 
 // 计算过滤后的列表
-watchEffect(() => {
+function filterData() {
   // 清空列表
   dataList.value = []
   displayDataList.value = []
@@ -264,7 +253,7 @@ watchEffect(() => {
     })
 
     // 筛选数据
-    const filteredData: Context[] = []
+    let filteredData: Context[] = []
 
     // 然后根据过滤条件筛选数据
     props.items.forEach(data => {
@@ -288,12 +277,26 @@ watchEffect(() => {
         filteredData.push(data)
       }
     })
+
+    // 排序
+    if (sortField.value === 'default') {
+      filteredData = filteredData.sort((a, b) => b.torrent_info.pri_order - a.torrent_info.pri_order)
+    } else if (sortField.value === 'site') {
+      filteredData = filteredData.sort((a, b) =>
+        (a.torrent_info.site_name || '').localeCompare(b.torrent_info.site_name || ''),
+      )
+    } else if (sortField.value === 'size') {
+      filteredData = filteredData.sort((a, b) => b.torrent_info.size - a.torrent_info.size)
+    } else if (sortField.value === 'seeder') {
+      filteredData = filteredData.sort((a, b) => b.torrent_info.seeders - a.torrent_info.seeders)
+    }
+
     // 显示前20个
     displayDataList.value = filteredData.slice(0, 20)
     // 保存剩余数据
     dataList.value = filteredData.slice(20)
   }
-})
+}
 
 // 过滤菜单相关
 const filterMenuOpen = ref(false)
@@ -350,6 +353,10 @@ function loadMore({ done }: { done: any }) {
   displayDataList.value.push(...itemsToMove)
   done('ok')
 }
+
+onMounted(() => {
+  filterData()
+})
 </script>
 
 <template>
