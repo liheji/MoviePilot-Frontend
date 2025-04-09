@@ -178,7 +178,7 @@ export default defineComponent({
   }
 
   &:not(.layout-overlay-nav) .layout-content-wrapper {
-    padding-inline-start: calc(variables.$layout-vertical-nav-width + 8px);
+    padding-inline-start: calc(variables.$layout-vertical-nav-width + 0.5rem);
   }
 
   // Adjust right column pl when vertical nav is collapsed
@@ -210,8 +210,8 @@ export default defineComponent({
 
 .layout-wrapper.layout-nav-type-vertical.layout-overlay-nav {
   .layout-navbar {
-    inline-size: calc(100% - 0px);
-    margin-inline-start: 8px;
+    inline-size: calc(100% - 0.5rem);
+    margin-inline-start: 0.5rem;
     padding-inline-start: 0;
   }
 }
