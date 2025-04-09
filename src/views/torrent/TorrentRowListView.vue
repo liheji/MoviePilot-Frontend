@@ -621,8 +621,6 @@ onMounted(() => {
 
 .view-header {
   overflow: hidden;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  box-shadow: none;
 }
 
 .search-count {
