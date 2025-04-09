@@ -623,7 +623,6 @@ function loadMore({ done }: { done: any }) {
 
 .view-header {
   overflow: hidden;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
 .sort-container {
