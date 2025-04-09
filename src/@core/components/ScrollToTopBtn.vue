@@ -47,41 +47,39 @@ onUnmounted(() => {
 /* Global Action Button Styles (FAB) */
 .global-action-buttons {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
   z-index: 100;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  inset-block-end: 30px;
+  inset-inline-end: 30px;
 }
 
 .global-action-button {
-  width: 44px;
-  height: 44px;
-  background-color: rgba(var(--v-theme-background), 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
   border-radius: 50%;
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+  background-color: rgba(var(--v-theme-background), 0.8);
+  block-size: 44px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 8%);
   color: rgb(var(--v-theme-on-surface));
+  cursor: pointer;
+  inline-size: 44px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   &:hover {
     background-color: rgba(var(--v-theme-background), 0.95);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
     color: rgb(var(--v-theme-primary));
+    transform: translateY(-4px);
   }
 
   svg {
+    block-size: 20px;
+    inline-size: 20px;
     transition: all 0.3s ease;
-    width: 20px;
-    height: 20px;
   }
 }
 </style>

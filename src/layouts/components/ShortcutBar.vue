@@ -202,9 +202,16 @@ onMounted(() => {
     </VCard>
   </VMenu>
   <!-- 名称测试弹窗 -->
-  <VDialog v-if="nameTestDialog" v-model="nameTestDialog" max-width="50rem" scrollable>
-    <VCard title="名称识别测试">
-      <DialogCloseBtn @click="nameTestDialog = false" />
+  <VDialog v-if="nameTestDialog" v-model="nameTestDialog" max-width="35rem" scrollable>
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-text-recognition" class="me-2" />
+          名称识别测试
+        </VCardTitle>
+        <DialogCloseBtn @click="nameTestDialog = false" />
+      </VCardItem>
+      <VDivider />
       <VCardText>
         <NameTestView />
       </VCardText>
@@ -212,8 +219,14 @@ onMounted(() => {
   </VDialog>
   <!-- 网络测试弹窗 -->
   <VDialog v-if="netTestDialog" v-model="netTestDialog" max-width="35rem" max-height="85vh" scrollable>
-    <VCard title="网络测试">
-      <DialogCloseBtn @click="netTestDialog = false" />
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-network" class="me-2" />
+          网速连通性测试
+        </VCardTitle>
+        <DialogCloseBtn @click="netTestDialog = false" />
+      </VCardItem>
       <VDivider />
       <VCardText>
         <NetTestView />
@@ -232,6 +245,7 @@ onMounted(() => {
       <DialogCloseBtn @click="loggingDialog = false" />
       <VCardItem>
         <VCardTitle class="inline-flex">
+          <VIcon icon="mdi-file-document" class="me-2" />
           实时日志
           <a class="mx-2 inline-flex items-center justify-center" :href="allLoggingUrl()" target="_blank">
             <div
@@ -250,9 +264,16 @@ onMounted(() => {
     </VCard>
   </VDialog>
   <!-- 规则测试弹窗 -->
-  <VDialog v-if="ruleTestDialog" v-model="ruleTestDialog" max-width="50rem" scrollable>
-    <VCard title="规则测试">
-      <DialogCloseBtn @click="ruleTestDialog = false" />
+  <VDialog v-if="ruleTestDialog" v-model="ruleTestDialog" max-width="40rem" scrollable>
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-filter-cog" class="me-2" />
+          规则测试
+        </VCardTitle>
+        <DialogCloseBtn @click="ruleTestDialog = false" />
+      </VCardItem>
+      <VDivider />
       <VCardText>
         <RuleTestView />
       </VCardText>
@@ -260,8 +281,14 @@ onMounted(() => {
   </VDialog>
   <!-- 系统健康检查弹窗 -->
   <VDialog v-if="systemTestDialog" v-model="systemTestDialog" max-width="35rem" max-height="85vh" scrollable>
-    <VCard title="系统健康检查">
-      <DialogCloseBtn @click="systemTestDialog = false" />
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-cog" class="me-2" />
+          系统健康检查
+        </VCardTitle>
+        <DialogCloseBtn @click="systemTestDialog = false" />
+      </VCardItem>
       <VDivider />
       <VCardText>
         <ModuleTestView />
@@ -276,8 +303,14 @@ onMounted(() => {
     scrollable
     :fullscreen="!display.mdAndUp.value"
   >
-    <VCard title="消息中心">
-      <DialogCloseBtn @click="messageDialog = false" />
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-message" class="me-2" />
+          消息中心
+        </VCardTitle>
+        <DialogCloseBtn @click="messageDialog = false" />
+      </VCardItem>
       <VDivider />
       <VCardText ref="chatContainer">
         <MessageView @scroll="scrollMessageToEnd" />
