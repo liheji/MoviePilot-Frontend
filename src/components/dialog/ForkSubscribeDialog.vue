@@ -230,26 +230,16 @@ onMounted(() => {
                       @click="doFork"
                       prepend-icon="mdi-heart"
                       :loading="processing"
+                      class="mb-2 me-2"
                     >
                       订阅
                     </VBtn>
                     <VBtn
-                      v-if="props.media?.share_uid && props.media?.share_uid === globalSettings.USER_UNIQUE_ID"
-                      color="error"
-                      :disabled="deleting"
-                      @click="doDelete"
-                      prepend-icon="mdi-delete"
-                      :loading="deleting"
-                      class="ms-2"
-                    >
-                      取消分享
-                    </VBtn>
-                    <VBtn
-                      v-else-if="isFollowed && props.media?.share_uid"
+                      v-if="isFollowed && props.media?.share_uid"
                       color="warning"
                       @click="unfollowUser"
                       prepend-icon="mdi-account-remove"
-                      class="ms-2"
+                      class="mb-2 me-2"
                     >
                       取消关注
                     </VBtn>
@@ -258,9 +248,23 @@ onMounted(() => {
                       @click="followUser"
                       color="info"
                       prepend-icon="mdi-account-plus"
-                      class="ms-2"
+                      class="mb-2 me-2"
                     >
                       关注
+                    </VBtn>
+                    <VBtn
+                      v-if="
+                        (props.media?.share_uid && props.media?.share_uid === globalSettings.USER_UNIQUE_ID) ||
+                        globalSettings.SUBSCRIBE_SHARE_MANAGE
+                      "
+                      color="error"
+                      :disabled="deleting"
+                      @click="doDelete"
+                      prepend-icon="mdi-delete"
+                      :loading="deleting"
+                      class="mb-2 me-2"
+                    >
+                      取消分享
                     </VBtn>
                   </div>
                   <div class="text-xs mt-2" v-if="props.media?.count">
