@@ -183,18 +183,16 @@ onUnmounted(() => {
     <!-- 加载进度条 -->
     <VFadeTransition>
       <div v-if="progressValue > 0" class="search-progress-container">
-        <div class="search-progress-card">
+        <VCard class="search-progress-card">
           <div class="progress-header">
             <VIcon icon="mdi-movie-search" color="primary" size="small" class="me-2" />
             <span class="progress-title">{{ progressText }}</span>
           </div>
           <div class="progress-bar-container">
-            <div class="progress-bar-wrapper">
-              <div class="progress-bar" :style="{ width: `${progressValue}%` }"></div>
-            </div>
+            <VProgressLinear color="primary" rounded :model-value="progressValue" />
             <div class="progress-percentage">{{ Math.ceil(progressValue) }}%</div>
           </div>
-        </div>
+        </VCard>
       </div>
     </VFadeTransition>
 
@@ -291,7 +289,7 @@ onUnmounted(() => {
   border: 1px solid rgba(var(--v-theme-primary), 0.1);
   border-radius: 12px;
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 12%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 10%);
   inline-size: 90%;
   max-inline-size: 400px;
 }
@@ -312,26 +310,6 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.progress-bar-wrapper {
-  overflow: hidden;
-  flex: 1;
-  border-radius: 4px;
-  background-color: rgba(var(--v-theme-on-surface), 0.08);
-  block-size: 4px;
-}
-
-.progress-bar {
-  border-radius: 4px;
-  background: linear-gradient(
-    90deg,
-    rgb(var(--v-theme-primary)) 0%,
-    rgb(var(--v-theme-primary)) 70%,
-    rgba(var(--v-theme-primary), 0.8) 100%
-  );
-  block-size: 100%;
-  transition: inline-size 0.3s ease;
 }
 
 .progress-percentage {
