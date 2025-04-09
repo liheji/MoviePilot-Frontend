@@ -615,7 +615,6 @@ function loadMore({ done }: { done: any }) {
 .view-header {
   overflow: hidden;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  background-color: rgb(var(--v-theme-surface));
   box-shadow: none;
 }
 
@@ -704,7 +703,6 @@ function loadMore({ done }: { done: any }) {
   padding: 8px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface));
 }
 
 .resource-list {

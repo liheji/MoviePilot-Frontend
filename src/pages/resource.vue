@@ -291,7 +291,6 @@ onUnmounted(() => {
   border: 1px solid rgba(var(--v-theme-primary), 0.1);
   border-radius: 12px;
   backdrop-filter: blur(10px);
-  background-color: rgb(var(--v-theme-surface));
   box-shadow: 0 8px 24px rgba(0, 0, 0, 12%);
   inline-size: 90%;
   max-inline-size: 400px;
@@ -346,7 +345,6 @@ onUnmounted(() => {
 /* 精简标题栏样式 */
 .search-header {
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  background-color: rgb(var(--v-theme-surface));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 5%);
   padding-block: 12px;
   padding-inline: 16px;
@@ -395,7 +393,6 @@ onUnmounted(() => {
 }
 
 .view-toggle-btn.active {
-  background-color: rgb(var(--v-theme-surface));
   box-shadow: 0 2px 4px rgba(0, 0, 0, 10%);
 }
 

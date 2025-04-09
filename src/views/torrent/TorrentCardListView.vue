@@ -380,7 +380,7 @@ function removeFilter(key: string, value: string) {
 
 function loadMore({ done }: { done: any }) {
   // 从 dataList 中获取最前面的 20 个元素
-  const itemsToMove = dataList.splice(0, 20) 
+  const itemsToMove = dataList.splice(0, 20)
   displayDataList.value.push(...itemsToMove)
   done('ok')
 }
@@ -624,7 +624,6 @@ function loadMore({ done }: { done: any }) {
 .view-header {
   overflow: hidden;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  background-color: rgb(var(--v-theme-surface));
 }
 
 .sort-container {

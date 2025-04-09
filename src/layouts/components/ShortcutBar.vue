@@ -389,7 +389,6 @@ onMounted(() => {
   padding: 16px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
   border-radius: 12px;
-  background-color: rgba(var(--v-theme-surface));
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 

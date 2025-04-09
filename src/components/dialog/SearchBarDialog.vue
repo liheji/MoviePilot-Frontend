@@ -843,7 +843,6 @@ onMounted(() => {
 .site-search-card {
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   border-radius: 14px;
-  background-color: rgb(var(--v-theme-surface));
 }
 
 .site-chip {

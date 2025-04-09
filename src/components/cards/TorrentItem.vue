@@ -194,7 +194,6 @@ onMounted(() => {
 
 .torrent-item {
   padding: 12px;
-  background-color: rgb(var(--v-theme-surface));
   box-shadow: none;
   margin-block-end: 8px;
   transition: background-color 0.2s ease, transform 0.2s ease;
