@@ -205,13 +205,11 @@ onActivated(() => {
   font-weight: 500;
   text-decoration: none;
   transition: all 0.25s ease;
-  box-shadow: none;
 
   &:hover {
     background-color: rgba(var(--v-theme-primary), 0.08);
     border-color: rgba(var(--v-theme-primary), 0.5);
     transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(var(--v-theme-primary), 0.1);
 
     .arrow-svg {
       transform: translateX(3px);
@@ -240,12 +238,11 @@ onActivated(() => {
   transform: translateY(-50%);
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: 50%;
   background-color: rgba(var(--v-theme-background), 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 0;
   display: flex;
   align-items: center;
@@ -270,8 +267,6 @@ onActivated(() => {
   &:hover {
     background-color: rgba(var(--v-theme-background), 0.95);
     transform: translateY(-50%) scale(1.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    border-color: rgba(var(--v-theme-on-surface), 0.15);
     color: rgb(var(--v-theme-primary));
 
     svg {
