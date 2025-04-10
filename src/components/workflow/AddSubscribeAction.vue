@@ -19,7 +19,7 @@ defineProps({
       <VCardItem>
         <template v-slot:prepend>
           <VAvatar>
-            <VIcon icon="mdi-star-check" size="x-large"></VIcon>
+            <VIcon icon="mdi-star-plus" size="x-large"></VIcon>
           </VAvatar>
         </template>
         <VCardTitle>添加订阅</VCardTitle>

@@ -44,7 +44,7 @@ onMounted(() => {
       <VCardItem>
         <template v-slot:prepend>
           <VAvatar>
-            <VIcon icon="mdi-download-box-outline" size="x-large"></VIcon>
+            <VIcon icon="mdi-download" size="x-large"></VIcon>
           </VAvatar>
         </template>
         <VCardTitle>添加下载</VCardTitle>

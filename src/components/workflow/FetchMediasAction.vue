@@ -110,7 +110,7 @@ onMounted(() => {
       <VCardItem>
         <template v-slot:prepend>
           <VAvatar>
-            <VIcon icon="mdi-multimedia" size="x-large"></VIcon>
+            <VIcon icon="mdi-movie-search" size="x-large"></VIcon>
           </VAvatar>
         </template>
         <VCardTitle>获取媒体数据</VCardTitle>

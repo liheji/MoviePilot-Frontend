@@ -1,11 +1,29 @@
 <script lang="ts" setup>
 import api from '@/api'
 import useDragAndDrop from '@core/utils/workflow'
+import { useDisplay } from 'vuetify'
+
+interface ActionItem {
+  name: string
+  type: string
+  desc?: string
+}
+
+const display = useDisplay()
+// APP
+const appMode = inject('pwaMode') && display.mdAndDown.value
 
 const { onDragStart } = useDragAndDrop()
 
 // 组件列表
-const actions = ref([])
+const actions = ref<ActionItem[]>([])
+// 侧边栏是否收起 (仅在桌面端有效)
+const isSidebarCollapsed = ref(false)
+// 侧边栏在移动端是否显示
+const showMobileSidebar = ref(false)
+
+// 定义emit
+const emit = defineEmits(['component-click'])
 
 // 加载组件列表
 async function load_actions() {
@@ -16,25 +34,382 @@ async function load_actions() {
   }
 }
 
+// 切换侧边栏收起状态
+function toggleSidebar() {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value
+}
+
+// 切换移动端侧边栏显示状态
+function toggleMobileSidebar() {
+  showMobileSidebar.value = !showMobileSidebar.value
+}
+
+// 处理移动端点击组件事件
+function handleComponentClick(action: ActionItem) {
+  // 向父组件发送事件
+  emit('component-click', action)
+  // 关闭侧边栏
+  showMobileSidebar.value = false
+}
+
+// 根据动作类型获取图标
+function getActionIcon(type: string): string {
+  const iconMap: Record<string, string> = {
+    'AddSubscribeAction': 'mdi-star-plus',
+    'AddDownloadAction': 'mdi-download',
+    'FetchDownloadsAction': 'mdi-progress-download',
+    'FetchMediasAction': 'mdi-movie-search',
+    'FetchRssAction': 'mdi-rss',
+    'FetchTorrentsAction': 'mdi-search-web',
+    'FilterMediasAction': 'mdi-filter-check',
+    'FilterTorrentsAction': 'mdi-filter-multiple',
+    'ScanFileAction': 'mdi-folder-search',
+    'ScrapeFileAction': 'mdi-file-find',
+    'SendEventAction': 'mdi-send-check',
+    'SendMessageAction': 'mdi-message-arrow-right',
+    'TransferFileAction': 'mdi-file-move',
+  }
+
+  return iconMap[type] || 'mdi-puzzle-outline'
+}
+
+// 计算侧边栏类名
+const sidebarClasses = computed(() => {
+  return {
+    'sidebar-collapsed': isSidebarCollapsed.value && !display.smAndDown.value,
+    'sidebar-mobile': display.smAndDown.value,
+    'sidebar-mobile-open': showMobileSidebar.value && display.smAndDown.value,
+  }
+})
+
+// 监听屏幕尺寸变化，自动关闭移动端侧边栏
+watch(
+  () => display.smAndDown.value,
+  isMobile => {
+    if (!isMobile) {
+      showMobileSidebar.value = false
+    }
+  },
+)
+
 onMounted(() => {
   load_actions()
 })
 </script>
 
 <template>
-  <aside>
-    <div class="mb-3"><VLabel>可选动作组件：</VLabel></div>
+  <!-- 移动端触发按钮 -->
+  <div
+    v-if="display.smAndDown.value"
+    class="workflow-sidebar-trigger"
+    :class="appMode ? 'right-4 bottom-28' : 'right-4 bottom-4'"
+    @click="toggleMobileSidebar"
+  >
+    <VBtn icon size="large" class="workflow-sidebar-fab">
+      <VIcon :icon="showMobileSidebar ? 'mdi-close' : 'mdi-plus'" />
+    </VBtn>
+  </div>
 
-    <div class="nodes flex flex-wrap justify-center">
-      <div
-        class="vue-flow__node-default cursor-grab mx-1"
-        v-for="(action, index) in actions"
-        :key="index"
-        :draggable="true"
-        @dragstart="onDragStart($event, action)"
-      >
-        {{ action['name'] }}
+  <!-- 侧边栏 -->
+  <aside class="workflow-sidebar" :class="sidebarClasses">
+    <div class="sidebar-container">
+      <!-- 侧边栏头部 -->
+      <div class="sidebar-header">
+        <div class="header-content">
+          <VAvatar size="36" class="workflow-logo">
+            <VIcon icon="mdi-puzzle" />
+          </VAvatar>
+          <span v-if="!isSidebarCollapsed || display.smAndDown.value" class="header-title">动作组件</span>
+          <IconBtn v-if="!display.smAndDown.value" @click="toggleSidebar" class="collapse-btn">
+            <VIcon :icon="isSidebarCollapsed ? 'mdi-chevron-right' : 'mdi-chevron-left'" />
+          </IconBtn>
+        </div>
+      </div>
+
+      <!-- 组件列表 -->
+      <div class="components-container">
+        <div
+          v-for="(action, index) in actions"
+          :key="index"
+          class="component-item"
+          :draggable="!display.smAndDown.value"
+          @dragstart="!display.smAndDown.value && onDragStart($event, action)"
+          @click="display.smAndDown.value && handleComponentClick(action)"
+        >
+          <div class="component-card">
+            <VAvatar size="36" class="component-avatar">
+              <VIcon :icon="getActionIcon(action.type)" size="18" />
+            </VAvatar>
+            <div v-if="!isSidebarCollapsed || display.smAndDown.value" class="component-info">
+              <div class="component-name">{{ action.name }}</div>
+              <div class="component-desc">{{ display.smAndDown.value ? '点击添加' : '拖动到画布' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部提示 -->
+      <div class="sidebar-footer">
+        <VBtn block class="drag-btn">
+          <div class="btn-content">
+            <VIcon v-if="isSidebarCollapsed && !display.smAndDown.value" class="footer-icon" icon="mdi-gesture-swipe" />
+            <template v-else>
+              <VIcon :icon="display.smAndDown.value ? 'mdi-gesture-tap' : 'mdi-gesture-swipe'" class="me-2" />
+              <span>{{ display.smAndDown.value ? '点击组件添加到画布' : '拖动组件到画布' }}</span>
+            </template>
+          </div>
+        </VBtn>
       </div>
     </div>
   </aside>
 </template>
+
+<style lang="scss" scoped>
+@use 'sass:color';
+
+.workflow-sidebar {
+  position: absolute;
+  z-index: 100;
+  overflow: hidden;
+  background-color: #f5f5f7;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 8%);
+  inline-size: 280px;
+  inset-block: 0;
+  inset-inline-start: 0;
+  transition: all 0.3s ease;
+
+  &.sidebar-collapsed {
+    inline-size: 70px;
+  }
+
+  &.sidebar-mobile {
+    inline-size: 240px;
+    transform: translateX(-100%);
+
+    &.sidebar-mobile-open {
+      transform: translateX(0);
+    }
+  }
+}
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+}
+
+.sidebar-header {
+  flex-shrink: 0;
+  padding: 16px;
+  background-color: #fff;
+  border-block-end: 1px solid rgba(0, 0, 0, 6%);
+
+  .header-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .workflow-logo {
+    background-color: #8c58f5;
+    color: white;
+    margin-inline-end: 10px;
+  }
+
+  .header-title {
+    color: #1a1a1a;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .collapse-btn {
+    position: absolute;
+    color: #8c58f5;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+}
+
+.components-container {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    inline-size: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: rgba(140, 88, 245, 30%);
+  }
+}
+
+.component-item {
+  cursor: grab;
+  margin-block-end: 10px;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.component-card {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: #e4e4e7;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #d4d4d8;
+    transform: translateY(-2px);
+  }
+}
+
+.component-avatar {
+  flex-shrink: 0;
+  background-color: #8c58f5;
+  color: white;
+  margin-inline-end: 12px;
+
+  .v-icon {
+    color: white !important;
+    opacity: 1 !important;
+  }
+}
+
+.component-info {
+  overflow: hidden;
+  max-inline-size: calc(100% - 48px);
+}
+
+.component-name {
+  overflow: hidden;
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.component-desc {
+  overflow: hidden;
+  color: #71717a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
+  padding: 12px;
+  background-color: #fff;
+  border-block-start: 1px solid rgba(0, 0, 0, 6%);
+
+  .drag-btn {
+    background-color: #8c58f5;
+    block-size: 44px;
+    color: white;
+    font-weight: 500;
+    letter-spacing: normal;
+    text-transform: none;
+
+    &:hover {
+      background-color: color.adjust(#8c58f5, $lightness: -5%);
+    }
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 100%;
+    }
+
+    .footer-icon {
+      font-size: 20px;
+    }
+  }
+}
+
+// 移动端悬浮按钮
+.workflow-sidebar-trigger {
+  position: fixed;
+  z-index: 100;
+}
+
+.workflow-sidebar-fab {
+  background-color: #8c58f5;
+  box-shadow: 0 4px 10px rgba(140, 88, 245, 40%);
+  color: white;
+
+  &:hover {
+    background-color: color.adjust(#8c58f5, $lightness: -5%);
+  }
+}
+
+.sidebar-collapsed {
+  .component-card {
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .component-avatar {
+    block-size: 40px !important;
+    inline-size: 40px !important;
+    margin-inline-end: 0;
+
+    .v-icon {
+      font-size: 20px !important;
+    }
+  }
+
+  .sidebar-footer {
+    padding-block: 10px;
+    padding-inline: 6px;
+
+    .drag-btn {
+      padding: 0;
+      border-radius: 10px;
+      block-size: 48px;
+      inline-size: 100%;
+      min-inline-size: 0;
+
+      .btn-content {
+        inline-size: 100%;
+      }
+    }
+  }
+}
+
+@media (width <= 600px) {
+  .component-card {
+    padding: 8px;
+  }
+
+  .component-item {
+    margin-block-end: 8px;
+  }
+
+  .components-container {
+    padding: 8px;
+  }
+
+  .sidebar-header {
+    padding: 12px;
+  }
+
+  .sidebar-footer {
+    padding: 8px;
+
+    .drag-btn {
+      block-size: 40px;
+    }
+  }
+}
+</style>

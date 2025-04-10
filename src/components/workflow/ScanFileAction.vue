@@ -20,7 +20,7 @@ defineProps({
       <VCardItem>
         <template v-slot:prepend>
           <VAvatar>
-            <VIcon icon="mdi-file-move" size="x-large"></VIcon>
+            <VIcon icon="mdi-folder-search" size="x-large"></VIcon>
           </VAvatar>
         </template>
         <VCardTitle>扫描目录</VCardTitle>
