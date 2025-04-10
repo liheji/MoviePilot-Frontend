@@ -8,7 +8,7 @@ html.v-overlay-scroll-blocked {
   position: fixed;
 }
 
-html.v-overlay-scroll-blocked body {
+html {
   --v-body-scroll-y: 0px !important;
 }
 
