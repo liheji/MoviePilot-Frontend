@@ -207,15 +207,12 @@ const isMacOS = computed(() => {
         <VToolbarItems>
           <VBtn icon variant="text" @click="importCodeDialog = true" class="ms-2">
             <VIcon size="24" color="white" icon="mdi-import" />
-            <VTooltip activator="parent" location="bottom">导入流程代码</VTooltip>
           </VBtn>
           <VBtn icon variant="text" @click="shareWorkflow" class="ms-2">
             <VIcon size="24" color="white" icon="mdi-share" />
-            <VTooltip activator="parent" location="bottom">分享流程代码</VTooltip>
           </VBtn>
           <VBtn icon variant="text" @click="updateWorkflow" class="ms-2 me-3">
             <VIcon size="24" color="white" icon="mdi-content-save" />
-            <VTooltip activator="parent" location="bottom">保存流程</VTooltip>
           </VBtn>
         </VToolbarItems>
       </VToolbar>

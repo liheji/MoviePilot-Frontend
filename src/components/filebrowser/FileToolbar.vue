@@ -119,7 +119,7 @@ const sortIcon = computed(() => {
     <VToolbarItems class="overflow-hidden">
       <VMenu v-if="inProps.storages?.length || 0 > 1" offset-y>
         <template #activator="{ props }">
-          <VBtn v-bind="props">
+          <VBtn>
             <VIcon icon="mdi-arrow-down-drop-circle-outline" />
           </VBtn>
         </template>
@@ -155,28 +155,16 @@ const sortIcon = computed(() => {
       </template>
     </VToolbarItems>
     <div class="flex-grow-1" />
-    <VTooltip text="调整排序">
-      <template #activator="{ props }">
-        <IconBtn v-bind="props" @click="changeSort">
-          <VIcon :icon="sortIcon" />
-        </IconBtn>
-      </template>
-    </VTooltip>
-    <VTooltip text="返回上一级" v-if="pathSegments.length > 0">
-      <template #activator="{ props }">
-        <IconBtn v-bind="props" @click="goUp">
-          <VIcon icon="mdi-arrow-up-bold-outline" />
-        </IconBtn>
-      </template>
-    </VTooltip>
+    <IconBtn @click="changeSort">
+      <VIcon :icon="sortIcon" />
+    </IconBtn>
+    <IconBtn @click="goUp">
+      <VIcon icon="mdi-arrow-up-bold-outline" />
+    </IconBtn>
     <VDialog v-model="newFolderPopper" max-width="50rem">
       <template #activator="{ props }">
-        <IconBtn v-bind="props">
-          <VTooltip text="新建文件夹">
-            <template #activator="{ props: _props }">
-              <VIcon v-bind="_props" icon="mdi-folder-plus-outline" />
-            </template>
-          </VTooltip>
+        <IconBtn>
+          <VIcon v-bind="_props" icon="mdi-folder-plus-outline" />
         </IconBtn>
       </template>
       <VCard title="新建文件夹">

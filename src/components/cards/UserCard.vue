@@ -216,7 +216,6 @@ onUnmounted(() => {
           class="action-btn"
         >
           <VIcon icon="mdi-pencil" />
-          <VTooltip v-if="!isMobile" activator="parent" location="bottom">编辑用户</VTooltip>
         </VBtn>
 
         <VBtn
@@ -229,7 +228,6 @@ onUnmounted(() => {
           class="action-btn"
         >
           <VIcon icon="mdi-delete" />
-          <VTooltip v-if="!isMobile" activator="parent" location="bottom">删除用户</VTooltip>
         </VBtn>
       </div>
     </div>

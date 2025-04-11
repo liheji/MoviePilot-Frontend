@@ -228,41 +228,18 @@ onMounted(() => {
 
             <!-- 站点特性图标 -->
             <div class="site-features flex items-center gap-1 ml-auto">
-              <VTooltip>
-                <template #activator="{ props }">
-                  <div v-if="cardProps.site?.limit_interval" v-bind="props" class="feature-icon-wrapper">
-                    <VIcon icon="mdi-speedometer" size="16" class="site-feature-icon" />
-                  </div>
-                </template>
-                <span>流控</span>
-              </VTooltip>
-
-              <VTooltip>
-                <template #activator="{ props }">
-                  <div v-if="cardProps.site?.proxy === 1" v-bind="props" class="feature-icon-wrapper">
-                    <VIcon icon="mdi-network-outline" size="16" class="site-feature-icon" />
-                  </div>
-                </template>
-                <span>代理</span>
-              </VTooltip>
-
-              <VTooltip>
-                <template #activator="{ props }">
-                  <div v-if="cardProps.site?.render === 1" v-bind="props" class="feature-icon-wrapper">
-                    <VIcon icon="mdi-apple-safari" size="16" class="site-feature-icon" />
-                  </div>
-                </template>
-                <span>仿真</span>
-              </VTooltip>
-
-              <VTooltip>
-                <template #activator="{ props }">
-                  <div v-if="cardProps.site?.filter" v-bind="props" class="feature-icon-wrapper">
-                    <VIcon icon="mdi-filter-cog-outline" size="16" class="site-feature-icon" />
-                  </div>
-                </template>
-                <span>过滤</span>
-              </VTooltip>
+              <div v-if="cardProps.site?.limit_interval" class="feature-icon-wrapper">
+                <VIcon icon="mdi-speedometer" size="16" class="site-feature-icon" />
+              </div>
+              <div v-if="cardProps.site?.proxy === 1" class="feature-icon-wrapper">
+                <VIcon icon="mdi-network-outline" size="16" class="site-feature-icon" />
+              </div>
+              <div v-if="cardProps.site?.render === 1" class="feature-icon-wrapper">
+                <VIcon icon="mdi-apple-safari" size="16" class="site-feature-icon" />
+              </div>
+              <div v-if="cardProps.site?.filter" class="feature-icon-wrapper">
+                <VIcon icon="mdi-filter-cog-outline" size="16" class="site-feature-icon" />
+              </div>
             </div>
           </div>
         </div>
@@ -309,69 +286,48 @@ onMounted(() => {
 
       <!-- 右侧操作按钮区 -->
       <div class="site-card-actions">
-        <VTooltip>
-          <template #activator="{ props }">
-            <IconBtn
-              v-bind="props"
-              elevation="0"
-              class="site-action-btn test-btn"
-              @click.stop="testSite"
-              :class="{ 'testing': testButtonDisable }"
-            >
-              <div class="test-btn-content">
-                <div class="pulse-dot" :class="statColor"></div>
-              </div>
-              <div v-if="testButtonDisable" class="loading-overlay">
-                <div class="loading-spinner">
-                  <div class="spinner-circle"></div>
-                  <div class="spinner-circle-dot"></div>
-                </div>
-                <span class="loading-text">测试中</span>
-              </div>
-            </IconBtn>
-          </template>
-          <span>测试站点连通性</span>
-        </VTooltip>
-        <VTooltip v-if="!cardProps.site?.public">
-          <template #activator="{ props }">
-            <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUserData">
-              <VIcon icon="mdi-chart-bell-curve" size="18" />
-            </IconBtn>
-          </template>
-          <span>查看站点数据</span>
-        </VTooltip>
-        <VTooltip v-if="!cardProps.site?.public">
-          <template #activator="{ props }">
-            <IconBtn v-bind="props" elevation="0" class="site-action-btn" @click.stop="handleSiteUpdate">
-              <VIcon icon="mdi-refresh" size="18" />
-            </IconBtn>
-          </template>
-          <span>更新Cookie/UA</span>
-        </VTooltip>
-        <VTooltip>
-          <template #activator="{ props }">
-            <IconBtn v-bind="props" elevation="0" class="site-action-btn more-btn">
-              <VIcon icon="mdi-dots-vertical" size="18" />
-              <VMenu activator="parent" close-on-content-click location="left">
-                <VList density="compact" nav class="dropdown-menu">
-                  <VListItem @click="siteEditDialog = true" base-color="info">
-                    <template #prepend>
-                      <VIcon icon="mdi-file-edit-outline" size="small" />
-                    </template>
-                    <VListItemTitle>编辑站点</VListItemTitle>
-                  </VListItem>
-                  <VListItem @click="deleteSiteInfo">
-                    <template #prepend>
-                      <VIcon icon="mdi-delete-outline" size="small" color="error" />
-                    </template>
-                    <VListItemTitle class="text-error">删除站点</VListItemTitle>
-                  </VListItem>
-                </VList>
-              </VMenu>
-            </IconBtn>
-          </template>
-          <span>更多操作</span>
-        </VTooltip>
+        <IconBtn
+          elevation="0"
+          class="site-action-btn test-btn"
+          @click.stop="testSite"
+          :class="{ 'testing': testButtonDisable }"
+        >
+          <div class="test-btn-content">
+            <div class="pulse-dot" :class="statColor"></div>
+          </div>
+          <div v-if="testButtonDisable" class="loading-overlay">
+            <div class="loading-spinner">
+              <div class="spinner-circle"></div>
+              <div class="spinner-circle-dot"></div>
+            </div>
+            <span class="loading-text">测试中</span>
+          </div>
+        </IconBtn>
+        <IconBtn elevation="0" class="site-action-btn" @click.stop="handleSiteUserData">
+          <VIcon icon="mdi-chart-bell-curve" size="18" />
+        </IconBtn>
+        <IconBtn elevation="0" class="site-action-btn" @click.stop="handleSiteUpdate">
+          <VIcon icon="mdi-refresh" size="18" />
+        </IconBtn>
+        <IconBtn elevation="0" class="site-action-btn more-btn">
+          <VIcon icon="mdi-dots-vertical" size="18" />
+          <VMenu activator="parent" close-on-content-click location="left">
+            <VList density="compact" nav class="dropdown-menu">
+              <VListItem @click="siteEditDialog = true" base-color="info">
+                <template #prepend>
+                  <VIcon icon="mdi-file-edit-outline" size="small" />
+                </template>
+                <VListItemTitle>编辑站点</VListItemTitle>
+              </VListItem>
+              <VListItem @click="deleteSiteInfo">
+                <template #prepend>
+                  <VIcon icon="mdi-delete-outline" size="small" color="error" />
+                </template>
+                <VListItemTitle class="text-error">删除站点</VListItemTitle>
+              </VListItem>
+            </VList>
+          </VMenu>
+        </IconBtn>
       </div>
     </VCard>
 

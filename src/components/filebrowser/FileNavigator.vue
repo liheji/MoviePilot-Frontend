@@ -313,14 +313,9 @@ function getIndentLevel(path: string, ancestorPath: string) {
                 :color="currentPath === directory.path ? 'primary' : 'amber-darken-1'"
                 class="me-1"
               />
-              <VTooltip :disabled="directory.name.length <= 18">
-                <template #activator="{ props: tooltipProps }">
-                  <span class="folder-name" v-bind="tooltipProps">
-                    {{ directory.name }}
-                  </span>
-                </template>
+              <span class="folder-name">
                 {{ directory.name }}
-              </VTooltip>
+              </span>
             </div>
           </div>
 
@@ -367,14 +362,9 @@ function getIndentLevel(path: string, ancestorPath: string) {
                     :color="currentPath === item.dir.path ? 'primary' : 'amber-darken-1'"
                     class="me-1"
                   />
-                  <VTooltip :disabled="item.dir.name.length <= 18">
-                    <template #activator="{ props: tooltipProps }">
-                      <span class="folder-name" v-bind="tooltipProps">
-                        {{ item.dir.name }}
-                      </span>
-                    </template>
+                  <span class="folder-name">
                     {{ item.dir.name }}
-                  </VTooltip>
+                  </span>
                 </div>
               </div>
             </div>
