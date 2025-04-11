@@ -343,6 +343,9 @@ onMounted(() => {
     <VCard class="search-dialog">
       <!-- 搜索输入框 -->
       <VCardItem class="pa-4 pa-sm-5 search-box-container">
+        <template #prepend>
+          <VIcon icon="mdi-magnify" color="primary" size="x-large" />
+        </template>
         <VCombobox
           ref="searchWordInput"
           v-model="searchWord"
@@ -353,16 +356,10 @@ onMounted(() => {
           @keydown.enter="searchMedia('media')"
           hide-details
           clearable
-        >
-          <template #prepend>
-            <VIcon icon="mdi-magnify" color="primary" class="search-icon" />
-          </template>
-        </VCombobox>
-        <DialogCloseBtn inner-class="close-btn" @click="emit('close')">
-          <template #default>
-            <VIcon icon="mdi-close-circle" color="error" />
-          </template>
-        </DialogCloseBtn>
+        />
+        <template #append>
+          <VIcon icon="mdi-close" class="clear-icon" @click="emit('close')" size="x-large" />
+        </template>
       </VCardItem>
 
       <VDivider class="search-divider" />
@@ -372,9 +369,7 @@ onMounted(() => {
         <!-- 有搜索词时显示结果 -->
         <VList lines="two" v-if="searchWord" class="search-list py-2">
           <!-- 搜索结果分组标题 -->
-          <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6">
-            <span class="category-title">媒体搜索</span>
-          </VListSubheader>
+          <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 媒体 </VListSubheader>
 
           <!-- 媒体搜索选项 -->
           <VHover>
@@ -396,7 +391,7 @@ onMounted(() => {
                     />
                   </div>
                 </template>
-                <VListItemTitle class="text-subtitle-1 font-weight-medium"> 电影、电视剧 </VListItemTitle>
+                <VListItemTitle class="font-weight-medium"> 电影、电视剧 </VListItemTitle>
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
                   搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的影视作品
                 </VListItemSubtitle>
@@ -426,7 +421,7 @@ onMounted(() => {
                     />
                   </div>
                 </template>
-                <VListItemTitle class="text-subtitle-1 font-weight-medium"> 系列合集 </VListItemTitle>
+                <VListItemTitle class="font-weight-medium"> 系列合集 </VListItemTitle>
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
                   搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的系列作品
                 </VListItemSubtitle>
@@ -456,7 +451,7 @@ onMounted(() => {
                     />
                   </div>
                 </template>
-                <VListItemTitle class="text-subtitle-1 font-weight-medium"> 演职人员 </VListItemTitle>
+                <VListItemTitle class="font-weight-medium"> 演职人员 </VListItemTitle>
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
                   搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的演员、导演等
                 </VListItemSubtitle>
@@ -482,7 +477,7 @@ onMounted(() => {
                     <VIcon icon="mdi-history" :color="hover.isHovering ? 'primary' : 'medium-emphasis'" size="small" />
                   </div>
                 </template>
-                <VListItemTitle class="text-subtitle-1 font-weight-medium"> 整理记录 </VListItemTitle>
+                <VListItemTitle class="font-weight-medium"> 整理记录 </VListItemTitle>
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
                   搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的历史记录
                 </VListItemSubtitle>
@@ -496,9 +491,7 @@ onMounted(() => {
           <!-- 其他搜索结果 -->
           <template v-if="matchedSubscribeItems.length > 0">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
-            <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6">
-              <span class="category-title">订阅内容</span>
-            </VListSubheader>
+            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 订阅 </VListSubheader>
 
             <VHover v-for="subscribe in matchedSubscribeItems" :key="subscribe.id">
               <template #default="hover">
@@ -519,7 +512,7 @@ onMounted(() => {
                       />
                     </div>
                   </template>
-                  <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                  <VListItemTitle class="font-weight-medium">
                     {{ subscribe.name
                     }}<span v-if="subscribe.season" class="text-body-2"> 第 {{ subscribe.season }} 季</span>
                   </VListItemTitle>
@@ -536,9 +529,7 @@ onMounted(() => {
 
           <template v-if="matchedMenuItems.length > 0">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
-            <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6">
-              <span class="category-title">功能菜单</span>
-            </VListSubheader>
+            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 功能 </VListSubheader>
 
             <VHover v-for="menu in matchedMenuItems" :key="menu.title">
               <template #default="hover">
@@ -559,7 +550,7 @@ onMounted(() => {
                       />
                     </div>
                   </template>
-                  <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                  <VListItemTitle class="font-weight-medium">
                     {{ menu.title }}
                   </VListItemTitle>
                   <VListItemSubtitle v-if="menu.description" class="text-body-2 text-medium-emphasis mt-1">
@@ -575,9 +566,7 @@ onMounted(() => {
 
           <template v-if="matchedPluginItems.length > 0">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
-            <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6">
-              <span class="category-title">插件</span>
-            </VListSubheader>
+            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 插件 </VListSubheader>
 
             <VHover v-for="plugin in matchedPluginItems" :key="plugin.id">
               <template #default="hover">
@@ -594,7 +583,7 @@ onMounted(() => {
                       <VIcon icon="mdi-puzzle" :color="hover.isHovering ? 'primary' : 'medium-emphasis'" size="small" />
                     </div>
                   </template>
-                  <VListItemTitle class="text-subtitle-1 font-weight-medium">
+                  <VListItemTitle class="font-weight-medium">
                     {{ plugin.plugin_name }}
                   </VListItemTitle>
                   <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
@@ -611,9 +600,7 @@ onMounted(() => {
           <!-- 将站点资源搜索移到最底部 -->
           <template v-if="searchWord">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
-            <VListSubheader class="primary-text font-weight-medium text-uppercase py-2 px-4 px-sm-6">
-              <span class="category-title">站点资源搜索</span>
-            </VListSubheader>
+            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 站点资源 </VListSubheader>
 
             <VCard class="mx-3 mx-sm-6 mb-4 mt-2 site-search-card">
               <VCardText class="pa-3 pa-sm-4">
@@ -735,15 +722,15 @@ onMounted(() => {
 
 <style scoped>
 .search-dialog {
-  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 8%);
 }
 
 .site-dialog {
-  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 8%);
 }
 
 .search-divider {
@@ -757,15 +744,15 @@ onMounted(() => {
 
 .close-btn {
   position: absolute;
-  right: 1.2rem;
-  top: 1.4rem;
-  background-color: rgba(var(--v-theme-on-surface), 0.04);
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(var(--v-theme-on-surface), 0.04);
+  block-size: 36px;
+  inline-size: 36px;
+  inset-block-start: 1.4rem;
+  inset-inline-end: 1.2rem;
   transition: background-color 0.2s ease;
 }
 
@@ -776,13 +763,6 @@ onMounted(() => {
 .search-input {
   border-radius: 12px;
   font-size: 16px;
-  padding-right: 40px;
-}
-
-.search-input :deep(.v-field__input) {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  min-height: 40px;
 }
 
 .search-icon {
@@ -793,27 +773,22 @@ onMounted(() => {
   background-color: rgb(var(--v-theme-background));
 }
 
-.category-title {
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-
 .option-icon-wrapper {
-  width: 32px;
-  height: 32px;
   border-radius: 8px;
   background-color: rgba(var(--v-theme-surface-variant), 0.12);
-  margin-right: 12px;
+  block-size: 32px;
+  inline-size: 32px;
+  margin-inline-end: 12px;
 }
 
 .search-icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
   border-radius: 10px;
   background-color: rgba(var(--v-theme-primary), 0.08);
+  block-size: 36px;
+  inline-size: 36px;
 }
 
 .search-icon-wrapper.warning {
@@ -825,9 +800,9 @@ onMounted(() => {
 }
 
 .search-option {
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  margin-bottom: 2px;
   border: 1px solid transparent;
+  margin-block-end: 2px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .search-option:hover {
@@ -836,8 +811,8 @@ onMounted(() => {
 }
 
 .recent-searches {
-  min-height: 200px;
   background-color: rgb(var(--v-theme-background));
+  min-block-size: 200px;
 }
 
 .site-search-card {
@@ -846,8 +821,8 @@ onMounted(() => {
 }
 
 .site-chip {
-  transition: all 0.2s ease;
   font-weight: normal;
+  transition: all 0.2s ease;
 }
 
 .site-chip:hover {
@@ -856,9 +831,9 @@ onMounted(() => {
 }
 
 .search-btn {
-  min-width: 70px;
   font-weight: 500;
   letter-spacing: 0.5px;
+  min-inline-size: 70px;
 }
 
 .empty-search-state,
@@ -871,6 +846,7 @@ onMounted(() => {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -886,10 +862,11 @@ onMounted(() => {
 }
 
 .site-select-btn {
-  min-height: 32px;
   font-size: 12px;
   letter-spacing: 0.5px;
-  padding: 0 12px;
+  min-block-size: 32px;
+  padding-block: 0;
+  padding-inline: 12px;
 }
 
 .site-chips-container {
@@ -897,7 +874,7 @@ onMounted(() => {
   background-color: rgba(var(--v-theme-surface-variant), 0.06);
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .search-box-container {
     padding: 16px;
   }
@@ -907,19 +884,20 @@ onMounted(() => {
   }
 
   .close-btn {
-    right: 0.8rem;
-    top: 1rem;
-    width: 32px;
-    height: 32px;
+    block-size: 32px;
+    inline-size: 32px;
+    inset-block-start: 1rem;
+    inset-inline-end: 0.8rem;
   }
 
   .site-chips-container {
-    padding: 6px 8px;
+    padding-block: 6px;
+    padding-inline: 8px;
   }
 
   .site-select-btn {
-    min-height: 28px;
     font-size: 11px;
+    min-block-size: 28px;
   }
 }
 </style>
