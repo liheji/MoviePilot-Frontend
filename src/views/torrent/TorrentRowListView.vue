@@ -376,7 +376,6 @@ onMounted(() => {
               :items="Object.entries(sortTitles).map(([key, title]) => ({ title, value: key }))"
               item-title="title"
               item-value="value"
-              variant="plain"
               density="compact"
               hide-details
               class="sort-select"
@@ -493,7 +492,6 @@ onMounted(() => {
               :items="Object.entries(sortTitles).map(([key, title]) => ({ title, value: key }))"
               item-title="title"
               item-value="value"
-              variant="plain"
               density="compact"
               hide-details
               class="mobile-sort-select"

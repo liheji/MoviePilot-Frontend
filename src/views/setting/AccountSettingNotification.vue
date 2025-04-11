@@ -208,22 +208,22 @@ onMounted(() => {
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
-                    <VListItem variant="plain" @click="addNotification('wechat')">
+                    <VListItem @click="addNotification('wechat')">
                       <VListItemTitle>微信</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addNotification('telegram')">
+                    <VListItem @click="addNotification('telegram')">
                       <VListItemTitle>Telegram</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addNotification('slack')">
+                    <VListItem @click="addNotification('slack')">
                       <VListItemTitle>Slack</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addNotification('synologychat')">
+                    <VListItem @click="addNotification('synologychat')">
                       <VListItemTitle>SynologyChat</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addNotification('vocechat')">
+                    <VListItem @click="addNotification('vocechat')">
                       <VListItemTitle>VoceChat</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addNotification('webpush')">
+                    <VListItem @click="addNotification('webpush')">
                       <VListItemTitle>WebPush</VListItemTitle>
                     </VListItem>
                   </VList>

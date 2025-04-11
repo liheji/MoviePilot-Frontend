@@ -311,12 +311,7 @@ function onSubscribeEditRemove() {
               <VMenu activator="parent" close-on-content-click>
                 <VList>
                   <template v-for="(item, i) in dropdownItems" :key="i">
-                    <VListItem
-                      v-if="item.show !== false"
-                      variant="plain"
-                      :base-color="item.props.color"
-                      @click="item.props.click"
-                    >
+                    <VListItem v-if="item.show !== false" :base-color="item.props.color" @click="item.props.click">
                       <template #prepend>
                         <VIcon :icon="item.props.prependIcon" />
                       </template>

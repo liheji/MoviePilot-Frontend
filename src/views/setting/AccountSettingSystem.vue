@@ -481,10 +481,10 @@ onDeactivated(() => {
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
-                    <VListItem variant="plain" @click="addDownloader('qbittorrent')">
+                    <VListItem @click="addDownloader('qbittorrent')">
                       <VListItemTitle>Qbittorrent</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addDownloader('transmission')">
+                    <VListItem @click="addDownloader('transmission')">
                       <VListItemTitle>Transmission</VListItemTitle>
                     </VListItem>
                   </VList>
@@ -529,16 +529,16 @@ onDeactivated(() => {
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
-                    <VListItem variant="plain" @click="addMediaServer('emby')">
+                    <VListItem @click="addMediaServer('emby')">
                       <VListItemTitle>Emby</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addMediaServer('jellyfin')">
+                    <VListItem @click="addMediaServer('jellyfin')">
                       <VListItemTitle>Jellyfin</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addMediaServer('plex')">
+                    <VListItem @click="addMediaServer('plex')">
                       <VListItemTitle>Plex</VListItemTitle>
                     </VListItem>
-                    <VListItem variant="plain" @click="addMediaServer('trimemedia')">
+                    <VListItem @click="addMediaServer('trimemedia')">
                       <VListItemTitle>飞牛影视</VListItemTitle>
                     </VListItem>
                   </VList>

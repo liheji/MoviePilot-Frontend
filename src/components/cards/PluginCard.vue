@@ -393,7 +393,6 @@ watch(
                       v-for="(item, i) in dropdownItems"
                       v-show="item.show"
                       :key="i"
-                      variant="plain"
                       :base-color="item.props.color"
                       @click="item.props.click"
                     >

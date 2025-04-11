@@ -545,7 +545,6 @@ onMounted(fetchData)
               <VListItem
                 v-for="(menu, i) in dropdownItems"
                 :key="i"
-                variant="plain"
                 :base-color="menu.props.color"
                 @click="menu.props.click(item)"
               >
@@ -632,7 +631,6 @@ onMounted(fetchData)
               <VListItem
                 v-for="(menu, i) in dropdownItems"
                 :key="i"
-                variant="plain"
                 :base-color="menu.props.color"
                 @click="menu.props.click(item)"
               >

@@ -134,7 +134,7 @@ onMounted(() => {
           <VToolbarTitle>{{ `浏览 - ${props.site?.name}` }}</VToolbarTitle>
           <VSpacer />
           <VToolbarItems>
-            <VBtn icon variant="plain" @click="emit('close')" class="me-3">
+            <VBtn icon @click="emit('close')" class="me-3">
               <VIcon size="large" color="white" icon="ri-close-line" />
             </VBtn>
           </VToolbarItems>
@@ -238,17 +238,13 @@ onMounted(() => {
                 <VIcon icon="mdi-dots-vertical" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
-                    <VListItem variant="plain" @click="openTorrentDetail(item.page_url || '')">
+                    <VListItem @click="openTorrentDetail(item.page_url || '')">
                       <template #prepend>
                         <VIcon icon="mdi-information" />
                       </template>
                       <VListItemTitle>查看详情</VListItemTitle>
                     </VListItem>
-                    <VListItem
-                      v-if="item.enclosure?.startsWith('http')"
-                      variant="plain"
-                      @click="downloadTorrentFile(item.enclosure)"
-                    >
+                    <VListItem v-if="item.enclosure?.startsWith('http')" @click="downloadTorrentFile(item.enclosure)">
                       <template #prepend>
                         <VIcon icon="mdi-download" />
                       </template>

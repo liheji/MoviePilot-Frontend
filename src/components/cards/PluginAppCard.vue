@@ -208,13 +208,7 @@ const dropdownItems = ref([
                 <VIcon icon="mdi-dots-vertical" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
-                    <VListItem
-                      v-for="(item, i) in dropdownItems"
-                      v-show="item.show"
-                      :key="i"
-                      variant="plain"
-                      @click="item.props.click"
-                    >
+                    <VListItem v-for="(item, i) in dropdownItems" v-show="item.show" :key="i" @click="item.props.click">
                       <template #prepend>
                         <VIcon :icon="item.props.prependIcon" />
                       </template>

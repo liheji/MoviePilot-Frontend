@@ -181,7 +181,6 @@ const dropdownItems = ref([
                           <VListItem
                             v-for="(menu, i) in dropdownItems"
                             :key="i"
-                            variant="plain"
                             :base-color="menu.color"
                             @click="menu.props.click(item)"
                           >

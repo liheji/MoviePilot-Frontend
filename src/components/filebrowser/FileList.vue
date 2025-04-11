@@ -645,12 +645,7 @@ onMounted(() => {
                       <VMenu activator="parent" close-on-content-click>
                         <VList>
                           <template v-for="(menu, i) in dropdownItems" :key="i">
-                            <VListItem
-                              v-if="menu.show"
-                              variant="plain"
-                              :base-color="menu.props.color"
-                              @click="menu.props.click(item)"
-                            >
+                            <VListItem v-if="menu.show" :base-color="menu.props.color" @click="menu.props.click(item)">
                               <template #prepend>
                                 <VIcon :icon="menu.props.prependIcon" />
                               </template>

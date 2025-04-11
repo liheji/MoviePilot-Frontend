@@ -206,47 +206,37 @@ const resolveProgress = (item: Workflow) => {
               <VIcon icon="mdi-dots-vertical" />
               <VMenu activator="parent" close-on-content-click>
                 <VList>
-                  <VListItem variant="plain" base-color="primary" @click="handleEdit(workflow)">
+                  <VListItem base-color="primary" @click="handleEdit(workflow)">
                     <template #prepend>
                       <VIcon icon="mdi-note-edit" />
                     </template>
                     <VListItemTitle>编辑任务</VListItemTitle>
                   </VListItem>
-                  <VListItem
-                    v-if="workflow.current_action"
-                    variant="plain"
-                    base-color="info"
-                    @click="handleRun(workflow, false)"
-                  >
+                  <VListItem v-if="workflow.current_action" base-color="info" @click="handleRun(workflow, false)">
                     <template #prepend>
                       <VIcon icon="mdi-play-speed" />
                     </template>
                     <VListItemTitle>继续执行</VListItemTitle>
                   </VListItem>
-                  <VListItem
-                    v-if="workflow.current_action"
-                    variant="plain"
-                    base-color="info"
-                    @click="handleRun(workflow, true)"
-                  >
+                  <VListItem v-if="workflow.current_action" base-color="info" @click="handleRun(workflow, true)">
                     <template #prepend>
                       <VIcon icon="mdi-replay" />
                     </template>
                     <VListItemTitle>重新执行</VListItemTitle>
                   </VListItem>
-                  <VListItem v-else variant="plain" base-color="info" @click="handleRun(workflow, true)">
+                  <VListItem v-else base-color="info" @click="handleRun(workflow, true)">
                     <template #prepend>
                       <VIcon icon="mdi-run" />
                     </template>
                     <VListItemTitle>立即执行</VListItemTitle>
                   </VListItem>
-                  <VListItem variant="plain" base-color="warning" @click="handleReset(workflow)">
+                  <VListItem base-color="warning" @click="handleReset(workflow)">
                     <template #prepend>
                       <VIcon icon="mdi-restore-alert" />
                     </template>
                     <VListItemTitle>重置任务</VListItemTitle>
                   </VListItem>
-                  <VListItem variant="plain" base-color="error" @click="handleDelete(workflow)">
+                  <VListItem base-color="error" @click="handleDelete(workflow)">
                     <template #prepend>
                       <VIcon icon="mdi-delete" />
                     </template>
