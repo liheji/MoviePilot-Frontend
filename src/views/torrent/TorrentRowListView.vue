@@ -380,6 +380,7 @@ onMounted(() => {
               hide-details
               class="sort-select"
               prepend-icon="mdi-sort"
+              variant="plain"
             >
             </VSelect>
             <div class="filter-divider"></div>
@@ -496,6 +497,7 @@ onMounted(() => {
               hide-details
               class="mobile-sort-select"
               prepend-icon="mdi-sort"
+              variant="plain"
             ></VSelect>
           </div>
 
@@ -649,12 +651,6 @@ onMounted(() => {
   transform: translateY(-2px);
 }
 
-.sort-select {
-  font-size: 0.875rem;
-  max-inline-size: 120px;
-  min-inline-size: 100px;
-}
-
 .filter-menu-content {
   max-block-size: 50vh;
   overflow-y: auto;
@@ -722,11 +718,6 @@ onMounted(() => {
   min-block-size: 300px;
 }
 
-.mobile-sort-select {
-  max-inline-size: 130px;
-  min-inline-size: 110px;
-}
-
 .filter-buttons-grid {
   display: grid;
   gap: 4px;
@@ -757,9 +748,8 @@ onMounted(() => {
   text-align: center;
 }
 
-@media (width <= 600px) {
-  .sort-select {
-    min-inline-size: 100px;
-  }
+.mobile-sort-select {
+  max-inline-size: 130px;
+  min-inline-size: 110px;
 }
 </style>

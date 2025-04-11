@@ -405,6 +405,7 @@ function loadMore({ done }: { done: any }) {
             hide-details
             class="sort-select"
             prepend-icon="mdi-sort"
+            variant="plain"
           ></VSelect>
         </div>
 
@@ -523,6 +524,7 @@ function loadMore({ done }: { done: any }) {
             hide-details
             class="mobile-sort-select"
             prepend-icon="mdi-sort"
+            variant="plain"
           ></VSelect>
         </div>
 
@@ -644,18 +646,6 @@ function loadMore({ done }: { done: any }) {
   transform: translateY(-2px);
 }
 
-.sort-select {
-  font-size: 0.9rem;
-  font-weight: 500;
-  max-inline-size: 160px;
-  min-inline-size: 120px;
-}
-
-.sort-select :deep(.v-field__input) {
-  min-block-size: 36px;
-  padding-block: 5px;
-}
-
 .selected-filters {
   overflow: hidden;
   border-radius: 0 0 12px 12px;
@@ -710,11 +700,6 @@ function loadMore({ done }: { done: any }) {
 }
 
 @media (width <= 600px) {
-  .sort-select {
-    max-inline-size: 120px;
-    min-inline-size: 100px;
-  }
-
   .filter-btn {
     font-size: 0.75rem;
   }
@@ -724,10 +709,6 @@ function loadMore({ done }: { done: any }) {
     inline-size: 100%;
     margin-block-end: 8px;
     padding-inline-end: 0;
-  }
-
-  .sort-select {
-    inline-size: 100%;
   }
 
   .filter-bar {
