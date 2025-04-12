@@ -152,66 +152,32 @@ async function fetchSubscribes() {
   }
 }
 
-// 保存用户站点选择到本地
-const saveUserSitePreferences = () => {
-  try {
-    localStorage.setItem('MP_SelectedSites', JSON.stringify(selectedSites.value))
-  } catch (err) {
-    console.error('保存站点选择失败:', err)
-  }
-}
-
-// 从本地或接口加载用户站点偏好设置
+// 从接口加载用户站点偏好设置
 const loadUserSitePreferences = async () => {
   try {
-    // 先尝试从本地存储获取
-    const storedSites = localStorage.getItem('MP_SelectedSites')
-    if (storedSites) {
-      selectedSites.value = JSON.parse(storedSites)
-      console.log('从本地加载站点选择:', selectedSites.value)
-      return
-    }
-
-    // 如果本地没有，尝试从接口获取系统预设
     const result = await api.get('system/setting/IndexerSites')
     if (result && result.data && result.data.value) {
       selectedSites.value = result.data.value
-      console.log('从系统预设加载站点选择:', selectedSites.value)
       return
     }
   } catch (err) {
-    console.error('加载站点选择失败:', err)
+    console.error(err)
   }
 }
 
-// 获取站点分类信息
-const getSiteCategories = () => {
-  api
-    .get('site/')
-    .then(async (res: any) => {
-      if (res && Array.isArray(res)) {
-        allSites.value = res.filter((site: any) => site.is_active) || []
-        // 加载用户站点选择
-        await loadUserSitePreferences()
-        // 如果没有选择任何站点并且有可用站点，才默认选择全部
-        if (selectedSites.value.length === 0 && allSites.value.length > 0) {
-          selectedSites.value = allSites.value.map((site: Site) => site.id)
-        }
-      } else if (res.data && Array.isArray(res.data)) {
-        allSites.value = res.data.filter((site: any) => site.is_active) || []
-        // 加载用户站点选择
-        await loadUserSitePreferences()
-        // 如果没有选择任何站点并且有可用站点，才默认选择全部
-        if (selectedSites.value.length === 0 && allSites.value.length > 0) {
-          selectedSites.value = allSites.value.map((site: Site) => site.id)
-        }
-      }
-      console.log('站点数据:', allSites.value)
-      console.log('已选站点:', selectedSites.value)
-    })
-    .catch(err => {
-      console.error('获取站点数据失败:', err)
-    })
+// 查询所有站点
+async function queryAllSites() {
+  try {
+    const data: Site[] = await api.get('site/')
+    // 过滤站点，只有启用的站点才显示
+    allSites.value = data.filter(item => item.is_active)
+    // 如果没有选择任何站点并且有可用站点，才默认选择全部
+    if (selectedSites.value.length === 0 && allSites.value.length > 0) {
+      selectedSites.value = allSites.value.map((site: Site) => site.id)
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 // 打开站点选择对话框
@@ -235,19 +201,11 @@ function searchSites(sites: number[]) {
   searchTorrent()
 }
 
-// 选择站点
-function chooseSitesDone(sites: number[]) {
-  chooseSiteDialog.value = false
-  selectedSites.value = sites
-}
-
 // 搜索资源
 function searchTorrent() {
   if (!searchWord.value) return
   // 记录搜索词
   saveRecentSearches(searchWord.value)
-  // 保存用户站点选择
-  saveUserSitePreferences()
   // 跳转到搜索页面
   router.push({
     path: '/resource',
@@ -335,7 +293,8 @@ onMounted(() => {
   fetchInstalledPlugins()
   fetchSubscribes()
   loadRecentSearches()
-  getSiteCategories()
+  loadUserSitePreferences()
+  if (superUser) queryAllSites()
 })
 </script>
 <template>
@@ -358,7 +317,9 @@ onMounted(() => {
           clearable
         />
         <template #append>
-          <VIcon icon="mdi-close" class="clear-icon" @click="emit('close')" size="x-large" />
+          <IconBtn>
+            <VIcon icon="mdi-close" color="primary" @click="emit('close')" size="x-large" />
+          </IconBtn>
         </template>
       </VCardItem>
 
@@ -621,14 +582,16 @@ onMounted(() => {
                       prepend-icon="mdi-magnify"
                       size="small"
                       variant="flat"
-                      rounded="pill"
                       class="search-btn"
                     >
                       搜索
                     </VBtn>
                   </div>
 
-                  <div class="d-flex align-center flex-wrap site-chips-container mt-1 py-2 px-2 px-sm-3">
+                  <div
+                    v-if="superUser"
+                    class="d-flex align-center flex-wrap site-chips-container mt-1 py-2 px-2 px-sm-3"
+                  >
                     <div class="d-flex align-center flex-wrap flex-grow-1">
                       <VChip
                         v-if="selectedSites.length > 0"
@@ -663,6 +626,7 @@ onMounted(() => {
                       color="primary"
                       @click="openSiteDialog"
                       class="ml-auto site-select-btn"
+                      rounded="pill"
                     >
                       选择站点
                       <VIcon size="small" class="ml-1">mdi-cog-outline</VIcon>
@@ -712,11 +676,9 @@ onMounted(() => {
     v-model="chooseSiteDialog"
     :sites="allSites"
     :selected="selectedSites"
-    :savebtn="true"
     @search="searchSites"
     @close="chooseSiteDialog = false"
-    @reload="getSiteCategories"
-    @save="chooseSitesDone"
+    @reload="queryAllSites"
   />
 </template>
 

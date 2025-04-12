@@ -202,7 +202,7 @@ const isMacOS = computed(() => {
             <VIcon size="large" color="white" icon="mdi-close" />
           </VBtn>
         </VToolbarItems>
-        <VToolbarTitle class="text-truncate"> 编辑流程 - {{ workflow?.name }} </VToolbarTitle>
+        <VToolbarTitle> 编辑流程 - {{ workflow?.name }} </VToolbarTitle>
         <VSpacer></VSpacer>
         <VToolbarItems>
           <VBtn icon variant="text" @click="importCodeDialog = true" class="ms-2">

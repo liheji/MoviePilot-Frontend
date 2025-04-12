@@ -8,14 +8,10 @@ const props = defineProps({
     required: true,
   },
   selected: Array as PropType<Number[]>,
-  savebtn: {
-    type: Boolean,
-    default: false,
-  },
 })
 
 // 定义事件
-const emit = defineEmits(['close', 'search', 'reload', 'save'])
+const emit = defineEmits(['close', 'search', 'reload'])
 
 // 过滤词
 const siteFilter = ref('')
@@ -23,11 +19,14 @@ const siteFilter = ref('')
 // 已选择站点
 const selectedSites = ref<any[]>(props.selected || [])
 
-watch(() => props.selected, value => {
-  if (selectedSites.value.length == 0 && value) {
-    selectedSites.value = value
-  }
-})
+watch(
+  () => props.selected,
+  value => {
+    if (selectedSites.value.length == 0 && value) {
+      selectedSites.value = value
+    }
+  },
+)
 
 // 全选/全不选按钮文字
 const checkAllText = computed(() => {
@@ -170,16 +169,6 @@ const filteredSites = computed(() => {
           class="mr-2 d-flex align-center justify-center"
         >
           取消
-        </VBtn>
-        <VBtn
-          v-if="savebtn"
-          color="success"
-          variant="flat"
-          @click="emit('save', selectedSites)"
-          class="mr-2 d-flex align-center justify-center"
-          :disabled="selectedSites.length === 0"
-        >
-          确定
         </VBtn>
         <VBtn
           color="primary"
