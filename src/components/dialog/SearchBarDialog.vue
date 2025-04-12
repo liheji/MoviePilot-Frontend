@@ -323,7 +323,7 @@ onMounted(() => {
         </template>
       </VCardItem>
 
-      <VDivider class="search-divider" />
+      <VDivider />
 
       <!-- 主搜索结果区域 -->
       <VCardText class="search-results-container pa-0">
@@ -566,7 +566,7 @@ onMounted(() => {
             <VCard class="mx-3 mx-sm-6 mb-4 mt-2 site-search-card">
               <VCardText class="pa-3 pa-sm-4">
                 <div class="d-flex flex-column">
-                  <div class="d-flex align-center mb-3">
+                  <div class="d-flex align-center">
                     <div class="search-icon-wrapper mr-3">
                       <VIcon icon="mdi-file-search" color="primary" size="small" />
                     </div>
@@ -590,7 +590,7 @@ onMounted(() => {
 
                   <div
                     v-if="superUser"
-                    class="d-flex align-center flex-wrap site-chips-container mt-1 py-2 px-2 px-sm-3"
+                    class="d-flex align-center flex-wrap site-chips-container mt-4 py-2 px-2 px-sm-3"
                   >
                     <div class="d-flex align-center flex-wrap flex-grow-1">
                       <VChip
@@ -699,11 +699,6 @@ onMounted(() => {
   opacity: 0.08;
 }
 
-.search-box-container {
-  position: relative;
-  background-color: rgb(var(--v-theme-background));
-}
-
 .close-btn {
   position: absolute;
   display: flex;
@@ -729,10 +724,6 @@ onMounted(() => {
 
 .search-icon {
   color: rgb(var(--v-theme-primary));
-}
-
-.search-list {
-  background-color: rgb(var(--v-theme-background));
 }
 
 .option-icon-wrapper {
@@ -773,7 +764,6 @@ onMounted(() => {
 }
 
 .recent-searches {
-  background-color: rgb(var(--v-theme-background));
   min-block-size: 200px;
 }
 
