@@ -119,16 +119,6 @@ onBeforeUnmount(() => {
 }
 
 .notification-item {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  border-radius: 12px;
-  margin-block-end: 8px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: rgba(var(--v-theme-primary), 0.03);
-    transform: translateY(-2px);
-  }
-
   .notification-avatar {
     background-color: rgba(var(--v-theme-primary), 0.1);
   }
