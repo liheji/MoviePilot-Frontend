@@ -121,7 +121,7 @@ onMounted(() => {
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard class="shortcut-menu-card">
+    <VCard class="shortcut-menu-card border">
       <VCardItem class="shortcut-header border-b">
         <VCardTitle class="font-weight-medium text-primary">捷径</VCardTitle>
         <template #append>

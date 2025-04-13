@@ -195,7 +195,7 @@ onMounted(() => {
         <VIcon :icon="getThemeIcon" />
       </IconBtn>
     </template>
-    <VList class="theme-switcher-list pt-0">
+    <VList class="theme-switcher-list pt-0 border">
       <VCardItem class="theme-switcher-header">
         <VCardTitle class="font-weight-medium text-primary">主题选择</VCardTitle>
       </VCardItem>
