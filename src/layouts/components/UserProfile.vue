@@ -85,8 +85,8 @@ const userLevel = computed(() => userStore.level)
   <VAvatar class="cursor-pointer ms-3" color="primary" variant="tonal">
     <VImg :src="avatar" />
 
-    <VMenu activator="parent" width="230" location="bottom end" offset="14px" class="user-menu">
-      <VList class="overflow-hidden pt-0 border">
+    <VMenu activator="parent" width="230" location="bottom end" offset="14px" class="user-menu" scrim>
+      <VList class="overflow-hidden pt-0">
         <!-- 👉 User Avatar & Name -->
         <div class="user-profile-header px-2 py-4 mb-2">
           <div class="d-flex align-center">

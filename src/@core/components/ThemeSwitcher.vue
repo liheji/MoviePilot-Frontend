@@ -189,13 +189,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <VMenu v-if="props.themes" class="theme-menu">
+  <VMenu v-if="props.themes" class="theme-menu" scrim>
     <template v-slot:activator="{ props }">
       <IconBtn v-bind="props">
         <VIcon :icon="getThemeIcon" />
       </IconBtn>
     </template>
-    <VList class="theme-switcher-list pt-0 border">
+    <VList class="theme-switcher-list pt-0">
       <VCardItem class="theme-switcher-header">
         <VCardTitle class="font-weight-medium text-primary">主题选择</VCardTitle>
       </VCardItem>

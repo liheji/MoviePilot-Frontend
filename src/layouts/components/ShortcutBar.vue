@@ -113,6 +113,7 @@ onMounted(() => {
     transition="scale-transition"
     close-on-content-click
     close-on-back
+    scrim
   >
     <!-- Menu Activator -->
     <template #activator="{ props }">
@@ -121,7 +122,7 @@ onMounted(() => {
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard class="shortcut-menu-card border">
+    <VCard class="shortcut-menu-card">
       <VCardItem class="shortcut-header border-b">
         <VCardTitle class="font-weight-medium text-primary">捷径</VCardTitle>
         <template #append>

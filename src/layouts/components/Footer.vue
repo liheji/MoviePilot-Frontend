@@ -60,8 +60,8 @@ const currentPath = computed(() => route.path)
           :icon="moreMenuDialog ? 'mdi-close' : 'mdi-dots-horizontal'"
           :color="moreActiveState ? 'primary' : ''"
         />
-        <VMenu v-model="moreMenuDialog" close-on-content-click activator="parent">
-          <VList class="font-bold border" lines="one">
+        <VMenu v-model="moreMenuDialog" close-on-content-click activator="parent" scrim>
+          <VList class="font-bold" lines="one">
             <VListSubheader class="bg-transparent"> 更多 </VListSubheader>
             <VListItem
               class="pe-20 ps-5"

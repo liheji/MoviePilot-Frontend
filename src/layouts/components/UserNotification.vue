@@ -41,7 +41,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <VMenu v-model="appsMenu" width="400" transition="scale-transition" close-on-content-click class="notification-menu">
+  <VMenu v-model="appsMenu" width="400" transition="scale-transition" close-on-content-click class="notification-menu" scrim>
     <!-- Menu Activator -->
     <template #activator="{ props }">
       <VBadge v-if="hasNewMessage" dot color="error" :offset-x="5" :offset-y="5" v-bind="props">
@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard class="border">
+    <VCard>
       <VCardItem class="notification-header">
         <VCardTitle class="font-weight-medium text-primary">通知中心</VCardTitle>
         <template #append>
