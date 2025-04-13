@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { Axios } from 'axios'
 import FileList from './filebrowser/FileList.vue'
 import FileToolbar from './filebrowser/FileToolbar.vue'
 import FileNavigator from './filebrowser/FileNavigator.vue'
@@ -13,7 +12,7 @@ const props = defineProps({
   tree: Boolean,
   endpoints: Object as PropType<EndPoints>,
   axios: {
-    type: Object as PropType<Axios>,
+    type: Function,
     required: true,
   },
   axiosconfig: Object,
@@ -220,7 +219,6 @@ const fileListStyle = computed(() => {
           @navigate="pathChanged"
         />
         <FileList
-          class="flex-grow"
           :item="item"
           :storage="activeStorage"
           :icons="fileIcons"

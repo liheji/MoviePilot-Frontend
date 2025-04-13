@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Axios, AxiosRequestConfig } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
 import type { PropType } from 'vue'
 import { useConfirm } from 'vuetify-use-dialog'
 import { useToast } from 'vue-toast-notification'
@@ -20,7 +20,7 @@ const inProps = defineProps({
   storage: String,
   endpoints: Object as PropType<EndPoints>,
   axios: {
-    type: Object as PropType<Axios>,
+    type: Function,
     required: true,
   },
   refreshpending: Boolean,
@@ -686,7 +686,7 @@ onMounted(() => {
     <VCardText v-else-if="!loading" class="grow d-flex justify-center align-center grey--text py-5"> 空目录 </VCardText>
   </VCard>
   <!-- 重命名弹窗 -->
-  <VDialog v-if="renamePopper" v-model="renamePopper" max-width="50rem">
+  <VDialog v-if="renamePopper" v-model="renamePopper" max-width="35rem">
     <VCard title="重命名">
       <DialogCloseBtn @click="renamePopper = false" />
       <VDivider />
@@ -695,7 +695,7 @@ onMounted(() => {
           <VCol cols="12">
             <VTextField v-model="newName" label="新名称" :loading="renameLoading" />
           </VCol>
-          <VCol cols="12" md="6" v-if="currentItem && currentItem.type == 'dir'">
+          <VCol cols="12" v-if="currentItem && currentItem.type == 'dir'">
             <VSwitch v-model="renameAll" label="自动重命名目录内所有媒体文件" />
           </VCol>
         </VRow>

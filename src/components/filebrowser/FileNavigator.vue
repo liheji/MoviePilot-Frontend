@@ -2,7 +2,7 @@
 import type { PropType } from 'vue'
 import type { FileItem } from '@/api/types'
 import { useDisplay } from 'vuetify'
-import type { Axios, AxiosRequestConfig } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
 
 // 显示器宽度
 const display = useDisplay()
@@ -23,7 +23,7 @@ const props = defineProps({
   },
   endpoints: Object,
   axios: {
-    type: Object as PropType<Axios>,
+    type: Function,
     required: true,
   },
 })

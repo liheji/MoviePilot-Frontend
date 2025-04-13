@@ -648,7 +648,7 @@ onMounted(fetchData)
     <VDivider />
     <div class="flex items-center justify-between">
       <div class="w-auto">
-        <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" variant="tonal" flat />
+        <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" flat />
       </div>
       <div class="w-auto text-sm">{{ pageTip.begin }} - {{ pageTip.end }} / {{ totalItems }}</div>
       <VPagination

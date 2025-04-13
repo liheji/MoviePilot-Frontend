@@ -454,13 +454,12 @@ onMounted(async () => {
             <div v-if="isAppMarketLoaded" class="bg-transparent mb-3 shadow-none">
               <VRow>
                 <VCol cols="6" md="">
-                  <VTextField v-model="filterForm.name" size="small" density="compact" label="名称" clearable />
+                  <VTextField v-model="filterForm.name" density="compact" label="名称" clearable />
                 </VCol>
                 <VCol v-if="authorFilterOptions.length > 0" cols="6" md="">
                   <VSelect
                     v-model="filterForm.author"
                     :items="authorFilterOptions"
-                    size="small"
                     density="compact"
                     chips
                     label="作者"
@@ -472,7 +471,6 @@ onMounted(async () => {
                   <VSelect
                     v-model="filterForm.label"
                     :items="labelFilterOptions"
-                    size="small"
                     density="compact"
                     chips
                     label="标签"
@@ -484,7 +482,6 @@ onMounted(async () => {
                   <VSelect
                     v-model="filterForm.repo"
                     :items="repoFilterOptions"
-                    size="small"
                     density="compact"
                     chips
                     label="插件库"
@@ -493,7 +490,7 @@ onMounted(async () => {
                   />
                 </VCol>
                 <VCol v-if="repoFilterOptions.length > 0" cols="6" md="">
-                  <VSelect v-model="activeSort" :items="sortOptions" size="small" density="compact" label="排序" />
+                  <VSelect v-model="activeSort" :items="sortOptions" density="compact" label="排序" />
                 </VCol>
               </VRow>
             </div>

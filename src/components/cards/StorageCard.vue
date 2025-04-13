@@ -128,45 +128,47 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VCard variant="tonal" @click="openStorageDialog">
-    <VCardText class="flex justify-space-between align-center gap-3">
-      <div class="align-self-start flex-1">
-        <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
-        <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
-        <div v-else-if="isNullOrEmptyObject(storage.config)">未配置</div>
+  <div>
+    <VCard variant="tonal" @click="openStorageDialog">
+      <VCardText class="flex justify-space-between align-center gap-3">
+        <div class="align-self-start flex-1">
+          <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
+          <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
+          <div v-else-if="isNullOrEmptyObject(storage.config)">未配置</div>
+        </div>
+        <VImg :src="getIcon" cover class="mt-5" max-width="3rem" min-width="3rem" />
+      </VCardText>
+      <div class="w-full absolute bottom-0">
+        <VProgressLinear v-if="usage > 0" :model-value="usage" :bg-color="progressColor" :color="progressColor" />
       </div>
-      <VImg :src="getIcon" cover class="mt-5" max-width="3rem" min-width="3rem" />
-    </VCardText>
-    <div class="w-full absolute bottom-0">
-      <VProgressLinear v-if="usage > 0" :model-value="usage" :bg-color="progressColor" :color="progressColor" />
-    </div>
-  </VCard>
-  <AliyunAuthDialog
-    v-if="aliyunAuthDialog"
-    v-model="aliyunAuthDialog"
-    :conf="props.storage.config || {}"
-    @close="aliyunAuthDialog = false"
-    @done="handleDone"
-  />
-  <U115AuthDialog
-    v-if="u115AuthDialog"
-    v-model="u115AuthDialog"
-    :conf="props.storage.config || {}"
-    @close="u115AuthDialog = false"
-    @done="handleDone"
-  />
-  <RcloneConfigDialog
-    v-if="rcloneConfigDialog"
-    v-model="rcloneConfigDialog"
-    :conf="props.storage.config || {}"
-    @close="rcloneConfigDialog = false"
-    @done="handleDone"
-  />
-  <AlistConfigDialog
-    v-if="aListConfigDialog"
-    v-model="aListConfigDialog"
-    :conf="props.storage.config || {}"
-    @close="aListConfigDialog = false"
-    @done="handleDone"
-  />
+    </VCard>
+    <AliyunAuthDialog
+      v-if="aliyunAuthDialog"
+      v-model="aliyunAuthDialog"
+      :conf="props.storage.config || {}"
+      @close="aliyunAuthDialog = false"
+      @done="handleDone"
+    />
+    <U115AuthDialog
+      v-if="u115AuthDialog"
+      v-model="u115AuthDialog"
+      :conf="props.storage.config || {}"
+      @close="u115AuthDialog = false"
+      @done="handleDone"
+    />
+    <RcloneConfigDialog
+      v-if="rcloneConfigDialog"
+      v-model="rcloneConfigDialog"
+      :conf="props.storage.config || {}"
+      @close="rcloneConfigDialog = false"
+      @done="handleDone"
+    />
+    <AlistConfigDialog
+      v-if="aListConfigDialog"
+      v-model="aListConfigDialog"
+      :conf="props.storage.config || {}"
+      @close="aListConfigDialog = false"
+      @done="handleDone"
+    />
+  </div>
 </template>

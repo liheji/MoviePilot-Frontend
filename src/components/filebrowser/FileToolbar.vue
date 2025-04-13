@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Axios, AxiosRequestConfig } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
 import type { EndPoints, FileItem } from '@/api/types'
 import { useDisplay } from 'vuetify'
 
@@ -20,7 +20,7 @@ const inProps = defineProps({
   },
   endpoints: Object as PropType<EndPoints>,
   axios: {
-    type: Object as PropType<Axios>,
+    type: Function,
     required: true,
   },
 })
@@ -117,9 +117,9 @@ const sortIcon = computed(() => {
 <template>
   <VToolbar flat dense class="rounded-t-lg border-b overflow-hidden">
     <VToolbarItems class="overflow-hidden">
-      <VMenu v-if="inProps.storages?.length || 0 > 1" offset-y>
+      <VMenu v-if="storages?.length || 0 > 1" offset-y>
         <template #activator="{ props }">
-          <VBtn>
+          <VBtn v-bind="props">
             <VIcon icon="mdi-arrow-down-drop-circle-outline" />
           </VBtn>
         </template>
@@ -131,7 +131,7 @@ const sortIcon = computed(() => {
             @click="changeStorage(item.value)"
           >
             <template #prepend>
-              <Icon :icon="item.icon" />
+              <VIcon :icon="item.icon" />
             </template>
             <VListItemTitle>{{ item.title }}</VListItemTitle>
           </VListItem>
@@ -161,10 +161,10 @@ const sortIcon = computed(() => {
     <IconBtn @click="goUp">
       <VIcon icon="mdi-arrow-up-bold-outline" />
     </IconBtn>
-    <VDialog v-model="newFolderPopper" max-width="50rem">
+    <VDialog v-model="newFolderPopper" max-width="35rem">
       <template #activator="{ props }">
         <IconBtn>
-          <VIcon v-bind="_props" icon="mdi-folder-plus-outline" />
+          <VIcon v-bind="props" icon="mdi-folder-plus-outline" />
         </IconBtn>
       </template>
       <VCard title="新建文件夹">

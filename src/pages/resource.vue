@@ -241,12 +241,16 @@ onUnmounted(() => {
     <div v-if="isRefreshed && dataList.length > 0 && !isViewChanging" class="search-results-container">
       <!-- 卡片视图模式 -->
       <VFadeTransition>
-        <TorrentCardListView v-if="viewType === 'card'" :items="dataList" />
+        <div>
+          <TorrentCardListView v-if="viewType === 'card'" :items="dataList" />
+        </div>
       </VFadeTransition>
 
       <!-- 列表视图模式 -->
       <VFadeTransition>
-        <TorrentRowListView v-if="viewType === 'row'" :items="dataList" />
+        <div>
+          <TorrentRowListView v-if="viewType === 'row'" :items="dataList" />
+        </div>
       </VFadeTransition>
     </div>
 

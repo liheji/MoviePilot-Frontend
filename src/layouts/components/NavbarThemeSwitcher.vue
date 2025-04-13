@@ -26,5 +26,5 @@ const themes: ThemeSwitcherTheme[] = [
 </script>
 
 <template>
-  <ThemeSwitcher class="ms-2" :themes="themes" />
+  <ThemeSwitcher :themes="themes" />
 </template>

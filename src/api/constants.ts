@@ -20,13 +20,13 @@ export const storageOptions = [
   {
     title: 'RClone',
     value: 'rclone',
-    icon: 'mdi-cloud-outline',
+    icon: 'mdi-server-network-outline',
     remote: true,
   },
   {
     title: 'AList',
     value: 'alist',
-    icon: 'mdi-cloud-outline',
+    icon: 'mdi-server-network-outline',
     remote: true,
   },
 ]

@@ -66,7 +66,6 @@ const notificationTypes = [
 function openNotificationInfoDialog() {
   // 替换成深复制，避免修改时影响原数据
   notificationInfo.value = cloneDeep(props.notification)
-  console.log(`当前卡片的通知信息：${JSON.stringify(notificationInfo.value)}`)
   notificationInfoDialog.value = true
 }
 
