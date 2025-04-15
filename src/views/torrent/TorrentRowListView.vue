@@ -400,7 +400,7 @@ onMounted(() => {
               <VChip v-if="filterForm[key].length > 0" size="small" color="primary" class="ms-1" variant="elevated">
                 {{ filterForm[key].length }}
               </VChip>
-              <VMenu activator="parent" :close-on-content-click="false">
+              <VMenu activator="parent" :close-on-content-click="false" scrim>
                 <VCard max-width="20rem">
                   <VCardText class="filter-menu-content">
                     <div class="flex justify-between">

@@ -44,6 +44,7 @@ const searchShares = () => {
           v-model="filterSubscribeDialog"
           width="20rem"
           :close-on-content-click="false"
+          scrim
         >
           <template #activator="{ props }">
             <VBtn
@@ -73,6 +74,7 @@ const searchShares = () => {
           v-model="searchShareDialog"
           width="25rem"
           :close-on-content-click="false"
+          scrim
         >
           <template #activator="{ props }">
             <VBtn
