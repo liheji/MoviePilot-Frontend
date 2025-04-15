@@ -15,6 +15,10 @@ const appMode = inject('pwaMode') && display.mdAndDown.value
 // 用户 Store
 const userStore = useUserStore()
 
+// 从 Store 中获取用户信息
+const superUser = userStore.superUser
+const userName = userStore.userName
+
 // 输入参数
 const props = defineProps({
   type: String,
@@ -24,9 +28,6 @@ const props = defineProps({
 
 // 是否刷新过
 let isRefreshed = ref(false)
-
-// 搜索关键字
-const keyword = ref(props.keyword || '')
 
 // 顺序存储键值
 const localOrderKey = props.type === '电影' ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'
@@ -48,16 +49,19 @@ const orderConfig = ref<{ id: number }[]>([])
 const displayList = ref<Subscribe[]>([])
 
 // 监听dataList变化，同步更新displayList
-watch(dataList, () => {
-  // 从 Store 中获取用户信息
-  const superUser = userStore.superUser
-  const userName = userStore.userName
-  if (superUser) displayList.value = dataList.value.filter(data => data.type === props.type)
-  else displayList.value = dataList.value.filter(data => data.type === props.type && data.username === userName)
-  // 过滤关键字
-  if (keyword.value) {
-    displayList.value = displayList.value.filter(data => data.name.toLowerCase().includes(keyword.value.toLowerCase()))
-  }
+watch([dataList, () => props.keyword], () => {
+  if (superUser)
+    displayList.value = dataList.value.filter(
+      data =>
+        data.type === props.type && (!props.keyword || data.name.toLowerCase().includes(props.keyword.toLowerCase())),
+    )
+  else
+    displayList.value = dataList.value.filter(
+      data =>
+        data.type === props.type &&
+        data.username === userName &&
+        (!props.keyword || data.name.toLowerCase().includes(props.keyword.toLowerCase())),
+    )
   // 排序
   sortSubscribeOrder()
 })
@@ -166,7 +170,7 @@ onActivated(async () => {
     v-if="displayList.length === 0 && isRefreshed"
     error-code="404"
     error-title="没有数据"
-    :error-description="keyword ? '没有搜索到相关内容，请更换搜索关键词。' : '请通过搜索添加电影、电视剧订阅。'"
+    :error-description="keyword ? '没有筛选到相关内容，请更换筛选条件。' : '请通过搜索添加电影、电视剧订阅。'"
   />
   <!-- 底部操作按钮 -->
   <div v-if="isRefreshed">

@@ -357,7 +357,7 @@ watch(
                 {{ props.plugin?.plugin_desc }}
               </VCardText>
             </div>
-            <div class="relative flex-shrink-0 self-center">
+            <div class="relative flex-shrink-0 self-center cursor-move">
               <VAvatar size="64">
                 <VImg
                   ref="imageRef"
@@ -406,10 +406,7 @@ watch(
               </IconBtn>
             </div>
           </VCardText>
-          <div v-if="hover.isHovering" class="me-n3 absolute top-0 right-5">
-            <VIcon class="cursor-move text-white">mdi-drag</VIcon>
-          </div>
-          <div v-else-if="props.plugin?.has_update" class="me-n3 absolute top-0 right-5">
+          <div v-if="props.plugin?.has_update" class="me-n3 absolute top-0 right-5">
             <VIcon icon="mdi-new-box" class="text-white" />
           </div>
         </VCard>

@@ -28,6 +28,7 @@ import VueApexCharts from 'vue3-apexcharts'
 // 6. 注册自定义组件
 import DialogCloseBtn from '@/@core/components/DialogCloseBtn.vue'
 import ScrollToTopBtn from '@/@core/components/ScrollToTopBtn.vue'
+import PageContentTitle from './@core/components/PageContentTitle.vue'
 import MediaCard from './components/cards/MediaCard.vue'
 import PosterCard from './components/cards/PosterCard.vue'
 import BackdropCard from './components/cards/BackdropCard.vue'
@@ -38,7 +39,6 @@ import MediaIdSelector from './components/misc/MediaIdSelector.vue'
 import CronField from './components/field/CronField.vue'
 import PathField from './components/field/PathField.vue'
 import HeaderTab from './layouts/components/HeaderTab.vue'
-import PageContentTitle from './layouts/components/PageContentTitle.vue'
 
 // 7. 样式文件
 import '@core/scss/template/libs/vuetify/index.scss'

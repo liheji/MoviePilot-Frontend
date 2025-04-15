@@ -12,7 +12,6 @@ const subType = route.meta.subType?.toString()
 const subId = ref(route.query.id as string)
 const activeTab = ref(route.query.tab)
 const shareViewKey = ref(0)
-const subscribeViewKey = ref(0)
 
 // 默认订阅设置弹窗
 const subscribeEditDialog = ref(false)
@@ -29,12 +28,6 @@ const subscribeFilter = ref('')
 // 分享搜索词
 const shareKeyword = ref('')
 
-// 过滤订阅
-const filterSubscribes = () => {
-  filterSubscribeDialog.value = false
-  subscribeViewKey.value++
-}
-
 // 搜索分享
 const searchShares = () => {
   searchShareDialog.value = false
@@ -49,12 +42,12 @@ const searchShares = () => {
         <VMenu
           v-if="activeTab === '我的订阅'"
           v-model="filterSubscribeDialog"
-          width="25rem"
+          width="20rem"
           :close-on-content-click="false"
         >
           <template #activator="{ props }">
             <VBtn
-              icon="mdi-filter-cog-outline"
+              icon="mdi-filter-multiple-outline"
               variant="text"
               :color="subscribeFilter ? 'primary' : 'gray'"
               size="default"
@@ -65,17 +58,13 @@ const searchShares = () => {
           <VCard>
             <VCardItem>
               <VCardTitle>
-                <VIcon icon="mdi-filter-cog-outline" class="mr-2" />
+                <VIcon icon="mdi-filter-multiple-outline" class="mr-2" />
                 筛选订阅
               </VCardTitle>
               <VDialogCloseBtn @click="filterSubscribeDialog = false" />
             </VCardItem>
             <VCardText>
-              <VTextField v-model="subscribeFilter" label="名称" clearable density="comfortable">
-                <template #append>
-                  <VBtn prepend-icon="mdi-check" color="primary" @click="filterSubscribes">确定</VBtn>
-                </template>
-              </VTextField>
+              <VTextField v-model="subscribeFilter" label="名称" clearable density="comfortable" />
             </VCardText>
           </VCard>
         </VMenu>
@@ -128,7 +117,7 @@ const searchShares = () => {
       <VWindowItem value="我的订阅">
         <transition name="fade-slide" appear>
           <div>
-            <SubscribeListView :type="subType" :subid="subId" :key="subscribeViewKey" :keyword="subscribeFilter" />
+            <SubscribeListView :type="subType" :subid="subId" :keyword="subscribeFilter" />
           </div>
         </transition>
       </VWindowItem>

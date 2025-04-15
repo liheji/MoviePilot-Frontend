@@ -47,6 +47,11 @@ const loading = ref(false)
 // 已安装插件列表
 const dataList = ref<Plugin[]>([])
 
+// 计算已安装插件的名称列表
+const installedPluginNames = computed(() => {
+  return dataList.value.map(item => item.plugin_name)
+})
+
 // 过滤后的已安装插件列表
 const filteredDataList = ref<Plugin[]>([])
 
@@ -55,6 +60,12 @@ const uninstalledList = ref<Plugin[]>([])
 
 // 插件市场插件列表
 const marketList = ref<Plugin[]>([])
+
+// 排序后的未安装插件列表
+const sortedUninstalledList = ref<Plugin[]>([])
+
+// 显示的未安装插件列表
+const displayUninstalledList = ref<Plugin[]>([])
 
 // 是否刷新过
 const isRefreshed = ref(false)
@@ -163,7 +174,7 @@ function sortPluginOrder() {
 // 保存顺序设置
 async function savePluginOrder() {
   // 顺序配置
-  const orderObj = dataList.value.map(item => ({ id: item.id || '' }))
+  const orderObj = filteredDataList.value.map(item => ({ id: item.id || '' }))
   orderConfig.value = orderObj
   const orderString = JSON.stringify(orderObj)
   localStorage.setItem('MP_PLUGIN_ORDER', orderString)
@@ -337,8 +348,8 @@ async function refreshData() {
   fetchUninstalledPlugins()
 }
 
-// 对uninstalledList进行排序，按PluginStatistics倒序
-const sortedUninstalledList = computed(() => {
+// 对uninstalledList进行排序到sortedUninstalledList
+watch([marketList, filterForm], () => {
   // 匹配过滤函数
   const match = (filter: Array<string>, value: string | undefined) =>
     filter.length === 0 || (value && filter.includes(value))
@@ -346,9 +357,6 @@ const sortedUninstalledList = computed(() => {
     filter.length === 0 || (value && value.split(',').some(v => filter.includes(v)))
   const filterText = (filter: string, value: string | undefined) =>
     !filter || (value && value.toLowerCase().includes(filter.toLowerCase()))
-
-  // 过滤后的数据列表
-  const ret_list: Plugin[] = []
 
   // 过滤
   marketList.value.forEach(value => {
@@ -359,22 +367,26 @@ const sortedUninstalledList = computed(() => {
         matchMultiple(filterForm.label, value.plugin_label) &&
         match(filterForm.repo, handleRepoUrl(value.repo_url))
       ) {
-        ret_list.push(value)
+        sortedUninstalledList.value.push(value)
       }
     }
   })
 
-  if (isNullOrEmptyObject(PluginStatistics.value)) return ret_list
-  // 数据排序
-  if (!activeSort.value || activeSort.value === 'count') {
-    return ret_list.sort((a, b) => {
-      return PluginStatistics.value[b.id || '0'] - PluginStatistics.value[a.id || '0']
-    })
-  } else if (activeSort.value) {
-    return ret_list.sort((a: any, b: any) => {
-      return a[activeSort.value ?? ''] > b[activeSort.value ?? ''] ? 1 : -1
-    })
+  // 排序
+  if (!isNullOrEmptyObject(PluginStatistics.value)) {
+    if (!activeSort.value || activeSort.value === 'count') {
+      sortedUninstalledList.value = sortedUninstalledList.value.sort((a, b) => {
+        return PluginStatistics.value[b.id || '0'] - PluginStatistics.value[a.id || '0']
+      })
+    } else if (activeSort.value) {
+      sortedUninstalledList.value = sortedUninstalledList.value.sort((a: any, b: any) => {
+        return a[activeSort.value ?? ''] > b[activeSort.value ?? ''] ? 1 : -1
+      })
+    }
   }
+
+  // 显示前20个
+  displayUninstalledList.value = sortedUninstalledList.value.slice(0, 20)
 })
 
 // 标签转换
@@ -405,9 +417,18 @@ function handleRepoUrl(url: string | undefined) {
 // 监测dataList变化或installedFilter变化时更新filteredDataList
 watch([dataList, installedFilter], () => {
   filteredDataList.value = dataList.value.filter(item => {
+    if (!installedFilter.value) return true
     return item.plugin_name?.toLowerCase().includes(installedFilter.value.toLowerCase())
   })
 })
+
+// 插件市场加载更多数据
+function loadMarketMore({ done }: { done: any }) {
+  // 从 dataList 中获取最前面的 20 个元素
+  const itemsToMove = sortedUninstalledList.value.splice(0, 20)
+  displayUninstalledList.value.push(...itemsToMove)
+  done('ok')
+}
 
 // 加载时获取数据
 onMounted(async () => {
@@ -436,7 +457,7 @@ onMounted(async () => {
         >
           <template #activator="{ props }">
             <VBtn
-              icon="mdi-filter-cog-outline"
+              icon="mdi-filter-multiple-outline"
               variant="text"
               :color="installedFilter ? 'primary' : 'gray'"
               size="default"
@@ -447,13 +468,19 @@ onMounted(async () => {
           <VCard>
             <VCardItem>
               <VCardTitle>
-                <VIcon icon="mdi-filter-cog-outline" class="mr-2" />
+                <VIcon icon="mdi-filter-multiple-outline" class="mr-2" />
                 筛选插件
               </VCardTitle>
               <VDialogCloseBtn @click="filterInstalledPluginDialog = false" />
             </VCardItem>
             <VCardText>
-              <VTextField v-model="installedFilter" label="名称" density="comfortable" clearable />
+              <VCombobox
+                v-model="installedFilter"
+                :items="installedPluginNames"
+                label="名称"
+                density="comfortable"
+                clearable
+              />
             </VCardText>
           </VCard>
         </VMenu>
@@ -465,7 +492,7 @@ onMounted(async () => {
         >
           <template #activator="{ props }">
             <VBtn
-              icon="mdi-filter-cog-outline"
+              icon="mdi-filter-multiple-outline"
               variant="text"
               :color="isFilterFormEmpty ? 'gray' : 'primary'"
               size="default"
@@ -476,7 +503,7 @@ onMounted(async () => {
           <VCard>
             <VCardItem>
               <VCardTitle>
-                <VIcon icon="mdi-filter-cog-outline" class="mr-2" />
+                <VIcon icon="mdi-filter-multiple-outline" class="mr-2" />
                 筛选插件
               </VCardTitle>
               <VDialogCloseBtn @click="filterMarketPluginDialog = false" />
@@ -584,13 +611,25 @@ onMounted(async () => {
         <transition name="fade-slide" appear>
           <div>
             <LoadingBanner v-if="!isAppMarketLoaded" class="mt-12" />
-            <div v-if="isAppMarketLoaded" class="grid gap-4 grid-plugin-card">
-              <template v-for="(data, index) in sortedUninstalledList" :key="`${data.id}_v${data.plugin_version}`">
-                <PluginAppCard :plugin="data" :count="PluginStatistics[data.id || '0']" @install="pluginInstalled" />
-              </template>
-            </div>
+            <!-- 资源列表 -->
+            <VInfiniteScroll
+              v-if="isAppMarketLoaded"
+              mode="intersect"
+              side="end"
+              :items="displayUninstalledList"
+              @load="loadMarketMore"
+              class="overflow-hidden"
+            >
+              <template #loading />
+              <template #empty />
+              <div class="grid gap-4 grid-plugin-card">
+                <template v-for="data in displayUninstalledList" :key="`${data.id}_v${data.plugin_version}`">
+                  <PluginAppCard :plugin="data" :count="PluginStatistics[data.id || '0']" @install="pluginInstalled" />
+                </template>
+              </div>
+            </VInfiniteScroll>
             <NoDataFound
-              v-if="uninstalledList.length === 0 && isAppMarketLoaded"
+              v-if="displayUninstalledList.length === 0 && isAppMarketLoaded"
               error-code="404"
               error-title="没有未安装插件"
               error-description="所有可用插件均已安装。"

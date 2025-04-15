@@ -334,8 +334,11 @@ function onSubscribeEditRemove() {
             <div v-if="subscribeState === 'P'" class="absolute inset-0 bg-yellow-900 opacity-80 pointer-events-none" />
           </template>
           <div>
-            <VCardText class="flex items-center">
-              <div class="h-auto w-16 flex-shrink-0 overflow-hidden rounded-md shadow-lg" v-if="imageLoaded">
+            <VCardText class="flex items-center py-3">
+              <div
+                class="h-auto w-16 flex-shrink-0 overflow-hidden rounded-md shadow-lg cursor-move"
+                v-if="imageLoaded"
+              >
                 <VImg :src="posterUrl" aspect-ratio="2/3" cover>
                   <template #placeholder>
                     <div class="w-full h-full">
@@ -352,7 +355,7 @@ function onSubscribeEditRemove() {
                 </div>
               </div>
             </VCardText>
-            <VCardText class="flex justify-space-between align-center flex-wrap">
+            <VCardText class="flex justify-space-between align-center flex-wrap py-3">
               <div class="flex align-center">
                 <IconBtn
                   v-if="props.media?.total_episode"
@@ -382,9 +385,6 @@ function onSubscribeEditRemove() {
                 bg-color="success"
                 color="success"
               />
-            </div>
-            <div v-if="hover.isHovering" class="me-n3 absolute top-1 right-10">
-              <IconBtn><VIcon class="cursor-move text-white">mdi-drag</VIcon></IconBtn>
             </div>
           </div>
         </VCard>

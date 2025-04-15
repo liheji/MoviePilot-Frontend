@@ -288,6 +288,7 @@ onUnmounted(() => {
 }
 
 .user-card-admin {
+  border: 1px solid transparent;
   background-clip: content-box, border-box;
   background-image: linear-gradient(rgb(var(--v-theme-surface)), rgb(var(--v-theme-surface))),
     linear-gradient(120deg, rgba(var(--v-theme-warning), 0.5), rgba(var(--v-theme-error), 0.5));
