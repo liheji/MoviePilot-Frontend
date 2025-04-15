@@ -625,7 +625,7 @@ onMounted(async () => {
               <template #loading />
               <template #empty />
               <div class="grid gap-4 grid-plugin-card">
-                <template v-for="data in displayUninstalledList" :key="`${data.id}_v${data.plugin_version}`">
+                <template v-for="(data, index) in displayUninstalledList" :key="`${data.id}_v${data.plugin_version}_${index}`">
                   <PluginAppCard :plugin="data" :count="PluginStatistics[data.id || '0']" @install="pluginInstalled" />
                 </template>
               </div>
