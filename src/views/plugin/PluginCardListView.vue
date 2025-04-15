@@ -358,6 +358,8 @@ watch([marketList, filterForm], () => {
   const filterText = (filter: string, value: string | undefined) =>
     !filter || (value && value.toLowerCase().includes(filter.toLowerCase()))
 
+  sortedUninstalledList.value = []
+
   // 过滤
   marketList.value.forEach(value => {
     if (value) {
@@ -631,8 +633,8 @@ onMounted(async () => {
             <NoDataFound
               v-if="displayUninstalledList.length === 0 && isAppMarketLoaded"
               error-code="404"
-              error-title="没有未安装插件"
-              error-description="所有可用插件均已安装。"
+              error-title="没有数据"
+              error-description="所有可用插件均已安装，如有筛选请调整筛选条件。"
             />
           </div>
         </transition>
