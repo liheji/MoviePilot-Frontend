@@ -135,7 +135,7 @@ onActivated(async () => {
         <VBtn
           icon="mdi-order-alphabetical-ascending"
           variant="text"
-          color="primary"
+          color="grey"
           size="default"
           class="settings-icon-button"
           @click="orderConfigDialog = true"
@@ -181,7 +181,7 @@ onActivated(async () => {
             <VIcon icon="mdi-order-alphabetical-ascending" size="small" class="me-2" />
             设置标签顺序
           </VCardTitle>
-          <DialogCloseBtn @click="orderConfigDialog = false" />
+          <VDialogCloseBtn @click="orderConfigDialog = false" />
         </VCardItem>
         <VDivider />
         <VCardText>

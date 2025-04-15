@@ -131,7 +131,7 @@ onMounted(async () => {
 <template>
   <VDialog width="40rem" max-height="85vh">
     <VCard title="用户认证" class="rounded-t">
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VRow>
           <VCol cols="12">

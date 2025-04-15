@@ -140,7 +140,7 @@ onUnmounted(() => {
       <VCardItem>
         <VCardTitle>整理队列</VCardTitle>
       </VCardItem>
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VProgressLinear
         v-if="dataList.length > 0 && progressValue > 0"

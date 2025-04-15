@@ -189,7 +189,7 @@ const userLevel = computed(() => userStore.level)
         <VBtn variant="elevated" color="error" @click="restart" prepend-icon="mdi-restart" class="px-5"> 确定 </VBtn>
         <VBtn variant="tonal" color="secondary" class="px-5" @click="restartDialog = false">取消</VBtn>
       </VCardActions>
-      <DialogCloseBtn @click="restartDialog = false" />
+      <VDialogCloseBtn @click="restartDialog = false" />
     </VCard>
   </VDialog>
 </template>

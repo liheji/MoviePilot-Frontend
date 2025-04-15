@@ -46,17 +46,8 @@ onActivated(() => {
 
 <template>
   <div>
-    <!-- 页面标题 -->
-    <div class="my-3 md:flex md:items-center md:justify-between">
-      <div class="min-w-0 flex-1 mx-0 flex align-middle">
-        <h2
-          class="mb-3 ms-2 truncate text-2xl font-bold leading-7 text-gray-100 sm:overflow-visible sm:text-3xl sm:leading-9 md:mb-0"
-          data-testid="page-header"
-        >
-          <span class="text-moviepilot">工作流</span>
-        </h2>
-      </div>
-    </div>
+    
+    <VPageContentTitle title="工作流" />
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <VRow v-if="workflowList.length > 0" class="match-height">
       <VCol cols="12" md="6" lg="4" v-for="item in workflowList" :key="item.id">

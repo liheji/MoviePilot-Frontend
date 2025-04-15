@@ -138,7 +138,7 @@ const dropdownItems = ref([
         <VCardTitle>{{ props.type + '订阅历史' }}</VCardTitle>
       </VCardItem>
       <VDivider />
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VList lines="two">
         <VInfiniteScroll mode="intersect" side="end" :items="historyList" class="overflow-hidden" @load="loadHistory">
           <template #loading>

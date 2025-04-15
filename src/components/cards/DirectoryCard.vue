@@ -175,7 +175,7 @@ watch(
 
 <template>
   <VCard variant="tonal" :width="props.width" :height="props.height">
-    <DialogCloseBtn @click="onClose" />
+    <VDialogCloseBtn @click="onClose" />
     <VCardItem>
       <VTextField
         v-model="props.directory.name"

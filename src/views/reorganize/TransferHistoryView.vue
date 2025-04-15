@@ -690,7 +690,7 @@ onMounted(fetchData)
   <!-- 底部弹窗 -->
   <VBottomSheet v-model="deleteConfirmDialog" inset>
     <VCard class="text-center rounded-t">
-      <DialogCloseBtn @click="deleteConfirmDialog = false" />
+      <VDialogCloseBtn @click="deleteConfirmDialog = false" />
       <VCardTitle class="pe-10">
         {{ confirmTitle }}
       </VCardTitle>

@@ -288,7 +288,6 @@ onUnmounted(() => {
 }
 
 .user-card-admin {
-  border: 2px solid transparent;
   background-clip: content-box, border-box;
   background-image: linear-gradient(rgb(var(--v-theme-surface)), rgb(var(--v-theme-surface))),
     linear-gradient(120deg, rgba(var(--v-theme-warning), 0.5), rgba(var(--v-theme-error), 0.5));
@@ -318,7 +317,7 @@ onUnmounted(() => {
   align-items: center;
   inset-block-start: 0;
   inset-inline: 0;
-  padding-block: 4px;
+  padding-block: 8px;
   padding-inline: 12px;
 }
 

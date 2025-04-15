@@ -12,17 +12,30 @@ const subType = route.meta.subType?.toString()
 const subId = ref(route.query.id as string)
 const activeTab = ref(route.query.tab)
 const shareViewKey = ref(0)
+const subscribeViewKey = ref(0)
 
 // 默认订阅设置弹窗
 const subscribeEditDialog = ref(false)
 
+// 订阅过滤弹窗
+const filterSubscribeDialog = ref(false)
+
 // 搜索订阅分享弹窗
 const searchShareDialog = ref(false)
 
-// 分享订阅过滤词
-const shareFilter = ref('')
+// 订阅过滤词
+const subscribeFilter = ref('')
 
-// 触发搜索订阅
+// 分享搜索词
+const shareKeyword = ref('')
+
+// 过滤订阅
+const filterSubscribes = () => {
+  filterSubscribeDialog.value = false
+  subscribeViewKey.value++
+}
+
+// 搜索分享
 const searchShares = () => {
   searchShareDialog.value = false
   shareViewKey.value++
@@ -33,26 +46,50 @@ const searchShares = () => {
   <div>
     <VHeaderTab :items="subType == '电影' ? SubscribeMovieTabs : SubscribeTvTabs" v-model="activeTab">
       <template #append>
-        <VBtn
+        <VMenu
           v-if="activeTab === '我的订阅'"
-          icon="mdi-clipboard-edit-outline"
-          variant="text"
-          color="primary"
-          size="default"
-          class="settings-icon-button"
-          @click="subscribeEditDialog = true"
-        />
+          v-model="filterSubscribeDialog"
+          width="25rem"
+          :close-on-content-click="false"
+        >
+          <template #activator="{ props }">
+            <VBtn
+              icon="mdi-filter-cog-outline"
+              variant="text"
+              :color="subscribeFilter ? 'primary' : 'gray'"
+              size="default"
+              class="settings-icon-button"
+              v-bind="props"
+            />
+          </template>
+          <VCard>
+            <VCardItem>
+              <VCardTitle>
+                <VIcon icon="mdi-filter-cog-outline" class="mr-2" />
+                筛选订阅
+              </VCardTitle>
+              <VDialogCloseBtn @click="filterSubscribeDialog = false" />
+            </VCardItem>
+            <VCardText>
+              <VTextField v-model="subscribeFilter" label="名称" clearable density="comfortable">
+                <template #append>
+                  <VBtn prepend-icon="mdi-check" color="primary" @click="filterSubscribes">确定</VBtn>
+                </template>
+              </VTextField>
+            </VCardText>
+          </VCard>
+        </VMenu>
         <VMenu
           v-if="activeTab === '订阅分享'"
           v-model="searchShareDialog"
-          width="35rem"
+          width="25rem"
           :close-on-content-click="false"
         >
           <template #activator="{ props }">
             <VBtn
               icon="mdi-movie-search-outline"
               variant="text"
-              color="primary"
+              :color="shareKeyword ? 'primary' : 'gray'"
               size="default"
               class="settings-icon-button"
               v-bind="props"
@@ -64,10 +101,10 @@ const searchShares = () => {
                 <VIcon icon="mdi-movie-search-outline" class="mr-2" />
                 搜索订阅分享
               </VCardTitle>
-              <DialogCloseBtn @click="searchShareDialog = false" />
+              <VDialogCloseBtn @click="searchShareDialog = false" />
             </VCardItem>
             <VCardText>
-              <VTextField v-model="shareFilter" label="搜索关键词" clearable>
+              <VTextField v-model="shareKeyword" label="关键词" clearable density="comfortable">
                 <template #append>
                   <VBtn prepend-icon="mdi-magnify" color="primary" @click="searchShares">搜索</VBtn>
                 </template>
@@ -75,14 +112,23 @@ const searchShares = () => {
             </VCardText>
           </VCard>
         </VMenu>
+        <VBtn
+          v-if="activeTab === '我的订阅'"
+          icon="mdi-clipboard-edit-outline"
+          variant="text"
+          color="gray"
+          size="default"
+          class="settings-icon-button"
+          @click="subscribeEditDialog = true"
+        />
       </template>
     </VHeaderTab>
 
     <VWindow v-model="activeTab" class="disable-tab-transition" :touch="false">
       <VWindowItem value="我的订阅">
         <transition name="fade-slide" appear>
-          <div class="mt-4">
-            <SubscribeListView :type="subType" :subid="subId" />
+          <div>
+            <SubscribeListView :type="subType" :subid="subId" :key="subscribeViewKey" :keyword="subscribeFilter" />
           </div>
         </transition>
       </VWindowItem>
@@ -96,7 +142,7 @@ const searchShares = () => {
       <VWindowItem value="订阅分享">
         <transition name="fade-slide" appear>
           <div>
-            <SubscribeShareView :keyword="shareFilter" :key="shareViewKey" />
+            <SubscribeShareView :keyword="shareKeyword" :key="shareViewKey" />
           </div>
         </transition>
       </VWindowItem>

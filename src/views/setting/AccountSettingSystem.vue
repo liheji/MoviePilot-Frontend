@@ -554,7 +554,7 @@ onDeactivated(() => {
   <VDialog v-if="advancedDialog" v-model="advancedDialog" scrollable max-width="60rem" persistent>
     <VCard>
       <VCardItem>
-        <DialogCloseBtn @click="advancedDialog = false" />
+        <VDialogCloseBtn @click="advancedDialog = false" />
         <VCardTitle>高级设置</VCardTitle>
         <VCardSubtitle>系统进阶设置，特殊情况下才需要调整</VCardSubtitle>
       </VCardItem>

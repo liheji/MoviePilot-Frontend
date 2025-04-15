@@ -291,7 +291,7 @@ onMounted(() => {
       :title="`${props.oper === 'add' ? '新增' : '编辑'}用户${props.oper !== 'add' ? ` - ${userName}` : ''}`"
       class="rounded-t"
     >
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardItem>
         <!-- 👉 Avatar -->

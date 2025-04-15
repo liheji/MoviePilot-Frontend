@@ -285,7 +285,7 @@ onBeforeMount(async () => {
           >{{ `数据 - ${props.site?.name}` }}
           <IconBtn @click.stop="refreshSiteData" color="info"><VIcon icon="mdi-refresh" /></IconBtn>
         </VCardTitle>
-        <DialogCloseBtn @click="emit('close')" />
+        <VDialogCloseBtn @click="emit('close')" />
       </VCardItem>
       <VDivider />
       <VCardText class="pt-5">

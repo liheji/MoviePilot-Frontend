@@ -70,7 +70,7 @@ async function updateSiteCookie() {
   <VDialog max-width="30rem">
     <!-- Dialog Content -->
     <VCard title="更新站点Cookie & UA">
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>
         <VForm @submit.prevent="() => {}">

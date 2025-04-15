@@ -95,7 +95,7 @@ function onClose() {
           <VIcon class="cursor-move" icon="mdi-drag" />
         </IconBtn>
       </span>
-      <DialogCloseBtn @click="onClose" />
+      <VDialogCloseBtn @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start">
           <h5 class="text-h6 mb-1">{{ props.rule.name }}</h5>
@@ -106,7 +106,7 @@ function onClose() {
     </VCard>
     <VDialog v-if="ruleInfoDialog" v-model="ruleInfoDialog" scrollable max-width="40rem" persistent>
       <VCard :title="`${props.rule.id} - 配置`" class="rounded-t">
-        <DialogCloseBtn v-model="ruleInfoDialog" />
+        <VDialogCloseBtn v-model="ruleInfoDialog" />
         <VDivider />
         <VCardText>
           <VForm>

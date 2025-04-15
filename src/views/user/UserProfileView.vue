@@ -57,7 +57,7 @@ const accountInfo = ref<User>({
   is_otp: false,
   permissions: {},
   settings: {},
-  nickname: ''
+  nickname: '',
 })
 
 // 二维码信息
@@ -135,15 +135,15 @@ async function saveAccountInfo() {
     }
     accountInfo.value.password = newPassword.value
   }
-  
+
   // 将nickname保存到settings中，后端可以直接处理JSON对象
   if (accountInfo.value.nickname) {
     if (!accountInfo.value.settings) {
-      accountInfo.value.settings = {};
+      accountInfo.value.settings = {}
     }
-    accountInfo.value.settings.nickname = accountInfo.value.nickname;
+    accountInfo.value.settings.nickname = accountInfo.value.nickname
   }
-  
+
   const oldUserName = accountInfo.value.name
   const oldAvatar = accountInfo.value.avatar
   accountInfo.value.avatar = currentAvatar.value
@@ -151,10 +151,10 @@ async function saveAccountInfo() {
   isSaving.value = true
   try {
     // 创建一个临时对象来保存用户数据，确保所有字段都会发送
-    const userData = { ...accountInfo.value };
-    
+    const userData = { ...accountInfo.value }
+
     const result: { [key: string]: any } = await api.put('user/', userData)
-    
+
     if (result.success) {
       if (oldUserName !== currentUserName.value) {
         $toast.success(`【${oldUserName}】更名【${currentUserName.value}】，用户信息保存成功！`)
@@ -312,12 +312,7 @@ watch(
             <VForm class="mt-6">
               <VRow>
                 <VCol cols="12" md="6">
-                  <VTextField
-                    v-model="currentUserName"
-                    density="comfortable"
-                    readonly
-                    label="用户名"
-                  />
+                  <VTextField v-model="currentUserName" density="comfortable" readonly label="用户名" />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VTextField v-model="accountInfo.email" density="comfortable" clearable label="邮箱" type="email" />
@@ -430,7 +425,7 @@ watch(
     <VDialog v-if="otpDialog" v-model="otpDialog" max-width="45rem" scrollable>
       <!-- 开启双重验证弹窗内容 -->
       <VCard>
-        <DialogCloseBtn @click="otpDialog = false" />
+        <VDialogCloseBtn @click="otpDialog = false" />
         <VCardText>
           <h4 class="text-h4 text-center mb-6 mt-5">登录双重验证</h4>
           <h5 class="text-h5 font-weight-medium mb-2">身份验证器</h5>

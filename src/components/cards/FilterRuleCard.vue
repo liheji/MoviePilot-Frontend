@@ -47,7 +47,7 @@ onMounted(() => {
         <VIcon class="cursor-move" icon="mdi-drag" />
       </IconBtn>
     </span>
-    <DialogCloseBtn @click="onClose" />
+    <VDialogCloseBtn @click="onClose" />
     <VCardItem>
       <VCardTitle>优先级 {{ props.pri }}</VCardTitle>
       <VRow>

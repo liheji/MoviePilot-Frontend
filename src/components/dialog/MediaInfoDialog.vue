@@ -13,7 +13,7 @@ const emit = defineEmits(['close'])
 <template>
   <VDialog max-width="50rem">
     <VCard>
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
         <MediaInfoCard :context="context" />
       </VCardItem>

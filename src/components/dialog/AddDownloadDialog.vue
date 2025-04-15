@@ -125,7 +125,7 @@ onMounted(() => {
         <span v-if="title">{{ torrent?.site_name }} - {{ title }}</span>
         <span v-else>确认下载</span>
       </VCardTitle>
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VList lines="one">
         <VListItem>

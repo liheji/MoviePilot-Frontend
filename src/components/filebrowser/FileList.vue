@@ -688,7 +688,7 @@ onMounted(() => {
   <!-- 重命名弹窗 -->
   <VDialog v-if="renamePopper" v-model="renamePopper" max-width="35rem">
     <VCard title="重命名">
-      <DialogCloseBtn @click="renamePopper = false" />
+      <VDialogCloseBtn @click="renamePopper = false" />
       <VDivider />
       <VCardText>
         <VRow>

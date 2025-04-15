@@ -103,7 +103,7 @@ onMounted(() => {
         @keydown.enter="searchMedias"
       />
     </VToolbar>
-    <DialogCloseBtn
+    <VDialogCloseBtn
       @click="
         () => {
           emit('close')

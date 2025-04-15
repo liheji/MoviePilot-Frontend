@@ -347,7 +347,7 @@ onDeactivated(() => {
           <VIcon icon="mdi-tune" size="small" class="me-2" />
           设置仪表板
         </VCardTitle>
-        <DialogCloseBtn @click="dialog = false" />
+        <VDialogCloseBtn @click="dialog = false" />
       </VCardItem>
       <VDivider />
       <VCardText>

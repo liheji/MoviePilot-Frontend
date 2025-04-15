@@ -150,7 +150,7 @@ onUnmounted(() => {
         @click="openDownloaderInfoDialog"
         :class="{ 'transition transform-cpu duration-300 -translate-y-1': hover.isHovering }"
       >
-        <DialogCloseBtn @click="onClose" />
+        <VDialogCloseBtn @click="onClose" />
         <span class="absolute top-3 right-12">
           <IconBtn>
             <VIcon class="cursor-move" icon="mdi-drag" />
@@ -181,7 +181,7 @@ onUnmounted(() => {
     </VHover>
     <VDialog v-if="downloaderInfoDialog" v-model="downloaderInfoDialog" scrollable max-width="40rem" persistent>
       <VCard :title="`${props.downloader.name} - 配置`" class="rounded-t">
-        <DialogCloseBtn v-model="downloaderInfoDialog" />
+        <VDialogCloseBtn v-model="downloaderInfoDialog" />
         <VDivider />
         <VCardText>
           <VForm>

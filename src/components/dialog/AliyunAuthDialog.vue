@@ -86,7 +86,7 @@ onUnmounted(() => {
 <template>
   <VDialog width="40rem" scrollable max-height="85vh">
     <VCard title="阿里云盘登录" class="rounded-t">
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VCardText class="pt-2 flex flex-col items-center">
         <div class="my-6 shadow-lg rounded text-center p-3 border">
           <VImg class="mx-auto" :src="qrCodeUrl" width="200" height="200">

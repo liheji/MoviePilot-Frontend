@@ -208,7 +208,7 @@ function onClose() {
           <VIcon class="cursor-move" icon="mdi-drag" />
         </IconBtn>
       </span>
-      <DialogCloseBtn @click="onClose" />
+      <VDialogCloseBtn @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start">
           <h5 class="text-h6 mb-1">{{ props.group.name }}</h5>
@@ -222,7 +222,7 @@ function onClose() {
     </VCard>
     <VDialog v-if="groupInfoDialog" v-model="groupInfoDialog" scrollable max-width="80rem" persistent>
       <VCard :title="`${props.group.name} - 配置`" class="rounded-t">
-        <DialogCloseBtn v-model="groupInfoDialog" />
+        <VDialogCloseBtn v-model="groupInfoDialog" />
         <VDivider />
         <VCardItem class="pt-1">
           <VRow class="mt-1">

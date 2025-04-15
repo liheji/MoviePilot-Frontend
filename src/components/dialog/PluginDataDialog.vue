@@ -43,7 +43,7 @@ onMounted(() => {
 <template>
   <VDialog scrollable max-width="80rem" :fullscreen="!display.mdAndUp.value">
     <VCard :title="`${props.plugin?.plugin_name}`" class="rounded-t">
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <LoadingBanner v-if="!isRefreshed" class="mt-5" />
       <VCardText v-else class="min-h-40">
         <PageRender @action="loadPluginPage" v-for="(item, index) in pluginPageItems" :key="index" :config="item" />

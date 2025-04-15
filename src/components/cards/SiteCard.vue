@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
+import noImage from '@images/logos/site.webp'
 import { useToast } from 'vue-toast-notification'
 import SiteAddEditDialog from '../dialog/SiteAddEditDialog.vue'
 import SiteUserDataDialog from '../dialog/SiteUserDataDialog.vue'
@@ -54,6 +55,9 @@ const siteStats = ref<SiteStatistic>({})
 async function getSiteIcon() {
   try {
     siteIcon.value = (await api.get(`site/icon/${cardProps.site?.id}`)).data.icon
+    if (!siteIcon.value) {
+      siteIcon.value = noImage
+    }
   } catch (error) {
     console.error(error)
   }
@@ -212,15 +216,18 @@ onMounted(() => {
         <!-- 顶部：图标和站点名称 -->
         <div class="flex items-center mb-1">
           <!-- 站点图标 -->
-          <div class="site-icon-container mr-2.5" @click.stop="siteEditDialog = true">
-            <img :src="siteIcon" class="site-icon" :alt="cardProps.site?.name" />
+          <div class="site-icon-container mr-2.5">
+            <VImg :src="siteIcon" class="site-icon" :alt="cardProps.site?.name">
+              <template #placeholder>
+                <div class="w-full h-full">
+                  <VSkeletonLoader class="object-cover aspect-w-1 aspect-h-1" />
+                </div>
+              </template>
+            </VImg>
             <div class="site-icon-edit-overlay">
-              <VIcon icon="mdi-pencil" color="white" size="16" />
+              <VIcon icon="mdi-drag" color="white" size="24" class="cursor-move" />
             </div>
           </div>
-
-          <!-- 拖动图标 -->
-          <VIcon icon="mdi-drag" size="20" class="drag-handle cursor-move opacity-40 mr-1.5 z-10" />
 
           <!-- 站点名称和特性图标 -->
           <div class="flex-1 min-w-0 flex items-center">
@@ -245,7 +252,7 @@ onMounted(() => {
         </div>
 
         <!-- 中间部分：网址 -->
-        <div class="site-meta mb-1.5">
+        <div class="site-meta my-3">
           <div class="site-url truncate" @click.stop="openSitePage">
             {{ cardProps.site?.url }}
           </div>
@@ -366,7 +373,6 @@ onMounted(() => {
 .site-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.09);
   border-radius: 10px;
   background: rgba(var(--v-theme-surface), 0.95);
   cursor: pointer;
@@ -374,7 +380,7 @@ onMounted(() => {
 }
 
 .site-card:hover {
-  border-color: rgba(var(--v-theme-primary), 0.2);
+  border: 1px solid rgba(var(--v-theme-primary), 0.2);
   box-shadow: 0 3px 12px -6px rgba(0, 0, 0, 10%);
   transform: translateY(-4px);
 }
@@ -393,7 +399,7 @@ onMounted(() => {
 .site-status-indicator {
   position: absolute;
   z-index: 1;
-  block-size: 2px;
+  block-size: 4px;
   inset-block-start: 0;
   inset-inline: 0;
   opacity: 0.5;
@@ -643,7 +649,6 @@ onMounted(() => {
 /* 数据统计 */
 .site-stats {
   margin-block-start: auto;
-  padding-block-start: 1rem;
 }
 
 .site-data-values {

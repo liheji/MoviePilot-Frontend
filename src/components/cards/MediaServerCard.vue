@@ -175,7 +175,7 @@ onMounted(() => {
 <template>
   <div>
     <VCard variant="tonal" @click="openMediaServerInfoDialog">
-      <DialogCloseBtn @click="onClose" />
+      <VDialogCloseBtn @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
           <div class="text-h6 mb-1">{{ mediaserver.name }}</div>
@@ -190,7 +190,7 @@ onMounted(() => {
     </VCard>
     <VDialog v-if="mediaServerInfoDialog" v-model="mediaServerInfoDialog" scrollable max-width="40rem" persistent>
       <VCard :title="`${props.mediaserver.name} - 配置`" class="rounded-t">
-        <DialogCloseBtn v-model="mediaServerInfoDialog" />
+        <VDialogCloseBtn v-model="mediaServerInfoDialog" />
         <VDivider />
         <VCardText>
           <VForm>
@@ -313,19 +313,10 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
-                  v-model="mediaServerInfo.config.username"
-                  label="用户名"
-                  active
-                />
+                <VTextField v-model="mediaServerInfo.config.username" label="用户名" active />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
-                  type="password"
-                  v-model="mediaServerInfo.config.password"
-                  label="密码"
-                  active
-                />
+                <VTextField type="password" v-model="mediaServerInfo.config.password" label="密码" active />
               </VCol>
             </VRow>
             <VRow v-if="mediaServerInfo.type == 'plex'">

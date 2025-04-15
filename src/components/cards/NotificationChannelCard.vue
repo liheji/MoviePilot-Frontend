@@ -119,7 +119,7 @@ function onClose() {
           <VIcon class="cursor-move" icon="mdi-drag" />
         </IconBtn>
       </span>
-      <DialogCloseBtn @click="onClose" />
+      <VDialogCloseBtn @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start">
           <div class="flex items-center">
@@ -133,7 +133,7 @@ function onClose() {
     </VCard>
     <VDialog v-if="notificationInfoDialog" v-model="notificationInfoDialog" scrollable max-width="40rem" persistent>
       <VCard :title="`${props.notification.name} - 配置`" class="rounded-t">
-        <DialogCloseBtn v-model="notificationInfoDialog" />
+        <VDialogCloseBtn v-model="notificationInfoDialog" />
         <VDivider />
         <VCardText>
           <VForm>

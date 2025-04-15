@@ -92,7 +92,7 @@ onBeforeMount(async () => {
 <template>
   <VDialog scrollable max-width="60rem" :fullscreen="!display.mdAndUp.value">
     <VCard :title="`${props.plugin?.plugin_name} - 配置`" class="rounded-t">
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText v-if="isRefreshed">
         <FormRender v-for="(item, index) in pluginFormItems" :key="index" :config="item" :model="pluginConfigForm" />

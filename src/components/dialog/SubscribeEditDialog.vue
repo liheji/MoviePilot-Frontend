@@ -370,7 +370,7 @@ onMounted(() => {
       class="rounded-t"
     >
       <VCardText>
-        <DialogCloseBtn @click="emit('close')" />
+        <VDialogCloseBtn @click="emit('close')" />
         <VForm @submit.prevent="() => {}">
           <VTabs v-model="activeTab" show-arrows>
             <VTab value="basic">

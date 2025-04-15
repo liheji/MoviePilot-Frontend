@@ -240,7 +240,7 @@ onMounted(() => {
           <VIcon icon="mdi-palette" class="me-2" />
           自定义主题风格
         </VCardTitle>
-        <DialogCloseBtn @click="cssDialog = false" />
+        <VDialogCloseBtn @click="cssDialog = false" />
       </VCardItem>
       <VDivider />
       <VAceEditor

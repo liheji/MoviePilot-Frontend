@@ -96,7 +96,6 @@ onUnmounted(() => {
   backdrop-filter: blur(10px);
   background-color: rgba(var(--v-theme-background), 0.8);
   border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  gap: 16px; // 为按钮留出空间
   inset-block-start: 0;
   margin-block-end: 16px;
   padding-block: 8px;

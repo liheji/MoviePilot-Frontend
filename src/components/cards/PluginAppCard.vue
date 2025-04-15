@@ -227,7 +227,7 @@ const dropdownItems = ref([
     <!-- 更新日志 -->
     <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
       <VCard :title="`${props.plugin?.plugin_name} 更新说明`">
-        <DialogCloseBtn @click="releaseDialog = false" />
+        <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />
         <VersionHistory :history="props.plugin?.history" />
       </VCard>
@@ -235,7 +235,7 @@ const dropdownItems = ref([
     <!-- 插件详情-->
     <VDialog v-if="detailDialog" v-model="detailDialog" max-width="30rem">
       <VCard>
-        <DialogCloseBtn @click="detailDialog = false" />
+        <VDialogCloseBtn @click="detailDialog = false" />
         <VCardText>
           <VCol>
             <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">

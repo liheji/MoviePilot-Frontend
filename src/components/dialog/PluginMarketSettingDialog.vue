@@ -48,7 +48,7 @@ onMounted(() => {
           <VIcon icon="mdi-store-cog" class="me-2" />
           插件仓库设置
         </VCardTitle>
-        <DialogCloseBtn @click="emit('close')" />
+        <VDialogCloseBtn @click="emit('close')" />
       </VCardItem>
       <VCardText class="pt-2">
         <VTextarea

@@ -19,10 +19,14 @@ const userStore = useUserStore()
 const props = defineProps({
   type: String,
   subid: String,
+  keyword: String,
 })
 
 // 是否刷新过
 let isRefreshed = ref(false)
+
+// 搜索关键字
+const keyword = ref(props.keyword || '')
 
 // 顺序存储键值
 const localOrderKey = props.type === '电影' ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'
@@ -50,6 +54,10 @@ watch(dataList, () => {
   const userName = userStore.userName
   if (superUser) displayList.value = dataList.value.filter(data => data.type === props.type)
   else displayList.value = dataList.value.filter(data => data.type === props.type && data.username === userName)
+  // 过滤关键字
+  if (keyword.value) {
+    displayList.value = displayList.value.filter(data => data.name.toLowerCase().includes(keyword.value.toLowerCase()))
+  }
   // 排序
   sortSubscribeOrder()
 })
@@ -139,6 +147,7 @@ onActivated(async () => {
 </script>
 
 <template>
+  <VPageContentTitle v-if="keyword" :title="`筛选：${keyword}`" />
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
   <draggable
     v-if="displayList.length > 0"
@@ -156,8 +165,8 @@ onActivated(async () => {
   <NoDataFound
     v-if="displayList.length === 0 && isRefreshed"
     error-code="404"
-    error-title="没有订阅"
-    error-description="请通过搜索添加电影、电视剧订阅。"
+    error-title="没有数据"
+    :error-description="keyword ? '没有搜索到相关内容，请更换搜索关键词。' : '请通过搜索添加电影、电视剧订阅。'"
   />
   <!-- 底部操作按钮 -->
   <div v-if="isRefreshed">

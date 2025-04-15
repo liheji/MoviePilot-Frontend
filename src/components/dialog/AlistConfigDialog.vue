@@ -31,7 +31,7 @@ async function savaAlistConfig() {
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
     <VCard title="AList配置" class="rounded-t">
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VRow>
           <VCol cols="12">

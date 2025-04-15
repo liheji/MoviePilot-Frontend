@@ -210,7 +210,7 @@ onMounted(() => {
           <VIcon icon="mdi-text-recognition" class="me-2" />
           名称识别测试
         </VCardTitle>
-        <DialogCloseBtn @click="nameTestDialog = false" />
+        <VDialogCloseBtn @click="nameTestDialog = false" />
       </VCardItem>
       <VDivider />
       <VCardText>
@@ -226,7 +226,7 @@ onMounted(() => {
           <VIcon icon="mdi-network" class="me-2" />
           网速连通性测试
         </VCardTitle>
-        <DialogCloseBtn @click="netTestDialog = false" />
+        <VDialogCloseBtn @click="netTestDialog = false" />
       </VCardItem>
       <VDivider />
       <VCardText>
@@ -243,7 +243,7 @@ onMounted(() => {
     :fullscreen="!display.mdAndUp.value"
   >
     <VCard>
-      <DialogCloseBtn @click="loggingDialog = false" />
+      <VDialogCloseBtn @click="loggingDialog = false" />
       <VCardItem>
         <VCardTitle class="inline-flex">
           <VIcon icon="mdi-file-document" class="me-2" />
@@ -272,7 +272,7 @@ onMounted(() => {
           <VIcon icon="mdi-filter-cog" class="me-2" />
           规则测试
         </VCardTitle>
-        <DialogCloseBtn @click="ruleTestDialog = false" />
+        <VDialogCloseBtn @click="ruleTestDialog = false" />
       </VCardItem>
       <VDivider />
       <VCardText>
@@ -288,7 +288,7 @@ onMounted(() => {
           <VIcon icon="mdi-cog" class="me-2" />
           系统健康检查
         </VCardTitle>
-        <DialogCloseBtn @click="systemTestDialog = false" />
+        <VDialogCloseBtn @click="systemTestDialog = false" />
       </VCardItem>
       <VDivider />
       <VCardText>
@@ -310,7 +310,7 @@ onMounted(() => {
           <VIcon icon="mdi-message" class="me-2" />
           消息中心
         </VCardTitle>
-        <DialogCloseBtn @click="messageDialog = false" />
+        <VDialogCloseBtn @click="messageDialog = false" />
       </VCardItem>
       <VDivider />
       <VCardText ref="chatContainer">

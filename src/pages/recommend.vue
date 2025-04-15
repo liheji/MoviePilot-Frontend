@@ -205,7 +205,7 @@ onActivated(async () => {
         <VBtn
           icon="mdi-tune"
           variant="text"
-          color="primary"
+          color="grey"
           size="default"
           class="settings-icon-button"
           @click="dialog = true"
@@ -234,7 +234,7 @@ onActivated(async () => {
             <VIcon icon="mdi-tune" size="small" class="me-2" />
             自定义内容
           </VCardTitle>
-          <DialogCloseBtn @click="dialog = false" />
+          <VDialogCloseBtn @click="dialog = false" />
         </VCardItem>
         <VDivider />
         <VCardText>

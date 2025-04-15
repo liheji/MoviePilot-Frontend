@@ -57,7 +57,7 @@ const $toast = useToast()
       class="rounded-t"
     >
       <VCardText>
-        <DialogCloseBtn @click="emit('close')" />
+        <VDialogCloseBtn @click="emit('close')" />
         <VForm @submit.prevent="() => {}" class="pt-2">
           <VRow>
             <VCol cols="12">

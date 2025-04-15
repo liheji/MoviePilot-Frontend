@@ -78,7 +78,7 @@ onBeforeMount(() => {
   <VDialog scrollable max-width="80rem" :fullscreen="!display.mdAndUp.value">
     <VCard class="rounded-t">
       <VCardItem class="my-2">
-        <DialogCloseBtn @click="emit('close')" />
+        <VDialogCloseBtn @click="emit('close')" />
       </VCardItem>
       <VCardText>
         <div class="media-page">
@@ -237,7 +237,7 @@ onBeforeMount(() => {
 .media-overview {
   display: flex;
   flex-direction: column;
-  padding-block: 1rem 1rem;
+  padding-block: 1rem;
 }
 
 @media (width >= 1024px) {

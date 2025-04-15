@@ -21,6 +21,9 @@ const apipath = 'subscribe/shares'
 // 当前页码
 const page = ref(1)
 
+// 搜索关键字
+const keyword = ref(props.keyword)
+
 // 是否加载中
 const loading = ref(false)
 
@@ -36,7 +39,7 @@ function getParams() {
   let params = {
     page: page.value,
     count: 30,
-    name: props.keyword,
+    name: keyword.value,
   }
   return params
 }
@@ -112,6 +115,7 @@ function removeData(id: number) {
 </script>
 
 <template>
+  <VPageContentTitle v-if="keyword" :title="`搜索：${keyword}`" />
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
   <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-hidden" @load="fetchData">
     <template #loading />
@@ -126,7 +130,7 @@ function removeData(id: number) {
       error-code="404"
       error-title="没有数据"
       :error-description="
-        keyword ? '没有搜索到相关内容，请更换搜索关键词' : '未获取到分享订阅数据，未开启数据分享或服务器无法连接。'
+        keyword ? '没有搜索到相关内容，请更换搜索关键词。' : '未获取到分享订阅数据，未开启数据分享或服务器无法连接。'
       "
     />
   </VInfiniteScroll>

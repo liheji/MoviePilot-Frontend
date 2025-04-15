@@ -148,7 +148,7 @@ onMounted(async () => {
       :title="`${props.oper === 'add' ? '新增' : '编辑'}站点${props.oper !== 'add' ? ` - ${siteForm.name}` : ''}`"
       class="rounded-t"
     >
-      <DialogCloseBtn @click="emit('close')" />
+      <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>
         <VForm @submit.prevent="() => {}">

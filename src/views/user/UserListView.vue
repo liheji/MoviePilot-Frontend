@@ -54,22 +54,11 @@ onActivated(() => {
 </script>
 
 <template>
+  <!-- 页面标题 -->
+  <VPageContentTitle title="用户管理" />
   <div class="card-list-container">
-    <!-- 页面标题 -->
-    <div class="my-3 md:flex md:items-center md:justify-between">
-      <div class="min-w-0 flex-1 mx-0 flex align-middle">
-        <h2
-          class="mb-3 ms-2 truncate text-2xl font-bold leading-7 text-gray-100 sm:overflow-visible sm:text-3xl sm:leading-9 md:mb-0"
-          data-testid="page-header"
-        >
-          <span class="text-moviepilot">用户管理</span>
-        </h2>
-      </div>
-    </div>
-
     <!-- 加载中提示 -->
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-
     <!-- 用户卡片网格 -->
     <div v-if="allUsers.length > 0 && isRefreshed" class="grid gap- grid-user-card">
       <!-- 普通用户卡片 -->

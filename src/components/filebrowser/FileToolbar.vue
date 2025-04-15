@@ -168,7 +168,7 @@ const sortIcon = computed(() => {
         </IconBtn>
       </template>
       <VCard title="新建文件夹">
-        <DialogCloseBtn @click="newFolderPopper = false" />
+        <VDialogCloseBtn @click="newFolderPopper = false" />
         <VDivider />
         <VCardText>
           <VTextField v-model="newFolderName" label="名称" />

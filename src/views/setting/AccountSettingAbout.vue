@@ -258,7 +258,7 @@ onMounted(() => {
   <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
     <VCard>
       <VCardItem>
-        <DialogCloseBtn @click="releaseDialog = false" />
+        <VDialogCloseBtn @click="releaseDialog = false" />
         <VCardTitle>{{ releaseDialogTitle }} 变更日志</VCardTitle>
       </VCardItem>
       <VCardText v-html="releaseDialogBody" />
