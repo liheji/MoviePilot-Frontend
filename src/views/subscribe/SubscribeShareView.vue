@@ -4,6 +4,12 @@ import type { SubscribeShare } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import SubscribeShareCard from '@/components/cards/SubscribeShareCard.vue'
 
+// 定义输入参数
+const props = defineProps({
+  // 过滤关键字
+  keyword: String,
+})
+
 // 判断是否有滚动条
 function hasScroll() {
   return document.body.scrollHeight - (window.innerHeight || document.documentElement.clientHeight) > 2
@@ -30,6 +36,7 @@ function getParams() {
   let params = {
     page: page.value,
     count: 30,
+    name: props.keyword,
   }
   return params
 }
@@ -118,7 +125,9 @@ function removeData(id: number) {
       v-if="dataList.length === 0 && isRefreshed"
       error-code="404"
       error-title="没有数据"
-      error-description="未获取到共享订阅数据，未开启数据分享或服务器无法连接。"
+      :error-description="
+        keyword ? '没有搜索到相关内容，请更换搜索关键词' : '未获取到分享订阅数据，未开启数据分享或服务器无法连接。'
+      "
     />
   </VInfiniteScroll>
 </template>
