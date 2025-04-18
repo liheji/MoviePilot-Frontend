@@ -26,6 +26,7 @@ export default {
   VBtn: {
     // set v-btn default color to primary
     color: 'primary',
+    elevation: 0,
   },
   VCard: {
     elevation: 0,

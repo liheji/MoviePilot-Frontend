@@ -41,7 +41,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <VMenu v-model="appsMenu" width="400" transition="scale-transition" close-on-content-click class="notification-menu" scrim>
+  <VMenu
+    v-model="appsMenu"
+    width="400"
+    transition="scale-transition"
+    close-on-content-click
+    class="notification-menu"
+    scrim
+  >
     <!-- Menu Activator -->
     <template #activator="{ props }">
       <VBadge v-if="hasNewMessage" dot color="error" :offset-x="5" :offset-y="5" v-bind="props">
@@ -55,13 +62,12 @@ onBeforeUnmount(() => {
     </template>
     <!-- Menu Content -->
     <VCard>
-      <VCardItem class="notification-header">
-        <VCardTitle class="font-weight-medium text-primary">通知中心</VCardTitle>
+      <VCardItem class="py-3">
+        <VCardTitle>通知中心</VCardTitle>
         <template #append>
           <VTooltip text="设为已读">
             <template #activator="{ props }">
               <IconBtn
-                class="mark-read-btn"
                 v-bind="props"
                 @click="
                   () => {
@@ -76,89 +82,33 @@ onBeforeUnmount(() => {
           </VTooltip>
         </template>
       </VCardItem>
-      <div v-if="notificationList.length > 0" class="notification-list">
-        <VListItem v-for="(item, i) in notificationList" :key="i" lines="two" class="notification-item">
+      <VDivider />
+      <div v-if="notificationList.length > 0">
+        <VListItem v-for="(item, i) in notificationList" :key="i" lines="two" class="mb-1">
           <template #prepend>
-            <VAvatar rounded class="notification-avatar">
+            <VAvatar rounded>
               <VIcon v-if="item.type === 'user'" icon="mdi-account-alert" size="large"></VIcon>
               <VIcon v-else-if="item.type === 'plugin'" icon="mdi-robot" size="large"></VIcon>
               <VIcon v-else icon="mdi-laptop" size="large"></VIcon>
             </VAvatar>
           </template>
-          <div class="notification-content">
-            <div class="notification-title overflow-visiable break-words whitespace-break-spaces">
+          <div>
+            <div class="text-body-1 text-high-emphasis break-words whitespace-break-spaces">
               {{ item.title }}
             </div>
-            <div class="notification-text">{{ item.text }}</div>
-            <div class="notification-time">{{ formatDateDifference(item.date) }}</div>
+            <div class="text-caption mt-1.5">
+              {{ item.text }}
+            </div>
+            <div class="text-sm text-primary mt-1.5">
+              {{ formatDateDifference(item.date) }}
+            </div>
           </div>
         </VListItem>
       </div>
-      <div v-else class="no-notification">
-        <div class="text-center">
-          <VIcon icon="mdi-bell-sleep-outline" size="40" class="mb-3 text-primary" />
-          <div>暂无通知</div>
-        </div>
+      <div v-else class="py-8 text-center">
+        <VIcon icon="mdi-bell-sleep-outline" size="40" class="mb-3" />
+        <div>暂无通知</div>
       </div>
     </VCard>
   </VMenu>
 </template>
-
-<style lang="scss" scoped>
-.notification-header {
-  background: linear-gradient(to right, rgba(var(--v-theme-primary), 0.04), rgba(var(--v-theme-primary), 0.01));
-  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  padding-block: 12px;
-  padding-inline: 16px;
-}
-
-.notification-list {
-  padding: 8px;
-  max-block-size: 500px;
-  overflow-y: auto;
-}
-
-.notification-item {
-  .notification-avatar {
-    background-color: rgba(var(--v-theme-primary), 0.1);
-  }
-
-  .notification-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-  }
-
-  .notification-text {
-    color: rgba(var(--v-theme-on-surface), 0.75);
-    font-size: 0.85rem;
-    margin-block-start: 6px;
-  }
-
-  .notification-time {
-    color: rgba(var(--v-theme-primary), 0.8);
-    font-size: 0.8rem;
-    margin-block-start: 6px;
-  }
-}
-
-.no-notification {
-  color: rgba(var(--v-theme-on-surface), 0.6);
-  font-size: 0.95rem;
-  padding-block: 30px;
-  padding-inline: 0;
-}
-
-.mark-read-btn {
-  border-radius: 8px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: rgba(var(--v-theme-primary), 0.1);
-    transform: scale(1.05);
-  }
-}
-
-.notification-menu .v-overlay__content {
-  overflow: hidden;
-}
-</style>

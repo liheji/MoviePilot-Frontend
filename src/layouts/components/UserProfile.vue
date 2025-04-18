@@ -86,59 +86,52 @@ const userLevel = computed(() => userStore.level)
     <VImg :src="avatar" />
 
     <VMenu activator="parent" width="230" location="bottom end" offset="14px" class="user-menu" scrim>
-      <VList class="overflow-hidden pt-0">
+      <VList class="pt-0">
         <!-- 👉 User Avatar & Name -->
-        <div class="user-profile-header px-2 py-4 mb-2">
-          <div class="d-flex align-center">
-            <VAvatar size="60" class="user-avatar" color="primary" rounded="sm">
+        <VListItem class="py-4" bg-color="primary" bg-opacity="0.05">
+          <template #prepend>
+            <VAvatar size="60" color="primary" rounded="sm" class="border-2 border-opacity-10">
               <VImg :src="avatar" />
             </VAvatar>
-            <div class="ms-4">
-              <div class="user-role">
-                {{ superUser ? '管理员' : '普通用户' }}
-              </div>
-              <div class="user-name">
-                {{ userName }}
-              </div>
-            </div>
+          </template>
+          <div>
+            <span class="text-primary text-sm font-medium d-block">
+              {{ superUser ? '管理员' : '普通用户' }}
+            </span>
+            <span class="text-high-emphasis text-lg font-weight-bold">
+              {{ userName }}
+            </span>
           </div>
-        </div>
+        </VListItem>
+        <VDivider class="mb-2" />
         <div class="px-2">
           <!-- 👉 Profile -->
-          <VListItem link @click="router.push('/profile')" class="user-menu-item mb-1">
+          <VListItem link @click="router.push('/profile')" class="mb-1 rounded-lg" hover>
             <template #prepend>
-              <div class="user-menu-icon">
-                <VIcon icon="mdi-account-outline" />
-              </div>
+              <VIcon icon="mdi-account-outline" />
             </template>
             <VListItemTitle>个人信息</VListItemTitle>
           </VListItem>
 
-          <VListItem link @click="router.push('/apps')" class="user-menu-item mb-1">
+          <VListItem link @click="router.push('/apps')" class="mb-1 rounded-lg" hover>
             <template #prepend>
-              <div class="user-menu-icon">
-                <VIcon icon="mdi-view-grid-outline" />
-              </div>
+              <VIcon icon="mdi-view-grid-outline" />
             </template>
             <VListItemTitle>功能视图</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Site Auth -->
-          <VListItem v-if="userLevel < 2 && superUser" link @click="showSiteAuthDialog" class="user-menu-item mb-1">
+          <VListItem v-if="userLevel < 2 && superUser" link @click="showSiteAuthDialog" class="mb-1 rounded-lg" hover>
             <template #prepend>
-              <div class="user-menu-icon">
-                <VIcon icon="mdi-lock-check-outline" />
-              </div>
+              <VIcon icon="mdi-lock-check-outline" />
             </template>
             <VListItemTitle>用户认证</VListItemTitle>
           </VListItem>
 
           <!-- 👉 FAQ -->
-          <VListItem href="https://wiki.movie-pilot.org" target="_blank" class="user-menu-item mb-1">
+          <VListItem href="https://wiki.movie-pilot.org" target="_blank" class="mb-1 rounded-lg" hover>
             <template #prepend>
-              <div class="user-menu-icon">
-                <VIcon icon="mdi-help-circle-outline" />
-              </div>
+              <VIcon icon="mdi-help-circle-outline" />
             </template>
             <VListItemTitle>帮助文档</VListItemTitle>
           </VListItem>
@@ -147,19 +140,19 @@ const userLevel = computed(() => userStore.level)
           <VDivider v-if="superUser" class="my-3" />
 
           <!-- 👉 restart -->
-          <VListItem v-if="superUser" @click="showRestartDialog" class="user-menu-item mb-1">
+          <VListItem v-if="superUser" @click="showRestartDialog" class="mb-1 rounded-lg" hover>
             <template #prepend>
-              <div class="user-menu-icon restart-icon">
-                <VIcon icon="mdi-restart" />
-              </div>
+              <VIcon icon="mdi-restart" />
             </template>
             <VListItemTitle>重启</VListItemTitle>
           </VListItem>
         </div>
         <!-- 👉 Logout -->
         <div class="px-2 mt-3 mb-2">
-          <VBtn color="error" block class="logout-btn" @click="logout">
-            <template #prepend> <VIcon icon="mdi-logout" /> </template>
+          <VBtn color="error" block class="py-3 rounded-lg" elevation="2" @click="logout">
+            <template #prepend>
+              <VIcon icon="mdi-logout" />
+            </template>
             退出登录
           </VBtn>
         </div>
@@ -175,94 +168,21 @@ const userLevel = computed(() => userStore.level)
   <VDialog v-if="restartDialog" v-model="restartDialog" max-width="25rem">
     <VCard>
       <VCardItem>
-        <div class="flex items-center justify-center mt-3">
+        <div class="d-flex align-center justify-center mt-3">
           <VAvatar color="warning" variant="text" size="x-large">
             <VIcon size="x-large" icon="mdi-alert" />
           </VAvatar>
           <div class="ms-3">
-            <p class="font-bold text-xl text-high-emphasis">确认重启系统吗？</p>
+            <p class="font-weight-bold text-xl text-high-emphasis">确认重启系统吗？</p>
             <p>重启后，您将被注销并需要重新登录。</p>
           </div>
         </div>
       </VCardItem>
       <VCardActions class="mx-auto">
-        <VBtn variant="elevated" color="error" @click="restart" prepend-icon="mdi-restart" class="px-5"> 确定 </VBtn>
         <VBtn variant="tonal" color="secondary" class="px-5" @click="restartDialog = false">取消</VBtn>
+        <VBtn variant="elevated" color="error" @click="restart" prepend-icon="mdi-restart" class="px-5"> 确定 </VBtn>
       </VCardActions>
       <VDialogCloseBtn @click="restartDialog = false" />
     </VCard>
   </VDialog>
 </template>
-
-<style lang="scss" scoped>
-.user-profile-header {
-  background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.05), rgba(var(--v-theme-primary), 0.02));
-}
-
-.user-role {
-  color: rgba(var(--v-theme-primary), 0.9);
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-block-end: 4px;
-}
-
-.user-name {
-  color: rgba(var(--v-theme-on-surface), 0.9);
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-
-.user-avatar {
-  border: 2px solid rgba(var(--v-theme-on-surface), 0.1);
-  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.2);
-}
-
-.user-menu-item {
-  border-radius: 8px;
-  margin-block: 4px;
-  margin-inline: 0;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: rgba(var(--v-theme-primary), 0.06);
-    transform: translateX(4px);
-  }
-}
-
-.user-menu-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background-color: rgba(var(--v-theme-primary), 0.08);
-  block-size: 36px;
-  inline-size: 36px;
-  margin-inline-end: 12px;
-  transition: all 0.2s ease;
-
-  .v-icon {
-    color: rgba(var(--v-theme-primary), 0.9);
-  }
-}
-
-.restart-icon {
-  background-color: rgba(var(--v-theme-error), 0.1);
-
-  .v-icon {
-    color: rgba(var(--v-theme-error), 0.9);
-  }
-}
-
-.logout-btn {
-  padding: 12px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-error), 0.2);
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.user-menu .v-overlay__content {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-on-surface), 0.08) !important;
-}
-</style>

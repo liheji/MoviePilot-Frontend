@@ -61,7 +61,7 @@ const currentPath = computed(() => route.path)
           :color="moreActiveState ? 'primary' : ''"
         />
         <VMenu v-model="moreMenuDialog" close-on-content-click activator="parent" scrim>
-          <VList class="font-bold" lines="one">
+          <VList lines="one">
             <VListSubheader class="bg-transparent"> 更多 </VListSubheader>
             <VListItem
               class="pe-20 ps-5"
@@ -73,7 +73,7 @@ const currentPath = computed(() => route.path)
               :base-color="currentPath === menu.to ? 'primary' : undefined"
             >
               <VListItemTitle>
-                <span class="text-lg">{{ menu.title }}</span>
+                <span class="text-base">{{ menu.title }}</span>
               </VListItemTitle>
             </VListItem>
           </VList>

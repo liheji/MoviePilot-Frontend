@@ -45,6 +45,57 @@ const sendButtonDisabled = ref(false)
 // 聊天容器
 const chatContainer = ref<HTMLElement>()
 
+// 定义捷径列表
+const shortcuts = [
+  {
+    title: '识别',
+    subtitle: '名称识别测试',
+    icon: 'mdi-text-recognition',
+    dialog: 'nameTest',
+    dialogRef: nameTestDialog,
+  },
+  {
+    title: '规则',
+    subtitle: '规则测试',
+    icon: 'mdi-filter-cog',
+    dialog: 'ruleTest',
+    dialogRef: ruleTestDialog,
+  },
+  {
+    title: '日志',
+    subtitle: '实时日志',
+    icon: 'mdi-file-document',
+    dialog: 'logging',
+    dialogRef: loggingDialog,
+  },
+  {
+    title: '网络',
+    subtitle: '网速连通性测试',
+    icon: 'mdi-network',
+    dialog: 'netTest',
+    dialogRef: netTestDialog,
+  },
+  {
+    title: '系统',
+    subtitle: '健康检查',
+    icon: 'mdi-cog',
+    dialog: 'systemTest',
+    dialogRef: systemTestDialog,
+  },
+  {
+    title: '消息',
+    subtitle: '消息中心',
+    icon: 'mdi-message',
+    dialog: 'message',
+    dialogRef: messageDialog,
+  },
+]
+
+// 打开对话框
+function openDialog(dialogRef) {
+  dialogRef.value = true
+}
+
 // 滚动到底部
 function scrollMessageToEnd() {
   nextTick(() => {
@@ -78,25 +129,9 @@ onMounted(() => {
   scrollMessageToEnd()
   const shortcut = getQueryValue('shortcut')
   if (shortcut) {
-    switch (shortcut) {
-      case 'nameTest':
-        nameTestDialog.value = true
-        break
-      case 'netTest':
-        netTestDialog.value = true
-        break
-      case 'logging':
-        loggingDialog.value = true
-        break
-      case 'ruleTest':
-        ruleTestDialog.value = true
-        break
-      case 'systemTest':
-        systemTestDialog.value = true
-        break
-      case 'message':
-        messageDialog.value = true
-        break
+    const found = shortcuts.find(item => item.dialog === shortcut)
+    if (found) {
+      found.dialogRef.value = true
     }
   }
 })
@@ -110,7 +145,6 @@ onMounted(() => {
     max-height="560"
     location="top end"
     origin="top end"
-    transition="scale-transition"
     close-on-content-click
     close-on-back
     scrim
@@ -122,81 +156,35 @@ onMounted(() => {
       </IconBtn>
     </template>
     <!-- Menu Content -->
-    <VCard class="shortcut-menu-card">
-      <VCardItem class="shortcut-header border-b">
-        <VCardTitle class="font-weight-medium text-primary">捷径</VCardTitle>
+    <VCard class="overflow-hidden">
+      <VCardItem class="py-3">
+        <VCardTitle>捷径</VCardTitle>
         <template #append>
-          <IconBtn @click="appsMenu = false" class="shortcut-close-btn">
+          <IconBtn @click="appsMenu = false">
             <VIcon icon="mdi-close" />
           </IconBtn>
         </template>
       </VCardItem>
-      <div class="ps ps--active-y shortcut-menu-container">
-        <div class="shortcut-grid">
-          <!-- 识别 -->
-          <div class="shortcut-item" @click="nameTestDialog = true">
-            <div class="shortcut-icon-wrapper">
-              <VIcon icon="mdi-text-recognition" size="24" />
-            </div>
-            <div class="shortcut-text">
-              <div class="shortcut-title">识别</div>
-              <div class="shortcut-subtitle">名称识别测试</div>
-            </div>
-          </div>
-
-          <!-- 规则 -->
-          <div class="shortcut-item" @click="ruleTestDialog = true">
-            <div class="shortcut-icon-wrapper">
-              <VIcon icon="mdi-filter-cog" size="24" />
-            </div>
-            <div class="shortcut-text">
-              <div class="shortcut-title">规则</div>
-              <div class="shortcut-subtitle">规则测试</div>
-            </div>
-          </div>
-
-          <!-- 日志 -->
-          <div class="shortcut-item" @click="loggingDialog = true">
-            <div class="shortcut-icon-wrapper">
-              <VIcon icon="mdi-file-document" size="24" />
-            </div>
-            <div class="shortcut-text">
-              <div class="shortcut-title">日志</div>
-              <div class="shortcut-subtitle">实时日志</div>
-            </div>
-          </div>
-
-          <!-- 网络 -->
-          <div class="shortcut-item" @click="netTestDialog = true">
-            <div class="shortcut-icon-wrapper">
-              <VIcon icon="mdi-network" size="24" />
-            </div>
-            <div class="shortcut-text">
-              <div class="shortcut-title">网络</div>
-              <div class="shortcut-subtitle">网速连通性测试</div>
-            </div>
-          </div>
-
-          <!-- 系统 -->
-          <div class="shortcut-item" @click="systemTestDialog = true">
-            <div class="shortcut-icon-wrapper">
-              <VIcon icon="mdi-cog" size="24" />
-            </div>
-            <div class="shortcut-text">
-              <div class="shortcut-title">系统</div>
-              <div class="shortcut-subtitle">健康检查</div>
-            </div>
-          </div>
-
-          <!-- 消息 -->
-          <div class="shortcut-item" @click="messageDialog = true">
-            <div class="shortcut-icon-wrapper">
-              <VIcon icon="mdi-message" size="24" />
-            </div>
-            <div class="shortcut-text">
-              <div class="shortcut-title">消息</div>
-              <div class="shortcut-subtitle">消息中心</div>
-            </div>
+      <VDivider />
+      <div class="pa-3">
+        <div class="grid grid-cols-2 gap-3">
+          <!-- 循环渲染快捷方式 -->
+          <div v-for="(item, index) in shortcuts" :key="index">
+            <VCard
+              flat
+              variant="outlined"
+              class="pa-4 d-flex align-center rounded-lg cursor-pointer transition-transform duration-300 hover:-translate-y-1"
+              hover
+              @click="openDialog(item.dialogRef)"
+            >
+              <VAvatar variant="tonal" size="48" class="me-4" rounded="lg">
+                <VIcon :icon="item.icon" size="24" />
+              </VAvatar>
+              <div>
+                <div class="text-body-1 text-high-emphasis font-weight-medium">{{ item.title }}</div>
+                <div class="text-caption text-medium-emphasis">{{ item.subtitle }}</div>
+              </div>
+            </VCard>
           </div>
         </div>
       </div>
@@ -245,16 +233,14 @@ onMounted(() => {
     <VCard>
       <VDialogCloseBtn @click="loggingDialog = false" />
       <VCardItem>
-        <VCardTitle class="inline-flex">
+        <VCardTitle class="d-inline-flex">
           <VIcon icon="mdi-file-document" class="me-2" />
           实时日志
-          <a class="mx-2 inline-flex items-center justify-center" :href="allLoggingUrl()" target="_blank">
-            <div
-              class="inline-flex cursor-pointer items-center rounded-full bg-gray-600 px-2 text-sm text-gray-200 ring-1 ring-gray-500 transition hover:bg-gray-700"
-            >
-              <VIcon icon="mdi-open-in-new" />
-              <span class="ms-1">在新窗口中打开</span>
-            </div>
+          <a class="mx-2 d-inline-flex align-center" :href="allLoggingUrl()" target="_blank">
+            <VChip color="grey-darken-1" size="small" class="ml-2">
+              <VIcon icon="mdi-open-in-new" size="small" start />
+              在新窗口中打开
+            </VChip>
           </a>
         </VCardTitle>
       </VCardItem>
@@ -333,113 +319,3 @@ onMounted(() => {
     </VCard>
   </VDialog>
 </template>
-
-<style lang="scss" scoped>
-.shortcut-menu-card {
-  overflow: hidden;
-}
-
-.shortcut-header {
-  background: linear-gradient(to right, rgba(var(--v-theme-primary), 0.04), rgba(var(--v-theme-primary), 0.01));
-  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  padding-block: 12px;
-  padding-inline: 16px;
-}
-
-.shortcut-close-btn {
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: rotate(90deg);
-  }
-}
-
-.shortcut-menu-container {
-  padding: 16px;
-}
-
-.shortcut-grid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.shortcut-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background-color: rgba(var(--v-theme-primary), 0.08);
-  block-size: 48px;
-  inline-size: 48px;
-  margin-inline-end: 16px;
-  transition: all 0.3s ease;
-
-  .v-icon {
-    color: rgba(var(--v-theme-primary), 1);
-    transition: transform 0.3s ease;
-  }
-}
-
-.shortcut-item {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  overflow: hidden;
-  align-items: center;
-  padding: 16px;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &::before {
-    position: absolute;
-    z-index: -1;
-    background: linear-gradient(135deg, rgba(var(--v-theme-primary), 0.08) 0%, rgba(var(--v-theme-primary), 0) 60%);
-    content: '';
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  &:hover {
-    border-color: rgba(var(--v-theme-primary), 0.15);
-    transform: translateY(-4px);
-
-    &::before {
-      opacity: 1;
-    }
-
-    .shortcut-icon-wrapper {
-      background-color: rgba(var(--v-theme-primary), 0.12);
-      transform: scale(1.1);
-
-      .v-icon {
-        transform: scale(1.2);
-      }
-    }
-  }
-
-  &:active {
-    box-shadow: 0 3px 10px rgba(var(--v-theme-on-surface), 0.08);
-    transform: translateY(0);
-  }
-}
-
-.shortcut-text {
-  flex: 1;
-}
-
-.shortcut-title {
-  color: rgba(var(--v-theme-on-surface), 0.95);
-  font-size: 1rem;
-  font-weight: 600;
-  margin-block-end: 4px;
-}
-
-.shortcut-subtitle {
-  color: rgba(var(--v-theme-on-surface), 0.7);
-  font-size: 0.8rem;
-}
-</style>
