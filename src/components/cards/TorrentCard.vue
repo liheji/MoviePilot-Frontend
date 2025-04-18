@@ -81,10 +81,19 @@ async function downloadTorrentFile() {
 
 // 获取优惠类型样式
 function getPromotionClass(downloadVolumeFactor: number | undefined, uploadVolumeFactor: number | undefined) {
-  if (!downloadVolumeFactor) return 'free-discount'
-  if (downloadVolumeFactor === 0) return 'free-discount'
-  else if (downloadVolumeFactor < 1) return 'percent-discount'
-  else if (uploadVolumeFactor !== undefined && uploadVolumeFactor > 1) return 'upload-bonus'
+  if (!downloadVolumeFactor) return 'bg-success'
+  if (downloadVolumeFactor === 0) return 'bg-success'
+  else if (downloadVolumeFactor < 1) return 'bg-orange'
+  else if (uploadVolumeFactor !== undefined && uploadVolumeFactor > 1) return 'bg-purple'
+  else return ''
+}
+
+// 获取优惠标签类
+function getPromotionChipClass(downloadVolumeFactor: number | undefined, uploadVolumeFactor: number | undefined) {
+  if (!downloadVolumeFactor) return 'chip-free'
+  if (downloadVolumeFactor === 0) return 'chip-free'
+  else if (downloadVolumeFactor < 1) return 'chip-discount'
+  else if (uploadVolumeFactor !== undefined && uploadVolumeFactor > 1) return 'chip-bonus'
   else return ''
 }
 
@@ -108,109 +117,147 @@ onMounted(() => {
       :width="props.width || '100%'"
       :variant="downloaded.includes(torrent?.enclosure || '') ? 'outlined' : 'flat'"
       @click="handleAddDownload(props.torrent)"
-      class="torrent-card h-full"
-      :class="{ 'downloaded-card': downloaded.includes(torrent?.enclosure || '') }"
+      class="h-full cursor-pointer transition-transform hover:-translate-y-1 duration-300 d-flex flex-column overflow-hidden torrent-card"
+      :class="{ 'border-success border-2 opacity-85': downloaded.includes(torrent?.enclosure || '') }"
+      hover
     >
       <!-- 优惠标签 -->
       <div
         v-if="torrent?.downloadvolumefactor !== 1 || torrent?.uploadvolumefactor !== 1"
-        class="discount-banner"
+        class="discount-banner text-white px-2 py-1 text-sm font-weight-bold rounded-bl-lg"
         :class="getPromotionClass(torrent?.downloadvolumefactor, torrent?.uploadvolumefactor)"
       >
         {{ torrent?.volume_factor }}
       </div>
 
       <!-- 媒体标题 -->
-      <div class="card-header">
-        <div class="media-title-wrapper flex flex-row flex-wrap justify-start">
-          <span class="media-title me-2">
+      <VCardItem class="pt-3 pb-0">
+        <div class="d-flex flex-row flex-wrap justify-start mb-2 pr-8">
+          <span class="text-h6 font-weight-bold text-truncate me-2">
             {{ media?.title ?? meta?.name }}
           </span>
-          <span v-if="meta?.season_episode" class="season-tag">{{ meta?.season_episode }}</span>
+          <VChip v-if="meta?.season_episode" class="chip-season rounded-sm font-weight-bold" variant="elevated">
+            {{ meta?.season_episode }}
+          </VChip>
         </div>
 
         <!-- 站点信息条 -->
-        <div class="site-info">
+        <div class="d-flex justify-space-between align-center mb-3 flex-wrap">
           <div class="d-flex align-center">
             <img
-              :alt="torrent?.site_name"
               v-if="siteIcons[torrent?.site || 0]"
               :src="siteIcons[torrent?.site || 0]"
-              class="site-icon"
+              :alt="torrent?.site_name"
+              class="mr-2 rounded"
+              width="20"
+              height="20"
             />
-            <span v-else class="site-fallback">{{ torrent?.site_name?.substring(0, 1) }}</span>
-            <span class="site-name">{{ torrent?.site_name }}</span>
+            <VAvatar v-else size="20" class="mr-2 text-caption bg-surface-variant" color="surface-variant">
+              {{ torrent?.site_name?.substring(0, 1) }}
+            </VAvatar>
+            <span class="font-weight-bold text-body-2">{{ torrent?.site_name }}</span>
           </div>
 
-          <div class="seeder-peers">
-            <span v-if="torrent?.seeders" class="seed-info">
-              <VIcon size="small" color="success" icon="mdi-arrow-up"></VIcon>{{ torrent?.seeders }}
+          <div class="d-flex align-center gap-3">
+            <span v-if="torrent?.seeders" class="d-flex align-center font-weight-bold">
+              <VIcon size="small" color="success" icon="mdi-arrow-up" class="mr-1"></VIcon>
+              {{ torrent?.seeders }}
             </span>
-            <span v-if="torrent?.peers" class="peer-info">
-              <VIcon size="small" color="warning" icon="mdi-arrow-down"></VIcon>{{ torrent?.peers }}
+            <span v-if="torrent?.peers" class="d-flex align-center font-weight-bold">
+              <VIcon size="small" color="warning" icon="mdi-arrow-down" class="mr-1"></VIcon>
+              {{ torrent?.peers }}
             </span>
           </div>
         </div>
-      </div>
+      </VCardItem>
 
       <!-- 种子内容 -->
-      <div class="card-content">
+      <VCardText class="d-flex flex-column flex-grow-1 pa-3 overflow-hidden">
         <!-- 种子标题 -->
-        <div class="torrent-title" :title="torrent?.title">
+        <div class="text-subtitle-2 font-weight-medium mb-2" :title="torrent?.title">
           {{ torrent?.title }}
         </div>
 
         <!-- 种子描述 -->
         <div
           v-if="meta?.subtitle || torrent?.description"
-          class="torrent-desc grow"
+          class="text-body-2 text-medium-emphasis mb-2"
           :title="meta?.subtitle || torrent?.description"
         >
           {{ meta?.subtitle || torrent?.description }}
         </div>
 
         <!-- 资源标签区 -->
-        <div class="tags-container">
-          <div v-if="meta?.edition" class="resource-tag edition">{{ meta?.edition }}</div>
-          <div v-if="meta?.resource_pix" class="resource-tag resolution">{{ meta?.resource_pix }}</div>
-          <div v-if="meta?.video_encode" class="resource-tag codec">{{ meta?.video_encode }}</div>
-          <div v-if="meta?.resource_team" class="resource-tag team">{{ meta?.resource_team }}</div>
-          <div v-for="(label, index) in torrent?.labels" :key="index" class="resource-tag label">{{ label }}</div>
-          <div v-if="torrent?.hit_and_run" class="resource-tag hr">H&R</div>
-          <div v-if="torrent?.freedate_diff" class="resource-tag expire">{{ torrent?.freedate_diff }}</div>
+        <div class="d-flex flex-wrap gap-1 mb-2">
+          <!-- 版本标签 -->
+          <VChip v-if="meta?.edition" class="chip-edition rounded-sm" size="small" variant="elevated">
+            {{ meta?.edition }}
+          </VChip>
+
+          <!-- 分辨率标签 -->
+          <VChip v-if="meta?.resource_pix" class="chip-resolution rounded-sm" size="small" variant="elevated">
+            {{ meta?.resource_pix }}
+          </VChip>
+
+          <!-- 编码标签 -->
+          <VChip v-if="meta?.video_encode" class="chip-codec rounded-sm" size="small" variant="elevated">
+            {{ meta?.video_encode }}
+          </VChip>
+
+          <!-- 制作组标签 -->
+          <VChip v-if="meta?.resource_team" class="chip-team rounded-sm" size="small" variant="elevated">
+            {{ meta?.resource_team }}
+          </VChip>
+
+          <!-- 其他标签 -->
+          <VChip
+            v-for="(label, index) in torrent?.labels"
+            :key="index"
+            class="chip-label rounded-sm"
+            size="small"
+            variant="elevated"
+            >{{ label }}</VChip
+          >
+
+          <!-- 特殊标签 -->
+          <VChip v-if="torrent?.hit_and_run" class="chip-hr rounded-sm" size="small" variant="elevated">H&R</VChip>
+          <VChip v-if="torrent?.freedate_diff" class="chip-expire rounded-sm" size="small" variant="elevated">{{
+            torrent?.freedate_diff
+          }}</VChip>
         </div>
-      </div>
+      </VCardText>
 
       <!-- 卡片底部信息 -->
-      <div class="card-footer">
-        <div class="more-sources-wrapper" v-if="props.more && props.more.length > 0">
-          <div class="more-sources-toggle" @click.stop="openMoreTorrentsDialog">
-            <VIcon :icon="showMoreTorrents ? 'mdi-chevron-up' : 'mdi-chevron-down'" size="small" class="me-1"></VIcon>
-            <span>更多来源 ({{ props.more.length }})</span>
-          </div>
+      <VCardActions class="border-t border-opacity-10 mt-auto pa-3">
+        <div v-if="props.more && props.more.length > 0">
+          <VBtn
+            variant="text"
+            color="primary"
+            size="small"
+            class="pa-1 d-flex align-center"
+            @click.stop="openMoreTorrentsDialog"
+          >
+            <VIcon :icon="showMoreTorrents ? 'mdi-chevron-up' : 'mdi-chevron-down'" size="small" class="mr-1"></VIcon>
+            更多来源 ({{ props.more.length }})
+          </VBtn>
         </div>
 
         <VSpacer />
 
         <!-- 体积和详情按钮并排 -->
-        <div class="card-actions">
-          <div v-if="torrent?.size" class="size-badge">
+        <div class="d-flex align-center">
+          <VChip v-if="torrent?.size" color="secondary" size="small" variant="elevated" class="rounded-sm mr-2">
             {{ formatFileSize(torrent.size) }}
-          </div>
+          </VChip>
 
-          <VBtn
-            size="small"
-            icon="mdi-information-outline"
-            variant="text"
-            color="primary"
-            class="detail-btn"
-            @click.stop="openTorrentDetail"
-          ></VBtn>
+          <VBtn icon size="small" variant="text" color="primary" @click.stop="openTorrentDetail">
+            <VIcon icon="mdi-information-outline"></VIcon>
+          </VBtn>
         </div>
-      </div>
+      </VCardActions>
     </VCard>
 
-    <!-- 更多来源对话框 - 改为独立对话框 -->
+    <!-- 更多来源对话框 -->
     <VDialog v-model="showMoreTorrents" max-width="380px" location="center">
       <VCard>
         <VCardTitle class="py-2 d-flex align-center">
@@ -222,44 +269,67 @@ onMounted(() => {
         <VDivider />
 
         <VCardText class="more-sources-content">
-          <div
-            v-for="(item, index) in props.more"
-            :key="index"
-            @click.stop="handleAddDownload(item)"
-            class="more-source-item cursor-pointer"
-          >
-            <div class="source-site-info">
-              <img
-                :alt="item.torrent_info?.site_name"
-                v-if="siteIcons[item.torrent_info?.site || 0]"
-                :src="siteIcons[item.torrent_info?.site || 0]"
-                class="source-site-icon"
-              />
-              <span v-else class="source-site-fallback">{{ item.torrent_info?.site_name?.substring(0, 1) }}</span>
-              <span class="source-site-name">{{ item.torrent_info.site_name }}</span>
-              <span v-if="item.meta_info?.season_episode" class="season-tag source-season-tag">
-                {{ item.meta_info.season_episode }}
-              </span>
+          <VList lines="one" density="compact">
+            <VListItem
+              v-for="(item, index) in props.more"
+              :key="index"
+              @click.stop="handleAddDownload(item)"
+              class="border-b border-opacity-5 hover:bg-primary-lighten-5"
+            >
+              <template v-slot:prepend>
+                <div class="d-flex align-center gap-1">
+                  <img
+                    v-if="siteIcons[item.torrent_info?.site || 0]"
+                    :src="siteIcons[item.torrent_info?.site || 0]"
+                    :alt="item.torrent_info?.site_name"
+                    width="16"
+                    height="16"
+                    class="rounded"
+                  />
+                  <VAvatar v-else size="16" class="text-caption bg-surface-variant">
+                    {{ item.torrent_info?.site_name?.substring(0, 1) }}
+                  </VAvatar>
+                  <span class="text-body-2 font-weight-bold">{{ item.torrent_info.site_name }}</span>
 
-              <span
-                v-if="item.torrent_info?.downloadvolumefactor !== 1 || item.torrent_info?.uploadvolumefactor !== 1"
-                class="source-discount"
-                :class="
-                  getPromotionClass(item.torrent_info?.downloadvolumefactor, item.torrent_info?.uploadvolumefactor)
-                "
-              >
-                {{ item.torrent_info?.volume_factor }}
-              </span>
-            </div>
+                  <VChip
+                    v-if="item.meta_info?.season_episode"
+                    class="chip-season rounded-sm ml-1"
+                    size="x-small"
+                    variant="elevated"
+                  >
+                    {{ item.meta_info.season_episode }}
+                  </VChip>
 
-            <div class="source-stats">
-              <span class="source-size">{{ formatFileSize(item.torrent_info?.size) }}</span>
-              <span class="source-seeders">
-                <VIcon size="x-small" color="success" icon="mdi-arrow-up"></VIcon>
-                {{ item.torrent_info?.seeders }}
-              </span>
-            </div>
-          </div>
+                  <VChip
+                    v-if="item.torrent_info?.downloadvolumefactor !== 1 || item.torrent_info?.uploadvolumefactor !== 1"
+                    :class="
+                      getPromotionChipClass(
+                        item.torrent_info?.downloadvolumefactor,
+                        item.torrent_info?.uploadvolumefactor,
+                      )
+                    "
+                    size="x-small"
+                    variant="elevated"
+                    class="rounded-sm ml-1"
+                  >
+                    {{ item.torrent_info?.volume_factor }}
+                  </VChip>
+                </div>
+              </template>
+
+              <template v-slot:append>
+                <div class="d-flex align-center gap-2">
+                  <span class="text-caption font-weight-bold text-primary">
+                    {{ formatFileSize(item.torrent_info?.size) }}
+                  </span>
+                  <span class="d-flex align-center text-caption font-weight-bold">
+                    <VIcon size="small" color="success" icon="mdi-arrow-up" class="mr-1"></VIcon>
+                    {{ item.torrent_info?.seeders }}
+                  </span>
+                </div>
+              </template>
+            </VListItem>
+          </VList>
         </VCardText>
       </VCard>
     </VDialog>
@@ -280,381 +350,91 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.torrent-card {
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: none;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease;
-  position: relative;
-}
-
-.torrent-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(var(--v-theme-primary), 0.3);
-}
-
 .discount-banner {
   position: absolute;
-  top: 0;
-  right: 0;
-  color: white;
-  padding: 4px 10px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  border-radius: 0 0 0 12px;
-  z-index: 2;
-}
-
-.free-discount {
-  background-color: #4caf50;
-  font-weight: 700;
-}
-
-.percent-discount {
-  background-color: #ff5722;
-}
-
-.upload-bonus {
-  background-color: #9c27b0;
-}
-
-.size-badge {
-  background-color: rgba(var(--v-theme-primary), 0.9);
-  color: white;
-  padding: 2px 8px;
-  font-weight: 600;
-  font-size: 0.8rem;
-  border-radius: 4px;
-  margin-right: 6px;
-  display: flex;
-  align-items: center;
-}
-
-.card-header {
-  padding: 12px 16px 0;
-}
-
-.media-title-wrapper {
-  margin-bottom: 8px;
-  padding-right: 2rem;
-}
-
-.media-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  color: rgba(var(--v-theme-on-surface), 0.87);
-}
-
-.season-tag {
-  font-size: 0.875rem;
-  background-color: #5c6bc0;
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-.site-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.site-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  border-radius: 2px;
-}
-
-.site-fallback {
-  width: 20px;
-  height: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-  font-weight: 700;
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  background-color: rgba(var(--v-theme-on-surface), 0.1);
-  border-radius: 2px;
-}
-
-.site-name {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: rgba(var(--v-theme-on-surface), 0.85);
-}
-
-.seeder-peers {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.seed-info {
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 600;
-}
-
-.peer-info {
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 600;
-}
-
-.card-content {
-  padding: 0 16px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  overflow: hidden;
-}
-
-.torrent-title {
-  font-size: 0.9rem;
-  font-weight: 500;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: rgba(var(--v-theme-on-surface), 0.87);
-  margin-bottom: 8px;
-}
-
-.torrent-desc {
-  font-size: 0.85rem;
-  color: rgba(var(--v-theme-on-surface), 0.6);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 8px;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.resource-tag {
-  font-size: 0.8rem;
-  padding: 3px 8px;
-  border-radius: 4px;
-  color: white;
-  font-weight: 700;
-}
-
-.edition {
-  background-color: #f44336;
-}
-
-.resolution {
-  background-color: #e91e63;
-}
-
-.codec {
-  background-color: #ff9800;
-}
-
-.team {
-  background-color: #03a9f4;
-}
-
-.expire {
-  background-color: #9c27b0;
-}
-
-.label {
-  background-color: #3f51b5;
-}
-
-.hr {
-  background-color: #000000;
-}
-
-.card-footer {
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  margin-top: auto;
-}
-
-.more-sources-wrapper {
-  position: relative;
-}
-
-.more-sources-toggle {
-  font-size: 0.875rem;
-  color: rgb(var(--v-theme-primary));
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.more-sources-toggle:hover {
-  background-color: rgba(var(--v-theme-primary), 0.08);
+  inset-block-start: 0;
+  inset-inline-end: 0;
 }
 
 .more-sources-content {
-  max-height: 60vh;
+  max-block-size: 60vh;
   overflow-y: auto;
 }
 
-.more-source-item {
-  padding: 8px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.2s;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+/* 卡片悬停效果 */
+.torrent-card {
+  border: 1px solid transparent;
 }
 
-.more-source-item:hover {
-  background-color: rgba(var(--v-theme-primary), 0.05);
+.torrent-card:hover {
+  border-color: rgba(var(--v-theme-primary), 0.3);
 }
 
-.source-site-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+/* 优惠标签样式 */
+.bg-success {
+  background-color: #4caf50;
 }
 
-.source-site-icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 2px;
+.bg-orange {
+  background-color: #ff5722;
 }
 
-.source-site-fallback {
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.7rem;
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  background-color: rgba(var(--v-theme-on-surface), 0.1);
-  border-radius: 2px;
+.bg-purple {
+  background-color: #9c27b0;
 }
 
-.source-site-name {
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.source-season-tag {
-  font-size: 0.75rem;
-  padding: 1px 4px;
-  margin-left: 4px;
-  background-color: #5c6bc0;
-}
-
-.source-discount {
-  font-weight: 700;
-  font-size: 0.8rem;
-  margin-left: 6px;
-  padding: 1px 5px;
-  border-radius: 3px;
+.chip-season {
+  background-color: #3f51b5;
   color: white;
 }
 
-.source-stats {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.chip-edition {
+  background-color: #f44336;
+  color: white;
 }
 
-.source-size {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgb(var(--v-theme-primary));
+.chip-resolution {
+  background-color: #7b1fa2;
+  color: white;
 }
 
-.source-seeders {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  font-weight: 600;
-  font-size: 0.8rem;
+.chip-codec {
+  background-color: #ff9800;
+  color: white;
 }
 
-.card-actions {
-  display: flex;
-  align-items: center;
+.chip-team {
+  background-color: #00897b;
+  color: white;
 }
 
-.detail-btn {
-  border-radius: 50%;
-  min-width: 36px;
-  height: 36px;
+.chip-label {
+  background-color: #5c6bc0;
+  color: white;
 }
 
-.downloaded-card {
-  border: 2px solid #4caf50 !important;
-  opacity: 0.85;
+.chip-hr {
+  background-color: #212121;
+  color: white;
 }
 
-@media (max-width: 640px) {
-  .resource-tag {
-    font-size: 0.75rem;
-    padding: 2px 6px;
-  }
+.chip-expire {
+  background-color: #7e57c2;
+  color: white;
 }
 
-.full-text {
-  white-space: normal;
-  word-break: break-word;
-  font-size: 14px;
-  line-height: 1.5;
+.chip-free {
+  background-color: #4caf50;
+  color: white;
 }
 
-.menu-activator {
-  width: 100%;
-  cursor: pointer;
+.chip-discount {
+  background-color: #ff5722;
+  color: white;
 }
 
-.break-words {
-  word-wrap: break-word;
-  word-break: break-word;
-}
-
-.overflow-visible {
-  overflow: visible !important;
-}
-
-.whitespace-break-spaces {
-  white-space: normal !important;
+.chip-bonus {
+  background-color: #9c27b0;
+  color: white;
 }
 </style>
