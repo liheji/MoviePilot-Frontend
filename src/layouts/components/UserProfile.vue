@@ -149,7 +149,7 @@ const userLevel = computed(() => userStore.level)
         </div>
         <!-- 👉 Logout -->
         <div class="px-2 mt-3 mb-2">
-          <VBtn color="error" block class="py-3 rounded-lg" elevation="2" @click="logout">
+          <VBtn color="error" block class="py-3" elevation="2" @click="logout">
             <template #prepend>
               <VIcon icon="mdi-logout" />
             </template>

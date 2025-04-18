@@ -16,7 +16,7 @@ const display = useDisplay()
 const appsMenu = ref(false)
 
 // 菜单最大宽度
-const menuMaxWidth = ref(480)
+const menuMaxWidth = ref(420)
 
 // 名称测试弹窗
 const nameTestDialog = ref(false)
@@ -92,7 +92,7 @@ const shortcuts = [
 ]
 
 // 打开对话框
-function openDialog(dialogRef) {
+function openDialog(dialogRef: any) {
   dialogRef.value = true
 }
 
@@ -172,7 +172,7 @@ onMounted(() => {
           <div v-for="(item, index) in shortcuts" :key="index">
             <VCard
               flat
-              variant="outlined"
+              variant="tonal"
               class="pa-4 d-flex align-center rounded-lg cursor-pointer transition-transform duration-300 hover:-translate-y-1"
               hover
               @click="openDialog(item.dialogRef)"
