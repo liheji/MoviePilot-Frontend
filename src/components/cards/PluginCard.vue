@@ -340,12 +340,12 @@ watch(
           }"
         >
           <div
-            class="relative flex flex-row items-start pa-3 justify-between grow card-backdrop"
-            :style="{ '--base-color': backgroundColor }"
+            class="relative flex flex-row items-start pa-3 justify-between grow"
+            :style="{ background: `${backgroundColor}` }"
           >
             <div
-              class="absolute inset-0 bg-cover bg-center card-backdrop-blur"
-              :style="{ '--base-color': backgroundColor }"
+              class="absolute inset-0 bg-cover bg-center"
+              :style="{ background: `${backgroundColor}`, filter: 'brightness(0.5)' }"
             />
             <div class="relative flex-1 min-w-0">
               <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
@@ -464,33 +464,6 @@ watch(
   background: rgba(29, 39, 59, 48%);
   content: '';
   inset: 0;
-}
-
-.card-backdrop {
-  background: rgba(var(--v-theme-primary), 0.2);
-
-  &::before {
-    position: absolute;
-    background: color-mix(in srgb, var(--base-color) 60%, transparent);
-    content: '';
-    inset: 0;
-    opacity: 0.8;
-  }
-}
-
-.card-backdrop-blur {
-  /* stylelint-disable-next-line property-no-vendor-prefix */
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  background: transparent;
-
-  &::before {
-    position: absolute;
-    background: color-mix(in srgb, var(--base-color) 30%, transparent);
-    content: '';
-    inset: 0;
-    opacity: 0.7;
-  }
 }
 
 .author-info {
