@@ -12,6 +12,7 @@ import { isNullOrEmptyObject } from '@/@core/utils'
 import { useUserStore } from '@/stores'
 import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
+import { useTheme } from 'vuetify'
 
 // 输入参数
 const mediaProps = defineProps({
@@ -29,6 +30,9 @@ const userStore = useUserStore()
 
 // 提示框
 const $toast = useToast()
+
+// 获取主题信息
+const theme = useTheme()
 
 // 媒体详情
 const mediaDetail = ref<MediaInfo>({} as MediaInfo)
@@ -71,6 +75,11 @@ const searchType = ref('title')
 
 // 选择站点对话框
 const chooseSiteDialog = ref(false)
+
+// 计算主题是否为透明
+const isNonTransparentTheme = computed(() => {
+  return theme.name.value !== 'transparent'
+})
 
 // 查询所有站点
 async function querySites() {
@@ -519,7 +528,7 @@ onBeforeMount(() => {
 <template>
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
   <div v-if="mediaDetail.tmdb_id || mediaDetail.douban_id || mediaDetail.bangumi_id" class="max-w-8xl mx-auto px-4">
-    <template v-if="getBackdropUrl || getPosterUrl">
+    <template v-if="(getBackdropUrl || getPosterUrl) && isNonTransparentTheme">
       <div class="vue-media-back absolute left-0 top-0 w-full h-96">
         <VImg class="h-96" position="top" :src="getBackdropUrl || getPosterUrl" cover />
       </div>
@@ -972,7 +981,6 @@ onBeforeMount(() => {
     ),
     linear-gradient(90deg, rgba(var(--v-theme-background), 0) 50%, rgba(var(--v-theme-background), 1) 100%),
     linear-gradient(270deg, rgba(var(--v-theme-background), 0) 50%, rgba(var(--v-theme-background), 1) 100%);
-  box-shadow: 0 0 0 2px rgb(var(--v-theme-background));
   margin-block-start: calc(-70px - env(safe-area-inset-top));
 }
 

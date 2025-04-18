@@ -11,6 +11,7 @@ html.v-overlay-scroll-blocked {
 @media (width <= 768px){
   html.v-overlay-scroll-blocked {
     position: relative;
+
     --v-body-scroll-y: 0px !important;
   }
 }
@@ -251,8 +252,6 @@ html.v-overlay-scroll-blocked {
 
 .card-cover-blurred::before {
   position: absolute;
-  /* stylelint-disable-next-line property-no-vendor-prefix */
-  -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
   background: rgba(29, 39, 59, 48%);
   content: '';
@@ -260,21 +259,15 @@ html.v-overlay-scroll-blocked {
 }
 
 .v-overlay__content .v-list{
-  /* stylelint-disable-next-line property-no-vendor-prefix */
-  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   background-color: rgb(var(--v-theme-surface), 0.9) !important;
 }
 
 .v-overlay__content .v-card:not(.bg-primary){
-  /* stylelint-disable-next-line property-no-vendor-prefix */
-  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   background-color: rgb(var(--v-theme-surface), 0.95) !important;
 
   .v-list, .v-table {
-    /* stylelint-disable-next-line property-no-vendor-prefix */
-    -webkit-backdrop-filter: none;
     backdrop-filter: none;
     background-color: transparent !important;
   }
@@ -321,4 +314,92 @@ html.v-overlay-scroll-blocked {
 
 .v-infinite-scroll__side {
   padding: 0;
+}
+
+
+// 透明主题特殊样式
+.transparent-app {
+  // 先将所有全局组件定义放在前面，避免CSS优先级问题
+  .v-application, .v-layout, .v-main, .layout-page-content {
+    background: transparent;
+  }
+  
+  // 侧边导航栏
+  .layout-vertical-nav {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--v-theme-surface), 0.5);
+    border-inline-end: 1px solid rgba(255, 255, 255, 10%);
+  }
+  
+  // 导航栏
+  .navbar-blur::after {
+    background: transparent;
+  }
+  
+  // 卡片
+  .v-card:not(.no-blur) {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--v-theme-surface), 0.3);
+  }
+
+  // 列表
+  .v-list {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--v-theme-surface), 0.3);
+  }
+  
+  // 工具栏
+  .v-toolbar {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--v-theme-surface), 0.3);
+  }
+  
+  // 表格
+  .v-table {
+    background-color: rgba(var(--v-theme-surface), 0.3);
+  }
+  
+  // 页脚
+  .v-footer {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--v-theme-surface), 0.3);
+  }
+  
+  // 页面容器
+  .layout-content-wrapper {
+    background: transparent;
+  }
+  
+  // 无内容区域的背景设为透明
+  .page-content-container {
+    background: transparent;
+  }
+  
+  // 对话框和菜单蒙层样式
+  .v-overlay__scrim {
+    background: rgba(var(--v-overlay-scrim-background), var(--v-overlay-scrim-opacity));
+  }
+
+  // 折叠面板
+  .v-expansion-panel {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--v-theme-surface), 0.3);
+  }
+}
+
+// 透明主题下的弹出窗口样式
+html[data-theme="transparent"] {
+  .v-overlay__content {
+    backdrop-filter: blur(10px) !important;    
+
+    .v-card:not(.bg-primary) {
+      backdrop-filter: blur(10px);
+      background-color: rgb(var(--v-theme-surface), 0.5) !important;
+    }
+
+    .v-list {
+      backdrop-filter: blur(10px);
+      background-color: rgb(var(--v-theme-surface), 0.5) !important;
+    }
+  }
 }

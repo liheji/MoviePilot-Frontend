@@ -70,7 +70,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div class="tab-header">
+  <div class="tab-header rounded-lg">
     <div ref="tabsContainerRef" class="header-tabs" :class="{ 'show-indicator': showTabsScrollIndicator }">
       <div
         v-for="(item, index) in items"
@@ -94,7 +94,6 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   backdrop-filter: blur(10px);
-  background-color: rgba(var(--v-theme-background), 0.8);
   border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.05);
   inset-block-start: 0;
   margin-block-end: 16px;
@@ -127,7 +126,7 @@ onUnmounted(() => {
   &::after {
     position: absolute;
     z-index: 1; // Ensure it's above the tabs but below other header elements if needed
-    background: linear-gradient(to left, rgba(var(--v-theme-background), 1) 30%, transparent);
+    background: linear-gradient(to left, rgba(var(--v-theme-background), 10.3) 30%, transparent);
     content: '';
     inline-size: 40px; // Width of the fade effect
     inset-block: 0;
@@ -135,11 +134,6 @@ onUnmounted(() => {
     opacity: 0; // Hidden by default
     pointer-events: none; // Allow interaction with content behind it
     transition: opacity 0.2s ease-in-out;
-  }
-
-  // Show the indicator when the class is present
-  &.show-indicator::after {
-    opacity: 1;
   }
 }
 

@@ -387,7 +387,7 @@ function loadMore({ done }: { done: any }) {
 </script>
 
 <template>
-  <div class="search-header d-none d-sm-flex">
+  <div class="search-header d-none d-sm-flex mb-3">
     <!-- 页面头部和筛选栏 -->
     <VCard class="view-header rounded-xl">
       <div class="d-flex align-center flex-wrap pa-3">
@@ -499,7 +499,7 @@ function loadMore({ done }: { done: any }) {
   </div>
 
   <!-- 移动端头部和筛选区域 -->
-  <VCard class="d-block d-sm-none search-header-mobile">
+  <VCard class="d-block d-sm-none search-header-mobile mb-3">
     <!-- 移动端头部 -->
     <div class="view-header">
       <div class="d-flex align-center flex-wrap pa-2">
@@ -617,7 +617,6 @@ function loadMore({ done }: { done: any }) {
   position: sticky;
   z-index: 10;
   backdrop-filter: blur(10px);
-  background-color: rgba(var(--v-theme-background), 0.95);
   inset-block-start: 0;
 }
 

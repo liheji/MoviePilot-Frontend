@@ -195,11 +195,10 @@ onMounted(() => {
         <VIcon :icon="getThemeIcon" />
       </IconBtn>
     </template>
-    <VList class="theme-switcher-list pt-0">
+    <VList class="theme-switcher-list pt-0 overflow-hidden">
       <VCardItem class="theme-switcher-header">
         <VCardTitle class="font-weight-medium text-primary">主题选择</VCardTitle>
       </VCardItem>
-
       <div class="theme-switcher-options px-2">
         <VListItem
           v-for="theme in props.themes"
@@ -271,8 +270,7 @@ onMounted(() => {
 }
 
 .theme-switcher-options {
-  max-block-size: 300px;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .theme-option {

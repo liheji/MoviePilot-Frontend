@@ -19,8 +19,13 @@ const themes: ThemeSwitcherTheme[] = [
   },
   {
     name: 'purple',
-    title: '紫韵幽兰',
+    title: '幻紫',
     icon: 'mdi-brightness-4',
+  },
+  {
+    name: 'transparent',
+    title: '透明',
+    icon: 'mdi-gradient-vertical',
   },
 ]
 </script>

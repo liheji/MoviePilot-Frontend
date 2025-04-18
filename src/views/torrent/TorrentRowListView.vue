@@ -583,7 +583,7 @@ onMounted(() => {
         mode="intersect"
         side="end"
         :items="displayDataList"
-        class="resource-list"
+        class="resource-list overflow-hidden"
         @load="loadMore"
       >
         <template #loading />
@@ -607,7 +607,6 @@ onMounted(() => {
   position: sticky;
   z-index: 10;
   backdrop-filter: blur(10px);
-  background-color: rgba(var(--v-theme-background), 0.95);
   inset-block-start: 0;
 }
 
@@ -615,7 +614,6 @@ onMounted(() => {
   position: sticky;
   z-index: 10;
   backdrop-filter: blur(10px);
-  background-color: rgba(var(--v-theme-background), 0.95);
   inset-block-start: 0;
 }
 

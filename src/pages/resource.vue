@@ -197,7 +197,7 @@ onUnmounted(() => {
     </VFadeTransition>
 
     <!-- 精简标题栏 -->
-    <VCard v-if="isRefreshed" class="search-header d-flex align-center mb-4">
+    <VCard v-if="isRefreshed" class="search-header d-flex align-center mb-3">
       <div class="search-info-container d-flex align-center flex-wrap">
         <div class="search-title text-primary">资源搜索结果</div>
         <div class="search-tags d-flex flex-wrap">
@@ -225,7 +225,7 @@ onUnmounted(() => {
 
     <!-- 视图切换加载状态 -->
     <VFadeTransition>
-      <div v-if="isRefreshed && isViewChanging" class="view-changing-container">
+      <div v-if="isRefreshed && isViewChanging" class="view-changing-container rounded-lg">
         <div class="view-changing-content">
           <div class="pulse-loader">
             <div class="pulse-circle"></div>
@@ -327,7 +327,6 @@ onUnmounted(() => {
 /* 精简标题栏样式 */
 .search-header {
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 5%);
   padding-block: 12px;
   padding-inline: 16px;
 }
@@ -390,7 +389,6 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(8px);
-  background-color: rgba(var(--v-theme-background), 0.7);
   inset: 0;
 }
 

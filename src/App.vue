@@ -2,6 +2,7 @@
 import { useTheme } from 'vuetify'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { ensureRenderComplete, removeEl } from './@core/utils/dom'
+import api from '@/api'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -9,8 +10,60 @@ let themeValue = localStorage.getItem('theme') || 'light'
 const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
 globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
 
+// 更新data-theme属性以便CSS选择器能正确匹配
+function updateHtmlThemeAttribute(themeName) {
+  document.documentElement.setAttribute('data-theme', themeName)
+  // 确保body元素也有相同的主题属性，以便更好地选择弹出窗口
+  document.body.setAttribute('data-theme', themeName)
+}
+
 // 显示状态
 const show = ref(false)
+
+// 背景图片
+const backgroundImages = ref<string[]>([])
+const activeImageIndex = ref(0)
+const isTransparentTheme = computed(() => globalTheme.name.value === 'transparent')
+let backgroundRotationTimer: NodeJS.Timeout | null = null
+
+// 获取背景图片
+async function fetchBackgroundImages() {
+  try {
+    backgroundImages.value = await api.get('/login/wallpapers')
+    console.log('获取背景图片成功:', backgroundImages.value)
+  } catch (e) {
+    console.error('获取背景图片失败:', e)
+  }
+}
+
+// 开始背景图片轮换
+function startBackgroundRotation() {
+  if (backgroundRotationTimer) clearInterval(backgroundRotationTimer)
+
+  if (backgroundImages.value.length > 1) {
+    backgroundRotationTimer = setInterval(() => {
+      activeImageIndex.value = (activeImageIndex.value + 1) % backgroundImages.value.length
+    }, 10000) // 每10秒切换一次
+  }
+}
+
+// 监听主题变化
+watch(
+  () => globalTheme.name.value,
+  async newTheme => {
+    // 更新HTML属性
+    updateHtmlThemeAttribute(newTheme)
+
+    if (newTheme === 'transparent' && backgroundImages.value.length === 0) {
+      await fetchBackgroundImages()
+      startBackgroundRotation()
+    } else if (newTheme !== 'transparent' && backgroundRotationTimer) {
+      clearInterval(backgroundRotationTimer)
+      backgroundRotationTimer = null
+    }
+  },
+  { immediate: true },
+)
 
 // ApexCharts 全局配置
 declare global {
@@ -43,6 +96,9 @@ if (window.Apex) {
 }
 
 onMounted(() => {
+  // 初始化data-theme属性
+  updateHtmlThemeAttribute(globalTheme.name.value)
+
   ensureRenderComplete(() => {
     nextTick(() => {
       setTimeout(() => {
@@ -56,10 +112,92 @@ onMounted(() => {
     })
   })
 })
+
+onUnmounted(() => {
+  if (backgroundRotationTimer) {
+    clearInterval(backgroundRotationTimer)
+    backgroundRotationTimer = null
+  }
+})
 </script>
 
 <template>
-  <VApp v-show="show">
-    <RouterView />
-  </VApp>
+  <div class="app-wrapper">
+    <!-- 透明主题背景 -->
+    <template v-if="isTransparentTheme && backgroundImages.length > 0">
+      <div class="background-container">
+        <div
+          v-for="(imageUrl, index) in backgroundImages"
+          :key="index"
+          class="background-image"
+          :class="{ 'active': index === activeImageIndex }"
+          :style="{ backgroundImage: `url(${imageUrl})` }"
+        ></div>
+        <!-- 全局磨砂层 -->
+        <div class="global-blur-layer"></div>
+      </div>
+    </template>
+
+    <VApp v-show="show" :class="{ 'transparent-app': isTransparentTheme }">
+      <RouterView />
+    </VApp>
+  </div>
 </template>
+
+<style lang="scss">
+/* 全局样式 */
+.app-wrapper {
+  position: relative;
+  inline-size: 100%;
+  min-block-size: 100vh;
+}
+
+.background-container {
+  position: fixed;
+  z-index: 0;
+  overflow: hidden;
+  block-size: 100%;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+}
+
+.background-image {
+  position: absolute;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  block-size: 100%;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+
+  &::after {
+    position: absolute;
+    background: linear-gradient(rgba(0, 0, 0, 30%) 0%, rgba(0, 0, 0, 60%) 100%);
+    block-size: 100%;
+    content: '';
+    inline-size: 100%;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+  }
+
+  &.active {
+    opacity: 1;
+  }
+}
+
+/* 全局磨砂层 */
+.global-blur-layer {
+  position: absolute;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 30%);
+  block-size: 100%;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+}
+</style>
