@@ -335,12 +335,6 @@ html.v-overlay-scroll-blocked {
   .navbar-blur::after {
     background: transparent;
   }
-  
-  // 卡片
-  .v-card:not(.no-blur) {
-    backdrop-filter: blur(10px);
-    background-color: rgba(var(--v-theme-surface), 0.3);
-  }
 
   // 列表
   .v-list {
@@ -348,6 +342,16 @@ html.v-overlay-scroll-blocked {
     background-color: rgba(var(--v-theme-surface), 0.3);
   }
   
+  // 卡片
+  .v-card:not(.no-blur) {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--v-theme-surface), 0.3);
+
+    .v-list {
+      background-color: transparent;
+      backdrop-filter: none;
+    }
+  }
   // 工具栏
   .v-toolbar {
     backdrop-filter: blur(10px);
@@ -392,12 +396,12 @@ html[data-theme="transparent"] {
   .v-overlay__content {
     backdrop-filter: blur(10px) !important;    
 
-    .v-card:not(.bg-primary) {
+    .v-list {
       backdrop-filter: blur(10px);
       background-color: rgb(var(--v-theme-surface), 0.5) !important;
     }
 
-    .v-list {
+    .v-card:not(.bg-primary) {
       backdrop-filter: blur(10px);
       background-color: rgb(var(--v-theme-surface), 0.5) !important;
     }

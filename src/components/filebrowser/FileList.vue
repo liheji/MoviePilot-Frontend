@@ -559,7 +559,7 @@ onMounted(() => {
         hide-details
         flat
         density="compact"
-        variant="tonal"
+        variant="plain"
         placeholder="搜索 ..."
         prepend-inner-icon="mdi-filter-outline"
         class="me-2"
@@ -616,7 +616,7 @@ onMounted(() => {
     </VCardText>
     <!-- 目录和文件列表 -->
     <VCardText v-else-if="dirs.length || files.length" class="p-0">
-      <div class="text-high-emphasis">
+      <VList class="text-high-emphasis">
         <VVirtualScroll :items="[...dirs, ...files]" :style="listStyle">
           <template #default="{ item }">
             <VHover>
@@ -678,7 +678,7 @@ onMounted(() => {
             </VHover>
           </template>
         </VVirtualScroll>
-      </div>
+      </VList>
     </VCardText>
     <VCardText v-else-if="filter" class="grow d-flex justify-center align-center grey--text py-5">
       没有目录或文件
