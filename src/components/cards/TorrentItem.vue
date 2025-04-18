@@ -107,10 +107,19 @@ onMounted(() => {
   <div class="w-100">
     <VListItem
       :value="props.torrent?.torrent_info?.enclosure"
-      class="pa-3 mb-2 rounded torrent-item transition-all duration-300 hover:-translate-y-1"
+      class="pa-3 mb-2 rounded torrent-item transition-all duration-300 hover:-translate-y-1 overflow-hidden"
       :class="{ 'border-start border-success border-3 opacity-85': downloaded.includes(torrent?.enclosure || '') }"
       @click="handleAddDownload"
     >
+      <!-- 优惠标签 -->
+      <div
+        v-if="torrent?.downloadvolumefactor !== 1 || torrent?.uploadvolumefactor !== 1"
+        class="discount-banner text-white px-2 py-1 text-sm font-weight-bold rounded-bl-lg"
+        :class="getPromotionClass(torrent?.downloadvolumefactor, torrent?.uploadvolumefactor)"
+      >
+        {{ torrent?.volume_factor }}
+      </div>
+
       <template v-slot:prepend>
         <div class="d-flex align-center">
           <img v-if="siteIcon" :src="siteIcon" :alt="torrent?.site_name" class="rounded mr-2" width="32" height="32" />
@@ -118,16 +127,6 @@ onMounted(() => {
             {{ torrent?.site_name?.substring(0, 1) }}
           </VAvatar>
           <div class="font-weight-bold text-body-2 d-none d-sm-block">{{ torrent?.site_name }}</div>
-
-          <VChip
-            v-if="torrent?.downloadvolumefactor !== 1 || torrent?.uploadvolumefactor !== 1"
-            :class="getPromotionChipClass(torrent?.downloadvolumefactor, torrent?.uploadvolumefactor)"
-            size="x-small"
-            variant="elevated"
-            class="rounded-sm ml-1"
-          >
-            {{ torrent?.volume_factor }}
-          </VChip>
         </div>
       </template>
 
@@ -230,6 +229,21 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.discount-banner {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+}
+
+.torrent-item {
+  border: 1px solid transparent;
+}
+
+.torrent-item:hover {
+  border-color: rgba(var(--v-theme-primary), 0.3);
+}
+
 .chip-season {
   background-color: #3f51b5;
   color: white;
