@@ -140,7 +140,7 @@ const dropdownItems = ref([
       <VDivider />
       <VDialogCloseBtn @click="emit('close')" />
       <VList lines="two">
-        <VInfiniteScroll mode="intersect" side="end" :items="historyList" class="overflow-hidden" @load="loadHistory">
+        <VInfiniteScroll mode="intersect" side="end" :items="historyList" class="overflow-visible" @load="loadHistory">
           <template #loading>
             <LoadingBanner />
           </template>

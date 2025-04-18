@@ -622,7 +622,7 @@ onMounted(async () => {
               side="end"
               :items="displayUninstalledList"
               @load="loadMarketMore"
-              class="overflow-hidden"
+              class="overflow-visible"
             >
               <template #loading />
               <template #empty />

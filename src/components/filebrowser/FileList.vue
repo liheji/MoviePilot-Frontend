@@ -548,7 +548,7 @@ onMounted(() => {
 
 <template>
   <VCard class="d-flex flex-column w-full h-full rounded-t-0" :class="{ 'rounded-s-0': showTree }">
-    <VToolbar v-if="!loading" density="compact" flat color="gray">
+    <div v-if="!loading" class="flex">
       <IconBtn v-if="display.mdAndUp.value">
         <VIcon v-if="showTree" icon="mdi-file-tree" @click="switchFileTree(false)" />
         <VIcon v-else icon="mdi-file-tree-outline" @click="switchFileTree(true)" />
@@ -559,7 +559,7 @@ onMounted(() => {
         hide-details
         flat
         density="compact"
-        variant="solo-filled"
+        variant="tonal"
         placeholder="搜索 ..."
         prepend-inner-icon="mdi-filter-outline"
         class="me-2"
@@ -591,7 +591,7 @@ onMounted(() => {
           <VIcon icon="mdi-delete-outline" color="error" />
         </IconBtn>
       </span>
-    </VToolbar>
+    </div>
     <VCardText v-if="loading" class="text-center flex flex-col items-center">
       <VProgressCircular size="48" indeterminate color="primary" />
     </VCardText>
@@ -616,7 +616,7 @@ onMounted(() => {
     </VCardText>
     <!-- 目录和文件列表 -->
     <VCardText v-else-if="dirs.length || files.length" class="p-0">
-      <VList subheader>
+      <div class="text-high-emphasis">
         <VVirtualScroll :items="[...dirs, ...files]" :style="listStyle">
           <template #default="{ item }">
             <VHover>
@@ -678,7 +678,7 @@ onMounted(() => {
             </VHover>
           </template>
         </VVirtualScroll>
-      </VList>
+      </div>
     </VCardText>
     <VCardText v-else-if="filter" class="grow d-flex justify-center align-center grey--text py-5">
       没有目录或文件
@@ -729,13 +729,3 @@ onMounted(() => {
     @close="nameTestDialog = false"
   />
 </template>
-
-<style lang="scss" scoped>
-.v-card {
-  block-size: 100%;
-}
-
-.v-toolbar {
-  background: rgb(var(--v-table-header-background));
-}
-</style>

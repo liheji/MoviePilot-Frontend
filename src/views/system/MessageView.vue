@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
     :mode="!isLoaded ? 'intersect' : 'manual'"
     side="start"
     :items="messages"
-    class="overflow-hidden"
+    class="overflow-visible"
     @load="loadMessages"
     load-more-text="加载更多 ..."
   >

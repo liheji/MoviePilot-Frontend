@@ -117,7 +117,7 @@ function removeData(id: number) {
 <template>
   <VPageContentTitle v-if="keyword" :title="`搜索：${keyword}`" />
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-  <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-hidden" @load="fetchData">
+  <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-visible" @load="fetchData">
     <template #loading />
     <template #empty />
     <div v-if="dataList.length > 0" class="grid gap-4 grid-subscribe-card" tabindex="0">

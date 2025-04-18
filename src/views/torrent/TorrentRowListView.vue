@@ -583,7 +583,7 @@ onMounted(() => {
         mode="intersect"
         side="end"
         :items="displayDataList"
-        class="resource-list overflow-hidden"
+        class="resource-list overflow-visible"
         @load="loadMore"
       >
         <template #loading />

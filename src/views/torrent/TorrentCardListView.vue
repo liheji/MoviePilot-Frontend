@@ -598,7 +598,7 @@ function loadMore({ done }: { done: any }) {
   </VDialog>
 
   <!-- 资源列表 -->
-  <VInfiniteScroll mode="intersect" side="end" :items="displayDataList" class="overflow-hidden" @load="loadMore">
+  <VInfiniteScroll mode="intersect" side="end" :items="displayDataList" class="overflow-visible" @load="loadMore">
     <template #loading />
     <template #empty />
     <div class="grid gap-4 grid-torrent-card items-start">
