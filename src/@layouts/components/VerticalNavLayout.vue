@@ -124,7 +124,7 @@ export default defineComponent({
   .layout-navbar {
     position: fixed;
     z-index: variables.$layout-vertical-nav-layout-navbar-z-index;
-    inline-size: calc(100vw - variables.$layout-vertical-nav-width - 1rem);
+    inline-size: calc(100vw - variables.$layout-vertical-nav-width);
     inset-block-start: 0;
 
     .navbar-content-container {
