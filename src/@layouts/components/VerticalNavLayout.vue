@@ -128,7 +128,7 @@ export default defineComponent({
     inset-block-start: 0;
 
     .navbar-content-container {
-      block-size: calc(env(safe-area-inset-top) + variables.$layout-vertical-nav-navbar-height);
+      block-size: calc(env(safe-area-inset-top) + variables.$layout-vertical-nav-navbar-height + 15px);
     }
 
     @at-root {
@@ -138,7 +138,7 @@ export default defineComponent({
             @include mixins.boxed-content;
           } @else {
             .navbar-content-container {
-              @include mixins.boxed-content;
+              // @include mixins.boxed-content;
             }
           }
         }
@@ -210,9 +210,8 @@ export default defineComponent({
 
 .layout-wrapper.layout-nav-type-vertical.layout-overlay-nav {
   .layout-navbar {
-    inline-size: calc(100% - 0.5rem);
-    margin-inline-start: 0.5rem;
-    padding-inline-start: 0;
+    inline-size: 100%;
+    padding-inline: 0;
   }
 }
 </style>

@@ -7,11 +7,11 @@
 }
 
 %default-layout-vertical-nav-floating-navbar-and-sticky-elevated-navbar-scrolled {
-  @include mixins.elevation(variables.$vertical-nav-navbar-elevation);
+  // @include mixins.elevation(variables.$vertical-nav-navbar-elevation);
 
   // If navbar is contained => Squeeze navbar content on scroll
   @if variables.$layout-vertical-nav-navbar-is-contained {
-    padding-inline: 1rem;
+    // padding-inline: 1rem;
   }
 }
 

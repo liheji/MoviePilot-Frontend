@@ -131,7 +131,7 @@ export default defineComponent({
             @include mixins.boxed-content;
           } @else {
             .navbar-content-container {
-              @include mixins.boxed-content;
+              // @include mixins.boxed-content;
             }
           }
         }
