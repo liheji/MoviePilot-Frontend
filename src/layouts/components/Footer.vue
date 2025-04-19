@@ -71,7 +71,7 @@ onMounted(() => {
 <template>
   <Teleport to="body">
     <div class="footer-nav-container">
-      <VCard class="footer-nav-card" rounded="pill">
+      <VCard class="footer-nav-card border" rounded="pill">
         <VCardText class="footer-card-content">
           <!-- 添加指示器 -->
           <div ref="indicator" class="nav-indicator"></div>
@@ -135,7 +135,6 @@ onMounted(() => {
   background-color: rgba(var(--v-theme-surface), 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(var(--v-theme-primary), 0.1);
   position: relative;
 }
 
