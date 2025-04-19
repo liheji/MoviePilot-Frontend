@@ -113,11 +113,11 @@ const userLevel = computed(() => userStore.level)
             <VListItemTitle>个人信息</VListItemTitle>
           </VListItem>
 
-          <VListItem link @click="router.push('/apps')" class="mb-1 rounded-lg" hover>
+          <VListItem link @click="router.push('/setting')" class="mb-1 rounded-lg" hover>
             <template #prepend>
-              <VIcon icon="mdi-view-grid-outline" />
+              <VIcon icon="mdi-cog-outline" />
             </template>
-            <VListItemTitle>功能视图</VListItemTitle>
+            <VListItemTitle>系统设定</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Site Auth -->

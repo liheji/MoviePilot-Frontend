@@ -114,6 +114,7 @@ export interface NavLinkProps {
 
 export interface NavLink extends NavLinkProps, Partial<AclProperties> {
   title: string
+  full_title?: string
   icon?: unknown
   badgeContent?: string
   badgeClass?: string

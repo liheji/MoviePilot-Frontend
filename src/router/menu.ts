@@ -29,7 +29,7 @@ export const SystemNavMenus = [
     to: '/discover',
     header: '发现',
     admin: false,
-    footer: false,
+    footer: true,
   },
   {
     title: '电影',
@@ -38,7 +38,7 @@ export const SystemNavMenus = [
     to: '/subscribe/movie',
     header: '订阅',
     admin: false,
-    footer: true,
+    footer: false,
   },
   {
     title: '电视剧',
@@ -47,7 +47,7 @@ export const SystemNavMenus = [
     to: '/subscribe/tv',
     header: '订阅',
     admin: false,
-    footer: true,
+    footer: false,
   },
 
   {

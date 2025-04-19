@@ -2,70 +2,107 @@
 import { NavMenu } from '@/@layouts/types'
 import { SystemNavMenus } from '@/router/menu'
 import { useUserStore } from '@/stores'
-import draggable from 'vuedraggable'
 
 // 从 Store 中获取superuser信息
 const superUser = useUserStore().superUser
 
-// APP图标顺序
-const appOrder = ref<string[]>([])
+// 应用分组（以header分组）
+const appGroups = ref<Record<string, NavMenu[]>>({})
 
-// 根据分类获取菜单列表
-const getMenuList = () => {
-  return SystemNavMenus.filter((item: NavMenu) => !item.admin || superUser)
+// 根据header属性对应用进行分类
+function categorizeApps() {
+  // 获取可见的菜单项
+  const menus = SystemNavMenus.filter((item: NavMenu) => (!item.admin || superUser) && !item.footer)
+
+  // 按header属性分组
+  const groupedMenus: Record<string, NavMenu[]> = {}
+
+  menus.forEach(menu => {
+    const header = menu.header || '其他'
+    if (!groupedMenus[header]) {
+      groupedMenus[header] = []
+    }
+    groupedMenus[header].push(menu)
+  })
+
+  // 将分组结果赋值给响应式变量
+  appGroups.value = groupedMenus
 }
 
-// APP列表
-const appList = ref<NavMenu[]>(getMenuList())
-
-// 保存APP图标顺序到localStorage
-function saveAppsOrder() {
-  appOrder.value = appList.value.map(app => app.title)
-  localStorage.setItem('MP_APPS_ORDER', JSON.stringify(appOrder.value))
-}
-
+// 页面加载时对应用进行分类
 onMounted(() => {
-  const localOrder = localStorage.getItem('MP_APPS_ORDER')
-  if (localOrder) {
-    appOrder.value = JSON.parse(localOrder)
-    // 对appList进行排序
-    appList.value.sort((a, b) => {
-      const aIndex = appOrder.value.findIndex(item => item === a.title)
-      const bIndex = appOrder.value.findIndex(item => item === b.title)
-      return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
-    })
-  }
+  categorizeApps()
 })
 </script>
 <template>
-  <div class="ps ps--active-y mx-3 appcenter-grid" tabindex="0">
-    <draggable
-      v-model="appList"
-      item-key="title"
-      tag="VRow"
-      delay="300"
-      @end="saveAppsOrder"
-      :component-data="{ 'class': 'ma-0 mt-n1' }"
-    >
-      <template #item="{ element }">
-        <VCol cols="6" md="3" lg="2" class="text-center cursor-pointer shortcut-icon select-none">
-          <VCard class="pa-4" :to="element.to" variant="flat">
-            <VAvatar size="64" variant="text">
-              <VIcon size="48" :icon="element.icon" color="primary" />
-            </VAvatar>
-            <h6 class="text-base font-weight-medium mt-2 mb-0">{{ element.full_title || element.title }}</h6>
-          </VCard>
-        </VCol>
-      </template>
-    </draggable>
+  <div class="app-settings-container">
+    <VContainer>
+      <!-- 遍历所有分组 -->
+      <div v-for="(apps, header) in appGroups" :key="header" class="mb-3">
+        <!-- 分组内容 - 使用卡片包装 -->
+        <VCard variant="flat" class="settings-section-card">
+          <VList lines="one" class="settings-list">
+            <VListItem
+              v-for="(app, appIndex) in apps"
+              :key="appIndex"
+              :to="app.to || ''"
+              color="primary"
+              class="settings-list-item"
+              rounded="0"
+            >
+              <template #prepend>
+                <VAvatar size="42" color="primary" variant="text" class="me-3">
+                  <VIcon :icon="app.icon as string" size="24"></VIcon>
+                </VAvatar>
+              </template>
+
+              <VListItemTitle class="font-weight-medium">
+                {{ app.full_title || app.title }}
+              </VListItemTitle>
+
+              <VListItemSubtitle v-if="app.description">
+                {{ app.description }}
+              </VListItemSubtitle>
+
+              <template #append>
+                <VIcon icon="mdi-chevron-right"></VIcon>
+              </template>
+            </VListItem>
+          </VList>
+        </VCard>
+      </div>
+    </VContainer>
   </div>
 </template>
 
-<style type="scss" scoped>
-.appcenter-grid .v-card {
-  /* stylelint-disable-next-line property-no-vendor-prefix */
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  background-color: rgb(var(--v-theme-surface), 0.8);
+<style lang="scss" scoped>
+.app-settings-container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.settings-section-card {
+  overflow: hidden;
+  background-color: rgb(var(--v-theme-surface));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.settings-list {
+  padding: 0;
+}
+
+.settings-list-item {
+  padding: 12px 16px;
+  transition: background-color 0.2s;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(var(--v-border-color), 0.12);
+  }
+
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.05);
+  }
 }
 </style>
