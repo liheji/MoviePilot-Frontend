@@ -128,7 +128,7 @@ export default defineComponent({
     inset-block-start: 0;
 
     .navbar-content-container {
-      block-size: calc(env(safe-area-inset-top) + variables.$layout-vertical-nav-navbar-height + 15px);
+      block-size: calc(env(safe-area-inset-top) + variables.$layout-vertical-nav-navbar-height);
     }
 
     @at-root {
