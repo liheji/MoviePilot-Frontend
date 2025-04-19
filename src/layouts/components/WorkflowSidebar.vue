@@ -136,7 +136,7 @@ onMounted(() => {
           @dragstart="!display.smAndDown.value && onDragStart($event, action)"
           @click="display.smAndDown.value && handleComponentClick(action)"
         >
-          <div class="component-card">
+          <VCard class="component-card">
             <VAvatar size="36" class="component-avatar">
               <VIcon :icon="getActionIcon(action.type)" size="18" />
             </VAvatar>
@@ -144,7 +144,7 @@ onMounted(() => {
               <div class="component-name">{{ action.name }}</div>
               <div class="component-desc">{{ display.smAndDown.value ? '点击添加' : '拖动到画布' }}</div>
             </div>
-          </div>
+          </VCard>
         </div>
       </div>
 
@@ -171,7 +171,7 @@ onMounted(() => {
   position: absolute;
   z-index: 100;
   overflow: hidden;
-  background-color: #f5f5f7;
+  background-color: rgb(var(--v-theme-background));
   box-shadow: 0 0 15px rgba(0, 0, 0, 8%);
   inline-size: 280px;
   inset-block: 0;
@@ -201,8 +201,8 @@ onMounted(() => {
 .sidebar-header {
   flex-shrink: 0;
   padding: 16px;
-  background-color: #fff;
-  border-block-end: 1px solid rgba(0, 0, 0, 6%);
+  background-color: rgb(var(--v-theme-background));
+  border-block-end: 1px solid rgba(var(--v-theme-on-background), 0.06);
 
   .header-content {
     position: relative;
@@ -211,20 +211,20 @@ onMounted(() => {
   }
 
   .workflow-logo {
-    background-color: #8c58f5;
+    background-color: rgb(var(--v-theme-primary));
     color: white;
     margin-inline-end: 10px;
   }
 
   .header-title {
-    color: #1a1a1a;
+    color: rgb(var(--v-theme-on-background));
     font-size: 18px;
     font-weight: 600;
   }
 
   .collapse-btn {
     position: absolute;
-    color: #8c58f5;
+    color: rgb(var(--v-theme-primary));
     inset-block-start: 0;
     inset-inline-end: 0;
   }
@@ -245,7 +245,7 @@ onMounted(() => {
 
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background-color: rgba(140, 88, 245, 30%);
+    background-color: rgba(var(--v-theme-primary), 0.3);
   }
 }
 
@@ -263,18 +263,18 @@ onMounted(() => {
   align-items: center;
   padding: 10px;
   border-radius: 12px;
-  background-color: #e4e4e7;
+  background-color: rgb(var(--v-theme-surface-variant));
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: #d4d4d8;
+    background-color: rgb(var(--v-theme-surface-variant));
     transform: translateY(-2px);
   }
 }
 
 .component-avatar {
   flex-shrink: 0;
-  background-color: #8c58f5;
+  background-color: rgb(var(--v-theme-primary));
   color: white;
   margin-inline-end: 12px;
 
@@ -291,7 +291,7 @@ onMounted(() => {
 
 .component-name {
   overflow: hidden;
-  color: #1a1a1a;
+  color: rgb(var(--v-theme-on-background));
   font-size: 14px;
   font-weight: 500;
   text-overflow: ellipsis;
@@ -309,20 +309,16 @@ onMounted(() => {
 .sidebar-footer {
   flex-shrink: 0;
   padding: 12px;
-  background-color: #fff;
+  background-color: rgb(var(--v-theme-background));
   border-block-start: 1px solid rgba(0, 0, 0, 6%);
 
   .drag-btn {
-    background-color: #8c58f5;
+    background-color: rgb(var(--v-theme-primary));
     block-size: 44px;
     color: white;
     font-weight: 500;
     letter-spacing: normal;
     text-transform: none;
-
-    &:hover {
-      background-color: color.adjust(#8c58f5, $lightness: -5%);
-    }
 
     .btn-content {
       display: flex;
@@ -344,8 +340,8 @@ onMounted(() => {
 }
 
 .workflow-sidebar-fab {
-  background-color: #8c58f5;
-  box-shadow: 0 4px 10px rgba(140, 88, 245, 40%);
+  background-color: rgb(var(--v-theme-primary));
+  box-shadow: 0 4px 10px rgba(var(--v-theme-primary), 40%);
   color: white;
 
   &:hover {
