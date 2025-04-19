@@ -25,7 +25,7 @@ const themes: ThemeSwitcherTheme[] = [
   {
     name: 'transparent',
     title: '透明',
-    icon: 'mdi-gradient-vertical',
+    icon: 'mdi-gradient-horizontal',
   },
 ]
 </script>

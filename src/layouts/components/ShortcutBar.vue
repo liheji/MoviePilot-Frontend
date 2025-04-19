@@ -178,7 +178,7 @@ onMounted(() => {
               @click="openDialog(item.dialogRef)"
             >
               <VAvatar variant="tonal" size="48" class="me-4" rounded="lg">
-                <VIcon :icon="item.icon" size="24" />
+                <VIcon color="primary" :icon="item.icon" size="24" />
               </VAvatar>
               <div>
                 <div class="text-body-1 text-high-emphasis font-weight-medium">{{ item.title }}</div>
