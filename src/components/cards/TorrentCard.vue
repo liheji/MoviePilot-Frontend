@@ -142,7 +142,7 @@ onMounted(() => {
         </div>
 
         <!-- 站点信息条 -->
-        <div class="d-flex justify-space-between align-center mb-3 flex-wrap">
+        <div class="d-flex justify-space-between align-center flex-wrap">
           <div class="d-flex align-center">
             <img
               v-if="siteIcons[torrent?.site || 0]"
@@ -174,7 +174,7 @@ onMounted(() => {
       <!-- 种子内容 -->
       <VCardText class="d-flex flex-column flex-grow-1 pa-3 overflow-hidden">
         <!-- 种子标题 -->
-        <div class="text-subtitle-2 font-weight-medium mb-2" :title="torrent?.title">
+        <div class="text-subtitle-2 text-high-emphasis font-weight-medium mb-1" :title="torrent?.title">
           {{ torrent?.title }}
         </div>
 

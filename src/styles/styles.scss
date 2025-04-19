@@ -368,6 +368,12 @@ html.v-overlay-scroll-blocked {
     backdrop-filter: blur(10px);
     background-color: rgba(var(--v-theme-surface), 0.3);
   }
+
+  // Sheet
+  .v-sheet {
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--v-theme-surface), 0.3);
+  }
   
   // 页面容器
   .layout-content-wrapper {

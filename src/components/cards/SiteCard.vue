@@ -196,95 +196,92 @@ onMounted(() => {
 <template>
   <div>
     <VCard
-      class="site-card relative h-full flex flex-col overflow-hidden group"
+      class="relative h-full flex flex-col overflow-hidden group transition-all duration-300 cursor-pointer hover:-translate-y-1"
       :class="[
-        cardProps.site?.is_active ? '' : 'inactive',
+        cardProps.site?.is_active ? '' : 'opacity-70',
         {
-          'status-error': statColor === 'error',
-          'status-warning': statColor === 'warning',
-          'status-success': statColor === 'success',
+          'border-error': statColor === 'error',
+          'border-warning': statColor === 'warning',
+          'border-success': statColor === 'success',
         },
       ]"
       :ripple="false"
-      @click="handleResourceBrowse"
+      variant="flat"
+      elevation="0"
+      rounded="lg"
+      hover
+      @click="siteEditDialog = true"
     >
       <!-- 装饰性状态指示器 -->
       <div v-if="cardProps.site?.is_active" class="site-status-indicator" :class="statColor"></div>
 
       <!-- 主体部分 -->
-      <div class="site-card-content relative flex-1 flex flex-col">
+      <div class="relative flex-1 flex flex-col p-3 z-1">
         <!-- 顶部：图标和站点名称 -->
         <div class="flex items-center mb-1">
           <!-- 站点图标 -->
-          <div class="site-icon-container mr-2.5">
-            <VImg :src="siteIcon" class="site-icon" :alt="cardProps.site?.name">
+          <VAvatar tile rounded="lg" size="32" class="me-2 cursor-move">
+            <VImg :src="siteIcon" class="w-full h-full" :alt="cardProps.site?.name" cover>
               <template #placeholder>
                 <div class="w-full h-full">
-                  <VSkeletonLoader class="object-cover aspect-w-1 aspect-h-1" />
+                  <VSkeletonLoader class="object-cover aspect-square" />
                 </div>
               </template>
             </VImg>
-            <div class="site-icon-edit-overlay">
-              <VIcon icon="mdi-drag" color="white" size="24" class="cursor-move" />
-            </div>
-          </div>
+          </VAvatar>
 
           <!-- 站点名称和特性图标 -->
           <div class="flex-1 min-w-0 flex items-center">
-            <h3 class="site-title truncate">{{ cardProps.site?.name }}</h3>
+            <h3 class="text-lg font-semibold leading-tight truncate">{{ cardProps.site?.name }}</h3>
 
             <!-- 站点特性图标 -->
-            <div class="site-features flex items-center gap-1 ml-auto">
-              <div v-if="cardProps.site?.limit_interval" class="feature-icon-wrapper">
-                <VIcon icon="mdi-speedometer" size="16" class="site-feature-icon" />
+            <div class="flex items-center gap-2 ml-auto mr-10">
+              <div class="hover:bg-primary/8 transition-colors">
+                <VIcon icon="mdi-speedometer" size="16" color="primary" class="opacity-85 hover:opacity-100" />
               </div>
-              <div v-if="cardProps.site?.proxy === 1" class="feature-icon-wrapper">
-                <VIcon icon="mdi-network-outline" size="16" class="site-feature-icon" />
+              <div class="hover:bg-primary/8 transition-colors">
+                <VIcon icon="mdi-network-outline" size="16" color="primary" class="opacity-85 hover:opacity-100" />
               </div>
-              <div v-if="cardProps.site?.render === 1" class="feature-icon-wrapper">
-                <VIcon icon="mdi-apple-safari" size="16" class="site-feature-icon" />
+              <div class="hover:bg-primary/8 transition-colors">
+                <VIcon icon="mdi-apple-safari" size="16" color="primary" class="opacity-85 hover:opacity-100" />
               </div>
-              <div v-if="cardProps.site?.filter" class="feature-icon-wrapper">
-                <VIcon icon="mdi-filter-cog-outline" size="16" class="site-feature-icon" />
+              <div class="hover:bg-primary/8 transition-colors">
+                <VIcon icon="mdi-filter-cog-outline" size="16" color="primary" class="opacity-85 hover:opacity-100" />
               </div>
             </div>
           </div>
         </div>
 
         <!-- 中间部分：网址 -->
-        <div class="site-meta my-3">
-          <div class="site-url truncate" @click.stop="openSitePage">
+        <div class="my-3">
+          <div class="text-sm text-medium-emphasis truncate" @click.stop="openSitePage">
             {{ cardProps.site?.url }}
           </div>
         </div>
 
         <!-- 底部：数据统计 -->
-        <div class="site-stats flex-1 flex flex-col justify-end">
+        <div class="flex-1 flex flex-col justify-end">
           <!-- 更直观的上传下载数据条 -->
-          <div class="data-transfer-stats">
+          <div class="border-t mt-1.5 pt-1.5">
             <!-- 上传数据 -->
-            <div class="data-row upload-row">
-              <div class="data-label">
+            <div class="flex items-center justify-between gap-3 mb-1.5">
+              <div class="text-sm text-medium-emphasis min-w-[70px]">
                 <VIcon icon="mdi-arrow-up" size="14" color="info" class="mr-1" />
                 <span>{{ formatFileSize(cardProps.data?.upload || 0) }}</span>
               </div>
-              <div class="data-progress-bar">
-                <div class="progress-filled upload-filled" :style="`width: ${getUploadPercent}%`">
-                  <div class="progress-glow"></div>
-                </div>
+              <div class="flex-grow h-1 rounded bg-on-surface/8 relative overflow-hidden">
+                <VProgressLinear :model-value="getUploadPercent" color="info" height="4" rounded="lg" />
               </div>
             </div>
 
             <!-- 下载数据 -->
-            <div class="data-row download-row">
-              <div class="data-label">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center text-[0.8rem] text-medium-emphasis min-w-[70px]">
                 <VIcon icon="mdi-arrow-down" size="14" color="success" class="mr-1" />
                 <span>{{ formatFileSize(cardProps.data?.download || 0) }}</span>
               </div>
-              <div class="data-progress-bar">
-                <div class="progress-filled download-filled" :style="`width: ${getDownloadPercent}%`">
-                  <div class="progress-glow"></div>
-                </div>
+              <div class="flex-grow h-1 rounded bg-on-surface/8 relative overflow-hidden">
+                <VProgressLinear :model-value="getDownloadPercent" color="warning" height="4" rounded="lg" />
               </div>
             </div>
           </div>
@@ -292,39 +289,54 @@ onMounted(() => {
       </div>
 
       <!-- 右侧操作按钮区 -->
-      <div class="site-card-actions">
-        <IconBtn
-          elevation="0"
-          class="site-action-btn test-btn"
+      <VSheet
+        class="absolute inset-y-0 right-0 z-20 flex flex-col py-2 px-1 transform translate-x-full transition-transform duration-200 group-hover:translate-x-0"
+      >
+        <!-- 测试按钮 -->
+        <VBtn
+          icon
+          variant="text"
+          density="comfortable"
+          class="mb-1 relative w-10 h-10 min-w-10 flex items-center justify-center rounded-full"
+          :disabled="testButtonDisable"
           @click.stop="testSite"
-          :class="{ 'testing': testButtonDisable }"
         >
-          <div class="test-btn-content">
-            <div class="pulse-dot" :class="statColor"></div>
+          <div class="relative flex items-center justify-center w-full h-full">
+            <div
+              class="w-[22px] h-[22px] rounded-full shadow-[inset_0_0_0_2px_rgba(var(--v-theme-on-surface),0.1)] pulse-dot"
+              :class="statColor"
+            ></div>
           </div>
-          <div v-if="testButtonDisable" class="loading-overlay">
-            <div class="loading-spinner">
+          <div
+            v-if="testButtonDisable"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-surface/95 rounded-full shadow-md animate-fade-in"
+          >
+            <div class="relative w-6 h-6">
               <div class="spinner-circle"></div>
-              <div class="spinner-circle-dot"></div>
             </div>
-            <span class="loading-text">测试中</span>
           </div>
-        </IconBtn>
-        <IconBtn elevation="0" class="site-action-btn" @click.stop="handleSiteUserData">
-          <VIcon icon="mdi-chart-bell-curve" size="18" />
-        </IconBtn>
-        <IconBtn elevation="0" class="site-action-btn" @click.stop="handleSiteUpdate">
-          <VIcon icon="mdi-refresh" size="18" />
-        </IconBtn>
-        <IconBtn elevation="0" class="site-action-btn more-btn">
-          <VIcon icon="mdi-dots-vertical" size="18" />
-          <VMenu activator="parent" close-on-content-click location="left">
-            <VList density="compact" nav class="dropdown-menu">
-              <VListItem @click="siteEditDialog = true" base-color="info">
+        </VBtn>
+
+        <!-- 用户数据按钮 -->
+        <VBtn icon variant="text" @click.stop="handleSiteUserData">
+          <VIcon icon="mdi-chart-bell-curve" size="small" />
+        </VBtn>
+
+        <!-- 更新按钮 -->
+        <VBtn icon variant="text" @click.stop="handleSiteUpdate">
+          <VIcon icon="mdi-refresh" size="small" />
+        </VBtn>
+
+        <!-- 更多选项按钮 -->
+        <VBtn icon variant="text" class="mt-auto">
+          <VIcon icon="mdi-dots-vertical" size="small" />
+          <VMenu :activator="'parent'" :close-on-content-click="true" :location="'left'">
+            <VList>
+              <VListItem @click="handleResourceBrowse" base-color="info">
                 <template #prepend>
-                  <VIcon icon="mdi-file-edit-outline" size="small" />
+                  <VIcon icon="mdi-web" size="small" />
                 </template>
-                <VListItemTitle>编辑站点</VListItemTitle>
+                <VListItemTitle>浏览资源</VListItemTitle>
               </VListItem>
               <VListItem @click="deleteSiteInfo">
                 <template #prepend>
@@ -334,8 +346,8 @@ onMounted(() => {
               </VListItem>
             </VList>
           </VMenu>
-        </IconBtn>
-      </div>
+        </VBtn>
+      </VSheet>
     </VCard>
 
     <!-- 对话框组件 -->
@@ -370,36 +382,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.site-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 10px;
-  background: rgba(var(--v-theme-surface), 0.95);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.site-card:hover {
-  border: 1px solid rgba(var(--v-theme-primary), 0.2);
-  box-shadow: 0 3px 12px -6px rgba(0, 0, 0, 10%);
-  transform: translateY(-4px);
-}
-
-.inactive {
-  opacity: 0.7;
-}
-
-.site-card-content {
-  z-index: 1;
-  padding-block: 10px;
-  padding-inline: 12px;
-}
-
 /* 站点状态指示器 - 更精致的渐变指示 */
 .site-status-indicator {
   position: absolute;
   z-index: 1;
-  block-size: 4px;
+  block-size: 2px;
   inset-block-start: 0;
   inset-inline: 0;
   opacity: 0.5;
@@ -432,403 +419,40 @@ onMounted(() => {
   opacity: 0.8;
 }
 
-/* 拖动手柄 */
-.drag-handle {
-  position: relative;
-  z-index: 10;
-}
-
-/* 数据显示相关样式 */
-.data-transfer-stats {
-  border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  margin-block-start: 6px;
-  padding-block-start: 6px;
-}
-
-.data-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-block-end: 6px;
-}
-
-.data-row:last-child {
-  margin-block-end: 0;
-}
-
-.data-label {
-  display: flex;
-  align-items: center;
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  font-size: 0.8rem;
-  min-inline-size: 70px;
-}
-
-.data-progress-bar {
-  position: relative;
-  overflow: hidden;
-  flex-grow: 1;
-  border-radius: 4px;
-  background: rgba(var(--v-theme-on-surface), 0.08);
-  block-size: 4px;
-}
-
-.progress-filled {
-  position: absolute;
-  overflow: hidden;
-  border-radius: 4px;
-  block-size: 100%;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  min-inline-size: 3px;
-  transition: inline-size 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.upload-filled {
-  animation: pulse-width 2s infinite;
+/* 上传下载条样式 */
+.upload-bar {
   background: linear-gradient(90deg, #4d79ff, #07f);
   box-shadow: 0 0 4px rgba(0, 119, 255, 50%);
+  animation: pulse-width 2s infinite;
 }
 
-.download-filled {
-  animation: pulse-width 2s infinite;
+.download-bar {
   background: linear-gradient(90deg, #42d392, #00b77e);
   box-shadow: 0 0 4px rgba(0, 183, 126, 50%);
+  animation: pulse-width 2s infinite;
 }
 
-.progress-glow {
-  position: absolute;
-  animation: shimmer 1.5s linear infinite;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 50%), transparent);
-  background-size: 200% 100%;
-  inset: 0;
-}
-
-@keyframes pulse-width {
-  0%,
-  100% {
-    opacity: 0.85;
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -100% 0;
-  }
-
-  100% {
-    background-position: 100% 0;
-  }
-}
-
-/* 速度等级样式 */
-.speed-idle {
-  animation: none !important;
-  inline-size: 5% !important;
-  opacity: 0.5;
-}
-
-.speed-low {
-  animation-duration: 6s !important;
-  inline-size: 30% !important;
-}
-
-.speed-medium {
-  animation-duration: 4s !important;
-  inline-size: 50% !important;
-}
-
-.speed-high {
-  animation-duration: 2s !important;
-  inline-size: 70% !important;
-}
-
-@keyframes pulse-width {
-  0%,
-  100% {
-    transform: scaleX(0.95);
-  }
-
-  50% {
-    transform: scaleX(1.05);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* 站点图标 */
-.site-icon-container {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  block-size: 38px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 6%);
-  cursor: pointer;
-  inline-size: 38px;
-  transition: transform 0.2s ease;
-}
-
-.site-icon-container:hover {
-  transform: scale(1.05);
-}
-
-.site-icon {
-  block-size: 100%;
-  inline-size: 100%;
-  object-fit: cover;
-}
-
-.site-icon-edit-overlay {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 50%);
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.site-icon-container:hover .site-icon-edit-overlay {
-  opacity: 1;
-}
-
-/* 站点标题 */
-.site-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-/* 站点网址 */
-.site-url {
-  color: rgba(var(--v-theme-on-surface), 0.6);
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: color 0.2s ease;
-}
-
-.site-url:hover {
-  color: rgba(var(--v-theme-primary), 0.9);
-}
-
-/* 站点特性图标 */
-.site-feature-icon {
-  color: rgba(var(--v-theme-primary), 0.95);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 5%));
-  margin-block: 0;
-  margin-inline: 1px;
-  opacity: 0.85;
-  transition: all 0.2s ease;
-}
-
-.site-feature-icon:hover {
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 10%));
-  opacity: 1;
-  transform: translateY(-1px);
-}
-
-/* 特性标签 */
-.site-features {
-  margin-block-start: 0;
-}
-
-/* 数据统计 */
-.site-stats {
-  margin-block-start: auto;
-}
-
-.site-data-values {
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  font-size: 12px;
-}
-
-.site-data-bar {
-  overflow: hidden;
-  border-radius: 1.5px;
-  block-size: 3px;
-}
-
-.site-data-bar-bg {
-  position: absolute;
-  background-color: rgba(var(--v-theme-on-surface), 0.05);
-  inset: 0;
-}
-
-.site-data-bar-upload {
-  background-color: rgba(var(--v-theme-info), 0.4);
-}
-
-.site-data-bar-download {
-  background-color: rgba(var(--v-theme-success), 0.4);
-}
-
-/* 状态样式 */
-.status-error {
-  border-color: rgba(var(--v-theme-error), 0.2);
-}
-
-.status-warning {
-  border-color: rgba(var(--v-theme-warning), 0.2);
-}
-
-.status-success {
-  border-color: rgba(var(--v-theme-success), 0.2);
-}
-
-/* 操作按钮 */
-.site-card-actions {
-  position: absolute;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  background: rgba(var(--v-theme-surface), 0.97);
-  border-inline-start: 1px solid rgba(var(--v-theme-on-surface), 0.06);
-  inset-block: 0;
-  inset-inline-end: 0;
-  padding-block: 8px;
-  padding-inline: 4px;
-  transform: translateX(100%);
-  transition: transform 0.2s ease;
-}
-
-/* 测试按钮特殊样式 */
-.test-btn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: 50% !important;
-  block-size: 40px !important;
-  inline-size: 40px !important;
-  margin-block-end: 12px;
-  min-inline-size: 40px;
-}
-
-.test-btn-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  block-size: 100%;
-  inline-size: 100%;
-}
-
-.loading-overlay {
-  position: absolute;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  animation: fade-in 0.2s ease;
-  background: rgba(var(--v-theme-surface), 0.95);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 10%);
-  inset: 0;
-}
-
-.loading-spinner {
-  position: relative;
-  block-size: 24px;
-  inline-size: 24px;
-}
-
-.spinner-circle {
-  position: absolute;
-  border: 2px solid rgba(var(--v-theme-primary), 0.2);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  block-size: 100%;
-  border-block-start-color: rgba(var(--v-theme-primary), 1);
-  inline-size: 100%;
-}
-
-.spinner-circle-dot {
-  position: absolute;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite reverse;
-  background-color: rgba(var(--v-theme-primary), 1);
-  block-size: 4px;
-  inline-size: 4px;
-  inset-block-start: 0;
-  inset-inline-start: 50%;
-  margin-block-start: -2px;
-  margin-inline-start: -2px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-text {
-  position: absolute;
-  color: rgba(var(--v-theme-primary), 1);
-  font-size: 12px;
-  font-weight: 500;
-  inset-block-end: -20px;
-  margin-block-start: 4px;
-  white-space: nowrap;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.pulse-dot {
-  position: relative;
-  border-radius: 50%;
-  background-color: transparent;
-  block-size: 22px;
-  box-shadow: inset 0 0 0 2px rgba(var(--v-theme-on-surface), 0.1);
-  inline-size: 22px;
-}
-
+/* 测试状态点样式 */
 .pulse-dot::before {
   position: absolute;
   z-index: 1;
   border-radius: 50%;
-  block-size: 70%;
   content: '';
-  inline-size: 70%;
-  inset-block-start: 15%;
-  inset-inline-start: 15%;
+  height: 70%;
+  width: 70%;
+  top: 15%;
+  left: 15%;
 }
 
 .pulse-dot::after {
   position: absolute;
   z-index: 2;
   border-radius: 50%;
-  block-size: 100%;
   content: '';
-  inline-size: 100%;
-  inset-block-start: 0;
-  inset-inline-start: 0;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
 }
 
 .pulse-dot.error::before {
@@ -871,15 +495,37 @@ onMounted(() => {
   box-shadow: 0 0 0 2px rgba(var(--v-theme-secondary), 0.3);
 }
 
+/* 加载动画 */
+.spinner-circle {
+  position: absolute;
+  border: 1px solid rgba(var(--v-theme-primary), 0.2);
+  border-top-color: rgba(var(--v-theme-primary), 1);
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* 动画关键帧 */
+@keyframes pulse-width {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scaleX(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1.05);
+  }
+}
+
 @keyframes pulse-animation-error {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.6);
   }
-
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-error), 0);
   }
-
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
   }
@@ -889,11 +535,9 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0.6);
   }
-
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-warning), 0);
   }
-
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0);
   }
@@ -903,11 +547,9 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-success), 0.6);
   }
-
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-success), 0);
   }
-
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-success), 0);
   }
@@ -917,96 +559,29 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-secondary), 0.6);
   }
-
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-secondary), 0);
   }
-
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-secondary), 0);
   }
 }
 
-.site-card:hover .site-card-actions {
-  transform: translateX(0);
-}
-
-.site-action-btn {
-  position: relative;
-  display: flex;
-  overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 8px;
-  background-color: rgba(var(--v-theme-surface), 1);
-  block-size: 32px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 5%);
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  cursor: pointer;
-  inline-size: 36px;
-  margin-block-end: 4px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.site-action-btn::before {
-  position: absolute;
-  background: radial-gradient(circle at center, rgba(var(--v-theme-primary), 0.1), transparent 70%);
-  content: '';
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.site-action-btn:hover {
-  background-color: white;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 10%);
-  color: rgba(var(--v-theme-primary), 1);
-  transform: translateY(-2px);
-}
-
-.site-action-btn:hover::before {
-  opacity: 1;
-}
-
-.site-action-btn.animate-pulse {
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
+@keyframes spin {
   0% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.4);
+    transform: rotate(0deg);
   }
-
-  70% {
-    box-shadow: 0 0 0 6px rgba(var(--v-theme-primary), 0);
-  }
-
   100% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0);
+    transform: rotate(360deg);
   }
 }
 
-.site-action-btn.more-btn {
-  margin-block: auto 0;
-}
-
-.dropdown-menu {
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.feature-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  block-size: 24px;
-  inline-size: 24px;
-  transition: background-color 0.2s ease;
-}
-
-.feature-icon-wrapper:hover {
-  background-color: rgba(var(--v-theme-primary), 0.08);
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>
