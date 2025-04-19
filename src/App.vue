@@ -10,8 +10,11 @@ let themeValue = localStorage.getItem('theme') || 'light'
 const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
 globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
 
+// 从 provide 中获取全局设置
+const globalSettings: any = inject('globalSettings')
+
 // 更新data-theme属性以便CSS选择器能正确匹配
-function updateHtmlThemeAttribute(themeName) {
+function updateHtmlThemeAttribute(themeName: string) {
   document.documentElement.setAttribute('data-theme', themeName)
   // 确保body元素也有相同的主题属性，以便更好地选择弹出窗口
   document.body.setAttribute('data-theme', themeName)
@@ -30,9 +33,8 @@ let backgroundRotationTimer: NodeJS.Timeout | null = null
 async function fetchBackgroundImages() {
   try {
     backgroundImages.value = await api.get('/login/wallpapers')
-    console.log('获取背景图片成功:', backgroundImages.value)
   } catch (e) {
-    console.error('获取背景图片失败:', e)
+    console.error(e)
   }
 }
 
@@ -45,6 +47,17 @@ function startBackgroundRotation() {
       activeImageIndex.value = (activeImageIndex.value + 1) % backgroundImages.value.length
     }, 10000) // 每10秒切换一次
   }
+}
+
+// 计算图片地址
+function getImgUrl(url: string) {
+  // 使用图片缓存
+  if (globalSettings.GLOBAL_IMAGE_CACHE)
+    return `${import.meta.env.VITE_API_BASE_URL}system/cache/image?url=${encodeURIComponent(url)}`
+  // 如果地址中包含douban则使用中转代理
+  if (url.includes('doubanio.com'))
+    return `${import.meta.env.VITE_API_BASE_URL}system/img/0?imgurl=${encodeURIComponent(url)}`
+  return url
 }
 
 // 监听主题变化
@@ -131,7 +144,7 @@ onUnmounted(() => {
           :key="index"
           class="background-image"
           :class="{ 'active': index === activeImageIndex }"
-          :style="{ backgroundImage: `url(${imageUrl})` }"
+          :style="{ backgroundImage: `url(${getImgUrl(imageUrl)})` }"
         ></div>
         <!-- 全局磨砂层 -->
         <div class="global-blur-layer"></div>

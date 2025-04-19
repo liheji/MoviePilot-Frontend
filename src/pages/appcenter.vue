@@ -39,6 +39,9 @@ onMounted(() => {
     <VContainer>
       <!-- 遍历所有分组 -->
       <div v-for="(apps, header) in appGroups" :key="header" class="mb-3">
+        <VListSubheader class="ps-1">
+          {{ header }}
+        </VListSubheader>
         <!-- 分组内容 - 使用卡片包装 -->
         <VCard variant="flat" class="settings-section-card">
           <VList lines="one" class="settings-list">
@@ -94,7 +97,7 @@ onMounted(() => {
 }
 
 .settings-list-item {
-  padding: 12px 16px;
+  padding: 8px 12px;
   transition: background-color 0.2s;
 
   &:not(:last-child) {

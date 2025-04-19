@@ -7,86 +7,50 @@ const appMode = inject('pwaMode') && display.mdAndDown.value
 
 const route = useRoute()
 
-// 过滤出底部菜单项（排除电影和电视剧，因为我们会合并它们）
+// 根据当前路径获取匹配的菜单路径
+function getMenuPathFromRoute(path: string): string {
+  const matchedMenu = SystemNavMenus.find(menu => menu.footer === true && path.startsWith(menu.to))
+  return matchedMenu ? matchedMenu.to : '/apps'
+}
+
+// 当前选中的菜单，初始值基于当前路由
+const currentMenu = ref<string>(getMenuPathFromRoute(route.path))
+
+// 过滤出底部菜单项
 const footerMenus = computed(() => {
   return SystemNavMenus.filter(menu => menu.footer === true)
 })
 
-// 为每个底部菜单创建激活状态
-const activeState = computed(() => {
-  const activeStates: Record<string, boolean> = {}
-
-  footerMenus.value.forEach(menu => {
-    const pathKey = menu.to.replace(/\//g, '_')
-    activeStates[pathKey] = route.path.startsWith(menu.to)
-  })
-
-  return activeStates
-})
-
-// 更多按钮的激活状态
-const moreActiveState = computed(() => {
-  return !Object.values(activeState.value).some(v => v)
-})
-
-// 用于动画的状态和方法
-const indicator = ref<HTMLElement | null>(null)
-const activeButton = ref<HTMLElement | null>(null)
-
-// 更新指示器位置的方法
-const updateIndicatorPosition = async () => {
-  await nextTick()
-  const activeEl = document.querySelector('.footer-nav-btn-active') as HTMLElement
-  if (activeEl && indicator.value) {
-    // 获取按钮的完整尺寸和位置信息
-    const rect = activeEl.getBoundingClientRect()
-    const parentRect = indicator.value.parentElement!.getBoundingClientRect()
-
-    // 计算相对于父容器的位置
-    const relativeLeft = rect.left - parentRect.left
-
-    // 设置指示器宽度和位置
-    indicator.value.style.width = `${rect.width}px`
-    indicator.value.style.left = `${relativeLeft}px`
-
-    activeButton.value = activeEl
-  }
-}
-
-// 监听路由变化
+// 监听路由变化来更新currentMenu
 watch(
   () => route.path,
-  async () => {
-    updateIndicatorPosition()
+  newPath => {
+    currentMenu.value = getMenuPathFromRoute(newPath)
   },
   { immediate: false },
 )
-
-// 在组件挂载后初始化指示器位置
-onMounted(() => {
-  updateIndicatorPosition()
-})
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport v-if="appMode" to="body">
     <div class="footer-nav-container">
       <VCard class="footer-nav-card border" rounded="pill">
         <VCardText class="footer-card-content">
           <!-- 添加指示器 -->
           <div ref="indicator" class="nav-indicator"></div>
-          <VBtnToggle class="footer-btn-group" :mandatory="false">
+          <VBtnToggle class="footer-btn-group" :mandatory="false" v-model="currentMenu">
             <!-- 遍历底部菜单项 -->
             <VBtn
               v-for="menu in footerMenus"
               :key="menu.to"
               :to="menu.to"
-              variant="plain"
-              :ripple="false"
+              :variant="currentMenu === menu.to ? 'text' : 'plain'"
               color="primary"
+              :ripple="false"
               class="footer-nav-btn"
               rounded="pill"
-              :class="{ 'footer-nav-btn-active': activeState[menu.to.replace(/\//g, '_')] }"
+              :class="{ 'footer-nav-btn-active': currentMenu === menu.to }"
+              :value="menu.to"
             >
               <div class="btn-content">
                 <VIcon :icon="menu.icon" size="24"></VIcon>
@@ -96,13 +60,14 @@ onMounted(() => {
 
             <!-- 更多按钮 -->
             <VBtn
-              variant="plain"
-              :ripple="false"
+              :variant="currentMenu === '/apps' ? 'text' : 'plain'"
               color="primary"
+              :ripple="false"
               to="/apps"
               rounded="pill"
               class="footer-nav-btn"
-              :class="{ 'footer-nav-btn-active': moreActiveState }"
+              :class="{ 'footer-nav-btn-active': currentMenu === '/apps' }"
+              value="/apps"
             >
               <div class="btn-content">
                 <VIcon icon="mdi-dots-horizontal" size="24"></VIcon>
@@ -122,7 +87,7 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 9998;
+  z-index: 1999;
   padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
   display: flex;
   justify-content: center;
@@ -141,17 +106,6 @@ onMounted(() => {
 .footer-card-content {
   padding: 6px 8px;
   position: relative;
-}
-
-.nav-indicator {
-  position: absolute;
-  height: 48px;
-  background-color: rgba(var(--v-theme-primary), 0.1);
-  border-radius: 100px;
-  z-index: 1;
-  top: 6px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
-  pointer-events: none;
 }
 
 .footer-btn-group {
