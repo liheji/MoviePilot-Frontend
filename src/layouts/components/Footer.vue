@@ -38,7 +38,7 @@ watch(
         <VCardText class="footer-card-content">
           <!-- 添加指示器 -->
           <div ref="indicator" class="nav-indicator"></div>
-          <VBtnToggle class="footer-btn-group" :mandatory="false" v-model="currentMenu">
+          <VBtnToggle class="footer-btn-group" :mandatory="true" v-model="currentMenu">
             <!-- 遍历底部菜单项 -->
             <VBtn
               v-for="menu in footerMenus"
