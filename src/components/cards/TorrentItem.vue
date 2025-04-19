@@ -151,22 +151,22 @@ onMounted(() => {
 
         <div class="d-flex flex-wrap gap-1 mb-2">
           <!-- 版本标签 -->
-          <VChip v-if="meta?.edition" class="chip-edition rounded-sm" size="small" variant="elevated">
+          <VChip v-if="meta?.edition" class="chip-edition rounded-sm" size="x-small" variant="elevated">
             {{ meta?.edition }}
           </VChip>
 
           <!-- 分辨率标签 -->
-          <VChip v-if="meta?.resource_pix" class="chip-resolution rounded-sm" size="small" variant="elevated">
+          <VChip v-if="meta?.resource_pix" class="chip-resolution rounded-sm" size="x-small" variant="elevated">
             {{ meta?.resource_pix }}
           </VChip>
 
           <!-- 编码标签 -->
-          <VChip v-if="meta?.video_encode" class="chip-codec rounded-sm" size="small" variant="elevated">
+          <VChip v-if="meta?.video_encode" class="chip-codec rounded-sm" size="x-small" variant="elevated">
             {{ meta?.video_encode }}
           </VChip>
 
           <!-- 制作组标签 -->
-          <VChip v-if="meta?.resource_team" class="chip-team rounded-sm" size="small" variant="elevated">
+          <VChip v-if="meta?.resource_team" class="chip-team rounded-sm" size="x-small" variant="elevated">
             {{ meta?.resource_team }}
           </VChip>
 
@@ -175,15 +175,15 @@ onMounted(() => {
             v-for="(label, index) in torrent?.labels"
             :key="index"
             class="chip-label rounded-sm"
-            size="small"
+            size="x-small"
             variant="elevated"
           >
             {{ label }}
           </VChip>
 
           <!-- 特殊标签 -->
-          <VChip v-if="torrent?.hit_and_run" class="chip-hr rounded-sm" size="small" variant="elevated"> H&R </VChip>
-          <VChip v-if="torrent?.freedate_diff" class="chip-expire rounded-sm" size="small" variant="elevated">
+          <VChip v-if="torrent?.hit_and_run" class="chip-hr rounded-sm" size="x-small" variant="elevated"> H&R </VChip>
+          <VChip v-if="torrent?.freedate_diff" class="chip-expire rounded-sm" size="x-small" variant="elevated">
             {{ torrent?.freedate_diff }}
           </VChip>
         </div>
@@ -203,7 +203,7 @@ onMounted(() => {
           </div>
 
           <div class="d-flex align-center">
-            <VChip v-if="torrent?.size" color="secondary" size="small" variant="elevated" class="rounded-sm mr-2">
+            <VChip v-if="torrent?.size" color="secondary" size="x-small" variant="elevated" class="rounded-sm mr-2">
               {{ formatFileSize(torrent.size) }}
             </VChip>
 
