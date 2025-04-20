@@ -125,13 +125,6 @@ onMounted(() => {
     })
   })
 })
-
-onUnmounted(() => {
-  if (backgroundRotationTimer) {
-    clearInterval(backgroundRotationTimer)
-    backgroundRotationTimer = null
-  }
-})
 </script>
 
 <template>
