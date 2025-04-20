@@ -92,7 +92,6 @@ onActivated(() => {
       oper="add"
       max-width="45rem"
       persistent
-      z-index="1010"
       @save="onUserAdd"
       @close="addUserDialog = false"
     />

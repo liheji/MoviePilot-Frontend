@@ -458,7 +458,7 @@ onMounted(async () => {
 
 // 使用动态按钮钩子
 useDynamicButton({
-  icon: 'mdi-view-dashboard-edit',
+  icon: 'mdi-magnify',
   onClick: () => {
     SearchDialog.value = true
   },
