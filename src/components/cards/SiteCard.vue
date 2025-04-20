@@ -196,7 +196,7 @@ onMounted(() => {
 <template>
   <div>
     <VCard
-      class="relative h-full flex flex-col overflow-hidden group transition-all duration-300 cursor-pointer hover:-translate-y-1"
+      class="site-card relative h-full flex flex-col overflow-hidden group transition-all duration-300 cursor-pointer hover:-translate-y-1"
       :class="[
         cardProps.site?.is_active ? '' : 'opacity-70',
         {
@@ -290,7 +290,7 @@ onMounted(() => {
 
       <!-- 右侧操作按钮区 -->
       <VSheet
-        class="absolute inset-y-0 right-0 z-20 flex flex-col py-2 px-1 transform translate-x-full transition-transform duration-200 group-hover:translate-x-0"
+        class="site-card-actions absolute inset-y-0 right-0 z-20 flex flex-col py-2 px-1 transform translate-x-full transition-transform duration-200"
       >
         <!-- 测试按钮 -->
         <VBtn
@@ -382,7 +382,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 站点状态指示器 - 更精致的渐变指示 */
+.site-card:hover {
+  .site-card-actions {
+    transform: translateX(0);
+  }
+}
+
 .site-status-indicator {
   position: absolute;
   z-index: 1;
