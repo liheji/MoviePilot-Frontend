@@ -236,16 +236,16 @@ onMounted(() => {
 
             <!-- 站点特性图标 -->
             <div class="flex items-center gap-2 ml-auto mr-10">
-              <div class="hover:bg-primary/8 transition-colors">
+              <div v-if="cardProps.site?.limit_interval" class="hover:bg-primary/8 transition-colors">
                 <VIcon icon="mdi-speedometer" size="16" color="primary" class="opacity-85 hover:opacity-100" />
               </div>
-              <div class="hover:bg-primary/8 transition-colors">
+              <div v-if="cardProps.site?.proxy" class="hover:bg-primary/8 transition-colors">
                 <VIcon icon="mdi-network-outline" size="16" color="primary" class="opacity-85 hover:opacity-100" />
               </div>
-              <div class="hover:bg-primary/8 transition-colors">
+              <div v-if="cardProps.site?.render" class="hover:bg-primary/8 transition-colors">
                 <VIcon icon="mdi-apple-safari" size="16" color="primary" class="opacity-85 hover:opacity-100" />
               </div>
-              <div class="hover:bg-primary/8 transition-colors">
+              <div v-if="cardProps.site?.filter" class="hover:bg-primary/8 transition-colors">
                 <VIcon icon="mdi-filter-cog-outline" size="16" color="primary" class="opacity-85 hover:opacity-100" />
               </div>
             </div>
