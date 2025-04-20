@@ -11,6 +11,7 @@ import { useDisplay } from 'vuetify'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { PluginTabs } from '@/router/menu'
 import PluginMarketSettingDialog from '@/components/dialog/PluginMarketSettingDialog.vue'
+import { useDynamicButton } from '@/composables/useDynamicButton'
 
 const route = useRoute()
 
@@ -454,6 +455,14 @@ onMounted(async () => {
     }
   }
 })
+
+// 使用动态按钮钩子
+useDynamicButton({
+  icon: 'mdi-view-dashboard-edit',
+  onClick: () => {
+    SearchDialog.value = true
+  },
+})
 </script>
 
 <template>
@@ -668,6 +677,7 @@ onMounted(async () => {
   <div v-if="isRefreshed">
     <!-- 插件搜索图标 -->
     <VFab
+      v-if="!appMode"
       icon="mdi-magnify"
       color="info"
       location="bottom"

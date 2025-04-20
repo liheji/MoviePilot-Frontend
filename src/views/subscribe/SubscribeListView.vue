@@ -7,6 +7,7 @@ import SubscribeCard from '@/components/cards/SubscribeCard.vue'
 import SubscribeHistoryDialog from '@/components/dialog/SubscribeHistoryDialog.vue'
 import { useUserStore } from '@/stores'
 import { useDisplay } from 'vuetify'
+import { useDynamicButton } from '@/composables/useDynamicButton'
 
 // APP
 const display = useDisplay()
@@ -148,6 +149,14 @@ onActivated(async () => {
     fetchData()
   }
 })
+
+// 使用动态按钮钩子
+useDynamicButton({
+  icon: 'mdi-history',
+  onClick: () => {
+    historyDialog.value = true
+  },
+})
 </script>
 
 <template>
@@ -175,7 +184,7 @@ onActivated(async () => {
   <!-- 底部操作按钮 -->
   <div v-if="isRefreshed">
     <VFab
-      v-if="userStore.superUser"
+      v-if="userStore.superUser && !appMode"
       icon="mdi-history"
       color="info"
       location="bottom"

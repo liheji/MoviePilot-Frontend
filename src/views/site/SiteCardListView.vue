@@ -6,6 +6,7 @@ import SiteCard from '@/components/cards/SiteCard.vue'
 import NoDataFound from '@/components/NoDataFound.vue'
 import SiteAddEditDialog from '@/components/dialog/SiteAddEditDialog.vue'
 import { useDisplay } from 'vuetify'
+import { useDynamicButton } from '@/composables/useDynamicButton'
 
 // APP
 const display = useDisplay()
@@ -84,6 +85,14 @@ onActivated(() => {
     fetchUserData()
   }
 })
+
+// 使用动态按钮钩子
+useDynamicButton({
+  icon: 'mdi-view-dashboard-edit',
+  onClick: () => {
+    siteAddDialog.value = true
+  },
+})
 </script>
 
 <template>
@@ -113,7 +122,7 @@ onActivated(() => {
   />
   <!-- 新增站点按钮 -->
   <VFab
-    v-if="isRefreshed"
+    v-if="isRefreshed && !appMode"
     icon="mdi-plus"
     location="bottom"
     size="x-large"
