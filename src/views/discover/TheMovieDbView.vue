@@ -198,9 +198,18 @@ watch(filterParams, () => {
       <div class="mr-5">
         <VLabel>评分</VLabel>
       </div>
-      <VSlider v-model="filterParams.vote_average" thumb-label max="10" min="0" :step="1" class="align-center" hide-details>
+      <VSlider
+        v-model="filterParams.vote_average"
+        thumb-label
+        max="10"
+        min="0"
+        :step="1"
+        class="align-center"
+        hide-details
+      >
         <template v-slot:append>
           <VTextField
+            variant="outlined"
             width="5rem"
             v-model="filterParams.vote_count"
             density="compact"

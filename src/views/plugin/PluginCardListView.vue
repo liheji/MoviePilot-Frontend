@@ -126,7 +126,10 @@ const isFilterFormEmpty = computed(() => {
 })
 
 // 插件过滤条件
-const installedFilter = ref('')
+const installedFilter = ref(null)
+
+// 有新版本过滤条件
+const hasUpdateFilter = ref(false)
 
 // 已安装插件过滤窗口
 const filterInstalledPluginDialog = ref(false)
@@ -416,11 +419,17 @@ function handleRepoUrl(url: string | undefined) {
   return url.replace('https://github.com/', '').replace('https://raw.githubusercontent.com/', '')
 }
 
-// 监测dataList变化或installedFilter变化时更新filteredDataList
-watch([dataList, installedFilter], () => {
+// 监测dataList变化或installedFilter、hasUpdateFilter变化时更新filteredDataList
+watch([dataList, installedFilter, hasUpdateFilter], () => {
   filteredDataList.value = dataList.value.filter(item => {
-    if (!installedFilter.value) return true
-    return item.plugin_name?.toLowerCase().includes(installedFilter.value.toLowerCase())
+    if (!installedFilter.value && !hasUpdateFilter.value) return true
+    if (hasUpdateFilter.value) {
+      return item.has_update
+    }
+    if (installedFilter.value) {
+      return item.plugin_name?.toLowerCase().includes((installedFilter.value as string).toLowerCase())
+    }
+    return true
   })
 })
 
@@ -477,13 +486,20 @@ onMounted(async () => {
               <VDialogCloseBtn @click="filterInstalledPluginDialog = false" />
             </VCardItem>
             <VCardText>
-              <VCombobox
-                v-model="installedFilter"
-                :items="installedPluginNames"
-                label="名称"
-                density="comfortable"
-                clearable
-              />
+              <VRow>
+                <VCol cols="12">
+                  <VCombobox
+                    v-model="installedFilter"
+                    :items="installedPluginNames"
+                    label="名称"
+                    density="comfortable"
+                    clearable
+                  />
+                </VCol>
+                <VCol cols="12">
+                  <VSwitch v-model="hasUpdateFilter" label="有新版本" />
+                </VCol>
+              </VRow>
             </VCardText>
           </VCard>
         </VMenu>
@@ -604,7 +620,9 @@ onMounted(async () => {
               error-code="404"
               error-title="没有数据"
               :error-description="
-                installedFilter ? '没有搜索到相关内容，请更换搜索关键词。' : '请先前往插件市场安装插件。'
+                installedFilter || hasUpdateFilter
+                  ? '没有匹配到相关内容，请更换筛选条件。'
+                  : '请先前往插件市场安装插件。'
               "
             />
           </div>
