@@ -26,9 +26,64 @@ watch(
   () => route.path,
   newPath => {
     currentMenu.value = getMenuPathFromRoute(newPath)
+    // 当路由变化时，清除动态按钮
+    dynamicButton.value = null
   },
   { immediate: false },
 )
+
+// 动态按钮相关
+// 定义动态按钮类型
+interface DynamicButton {
+  icon: string
+  action: () => void
+  show: boolean
+  routePath?: string // 添加路径属性，用于标识哪个路由注册的
+}
+
+// 提供动态按钮注册和获取的方法
+const dynamicButton = ref<DynamicButton | null>(null)
+
+// 提供一个方法让其他组件注册动态按钮
+const registerDynamicButton = (button: DynamicButton) => {
+  // 保存注册按钮的路由路径
+  button.routePath = route.path
+  dynamicButton.value = button
+}
+
+// 提供一个方法让其他组件取消注册动态按钮
+const unregisterDynamicButton = () => {
+  dynamicButton.value = null
+}
+
+// 添加全局注册方法，解决注入不可用的问题
+if (typeof window !== 'undefined') {
+  // 确保在浏览器环境中
+  ;(window as any).__VUE_INJECT_DYNAMIC_BUTTON__ = registerDynamicButton
+}
+
+// 提供给其他组件使用
+provide('registerDynamicButton', registerDynamicButton)
+provide('unregisterDynamicButton', unregisterDynamicButton)
+
+// 在组件销毁时清理
+onUnmounted(() => {
+  dynamicButton.value = null
+  // 清理全局方法
+  if (typeof window !== 'undefined') {
+    delete (window as any).__VUE_INJECT_DYNAMIC_BUTTON__
+  }
+})
+
+// 显示动态按钮
+const showDynamicButton = computed(() => {
+  return (
+    dynamicButton.value &&
+    dynamicButton.value.show &&
+    // 确保只在注册的路由路径下显示按钮
+    (!dynamicButton.value.routePath || dynamicButton.value.routePath === route.path)
+  )
+})
 </script>
 
 <template>
@@ -77,6 +132,23 @@ watch(
           </VBtnToggle>
         </VCardText>
       </VCard>
+      <VCard v-if="showDynamicButton" class="footer-nav-card dynamic-btn-card border" rounded="pill">
+        <VCardText class="footer-card-content">
+          <!-- 各页面的动态按钮 -->
+          <VBtn
+            variant="text"
+            color="primary"
+            :ripple="false"
+            @click="dynamicButton?.action()"
+            rounded="pill"
+            class="footer-nav-btn"
+          >
+            <div class="btn-content">
+              <VIcon :icon="dynamicButton?.icon || 'mdi-plus'" size="24"></VIcon>
+            </div>
+          </VBtn>
+        </VCardText>
+      </VCard>
     </div>
   </Teleport>
 </template>
@@ -91,7 +163,13 @@ watch(
   padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
   display: flex;
   justify-content: center;
+  align-items: center;
   pointer-events: none;
+
+  // 按钮卡片之间的间距
+  > .v-card + .v-card {
+    margin-left: 4px;
+  }
 }
 
 .footer-nav-card {
@@ -101,6 +179,32 @@ watch(
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   position: relative;
+}
+
+// 动态按钮卡片样式
+.dynamic-btn-card {
+  min-height: 0;
+  height: auto;
+  width: auto;
+
+  .footer-card-content {
+    padding: 3px;
+  }
+
+  .footer-nav-btn {
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+
+    .btn-content {
+      margin: 0;
+    }
+
+    .v-icon {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .footer-card-content {

@@ -6,6 +6,7 @@ import { DashboardItem } from '@/api/types'
 import { useUserStore } from '@/stores'
 import DashboardElement from '@/components/misc/DashboardElement.vue'
 import { useDisplay } from 'vuetify'
+import { useDynamicButton } from '@/composables/useDynamicButton'
 
 // APP
 const display = useDisplay()
@@ -140,6 +141,14 @@ const pluginDashboardRefreshStatus = ref<{ [key: string]: boolean }>({})
 
 // 弹窗
 const dialog = ref(false)
+
+// 使用动态按钮钩子
+useDynamicButton({
+  icon: 'mdi-view-dashboard-edit',
+  onClick: () => {
+    dialog.value = true
+  },
+})
 
 // 加载用户监控面板配置（本地无配置时才加载）
 async function loadDashboardConfig() {
@@ -297,7 +306,7 @@ onBeforeMount(async () => {
   getPluginDashboardMeta()
 })
 
-onActivated(async () => {
+onActivated(() => {
   isRequest.value = true
 })
 
@@ -327,8 +336,9 @@ onDeactivated(() => {
     </template>
   </draggable>
 
-  <!-- 底部操作按钮 -->
+  <!-- 底部操作按钮（只在非移动设备上显示） -->
   <VFab
+    v-if="!appMode"
     icon="mdi-view-dashboard-edit"
     location="bottom"
     size="x-large"
@@ -336,7 +346,6 @@ onDeactivated(() => {
     app
     appear
     @click="dialog = true"
-    :class="{ 'mb-12': appMode }"
   />
 
   <!-- 弹窗，根据配置生成选项 -->
