@@ -369,7 +369,7 @@ onDeactivated(() => {
               <VCol cols="12" md="3">
                 <VSelect
                   v-model="SystemSettings.Basic.WALLPAPER"
-                  label="登录首页壁纸"
+                  label="背景壁纸"
                   hint="选择登陆页面背景来源"
                   persistent-hint
                   :items="wallpaperItems"

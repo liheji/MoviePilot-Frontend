@@ -326,14 +326,9 @@ html.v-overlay-scroll-blocked {
   
   // 侧边导航栏
   .layout-vertical-nav {
-    backdrop-filter: blur(10px);
-    background-color: rgba(var(--v-theme-surface), 0.5);
-    border-inline-end: 1px solid rgba(255, 255, 255, 10%);
-  }
-  
-  // 导航栏
-  .navbar-blur::after {
-    background: transparent;
+    backdrop-filter: blur(16px);
+    background-color: rgba(var(--v-theme-surface), 0.2);
+    border-inline-end: 1px solid rgba(var(--v-theme-on-surface), 0.05);
   }
 
   // 列表
@@ -409,6 +404,10 @@ html[data-theme="transparent"] {
 
     .v-card:not(.bg-primary) {
       backdrop-filter: blur(10px);
+      background-color: rgb(var(--v-theme-surface), 0.5) !important;
+    }
+
+    .v-table thead {
       background-color: rgb(var(--v-theme-surface), 0.5) !important;
     }
   }

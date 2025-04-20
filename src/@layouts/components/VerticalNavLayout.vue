@@ -105,7 +105,6 @@ export default defineComponent({
   position: relative;
   z-index: 1;
   margin-block-start: 0;
-  padding-block-start: 0;
 }
 
 .layout-wrapper.layout-nav-type-vertical {
@@ -178,7 +177,7 @@ export default defineComponent({
   }
 
   &:not(.layout-overlay-nav) .layout-content-wrapper {
-    padding-inline-start: calc(variables.$layout-vertical-nav-width + 0.5rem);
+    padding-inline-start: calc(variables.$layout-vertical-nav-width);
   }
 
   // Adjust right column pl when vertical nav is collapsed

@@ -206,8 +206,8 @@ onUnmounted(() => {
 .global-blur-layer {
   position: absolute;
   z-index: 1;
-  backdrop-filter: blur(10px);
-  background-color: rgba(0, 0, 0, 30%);
+  backdrop-filter: blur(16px);
+  background-color: rgba(128, 128, 128, 30%);
   block-size: 100%;
   inline-size: 100%;
   inset-block-start: 0;

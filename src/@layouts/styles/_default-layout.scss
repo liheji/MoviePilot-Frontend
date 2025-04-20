@@ -40,7 +40,8 @@ body,
 
   // TODO: Use grid gutter variable here;
   padding-block: 1.5rem;
-  padding-block-start: calc(env(safe-area-inset-top) + 4.25rem);
+  padding-inline: 0.5rem;
+  padding-block-start: calc(env(safe-area-inset-top) + 4.5rem);
 
   // display: flex;display
 
