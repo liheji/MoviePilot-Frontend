@@ -353,7 +353,7 @@ async function refreshData() {
 }
 
 // 对uninstalledList进行排序到sortedUninstalledList
-watch([marketList, filterForm], () => {
+watch([marketList, filterForm, activeSort], () => {
   // 匹配过滤函数
   const match = (filter: Array<string>, value: string | undefined) =>
     filter.length === 0 || (value && filter.includes(value))
@@ -577,7 +577,7 @@ useDynamicButton({
                       clearable
                     />
                   </VCol>
-                  <VCol v-if="repoFilterOptions.length > 0" cols="12" md="6">
+                  <VCol v-if="sortOptions.length > 0" cols="12" md="6">
                     <VSelect v-model="activeSort" :items="sortOptions" density="comfortable" label="排序" />
                   </VCol>
                 </VRow>

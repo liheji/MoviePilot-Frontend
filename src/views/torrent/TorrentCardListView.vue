@@ -523,10 +523,10 @@ function loadMore({ done }: { done: any }) {
     </div>
   </VCard>
 
-  <!-- 筛选菜单 -->
+  <!-- 筛选弹窗 -->
   <VDialog v-model="filterMenuOpen" max-width="25rem" max-height="80%" location="center">
     <VCard>
-      <VCardTitle class="py-2 d-flex align-center">
+      <VCardTitle class="py-3 d-flex align-center">
         <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
         <span>{{ currentFilterTitle }}</span>
         <VSpacer />
@@ -701,7 +701,7 @@ function loadMore({ done }: { done: any }) {
   justify-content: center;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   border-radius: 8px;
-  background-color: rgba(var(--v-theme-surface), 1);
+  background-color: rgba(var(--v-theme-surface), 0.5);
   block-size: auto;
   min-block-size: 48px;
   padding-block: 4px;

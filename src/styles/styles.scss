@@ -404,6 +404,7 @@ html.v-overlay-scroll-blocked {
 html[data-theme="transparent"] {
   .v-overlay__content {
     backdrop-filter: blur(10px) !important;    
+    border-radius: 12px !important;
 
     .v-list {
       backdrop-filter: blur(10px);
