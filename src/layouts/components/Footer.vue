@@ -137,7 +137,7 @@ const showDynamicButton = computed(() => {
           <!-- 各页面的动态按钮 -->
           <VBtn variant="text" :ripple="false" @click="dynamicButton?.action()" rounded="pill" class="footer-nav-btn">
             <div class="btn-content">
-              <VIcon :icon="dynamicButton?.icon || 'mdi-plus'" size="24"></VIcon>
+              <VIcon color="white" :icon="dynamicButton?.icon || 'mdi-plus'" size="24"></VIcon>
             </div>
           </VBtn>
         </VCardText>
