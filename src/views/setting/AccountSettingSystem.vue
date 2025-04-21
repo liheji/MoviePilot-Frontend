@@ -260,6 +260,26 @@ const pipMirrorsItems = [
   'https://mirrors.bfsu.edu.cn/pypi/web/simple', // 北京外国语大学
 ]
 
+// Github加速代理显示处理
+const githubProxyDisplay = computed({
+  get: () => {
+    return SystemSettings.value.Advanced.GITHUB_PROXY || null
+  },
+  set: val => {
+    SystemSettings.value.Advanced.GITHUB_PROXY = val === null ? '' : val
+  },
+})
+
+// PIP加速代理显示处理
+const pipProxyDisplay = computed({
+  get: () => {
+    return SystemSettings.value.Advanced.PIP_PROXY || null
+  },
+  set: val => {
+    SystemSettings.value.Advanced.PIP_PROXY = val === null ? '' : val
+  },
+})
+
 // 日志等级
 const logLevelItems = [
   { title: 'DEBUG - 调试 ', value: 'DEBUG' },
@@ -694,22 +714,24 @@ onDeactivated(() => {
               <VRow>
                 <VCol cols="12" md="6">
                   <VCombobox
-                    v-model="SystemSettings.Advanced.GITHUB_PROXY"
+                    v-model="githubProxyDisplay"
                     label="Github加速代理"
-                    placeholder="http(s)://host/"
+                    placeholder="留空表示不使用代理"
                     hint="使用代理加速Github访问速度"
                     persistent-hint
                     :items="githubMirrorsItems"
+                    clearable
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VCombobox
-                    v-model="SystemSettings.Advanced.PIP_PROXY"
+                    v-model="pipProxyDisplay"
                     label="PIP加速代理"
-                    placeholder="http(s)://host"
+                    placeholder="留空表示不使用代理"
                     hint="使用代理加速插件等pip库安装速度"
                     persistent-hint
                     :items="pipMirrorsItems"
+                    clearable
                   />
                 </VCol>
               </VRow>
