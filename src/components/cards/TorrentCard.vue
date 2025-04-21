@@ -283,7 +283,7 @@ onMounted(() => {
             >
               <template v-slot:prepend>
                 <div class="d-flex align-center gap-1">
-                  <img
+                  <VImg
                     v-if="siteIcons[item.torrent_info?.site || 0]"
                     :src="siteIcons[item.torrent_info?.site || 0]"
                     :alt="item.torrent_info?.site_name"
@@ -330,6 +330,15 @@ onMounted(() => {
                   <span class="d-flex align-center text-caption font-weight-bold">
                     <VIcon size="small" color="success" icon="mdi-arrow-up" class="mr-1"></VIcon>
                     {{ item.torrent_info?.seeders }}
+                  </span>
+                  <span>
+                    <VIcon
+                      @click.stop="openTorrentDetail(item)"
+                      size="small"
+                      color="secondary"
+                      icon="mdi-arrow-top-right"
+                      class="mr-1"
+                    ></VIcon>
                   </span>
                 </div>
               </template>

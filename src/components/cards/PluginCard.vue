@@ -436,7 +436,7 @@ watch(
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
 
     <!-- 更新日志 -->
-    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
+    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" max-height="80vh" scrollable>
       <VCard :title="`${props.plugin?.plugin_name} 更新说明`">
         <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />

@@ -183,7 +183,7 @@ onUnmounted(() => {
     <!-- 加载进度条 -->
     <VFadeTransition>
       <div v-if="progressValue > 0" class="search-progress-container">
-        <VCard class="search-progress-card">
+        <VCard elevation="3" class="search-progress-card">
           <div class="progress-header">
             <VIcon icon="mdi-movie-search" color="primary" size="small" class="me-2" />
             <span class="progress-title">{{ progressText }}</span>

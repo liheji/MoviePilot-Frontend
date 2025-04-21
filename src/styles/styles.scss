@@ -393,6 +393,10 @@ html.v-overlay-scroll-blocked {
     backdrop-filter: blur(10px);
     background-color: rgba(var(--v-theme-surface), 0.3);
   }
+
+  .v-tabs.v-tabs-pill .v-slide-group-item--active.v-tab--selected.text-primary {
+    background-color: rgba(var(--v-theme-primary), 0.7) !important;
+  }
 }
 
 // 透明主题下的弹出窗口样式

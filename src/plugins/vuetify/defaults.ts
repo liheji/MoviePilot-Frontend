@@ -41,6 +41,10 @@ export default {
   VBottomSheet: {
     elevation: 0,
   },
+  VDialog: {
+    elevation: 0,
+    rounded: 'lg',
+  },
   VExpansionPanels: {
     elevation: 0,
   },
