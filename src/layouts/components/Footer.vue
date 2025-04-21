@@ -89,7 +89,7 @@ const showDynamicButton = computed(() => {
 <template>
   <Teleport v-if="appMode" to="body">
     <div class="footer-nav-container">
-      <VCard class="footer-nav-card border" rounded="pill">
+      <VCard class="footer-nav-card border" rounded="pill" :class="{ 'shift-left': showDynamicButton }">
         <VCardText class="footer-card-content">
           <!-- 添加指示器 -->
           <div ref="indicator" class="nav-indicator"></div>
@@ -132,14 +132,23 @@ const showDynamicButton = computed(() => {
           </VBtnToggle>
         </VCardText>
       </VCard>
-      <VCard v-if="showDynamicButton" class="footer-nav-card dynamic-btn-card border" rounded="pill">
-        <VCardText class="footer-card-content">
-          <!-- 各页面的动态按钮 -->
-          <VBtn icon variant="text" :ripple="false" @click="dynamicButton?.action()" rounded="pill" class="footer-nav-btn">
-            <VIcon color="secondary" :icon="dynamicButton?.icon || 'mdi-plus'" size="24"></VIcon>
-          </VBtn>
-        </VCardText>
-      </VCard>
+      <Transition name="fade-slide">
+        <VCard v-if="showDynamicButton" class="footer-nav-card dynamic-btn-card border" rounded="pill">
+          <VCardText class="footer-card-content">
+            <!-- 各页面的动态按钮 -->
+            <VBtn
+              icon
+              variant="text"
+              :ripple="false"
+              @click="dynamicButton?.action()"
+              rounded="pill"
+              class="footer-nav-btn"
+            >
+              <VIcon color="secondary" :icon="dynamicButton?.icon || 'mdi-plus'" size="24"></VIcon>
+            </VBtn>
+          </VCardText>
+        </VCard>
+      </Transition>
     </div>
   </Teleport>
 </template>
@@ -147,76 +156,54 @@ const showDynamicButton = computed(() => {
 <style lang="scss">
 .footer-nav-container {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   z-index: 1999;
-  padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  inset-block-end: 0;
+  inset-inline: 0;
+  padding-block-end: calc(6px + env(safe-area-inset-bottom, 0px));
   pointer-events: none;
 
   // 按钮卡片之间的间距
   > .v-card + .v-card {
-    margin-left: 4px;
+    margin-inline-start: 2px; // 减少间距
   }
 }
 
 .footer-nav-card {
-  pointer-events: auto;
-  overflow: hidden;
-  background-color: rgba(var(--v-theme-surface), 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   position: relative;
-}
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  background-color: rgba(var(--v-theme-surface), 0.8);
+  pointer-events: auto;
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 
-// 动态按钮卡片样式
-.dynamic-btn-card {
-  min-height: 0;
-  height: auto;
-  width: auto;
-
-  .footer-card-content {
-    padding: 3px;
-  }
-
-  .footer-nav-btn {
-    min-width: 40px;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-
-    .btn-content {
-      margin: 0;
-    }
-
-    .v-icon {
-      margin-bottom: 0;
-    }
+  &.shift-left {
+    transform: translateX(0);
   }
 }
 
 .footer-card-content {
-  padding: 6px 8px;
   position: relative;
+  padding-block: 6px;
+  padding-inline: 8px;
 }
 
 .footer-btn-group {
-  width: 100%;
+  position: relative;
   display: flex;
   justify-content: space-around;
-  background-color: transparent;
   border: none;
-  position: relative;
+  background-color: transparent;
+  inline-size: 100%;
 }
 
 .footer-nav-btn {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-grow: 0;
-  position: relative;
   background-color: transparent;
 
   &.v-btn--active {
@@ -232,11 +219,57 @@ const showDynamicButton = computed(() => {
   }
 }
 
-@keyframes fadeIn {
+// 动态按钮卡片样式
+.dynamic-btn-card {
+  block-size: auto;
+  inline-size: auto;
+  min-block-size: 0;
+
+  .footer-card-content {
+    padding: 3px;
+  }
+
+  .footer-nav-btn {
+    padding: 0;
+    block-size: 36px;
+    inline-size: 36px;
+    min-inline-size: 36px;
+
+    .btn-content {
+      margin: 0;
+    }
+
+    .v-icon {
+      margin-block-end: 0;
+    }
+  }
+}
+
+// 淡入滑动动画
+.fade-slide-enter-active {
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.fade-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateX(-50%) translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);

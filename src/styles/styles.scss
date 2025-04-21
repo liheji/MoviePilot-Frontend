@@ -273,8 +273,10 @@ html.v-overlay-scroll-blocked {
   }
 }
 
-.v-list-item:hover {
-  background-color: rgba(var(--v-theme-on-surface), 0.04) !important;
+.v-menu {
+  .v-list-item:hover {
+    background-color: rgba(var(--v-theme-on-surface), 0.04) !important;
+  }
 }
 
 .v-btn.v-btn--icon {
@@ -343,10 +345,11 @@ html.v-overlay-scroll-blocked {
     background-color: rgba(var(--v-theme-surface), 0.3);
 
     .v-list {
-      background-color: transparent;
       backdrop-filter: none;
+      background-color: transparent;
     }
   }
+
   // 工具栏
   .v-toolbar {
     backdrop-filter: blur(10px);
