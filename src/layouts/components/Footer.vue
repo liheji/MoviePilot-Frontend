@@ -89,7 +89,7 @@ const showDynamicButton = computed(() => {
 <template>
   <Teleport v-if="appMode" to="body">
     <div class="footer-nav-container">
-      <VCard class="footer-nav-card border" rounded="pill" :class="{ 'shift-left': showDynamicButton }">
+      <VCard elevation="3" class="footer-nav-card border" rounded="pill" :class="{ 'shift-left': showDynamicButton }">
         <VCardText class="footer-card-content">
           <!-- 添加指示器 -->
           <div ref="indicator" class="nav-indicator"></div>
@@ -133,7 +133,7 @@ const showDynamicButton = computed(() => {
         </VCardText>
       </VCard>
       <Transition name="fade-slide">
-        <VCard v-if="showDynamicButton" class="footer-nav-card dynamic-btn-card border" rounded="pill">
+        <VCard v-if="showDynamicButton" elevation="3" class="footer-nav-card dynamic-btn-card border" rounded="pill">
           <VCardText class="footer-card-content">
             <!-- 各页面的动态按钮 -->
             <VBtn

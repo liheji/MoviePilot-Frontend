@@ -33,79 +33,6 @@
   <meta name="HandheldFriendly" content="True" />
   <meta name="MobileOptimized" content="320" />
   <link rel="stylesheet" type="text/css" href="/loader.css" />
-  <style>
-    :root {
-      /* 系统字体栈优化 */
-      --font-family-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto,
-        "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-      --font-family-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-        "Courier New", monospace;
-
-      /* 针对不同操作系统的字体优化 */
-      --font-ios: -apple-system, "SF Pro Text", "SF Pro Display";
-      --font-macos: -apple-system, BlinkMacSystemFont, "SF Pro Text";
-      --font-windows: "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol";
-      --font-android: Roboto, "Noto Sans";
-    }
-
-    /* 基础字体设置 */
-    html {
-      font-family: var(--font-family-sans);
-      -webkit-text-size-adjust: 100%;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-    }
-
-    /* 系统特定优化 */
-    @supports (-webkit-touch-callout: none) {
-
-      /* iOS设备 */
-      body {
-        font-family: var(--font-ios);
-        /* iOS文本渲染优化 */
-        -webkit-text-size-adjust: none;
-      }
-    }
-
-    /* macOS特定优化 */
-    @media screen and (-webkit-min-device-pixel-ratio: 0) and (min-color-index: 0) {
-      body {
-        font-family: var(--font-macos);
-      }
-    }
-
-    /* Windows特定优化 */
-    @media screen and (-ms-high-contrast: active),
-    (-ms-high-contrast: none) {
-      body {
-        font-family: var(--font-windows);
-      }
-    }
-
-    /* Android特定优化 */
-    @supports (-webkit-overflow-scrolling: touch) and (not (-webkit-touch-callout: none)) {
-      body {
-        font-family: var(--font-android);
-      }
-    }
-
-    /* 中文字体优化 */
-    :lang(zh),
-    :lang(zh-CN) {
-      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
-        "Microsoft YaHei", "Heiti SC", "Noto Sans SC", "Source Han Sans SC", sans-serif;
-      letter-spacing: 0.05em;
-    }
-
-    /* 平板和移动设备字体大小优化 */
-    @media (max-width: 768px) {
-      html {
-        font-size: 14px;
-      }
-    }
-  </style>
   <script>
     const loaderColor = localStorage.getItem('materio-initial-loader-bg') || '#FFFFFF'
     if (loaderColor) document.documentElement.style.setProperty('--initial-loader-bg', loaderColor)
@@ -118,7 +45,7 @@
   <div id="loading-bg">
     <div class="loading-logo">
       <!-- Logo -->
-      <svg width="10rem" height="10rem" viewBox="0 0 192 192" version="1.1" xmlns="http://www.w3.org/2000/svg"
+      <svg width="160px" height="160px" viewBox="0 0 192 192" version="1.1" xmlns="http://www.w3.org/2000/svg"
         style="fill-rule: evenodd; clip-rule: evenodd; stroke-linejoin: round; stroke-miterlimit: 2">
         <g transform="matrix(1,0,0,1,-2606,-236)">
           <g id="a2-c" transform="matrix(1,0,0,1,2606,236)">

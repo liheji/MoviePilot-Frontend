@@ -1,8 +1,8 @@
 %blurry-bg {
     position: relative;
     /* stylelint-disable property-no-vendor-prefix */
-    // -webkit-backdrop-filter: blur(6px);-webkit-backdrop-filter-webkit-backdrop-filter
-    // backdrop-filter: blur(6px);backdrop-filterbackdrop-filter
+    // -webkit-backdrop-filter: blur(6px);-webkit-backdrop-filter-webkit-backdrop-filter-webkit-backdrop-filter
+    // backdrop-filter: blur(6px);backdrop-filterbackdrop-filterbackdrop-filter
     /* stylelint-enable */
     background-color: transparent;
     box-shadow: none;
@@ -10,33 +10,34 @@
     &::before {
       position: absolute;
       z-index: -1;
-      block-size: calc(env(safe-area-inset-top) + 5rem);
+      block-size: calc(env(safe-area-inset-top, 0px) + 5rem);
       content: "";
       inset-block-start: 0;
       inset-inline: 0;
       pointer-events: none;
       transition: opacity 0.2s ease-in-out, background 0.2s ease-in-out;
       
+      // PC端样式 (默认)
       .v-theme--light & {
         background: linear-gradient(
           to bottom,
-          rgba(var(--v-theme-background), 0.85) 0%,
-          rgba(var(--v-theme-background), 0.65) 20%,
-          rgba(var(--v-theme-background), 0.45) 40%,
-          rgba(var(--v-theme-background), 0.25) 60%,
-          rgba(var(--v-theme-background), 0.1) 80%,
-          rgba(var(--v-theme-background), 0.0) 100%
+          rgba(var(--v-theme-surface), 0.9) 0%,
+          rgba(var(--v-theme-surface), 0.7) 20%,
+          rgba(var(--v-theme-surface), 0.5) 40%,
+          rgba(var(--v-theme-surface), 0.3) 60%,
+          rgba(var(--v-theme-surface), 0.1) 80%,
+          rgba(var(--v-theme-surface), 0.0) 100%
         );
       }
       
       .v-theme--dark & {
         background: linear-gradient(
           to bottom,
-          rgba(var(--v-theme-background), 0.9) 0%,
-          rgba(var(--v-theme-background), 0.7) 20%,
-          rgba(var(--v-theme-background), 0.5) 40%,
-          rgba(var(--v-theme-background), 0.3) 60%,
-          rgba(var(--v-theme-background), 0.15) 80%,
+          rgba(var(--v-theme-background), 0.8) 0%,
+          rgba(var(--v-theme-background), 0.6) 20%,
+          rgba(var(--v-theme-background), 0.4) 40%,
+          rgba(var(--v-theme-background), 0.25) 60%,
+          rgba(var(--v-theme-background), 0.1) 80%,
           rgba(var(--v-theme-background), 0.0) 100%
         );
       }
@@ -44,11 +45,11 @@
       .v-theme--purple & {
         background: linear-gradient(
           to bottom,
-          rgba(var(--v-theme-background), 0.9) 0%,
-          rgba(var(--v-theme-background), 0.7) 20%,
-          rgba(var(--v-theme-background), 0.5) 40%,
-          rgba(var(--v-theme-background), 0.3) 60%,
-          rgba(var(--v-theme-background), 0.15) 80%,
+          rgba(var(--v-theme-background), 0.8) 0%,
+          rgba(var(--v-theme-background), 0.6) 20%,
+          rgba(var(--v-theme-background), 0.4) 40%,
+          rgba(var(--v-theme-background), 0.25) 60%,
+          rgba(var(--v-theme-background), 0.1) 80%,
           rgba(var(--v-theme-background), 0.0) 100%
         );
       }
@@ -56,65 +57,68 @@
       .v-theme--transparent & {
         background: linear-gradient(
           to bottom,
-          rgba(11, 11, 11, 70%) 0%,
-          rgba(11, 11, 11, 60%) 20%,
-          rgba(11, 11, 11, 50%) 40%,
-          rgba(11, 11, 11, 30%) 60%,
-          rgba(11, 11, 11, 15%) 80%,
+          rgba(11, 11, 11, 60%) 0%,
+          rgba(11, 11, 11, 50%) 20%,
+          rgba(11, 11, 11, 40%) 40%,
+          rgba(11, 11, 11, 25%) 60%,
+          rgba(11, 11, 11, 10%) 80%,
           rgba(11, 11, 11, 0%) 100%
         );
       }
     }
-    
-    .window-scrolled & {
-      &::before {
-        .v-theme--light & {
-          background: linear-gradient(
-            to bottom,
-            rgba(var(--v-theme-background), 0.95) 0%,
-            rgba(var(--v-theme-background), 0.85) 20%,
-            rgba(var(--v-theme-background), 0.7) 40%,
-            rgba(var(--v-theme-background), 0.5) 60%,
-            rgba(var(--v-theme-background), 0.2) 80%,
-            rgba(var(--v-theme-background), 0.0) 100%
-          );
-        }
-        
-        .v-theme--dark & {
-          background: linear-gradient(
-            to bottom,
-            rgba(var(--v-theme-background), 1) 0%,
-            rgba(var(--v-theme-background), 0.9) 20%,
-            rgba(var(--v-theme-background), 0.75) 40%,
-            rgba(var(--v-theme-background), 0.55) 60%,
-            rgba(var(--v-theme-background), 0.3) 80%,
-            rgba(var(--v-theme-background), 0.0) 100%
-          );
-        }
-  
-        .v-theme--purple & {
-          background: linear-gradient(
-            to bottom,
-            rgba(var(--v-theme-background), 1) 0%,
-            rgba(var(--v-theme-background), 0.9) 20%,
-            rgba(var(--v-theme-background), 0.75) 40%,
-            rgba(var(--v-theme-background), 0.55) 60%,
-            rgba(var(--v-theme-background), 0.3) 80%,
-            rgba(var(--v-theme-background), 0.0) 100%
-          );
-        }
-  
-        .v-theme--transparent & {
-          background: linear-gradient(
-            to bottom,
-            rgba(11, 11, 11, 90%) 0%,
-            rgba(11, 11, 11, 80%) 20%,
-            rgba(11, 11, 11, 70%) 40%,
-            rgba(11, 11, 11, 50%) 60%,
-            rgba(11, 11, 11, 30%) 80%,
-            rgba(11, 11, 11, 0%) 100%
-          );
-        }
+}
+
+// 移动端样式
+@media (pointer: coarse) {
+  %blurry-bg {
+    &::before {
+      .v-theme--light & {
+        background: linear-gradient(
+          to bottom,
+          rgba(var(--v-theme-surface), 1) 0%,
+          rgba(var(--v-theme-surface), 0.9) 20%,
+          rgba(var(--v-theme-surface), 0.7) 40%,
+          rgba(var(--v-theme-surface), 0.5) 60%,
+          rgba(var(--v-theme-surface), 0.2) 80%,
+          rgba(var(--v-theme-surface), 0.0) 100%
+        );
+      }
+      
+      .v-theme--dark & {
+        background: linear-gradient(
+          to bottom,
+          rgba(var(--v-theme-background), 1) 0%,
+          rgba(var(--v-theme-background), 0.85) 20%,
+          rgba(var(--v-theme-background), 0.7) 40%,
+          rgba(var(--v-theme-background), 0.5) 60%,
+          rgba(var(--v-theme-background), 0.3) 80%,
+          rgba(var(--v-theme-background), 0.0) 100%
+        );
+      }
+
+      .v-theme--purple & {
+        background: linear-gradient(
+          to bottom,
+          rgba(var(--v-theme-background), 1) 0%,
+          rgba(var(--v-theme-background), 0.85) 20%,
+          rgba(var(--v-theme-background), 0.7) 40%,
+          rgba(var(--v-theme-background), 0.5) 60%,
+          rgba(var(--v-theme-background), 0.3) 80%,
+          rgba(var(--v-theme-background), 0.0) 100%
+        );
+      }
+
+      .v-theme--transparent & {
+        background: linear-gradient(
+          to bottom,
+          rgba(11, 11, 11, 90%) 0%,
+          rgba(11, 11, 11, 80%) 20%,
+          rgba(11, 11, 11, 65%) 40%,
+          rgba(11, 11, 11, 45%) 60%,
+          rgba(11, 11, 11, 25%) 80%,
+          rgba(11, 11, 11, 0%) 100%
+        );
       }
     }
+  }
 }
