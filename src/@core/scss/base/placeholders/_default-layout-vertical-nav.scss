@@ -11,7 +11,7 @@
 
   // If navbar is contained => Squeeze navbar content on scroll
   @if variables.$layout-vertical-nav-navbar-is-contained {
-    // padding-inline: 1rem;
+    padding-inline: 1rem;
   }
 }
 
@@ -36,8 +36,7 @@
     block-size: calc(variables.$layout-vertical-nav-navbar-height + variables.$vertical-nav-floating-navbar-top + 0.5rem);
     content: "";
     inset-block-start: -(variables.$vertical-nav-floating-navbar-top);
-    inset-inline-end: 0;
-    inset-inline-start: 0;
+    inset-inline: 0;
     /* stylelint-disable property-no-vendor-prefix */
     -webkit-mask: linear-gradient(black, black 18%, transparent 100%);
     mask: linear-gradient(black, black 18%, transparent 100%);
