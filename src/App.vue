@@ -60,6 +60,20 @@ function getImgUrl(url: string) {
   return url
 }
 
+// 处理页面可见性变化
+function handleVisibilityChange() {
+  if (document.visibilityState === 'visible' && isTransparentTheme.value) {
+    // 如果已有背景图片数据，直接重启轮换
+    if (backgroundImages.value.length > 0) {
+      startBackgroundRotation()
+    }
+    // 如果没有背景图片数据，重新获取
+    else {
+      fetchBackgroundImages().then(() => startBackgroundRotation())
+    }
+  }
+}
+
 // 监听主题变化
 watch(
   () => globalTheme.name.value,
@@ -112,6 +126,9 @@ onMounted(() => {
   // 初始化data-theme属性
   updateHtmlThemeAttribute(globalTheme.name.value)
 
+  // 添加页面可见性变化监听
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+
   ensureRenderComplete(() => {
     nextTick(() => {
       setTimeout(() => {
@@ -124,6 +141,17 @@ onMounted(() => {
       }, 1500)
     })
   })
+})
+
+onUnmounted(() => {
+  // 移除页面可见性监听
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+
+  // 清除轮换定时器
+  if (backgroundRotationTimer) {
+    clearInterval(backgroundRotationTimer)
+    backgroundRotationTimer = null
+  }
 })
 </script>
 
