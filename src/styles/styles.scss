@@ -358,6 +358,7 @@ html.v-overlay-scroll-blocked {
   
   // 表格
   .v-table {
+    border-radius: 0;
     background-color: rgba(var(--v-theme-surface), 0.3);
   }
   
