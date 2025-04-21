@@ -159,7 +159,7 @@ const theme: VuetifyOptions['theme'] = {
       dark: true,
       colors: {
         'primary': '#A370F7',
-        'secondary': '#B794FF',
+        'secondary': '#8A8D93',
         'on-secondary': '#FFFFFF',
         'success': '#66BB6A',
         'info': '#42A5F5',

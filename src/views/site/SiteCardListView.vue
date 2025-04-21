@@ -88,7 +88,7 @@ onActivated(() => {
 
 // 使用动态按钮钩子
 useDynamicButton({
-  icon: 'mdi-plus',
+  icon: 'mdi-web-plus',
   onClick: () => {
     siteAddDialog.value = true
   },
@@ -123,7 +123,7 @@ useDynamicButton({
   <!-- 新增站点按钮 -->
   <VFab
     v-if="isRefreshed && !appMode"
-    icon="mdi-plus"
+    icon="mdi-web-plus"
     location="bottom"
     size="x-large"
     fixed

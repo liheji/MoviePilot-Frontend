@@ -20,7 +20,7 @@ const inProps = defineProps({
   storage: String,
   endpoints: Object as PropType<EndPoints>,
   axios: {
-    type: Function,
+    type: Object as PropType<any>,
     required: true,
   },
   refreshpending: Boolean,
@@ -562,7 +562,7 @@ onMounted(() => {
         variant="plain"
         placeholder="搜索 ..."
         prepend-inner-icon="mdi-filter-outline"
-        class="me-2"
+        class="mx-2"
         rounded
       />
       <VSpacer v-if="isFile" />

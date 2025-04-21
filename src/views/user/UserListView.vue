@@ -4,6 +4,11 @@ import type { User } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import UserCard from '@/components/cards/UserCard.vue'
 import UserAddEditDialog from '@/components/dialog/UserAddEditDialog.vue'
+import { useDisplay } from 'vuetify'
+import { useDynamicButton } from '@/composables/useDynamicButton'
+// APP
+const display = useDisplay()
+const appMode = inject('pwaMode') && display.mdAndDown.value
 
 // 是否刷新过
 const isRefreshed = ref(false)
@@ -51,6 +56,14 @@ onActivated(() => {
     loadAllUsers()
   }
 })
+
+// 使用动态按钮钩子
+useDynamicButton({
+  icon: 'mdi-account-plus',
+  onClick: () => {
+    openAddUserDialog()
+  },
+})
 </script>
 
 <template>
@@ -70,20 +83,25 @@ onActivated(() => {
         @remove="loadAllUsers"
         @save="loadAllUsers"
       />
-
-      <!-- 添加用户卡片 -->
-      <VCard class="add-user-card" @click="openAddUserDialog">
-        <div class="add-user-content">
-          <VIcon icon="mdi-account-plus" size="large" color="primary" />
-          <span class="add-user-text">添加用户</span>
-        </div>
-      </VCard>
     </div>
 
     <!-- 无数据提示 -->
     <div v-if="allUsers.length === 0 && isRefreshed">
       <NoDataFound error-code="404" error-title="没有用户" error-description="点击添加用户卡片添加用户" />
     </div>
+
+    <!-- 新增用户按钮 -->
+    <VFab
+      v-if="isRefreshed && !appMode"
+      icon="mdi-account-plus"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="openAddUserDialog"
+      :class="{ 'mb-12': appMode }"
+    />
 
     <!-- 用户添加弹窗 -->
     <UserAddEditDialog
@@ -97,35 +115,3 @@ onActivated(() => {
     />
   </div>
 </template>
-
-<style scoped>
-.add-user-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px dashed rgba(var(--v-theme-primary), 0.4);
-  background-color: rgba(var(--v-theme-surface), 1);
-  block-size: 100%;
-  cursor: pointer;
-  min-block-size: 160px;
-  transition: all 0.3s ease;
-}
-
-.add-user-card:hover {
-  background-color: rgba(var(--v-theme-primary), 0.05);
-  transform: translateY(-4px);
-}
-
-.add-user-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.add-user-text {
-  color: rgba(var(--v-theme-primary), 0.8);
-  font-size: 1.05rem;
-  font-weight: 500;
-}
-</style>

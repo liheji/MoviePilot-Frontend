@@ -252,7 +252,7 @@ onMounted(() => {
 
         <!-- 体积和详情按钮并排 -->
         <div class="d-flex align-center">
-          <VChip v-if="torrent?.size" color="secondary" size="x-small" variant="elevated" class="rounded-sm mr-2">
+          <VChip v-if="torrent?.size" color="primary" size="x-small" variant="elevated" class="rounded-sm mr-2">
             {{ formatFileSize(torrent.size) }}
           </VChip>
           <VBtn icon size="small" variant="text" color="primary" @click.stop="openTorrentDetail">
@@ -263,9 +263,9 @@ onMounted(() => {
     </VCard>
 
     <!-- 更多来源对话框 -->
-    <VDialog v-model="showMoreTorrents" max-width="380px" location="center">
+    <VDialog v-model="showMoreTorrents" max-width="25rem" location="center">
       <VCard>
-        <VCardTitle class="py-2 d-flex align-center">
+        <VCardTitle class="py-3 d-flex align-center">
           <span>其他来源</span>
           <VSpacer />
           <VBtn variant="text" size="small" icon="mdi-close" @click.stop="showMoreTorrents = false"></VBtn>
@@ -273,7 +273,7 @@ onMounted(() => {
 
         <VDivider />
 
-        <VCardText class="more-sources-content">
+        <VCardText class="more-sources-content pa-0">
           <VList lines="one" density="compact">
             <VListItem
               v-for="(item, index) in props.more"
@@ -333,7 +333,7 @@ onMounted(() => {
                   </span>
                   <span>
                     <VIcon
-                      @click.stop="openTorrentDetail(item)"
+                      @click.stop="openTorrentDetail"
                       size="small"
                       color="secondary"
                       icon="mdi-arrow-top-right"

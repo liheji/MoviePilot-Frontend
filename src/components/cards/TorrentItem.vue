@@ -203,7 +203,7 @@ onMounted(() => {
           </div>
 
           <div class="d-flex align-center">
-            <VChip v-if="torrent?.size" color="secondary" size="x-small" variant="elevated" class="rounded-sm mr-2">
+            <VChip v-if="torrent?.size" color="primary" size="x-small" variant="elevated" class="rounded-sm mr-2">
               {{ formatFileSize(torrent.size) }}
             </VChip>
 
