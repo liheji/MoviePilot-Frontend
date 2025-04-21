@@ -70,7 +70,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div class="tab-header rounded-lg">
+  <div class="tab-header rounded-t-lg">
     <div ref="tabsContainerRef" class="header-tabs" :class="{ 'show-indicator': showTabsScrollIndicator }">
       <div
         v-for="(item, index) in items"

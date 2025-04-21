@@ -41,9 +41,10 @@ function updateTheme() {
   const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
   const theme = currentThemeName.value === 'auto' ? autoTheme : currentThemeName.value
   globalTheme.name.value = theme
-  savedTheme.value = theme
+  // 保存原始主题设置，而不是计算后的值
+  savedTheme.value = currentThemeName.value
   // 保存主题到本地
-  saveLocalTheme(theme, globalTheme)
+  saveLocalTheme(currentThemeName.value, globalTheme)
   // 刷新页面
   location.reload()
 }
@@ -59,7 +60,7 @@ function changeTheme(theme: string) {
       theme: nextTheme,
     })
   } catch (e) {
-    console.error('保存主题到服务端失败')
+    console.error(e)
   }
 }
 
@@ -135,11 +136,7 @@ onMounted(() => {
         <VIcon :icon="getThemeIcon" />
       </IconBtn>
     </template>
-    <VList class="pt-0">
-      <VCardItem class="py-3">
-        <VCardTitle>主题选择</VCardTitle>
-      </VCardItem>
-      <VDivider class="mb-2" />
+    <VList>
       <div class="px-2">
         <VListItem
           v-for="theme in props.themes"
