@@ -9,7 +9,7 @@
 
   webFontLoader.load({
     google: {
-      families: ['Inter:100,200,300,400,500,600,700&display=swap'],
+      families: ['Inter:100,200,300,400,500,600,700&display=swap', 'Noto+Sans+SC:400,500,700&display=swap'],
     },
   })
 })()
