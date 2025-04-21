@@ -11,7 +11,8 @@
   },
   // SCSS
   "[scss]": {
-    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+    "editor.defaultFormatter": "stylelint.vscode-stylelint",
+    "editor.formatOnSave": false
   },
   // JSON
   "[json]": {
