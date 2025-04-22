@@ -40,15 +40,8 @@ import CronField from './components/field/CronField.vue'
 import PathField from './components/field/PathField.vue'
 import HeaderTab from './layouts/components/HeaderTab.vue'
 
-// 7. 样式文件
-import '@core/scss/template/libs/vuetify/index.scss'
-import 'vuetify/styles'
-import '@core/scss/template/index.scss'
-import '@layouts/styles/index.scss'
-import 'vue-toast-notification/dist/theme-bootstrap.css'
-import 'vue3-perfect-scrollbar/style.css'
-import '@vue-js-cron/vuetify/dist/vuetify.css'
-import '@styles/styles.scss'
+// 7. 样式文件 - 合并为单一导入
+import '@/styles/main.scss'
 
 // 创建Vue实例
 const app = createApp(App)
