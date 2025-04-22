@@ -1,7 +1,6 @@
 @use "vuetify/lib/styles/tools/_elevation" as mixins_elevation;
 @use "@configured-variables" as variables;
 @use "mixins";
-@use "@core/scss/base/mixins" as mixins_base;
 
 // 👉 Alert
 .v-alert {
@@ -190,5 +189,5 @@
 
 // 👉 SnackBar
 .v-snackbar--variant-elevated {
-  @include mixins_base.elevation(6);
+  @include mixins.elevation(6);
 }

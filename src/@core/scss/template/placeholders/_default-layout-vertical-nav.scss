@@ -1,6 +1,6 @@
 @use "@configured-variables" as variables;
 @use "misc";
-@use "@core/scss/base/mixins";
+@use "../mixins";
 
 %default-layout-vertical-nav-scrolled-sticky-elevated-nav {
   background-color: rgb(var(--v-theme-surface));
@@ -42,4 +42,4 @@
     mask: linear-gradient(black, black 18%, transparent 100%);
     /* stylelint-enable */
   }
-}
+} 

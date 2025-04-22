@@ -1,33 +1,5 @@
 @use "sass:map";
+@use "template/index";
 
-// Layout
-@use "vertical-nav";
-@use "default-layout";
-
-// Components
-@use "components";
-
-// Utilities
-@use "utilities";
-
-// Misc
-@use "misc";
-
-// Dark
-@use "dark";
-
-a {
-  color: rgb(var(--v-theme-primary));
-  text-decoration: none;
-}
-
-// Vuetify 3 don't provide margin bottom style like vuetify 2
-p {
-  margin-block-end: 1rem;
-}
-
-// Iconify icon size
-svg.iconify {
-  block-size: 1em;
-  inline-size: 1em;
-}
+// 保留这个引用以向后兼容，但实际功能已经移至template/index.scss
+@use "variables";

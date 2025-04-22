@@ -1,4 +1,5 @@
-@use "@core/scss/base/mixins";
+@use "../mixins";
+@use "@configured-variables" as variables;
 
 .v-application .fc {
   --fc-today-bg-color: rgba(var(--v-theme-on-surface), 0.04);
@@ -16,14 +17,18 @@
     padding: 0;
   }
 
+  .fc-toolbar-title {
+    display: inline-block;
+    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-inline-start: 0.25rem;
+  }
+
   .fc-col-header-cell-cushion {
     color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
     font-size: 0.875rem;
     font-weight: 600;
-  }
-
-  .fc-toolbar .fc-toolbar-title {
-    margin-inline-start: 0.25rem;
   }
 
   .fc-event-time {
@@ -95,6 +100,7 @@
     gap: 1rem 0.5rem;
   }
 
+  // 👉 Toolbar Chunk and Button Group
   .fc-toolbar-chunk {
     display: flex;
     align-items: center;
@@ -102,19 +108,38 @@
     .fc-button-group {
       .fc-button-primary {
         &,
+        &:focus,
         &:hover,
         &:not(.disabled):active {
           border-color: transparent;
           background-color: transparent;
-          color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-        }
-
-        &:focus {
           box-shadow: none !important;
+          color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
         }
       }
     }
 
+    // 👉 sidebar toggler
+    .fc-drawerToggler-button {
+      display: none;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' stroke='rgba(94,86,105,0.68)' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round' class='css-i6dzq1'%3E%3Cpath d='M3 12h18M3 6h18M3 18h18'/%3E%3C/svg%3E");
+      background-position: 50%;
+      background-repeat: no-repeat;
+      block-size: 1.5625rem;
+      font-size: 0;
+      inline-size: 1.5625rem;
+      margin-inline-end: 0.25rem;
+
+      @media (width <= 1264px) {
+        display: block !important;
+      }
+
+      .v-theme--dark & {
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' stroke='rgba(232,232,241,0.68)' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round' class='css-i6dzq1'%3E%3Cpath d='M3 12h18M3 6h18M3 18h18'/%3E%3C/svg%3E");
+      }
+    }
+
+    // Special styling for the last toolbar chunk
     &:last-child {
       .fc-button-group {
         border: 0.0625rem solid rgba(var(--v-border-color), var(--v-border-opacity));
@@ -137,13 +162,6 @@
         }
       }
     }
-  }
-
-  .fc-toolbar-title {
-    display: inline-block;
-    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-    font-size: 1.25rem;
-    font-weight: 500;
   }
 
   .fc-scrollgrid-section {
@@ -214,37 +232,6 @@
       margin: 0;
       font-size: 1rem;
       font-weight: 500;
-    }
-  }
-
-  // 👉 sidebar toggler
-  .fc-toolbar-chunk {
-    .fc-button-group {
-      align-items: center;
-
-      .fc-button .fc-icon {
-        vertical-align: bottom;
-      }
-
-      // ℹ️ Below two `background-image` styles contains static color due to browser limitation of not parsing the css var inside CSS url()
-      .fc-drawerToggler-button {
-        display: none;
-        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' stroke='rgba(94,86,105,0.68)' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round' class='css-i6dzq1'%3E%3Cpath d='M3 12h18M3 6h18M3 18h18'/%3E%3C/svg%3E");
-        background-position: 50%;
-        background-repeat: no-repeat;
-        block-size: 1.5625rem;
-        font-size: 0;
-        inline-size: 1.5625rem;
-        margin-inline-end: 0.25rem;
-
-        @media (width <= 1264px) {
-          display: block !important;
-        }
-
-        .v-theme--dark & {
-          background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' stroke='rgba(232,232,241,0.68)' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round' class='css-i6dzq1'%3E%3Cpath d='M3 12h18M3 6h18M3 18h18'/%3E%3C/svg%3E");
-        }
-      }
     }
   }
 

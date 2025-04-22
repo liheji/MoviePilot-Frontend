@@ -1,9 +1,8 @@
 @use "@configured-variables" as variables;
-@use "@core/scss/base/placeholders" as *;
-@use "@core/scss/template/placeholders" as *;
+@use "placeholders" as *;
 @use "vuetify/lib/styles/tools/_elevation" as mixins_elevation;
-@use "misc";
-@use "@core/scss/base/mixins";
+@use "../misc";
+@use "mixins";
 
 $header: ".layout-navbar";
 
@@ -101,4 +100,4 @@ $header: ".layout-navbar";
       }
     }
   }
-}
+} 

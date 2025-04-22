@@ -10,17 +10,19 @@
 */
 @use "sass:map";
 
-// @forward "@layouts/styles/variables";
+// 使用模板中的变量，不再进行配置 
+@use "@layouts/styles/variables" as layouts-vars;
 @use "utils";
 
 // 👉 Default layout
 
 $navbar-high-emphasis-text: true !default;
 
-@forward "@layouts/styles/variables" with (
-  $layout-vertical-nav-collapsed-width: 68px !default,
-);
-@use "@layouts/styles/variables" as *;
+// 移除@forward配置，已合并到template/_variables.scss
+// @forward "@layouts/styles/variables" with (
+//   $layout-vertical-nav-collapsed-width: 68px !default,
+// );
+// @use "@layouts/styles/variables" as *;
 
 $theme-colors-name: (
   "primary",
@@ -55,7 +57,7 @@ $vertical-nav-horizontal-padding: 1.375rem 1rem !default;
 $vertical-nav-horizontal-padding-start: utils.get-first-value($vertical-nav-horizontal-padding);
 
 // Vertical nav header height. Mostly we will align it with navbar height;
-$vertical-nav-header-height: $layout-vertical-nav-navbar-height !default;
+$vertical-nav-header-height: layouts-vars.$layout-vertical-nav-navbar-height !default;
 $vertical-nav-navbar-shadow: 0 4px 8px -4px rgb(94 86 105 / 42%);
 
 // Vertical nav header padding

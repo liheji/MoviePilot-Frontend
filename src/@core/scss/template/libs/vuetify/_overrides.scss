@@ -1,5 +1,5 @@
-@use "@core/scss/base/utils";
 @use "@configured-variables" as variables;
+@use "../../../utils";
 
 // 👉 Application
 // ℹ️ We need accurate vh in mobile devices as well
@@ -196,7 +196,6 @@ h6,
 }
 
 // 👉 DataTable
-// 👉 DataTable
 .v-data-table {
   /* stylelint-disable-next-line no-descending-specificity */
   .v-checkbox-btn .v-selection-control__wrapper {
@@ -250,34 +249,53 @@ h6,
 .v-badge__badge {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-// 👉 Btn focus outline style removed
-.v-btn:focus-visible::after {
-  opacity: 0 !important;
+// 👉 Dialog
+.v-dialog--fullscreen {
+  background-color: rgb(var(--v-theme-surface));
 }
 
-// .v-select chip spacing for slot
-.v-input:not(.v-select--chips) .v-select__selection {
-  .v-chip {
-    margin-block: 2px var(--select-chips-margin-bottom);
-  }
+// For dialog card title
+.v-card-item + .v-card-text {
+  padding-block-start: 0 !important;
 }
 
-// 👉 VCard and VList subtitle color
-.v-card-subtitle,
-.v-list-item-subtitle {
-  color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity));
-}
+// 👉 v-slide-group (List of chips)
+.v-slide-group {
+  .v-slide-group__container {
+    display: flex;
+    flex-wrap: wrap;
 
-// 👉 placeholders
-.v-field__input {
-  @at-root {
-    & input::placeholder,
-    input#{&}::placeholder,
-    textarea#{&}::placeholder {
-      color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity)) !important;
-      opacity: 1 !important;
+    // Spacing between buttons in v-slide-group
+    .v-slide-group-item:not(:last-child) {
+      margin-inline-end: 0.5rem;
     }
   }
 }
+
+// 👉 Expansion Panel
+.v-expansion-panels {
+  .v-expansion-panel-title {
+    min-block-size: unset !important;
+    padding-block: 1rem !important;
+  }
+}
+
+// 👉 v-textarea
+.v-textarea {
+  textarea {
+    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+
+    &:hover,
+    &:focus {
+      color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+    }
+  }
+}
+
+// 👉 Cursor
+.cursor-pointer {
+  cursor: pointer;
+} 

@@ -4,7 +4,18 @@ $shadow-key-ambient-opacity-custom: var(--v-shadow-key-ambient-opacity);
 /* stylelint-disable-next-line max-line-length */
 $font-family-custom: 'Inter', 'Noto Sans SC', sans-serif, -apple-system, blinkmacsystemfont, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
-@forward "../../../base/libs/vuetify/variables" with (
+// 👉 Card transition properties
+$card-transition-property-custom: box-shadow, opacity;
+
+@forward "vuetify/settings" with (
+  // 👉 General settings
+  $color-pack: false !default,
+
+  // 👉 Shadow opacity
+  $shadow-key-umbra-opacity: $shadow-key-umbra-opacity-custom !default,
+  $shadow-key-penumbra-opacity: $shadow-key-penumbra-opacity-custom !default,
+  $shadow-key-ambient-opacity: $shadow-key-ambient-opacity-custom !default,
+
   $body-font-family: $font-family-custom !default,
   $border-radius-root: 6px !default,
 
@@ -110,6 +121,18 @@ $font-family-custom: 'Inter', 'Noto Sans SC', sans-serif, -apple-system, blinkma
     24: (0 9px 46px 8px $shadow-key-ambient-opacity-custom)
   ) !default,
 
+  // 👉 Card
+  $card-color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity)) !default,
+  $card-elevation: 6 !default,
+  $card-title-line-height: 2rem !default,
+  $card-actions-min-height: unset !default,
+  $card-text-padding: 1.25rem !default,
+  $card-item-padding: 1.25rem !default,
+  $card-actions-padding: 0 12px 12px !default,
+  $card-transition-property: $card-transition-property-custom !default,
+  $card-subtitle-opacity: 1 !default,
+  $card-title-letter-spacing: 0.0094rem !default,
+
   // 👉 Typography
   $typography: (
     "h1": (
@@ -161,13 +184,16 @@ $font-family-custom: 'Inter', 'Noto Sans SC', sans-serif, -apple-system, blinkma
     )
   ) !default,
 
-  // 👉 Card
-  $card-title-letter-spacing: 0.0094rem !default,
-  $card-title-line-height: 2rem !default,
-  $card-subtitle-opacity: 1 !default,
+  // 👉 List
+  $list-item-icon-margin-end: 16px !default,
+  $list-item-icon-margin-start: 16px !default,
+  $list-item-subtitle-opacity: 1 !default,
+  $list-subheader-text-opacity: 1 !default,
 
   // 👉 Tooltip
-  $tooltip-background-color:#212121 !default,
+  $tooltip-background-color: #212121 !default,
+  $tooltip-text-color: rgb(var(--v-theme-on-primary)) !default,
+  $tooltip-font-size: 0.75rem !default,
   $tooltip-border-radius: 4px !default,
   $tooltip-padding: 4px 8px !default,
 
@@ -208,9 +234,6 @@ $font-family-custom: 'Inter', 'Noto Sans SC', sans-serif, -apple-system, blinkma
 
   // 👉 Menu
   $menu-content-border-radius: 5px !default,
-
-  // 👉 List
-  $list-subheader-text-opacity: 1 !default,
 
   // 👉 Snackbar
   $snackbar-background:#212121 !default,
