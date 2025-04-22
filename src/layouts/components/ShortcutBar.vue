@@ -173,11 +173,11 @@ onMounted(() => {
             <VCard
               flat
               variant="tonal"
-              class="pa-4 d-flex align-center rounded-lg cursor-pointer transition-transform duration-300 hover:-translate-y-1"
+              class="pa-2 d-flex align-center rounded-lg cursor-pointer transition-transform duration-300 hover:-translate-y-1 border"
               hover
               @click="openDialog(item.dialogRef)"
             >
-              <VAvatar variant="tonal" size="48" class="me-4" rounded="lg">
+              <VAvatar variant="text" size="48" rounded="lg">
                 <VIcon color="primary" :icon="item.icon" size="24" />
               </VAvatar>
               <div>
