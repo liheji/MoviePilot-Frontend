@@ -188,7 +188,7 @@ onMounted(async () => {
 
 <template>
   <VBottomSheet inset scrollable>
-    <VCard class="rounded-t">
+    <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
         <VCardTitle class="pe-10"> 订阅 - {{ props.media?.title }} </VCardTitle>
