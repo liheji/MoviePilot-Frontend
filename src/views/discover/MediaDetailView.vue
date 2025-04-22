@@ -507,10 +507,14 @@ function onSubscribeEditRemove() {
 async function clickSearch(type: string) {
   searchType.value = type
   if (allSites.value?.length == 0) {
-    querySites()
-    querySelectedSites()
+    await querySites()
+    await querySelectedSites()
   }
-  chooseSiteDialog.value = true
+  if (allSites.value?.length > 0) {
+    chooseSiteDialog.value = true
+  } else {
+    handleSearch()
+  }
 }
 
 // 搜索多站点

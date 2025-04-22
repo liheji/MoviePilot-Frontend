@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Site, Plugin, Subscribe } from '@/api/types'
-import { popScopeId, PropType } from 'vue'
+import type { Site } from '@/api/types'
 
 const props = defineProps({
   sites: {
@@ -63,14 +62,14 @@ const filteredSites = computed(() => {
           variant="outlined"
           hide-details
           class="ml-4"
-          style="max-width: 200px"
+          style="max-inline-size: 200px"
           prepend-inner-icon="mdi-magnify"
           clearable
         />
       </VCardTitle>
       <VDivider class="search-divider" />
 
-      <VCardText style="max-height: 420px" class="overflow-y-auto px-4 py-4">
+      <VCardText style="max-block-size: 420px" class="overflow-y-auto px-4 py-4">
         <!-- 站点列表 -->
         <div v-if="filteredSites.length > 0">
           <!-- 选择操作 -->
@@ -186,9 +185,9 @@ const filteredSites = computed(() => {
 </template>
 <style scoped>
 .site-checkbox-wrapper {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.2s ease;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
 .site-checkbox-wrapper:hover {
@@ -196,15 +195,15 @@ const filteredSites = computed(() => {
 }
 
 .site-name {
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .site-selected {
+  border-color: rgba(var(--v-theme-primary), 0.2);
   background-color: rgba(var(--v-theme-primary), 0.08);
   color: rgb(var(--v-theme-primary));
-  border-color: rgba(var(--v-theme-primary), 0.2);
 }
 
 .site-hover {

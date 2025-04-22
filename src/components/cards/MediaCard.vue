@@ -334,10 +334,14 @@ function goMediaDetail(isHovering = false) {
 // 点击搜索
 async function clickSearch() {
   if (allSites.value?.length == 0) {
-    querySites()
-    querySelectedSites()
+    await querySites()
+    await querySelectedSites()
   }
-  chooseSiteDialog.value = true
+  if (allSites.value?.length > 0) {
+    chooseSiteDialog.value = true
+  } else {
+    handleSearch()
+  }
 }
 
 // 开始搜索
