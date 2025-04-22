@@ -90,6 +90,7 @@ export default {
     variant: 'outlined',
     color: 'primary',
     hideDetails: 'auto',
+    menuProps: { elevation: 0 },
   },
   VRangeSlider: {
     // set v-range-slider default color to primary
@@ -127,6 +128,7 @@ export default {
     variant: 'outlined',
     color: 'primary',
     hideDetails: 'auto',
+    menuProps: { elevation: 0 },
   },
   VFileInput: {
     variant: 'outlined',

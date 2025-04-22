@@ -318,6 +318,10 @@ html.v-overlay-scroll-blocked {
   padding: 0;
 }
 
+.v-menu .v-overlay__content {
+  box-shadow: none !important;
+}
+
 
 // 透明主题特殊样式
 .transparent-app {
