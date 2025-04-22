@@ -392,7 +392,7 @@ watch([marketList, filterForm, activeSort], () => {
   }
 
   // 显示前20个
-  displayUninstalledList.value = sortedUninstalledList.value.slice(0, 20)
+  displayUninstalledList.value = sortedUninstalledList.value.splice(0, 20)
 })
 
 // 标签转换
