@@ -53,7 +53,6 @@ function replaceNewLine(value: string) {
         aspect-ratio="3/2"
         cover
         position="top"
-        :class="{ shadow: isImageLoaded }"
         @load="imageLoaded"
         @error="imageLoadError = true"
       />

@@ -298,7 +298,7 @@ function onSubscribeEditRemove() {
           class="flex flex-col h-full"
           :class="{
             'outline-dashed outline-1': props.media?.best_version && imageLoaded,
-            'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
+            'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
             'opacity-70': subscribeState === 'S',
           }"
           min-height="170"
@@ -335,10 +335,7 @@ function onSubscribeEditRemove() {
           </template>
           <div>
             <VCardText class="flex items-center py-3">
-              <div
-                class="h-auto w-16 flex-shrink-0 overflow-hidden rounded-md shadow-lg cursor-move"
-                v-if="imageLoaded"
-              >
+              <div class="h-auto w-16 flex-shrink-0 overflow-hidden rounded-md cursor-move" v-if="imageLoaded">
                 <VImg :src="posterUrl" aspect-ratio="2/3" cover>
                   <template #placeholder>
                     <div class="w-full h-full">

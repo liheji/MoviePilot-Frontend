@@ -156,7 +156,7 @@ const dropdownItems = ref([
           @click="detailDialog = true"
           class="flex flex-col h-full"
           :class="{
-            'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
+            'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
           }"
         >
           <div
@@ -185,7 +185,6 @@ const dropdownItems = ref([
                   :src="iconPath"
                   aspect-ratio="4/3"
                   cover
-                  :class="{ shadow: isImageLoaded }"
                   @load="imageLoaded"
                   @error="imageLoadError = true"
                 />
@@ -246,7 +245,6 @@ const dropdownItems = ref([
                     :src="iconPath"
                     aspect-ratio="4/3"
                     cover
-                    :class="{ shadow: isImageLoaded }"
                     @load="imageLoaded"
                     @error="imageLoadError = true"
                   />

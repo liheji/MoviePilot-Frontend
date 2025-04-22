@@ -102,7 +102,7 @@ function doDelete() {
           :key="props.media?.id"
           class="flex flex-col h-full"
           :class="{
-            'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
+            'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
           }"
           min-height="170"
           @click="showForkSubscribe"
@@ -119,7 +119,7 @@ function doDelete() {
           </template>
           <div class="h-full flex flex-col">
             <VCardText class="flex items-center pb-1 grow">
-              <div class="h-auto w-12 flex-shrink-0 overflow-hidden rounded-md shadow-lg" v-if="imageLoaded">
+              <div class="h-auto w-12 flex-shrink-0 overflow-hidden rounded-md" v-if="imageLoaded">
                 <VImg :src="posterUrl" aspect-ratio="2/3" cover @click.stop="viewMediaDetail">
                   <template #placeholder>
                     <div class="w-full h-full">

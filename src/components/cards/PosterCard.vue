@@ -43,9 +43,9 @@ function goPlay(isHovering: boolean | null = false) {
         v-bind="hover.props"
         :height="props.height"
         :width="props.width"
-        class="outline-none shadow ring-gray-500"
+        class="outline-none ring-gray-500"
         :class="{
-          'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
+          'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
           'ring-1': isImageLoaded,
         }"
       >
@@ -69,7 +69,7 @@ function goPlay(isHovering: boolean | null = false) {
           variant="elevated"
           size="small"
           :class="getChipColor(props.media?.type || '')"
-          class="absolute left-2 top-2 bg-opacity-80 shadow-md text-white font-bold"
+          class="absolute left-2 top-2 bg-opacity-80 text-white font-bold"
         >
           {{ props.media?.type }}
         </VChip>

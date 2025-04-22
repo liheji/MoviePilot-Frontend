@@ -336,7 +336,7 @@ watch(
           @click="openPluginDetail"
           class="flex flex-col h-full"
           :class="{
-            'transition transform-cpu duration-300 -translate-y-1 shadow-lg': hover.isHovering,
+            'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
           }"
         >
           <div
@@ -364,7 +364,6 @@ watch(
                   :src="iconPath"
                   aspect-ratio="4/3"
                   cover
-                  :class="{ shadow: isImageLoaded }"
                   @load="imageLoaded"
                   @error="imageLoadError = true"
                 />

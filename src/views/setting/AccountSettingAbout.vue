@@ -221,7 +221,7 @@ onMounted(() => {
             <div
               v-for="release in allRelease"
               :key="release.tag_name"
-              class="mb-3 flex w-full flex-col space-y-3 rounded-md px-4 py-2 shadow-md ring-1 ring-gray-400 sm:flex-row sm:space-y-0 sm:space-x-3"
+              class="mb-3 flex w-full flex-col space-y-3 rounded-md px-4 py-2 ring-1 ring-gray-400 sm:flex-row sm:space-y-0 sm:space-x-3"
             >
               <div class="flex w-full flex-grow items-center justify-start space-x-2 truncate sm:justify-start">
                 <span class="truncate text-lg font-bold">

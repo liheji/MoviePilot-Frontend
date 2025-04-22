@@ -145,7 +145,7 @@ onActivated(() => {
                 width="50"
                 :src="arg.event.extendedProps.posterPath"
                 aspect-ratio="2/3"
-                class="object-cover rounded shadow ring-gray-500"
+                class="object-cover rounded ring-gray-500"
                 cover
               >
                 <template #placeholder>
@@ -175,7 +175,7 @@ onActivated(() => {
               :src="arg.event.extendedProps.posterPath"
               v-bind="props"
               aspect-ratio="2/3"
-              class="object-cover rounded shadow ring-gray-500"
+              class="object-cover rounded ring-gray-500"
               cover
             >
               <template #placeholder>

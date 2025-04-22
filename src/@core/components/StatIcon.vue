@@ -8,9 +8,9 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <div class="absolute top-2 right-2 flex items-center justify-between p-2 shadow">
+  <div class="absolute top-2 right-2 flex items-center justify-between p-2">
     <VBadge :color="props.color" bordered>
-      <template #badge>          
+      <template #badge>
         <VIcon icon="mdi-pulse"></VIcon>
       </template>
     </VBadge>

@@ -395,16 +395,22 @@ html.v-overlay-scroll-blocked {
     background-color: rgba(var(--v-theme-surface), 0.3);
   }
 
+  // 选中标签样式
   .v-tabs.v-tabs-pill .v-slide-group-item--active.v-tab--selected.text-primary {
     background-color: rgba(var(--v-theme-primary), 0.7) !important;
+  }
+
+  // 加载占位
+  .v-skeleton-loader {
+    background-color: rgba(var(--v-theme-surface), 0.3);
   }
 }
 
 // 透明主题下的弹出窗口样式
 html[data-theme="transparent"] {
-  .v-overlay__content {
-    backdrop-filter: blur(10px) !important;    
+  .v-overlay__content {    
     border-radius: 12px !important;
+    backdrop-filter: blur(10px) !important;
 
     .v-list {
       backdrop-filter: blur(10px);
