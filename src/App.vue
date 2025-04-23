@@ -136,7 +136,7 @@ function animateAndRemoveLoader() {
       document.documentElement.style.removeProperty('background')
       // 显示页面
       show.value = true
-    }, 800) // 与CSS动画持续时间匹配
+    }, 500) // 与CSS动画持续时间匹配
   }
 }
 
@@ -149,12 +149,7 @@ onMounted(() => {
 
   ensureRenderComplete(() => {
     nextTick(() => {
-      // 添加logo脉冲动画
-      const loadingLogo = document.querySelector('.loading-logo svg') as SVGElement
-      if (loadingLogo) {
-        loadingLogo.style.animation = 'pulse-scale 1.5s ease infinite'
-      }
-
+      // 不再添加脉冲动画
       setTimeout(() => {
         // 移除加载动画（使用新的动画方法）
         animateAndRemoveLoader()
