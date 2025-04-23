@@ -35,27 +35,11 @@ const isPasswordVisible = ref(false)
 // 错误信息
 const errorMessage = ref('')
 
-// 背景图片 URL 和预加载 URL
-const backgroundImages = ref<string[]>([])
-const activeImageIndex = ref(0)
-
 // 是否开启双重验证
 const isOTP = ref(false)
 
 // 用户名称输入框
 const usernameInput = ref()
-
-// Interval定时器
-let intervalTimer: NodeJS.Timeout | null = null
-
-// 获取背景图片
-async function fetchBackgroundImage() {
-  try {
-    backgroundImages.value = await api.get('/login/wallpapers')
-  } catch (e) {
-    console.log(e)
-  }
-}
 
 // 查询是否开启双重验证
 const fetchOTP = debounce(async () => {
@@ -180,13 +164,6 @@ function login() {
     })
 }
 
-// 初始化背景图片轮循
-function startBackgroundRotation() {
-  intervalTimer = setInterval(() => {
-    activeImageIndex.value = (activeImageIndex.value + 1) % backgroundImages.value.length
-  }, 5000) // 每5秒切换一次图片
-}
-
 // 自动登录
 onMounted(async () => {
   // 获取token和remember状态
@@ -196,39 +173,20 @@ onMounted(async () => {
   // 如果token存在，且保持登录状态为true，则跳转到首页
   if (token && remember) {
     router.push('/')
-  } else {
-    // 获取背景图片
-    await fetchBackgroundImage()
-    if (backgroundImages.value.length > 1) {
-      startBackgroundRotation()
-    }
   }
-})
-
-onUnmounted(() => {
-  if (intervalTimer) clearInterval(intervalTimer)
 })
 </script>
 
 <template>
-  <!-- 当前背景图片 -->
-  <div class="relative flex min-h-screen flex-col bg-gray-900 items-center justify-center">
-    <div>
-      <div
-        v-for="(imageUrl, index) in backgroundImages"
-        class="absolute-top-shift absolute inset-0 bg-cover bg-center transition-opacity duration-300 ease-in"
-        :class="{ 'opacity-100': index === activeImageIndex, 'opacity-0': index !== activeImageIndex }"
-      >
-        <VImg :src="imageUrl" class="absolute inset-0 transition-opacity duration-1000" cover position="center top" />
-        <div
-          class="absolute inset-0"
-          style="background-image: linear-gradient(rgba(45, 55, 72, 47%) 0%, rgb(26, 32, 46) 100%)"
-        />
-      </div>
-    </div>
+  <!-- 登录页面容器 -->
+  <div class="relative flex min-h-screen flex-col items-center justify-center">
     <!-- 登录表单 -->
     <div class="auth-wrapper d-flex align-center justify-center">
-      <VCard class="auth-card px-7 py-3 w-full h-full opacity-85" max-width="24rem">
+      <VCard
+        class="auth-card px-7 py-3 w-full h-full"
+        :class="{ 'opacity-75': globalTheme.name.value !== 'transparent' }"
+        max-width="24rem"
+      >
         <VCardItem class="justify-center">
           <template #prepend>
             <div class="d-flex pe-0">
@@ -293,10 +251,6 @@ onUnmounted(() => {
 
 .v-card-item__prepend {
   padding-inline-end: 0 !important;
-}
-
-.absolute-top-shift {
-  inset-block-start: calc(-4rem - env(safe-area-inset-top));
 }
 
 .auth-wrapper {

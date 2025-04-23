@@ -3,6 +3,7 @@ import { useTheme } from 'vuetify'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { ensureRenderComplete, removeEl } from './@core/utils/dom'
 import api from '@/api'
+import { useAuthStore } from '@/stores/auth'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -13,21 +14,55 @@ globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
 // 从 provide 中获取全局设置
 const globalSettings: any = inject('globalSettings')
 
-// 更新data-theme属性以便CSS选择器能正确匹配
-function updateHtmlThemeAttribute(themeName: string) {
-  document.documentElement.setAttribute('data-theme', themeName)
-  // 确保body元素也有相同的主题属性，以便更好地选择弹出窗口
-  document.body.setAttribute('data-theme', themeName)
-}
-
 // 显示状态
 const show = ref(false)
+
+// 检查是否登录
+const authStore = useAuthStore()
+const isLogin = computed(() => authStore.token)
 
 // 背景图片
 const backgroundImages = ref<string[]>([])
 const activeImageIndex = ref(0)
 const isTransparentTheme = computed(() => globalTheme.name.value === 'transparent')
 let backgroundRotationTimer: NodeJS.Timeout | null = null
+
+// ApexCharts 全局配置
+declare global {
+  interface Window {
+    Apex: any
+  }
+}
+
+if (window.Apex) {
+  // 数据标签
+  window.Apex.dataLabels = {
+    formatter: function (_: number, { seriesIndex, w }: { seriesIndex: number; w: any }) {
+      // 如果有小数点，保留两位小数，否则保留整数
+      const data = w.config.series[seriesIndex]
+      return data.toFixed(data % 1 === 0 ? 0 : 1)
+    },
+  }
+  // 图例
+  window.Apex.legend = {
+    labels: {
+      useSeriesColors: true,
+    },
+  }
+  // 标题
+  window.Apex.title = {
+    style: {
+      color: 'rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))',
+    },
+  }
+}
+
+// 更新data-theme属性以便CSS选择器能正确匹配
+function updateHtmlThemeAttribute(themeName: string) {
+  document.documentElement.setAttribute('data-theme', themeName)
+  // 确保body元素也有相同的主题属性，以便更好地选择弹出窗口
+  document.body.setAttribute('data-theme', themeName)
+}
 
 // 获取背景图片
 async function fetchBackgroundImages() {
@@ -62,7 +97,7 @@ function getImgUrl(url: string) {
 
 // 处理页面可见性变化
 function handleVisibilityChange() {
-  if (document.visibilityState === 'visible' && isTransparentTheme.value) {
+  if (document.visibilityState === 'visible') {
     // 如果已有背景图片数据，直接重启轮换
     if (backgroundImages.value.length > 0) {
       startBackgroundRotation()
@@ -71,54 +106,6 @@ function handleVisibilityChange() {
     else {
       fetchBackgroundImages().then(() => startBackgroundRotation())
     }
-  }
-}
-
-// 监听主题变化
-watch(
-  () => globalTheme.name.value,
-  async newTheme => {
-    // 更新HTML属性
-    updateHtmlThemeAttribute(newTheme)
-
-    if (newTheme === 'transparent' && backgroundImages.value.length === 0) {
-      await fetchBackgroundImages()
-      startBackgroundRotation()
-    } else if (newTheme !== 'transparent' && backgroundRotationTimer) {
-      clearInterval(backgroundRotationTimer)
-      backgroundRotationTimer = null
-    }
-  },
-  { immediate: true },
-)
-
-// ApexCharts 全局配置
-declare global {
-  interface Window {
-    Apex: any
-  }
-}
-
-if (window.Apex) {
-  // 数据标签
-  window.Apex.dataLabels = {
-    formatter: function (_: number, { seriesIndex, w }: { seriesIndex: number; w: any }) {
-      // 如果有小数点，保留两位小数，否则保留整数
-      const data = w.config.series[seriesIndex]
-      return data.toFixed(data % 1 === 0 ? 0 : 1)
-    },
-  }
-  // 图例
-  window.Apex.legend = {
-    labels: {
-      useSeriesColors: true,
-    },
-  }
-  // 标题
-  window.Apex.title = {
-    style: {
-      color: 'rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))',
-    },
   }
 }
 
@@ -144,14 +131,16 @@ onMounted(() => {
   // 初始化data-theme属性
   updateHtmlThemeAttribute(globalTheme.name.value)
 
+  // 加载背景图片并开始轮换
+  fetchBackgroundImages().then(() => startBackgroundRotation())
+
   // 添加页面可见性变化监听
   document.addEventListener('visibilitychange', handleVisibilityChange)
 
   ensureRenderComplete(() => {
     nextTick(() => {
-      // 不再添加脉冲动画
       setTimeout(() => {
-        // 移除加载动画（使用新的动画方法）
+        // 移除加载动画
         animateAndRemoveLoader()
       }, 1500)
     })
@@ -173,7 +162,7 @@ onUnmounted(() => {
 <template>
   <div class="app-wrapper">
     <!-- 透明主题背景 -->
-    <template v-if="isTransparentTheme && backgroundImages.length > 0">
+    <template v-if="backgroundImages.length > 0 && (isTransparentTheme || !isLogin)">
       <div class="background-container">
         <div
           v-for="(imageUrl, index) in backgroundImages"
