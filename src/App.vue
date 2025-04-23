@@ -122,6 +122,24 @@ if (window.Apex) {
   }
 }
 
+// 添加logo动画效果并延迟移除加载界面
+function animateAndRemoveLoader() {
+  const loadingBg = document.querySelector('#loading-bg') as HTMLElement
+  if (loadingBg) {
+    // 先添加完成动画类
+    loadingBg.classList.add('loading-complete')
+
+    // 等待动画完成后再移除元素
+    setTimeout(() => {
+      removeEl('#loading-bg')
+      // 将background属性从html的style中移除
+      document.documentElement.style.removeProperty('background')
+      // 显示页面
+      show.value = true
+    }, 800) // 与CSS动画持续时间匹配
+  }
+}
+
 onMounted(() => {
   // 初始化data-theme属性
   updateHtmlThemeAttribute(globalTheme.name.value)
@@ -131,13 +149,15 @@ onMounted(() => {
 
   ensureRenderComplete(() => {
     nextTick(() => {
+      // 添加logo脉冲动画
+      const loadingLogo = document.querySelector('.loading-logo svg') as SVGElement
+      if (loadingLogo) {
+        loadingLogo.style.animation = 'pulse-scale 1.5s ease infinite'
+      }
+
       setTimeout(() => {
-        // 移除加载动画
-        removeEl('#loading-bg')
-        // 将background属性从html的style中移除
-        document.documentElement.style.removeProperty('background')
-        // 显示页面
-        show.value = true
+        // 移除加载动画（使用新的动画方法）
+        animateAndRemoveLoader()
       }, 1500)
     })
   })

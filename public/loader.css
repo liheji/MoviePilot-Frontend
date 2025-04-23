@@ -5,12 +5,25 @@
   background: var(--initial-loader-bg, #fff);
   block-size: 100vh;
   inline-size: 100vw;
+  transition: opacity 0.8s ease;
 }
 
 .loading-logo {
   position: absolute;
   inset-block-start: 35%;
   inset-inline-start: calc(50% - 5rem);
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+/* 添加logo完成动画 */
+.loading-complete .loading-logo {
+  opacity: 0;
+  transform: scale(1.2) rotate(360deg);
+}
+
+/* 添加加载背景消失动画 */
+.loading-complete {
+  opacity: 0;
 }
 
 .loading {
@@ -22,6 +35,12 @@
   inline-size: 55px;
   inset-block-start: 80%;
   inset-inline-start: calc(50% - 27.5px);
+  transition: opacity 0.6s ease;
+}
+
+/* 完成时隐藏加载动画 */
+.loading-complete .loading {
+  opacity: 0;
 }
 
 .loading .effect-1,
@@ -71,5 +90,20 @@
   100% {
     opacity: 1;
     transform: rotate(1turn);
+  }
+}
+
+/* 添加logo脉冲效果动画 */
+@keyframes pulse-scale {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }
