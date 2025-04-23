@@ -24,24 +24,10 @@ function jumpTab(tab: string) {
 
 <template>
   <div>
-    <VTabs v-model="activeTab" show-arrows class="v-tabs-pill">
-      <VTab
-        v-for="item in SettingTabs"
-        :key="item.icon"
-        :value="item.tab"
-        @click="jumpTab(item.tab)"
-        selected-class="v-slide-group-item--active v-tab--selected"
-      >
-        <div class="flex align-center">
-          <VIcon size="20" start :icon="item.icon" />
-          {{ item.title }}
-        </div>
-      </VTab>
-    </VTabs>
-
+    <VHeaderTab :items="SettingTabs" v-model="activeTab" />
     <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
       <!-- 系统 -->
-      <VWindowItem value="system">
+      <VWindowItem value="系统">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSystem />
@@ -50,7 +36,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 目录 -->
-      <VWindowItem value="directory">
+      <VWindowItem value="存储 & 目录">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingDirectory />
@@ -59,7 +45,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 站点 -->
-      <VWindowItem value="site">
+      <VWindowItem value="站点">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSite />
@@ -68,7 +54,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 规则 -->
-      <VWindowItem value="rule">
+      <VWindowItem value="规则">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingRule />
@@ -77,7 +63,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 搜索 -->
-      <VWindowItem value="search">
+      <VWindowItem value="搜索 & 下载">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSearch />
@@ -86,7 +72,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 订阅 -->
-      <VWindowItem value="subscribe">
+      <VWindowItem value="订阅">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSubscribe />
@@ -95,7 +81,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 服务 -->
-      <VWindowItem value="scheduler">
+      <VWindowItem value="服务">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingScheduler />
@@ -104,7 +90,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 通知 -->
-      <VWindowItem value="notification">
+      <VWindowItem value="通知">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingNotification />
@@ -113,7 +99,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 词表 -->
-      <VWindowItem value="words">
+      <VWindowItem value="词表">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingWords />
@@ -122,7 +108,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 关于 -->
-      <VWindowItem value="about">
+      <VWindowItem value="关于">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingAbout />
