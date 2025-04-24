@@ -70,7 +70,11 @@ async function handleAddDownload(item: Context | null = null) {
 }
 
 // 打开种子详情页面
-function openTorrentDetail() {
+function openTorrentDetail(item: Context | null = null) {
+  if (item && !isNullOrEmptyObject(item) && !isNullOrEmptyObject(item.torrent_info)) {
+    window.open(item.torrent_info.page_url, '_blank')
+    return
+  }
   window.open(torrent.value?.page_url, '_blank')
 }
 
@@ -255,7 +259,7 @@ onMounted(() => {
           <VChip v-if="torrent?.size" color="primary" size="x-small" variant="elevated" class="rounded-sm mr-2">
             {{ formatFileSize(torrent.size) }}
           </VChip>
-          <VBtn icon size="small" variant="text" color="primary" @click.stop="openTorrentDetail">
+          <VBtn icon size="small" variant="text" color="primary" @click.stop="openTorrentDetail()">
             <VIcon icon="mdi-information-outline"></VIcon>
           </VBtn>
         </div>
@@ -333,7 +337,7 @@ onMounted(() => {
                   </span>
                   <span>
                     <VIcon
-                      @click.stop="openTorrentDetail"
+                      @click.stop="openTorrentDetail(item)"
                       size="small"
                       color="secondary"
                       icon="mdi-arrow-top-right"
