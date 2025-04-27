@@ -8,6 +8,10 @@ import { CustomRule, FilterRuleGroup } from '@/api/types'
 import CustomerRuleCard from '@/components/cards/CustomRuleCard.vue'
 import FilterRuleGroupCard from '@/components/cards/FilterRuleGroupCard.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 自定义规则列表
 const customRules = ref<CustomRule[]>([])
@@ -32,10 +36,10 @@ const $toast = useToast()
 
 // 种子优先规则下拉框
 const TorrentPriorityItems = [
-  { title: '资源优先级', value: 'torrent' },
-  { title: '站点优先级', value: 'site' },
-  { title: '站点上传量', value: 'upload' },
-  { title: '资源做种数', value: 'seeder' },
+  { title: t('setting.rule.resourcePriority'), value: 'torrent' },
+  { title: t('setting.rule.sitePriority'), value: 'site' },
+  { title: t('setting.rule.siteUpload'), value: 'upload' },
+  { title: t('setting.rule.resourceSeeder'), value: 'seeder' },
 ]
 
 // 调用API查询自动分类配置
@@ -51,12 +55,12 @@ async function loadMediaCategories() {
 async function saveCustomRules() {
   // 检查是否存在空id规则
   if (customRules.value.some(item => !item.id)) {
-    $toast.error('存在空ID的规则，无法保存，请修改！')
+    $toast.error(t('setting.rule.emptyIdError'))
     return
   }
   // 检查是否存在空的规则名称
   if (customRules.value.some(item => !item.name)) {
-    $toast.error('存在空名字的规则，无法保存，请修改！')
+    $toast.error(t('setting.rule.emptyNameError'))
     return
   }
   // 获取所有规则ID和名称
@@ -64,18 +68,18 @@ async function saveCustomRules() {
   const names = customRules.value.map(item => item.name)
   // 检查是否存在重名的规则ID
   if (new Set(ids).size !== ids.length) {
-    $toast.error('存在重复规则ID！无法保存，请修改！')
+    $toast.error(t('setting.rule.duplicateIdError'))
     return
   }
   // 检查是否存在重名规则名称
   if (new Set(names).size !== names.length) {
-    $toast.error('存在重复规则名称！无法保存，请修改！')
+    $toast.error(t('setting.rule.duplicateNameError'))
     return
   }
   try {
     const result: { [key: string]: any } = await api.post('system/setting/CustomFilterRules', customRules.value)
-    if (result.success) $toast.success('自定义规则保存成功')
-    else $toast.error('自定义规则保存失败！')
+    if (result.success) $toast.success(t('setting.rule.customRuleSaveSuccess'))
+    else $toast.error(t('setting.rule.customRuleSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -117,19 +121,19 @@ async function queryFilterRuleGroups() {
 async function saveFilterRuleGroups() {
   // 检查是否存在空的规则组名称
   if (filterRuleGroups.value.some(item => !item.name)) {
-    $toast.error('存在空名字的规则组！无法保存，请修改！')
+    $toast.error(t('setting.rule.emptyGroupNameError'))
     return
   }
   // 检查是否存在重名规则组
   const names = filterRuleGroups.value.map(item => item.name)
   if (new Set(names).size !== names.length) {
-    $toast.error('存在重复规则组名称！无法保存，请修改！')
+    $toast.error(t('setting.rule.duplicateGroupNameError'))
     return
   }
   try {
     const result: { [key: string]: any } = await api.post('system/setting/UserFilterRuleGroups', filterRuleGroups.value)
-    if (result.success) $toast.success('优先级规则组保存成功')
-    else $toast.error('优先级规则组保存失败！')
+    if (result.success) $toast.success(t('setting.rule.ruleGroupSaveSuccess'))
+    else $toast.error(t('setting.rule.ruleGroupSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -157,10 +161,14 @@ async function shareRules(rules: CustomRule[] | FilterRuleGroup[], type: string)
   try {
     let success
     success = copyToClipboard(value)
-    if (await success) $toast.success(`${type === 'custom' ? '自定义规则' : '优先级规则组'}已复制到剪贴板！`)
-    else $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败：可能是浏览器不支持或被用户阻止！`)
+    if (await success)
+      $toast.success(
+        type === 'custom' ? t('setting.rule.customRuleCopySuccess') : t('setting.rule.ruleGroupCopySuccess'),
+      )
+    else
+      $toast.error(type === 'custom' ? t('setting.rule.customRuleCopyFailed') : t('setting.rule.ruleGroupCopyFailed'))
   } catch (e) {
-    $toast.error(`${type === 'custom' ? '自定义规则' : '优先级规则组'}复制失败！`)
+    $toast.error(type === 'custom' ? t('setting.rule.customRuleCopyError') : t('setting.rule.ruleGroupCopyError'))
     console.error(e)
   }
 }
@@ -178,7 +186,7 @@ function saveCodeString(type: string, codeString: any) {
   try {
     parsedCode = JSON.parse(codeString.value)
   } catch (e) {
-    $toast.error('导入规则失败！无法解析输入的数据！')
+    $toast.error(t('setting.rule.importFailed'))
     console.error(e)
     return
   }
@@ -194,10 +202,10 @@ function saveCodeString(type: string, codeString: any) {
       const newFilterRuleGroups = extractFilterRuleGroups(parsedCode) || []
       filterRuleGroups.value = [...filterRuleGroups.value, ...newFilterRuleGroups]
     } else {
-      $toast.error('导入规则失败！未知的数据类型！')
+      $toast.error(t('setting.rule.importUnknownType'))
     }
   } catch (e) {
-    $toast.error('导入规则失败！')
+    $toast.error(t('setting.rule.importFailed'))
     console.error(e)
   }
 }
@@ -272,8 +280,8 @@ function isValidValue(value: any, type: string): boolean {
 
 function validateCustomRule(hasName: boolean, hasId: boolean, noDuplicates: boolean): boolean {
   if (!hasName || !hasId || !noDuplicates) {
-    if (!noDuplicates) $toast.warning(`存在重名值`)
-    if (!hasId) $toast.error(`导入失败！发现有规则不存在ID，可能属于优先级规则组！`)
+    if (!noDuplicates) $toast.warning(t('setting.rule.duplicateValue'))
+    if (!hasId) $toast.error(t('setting.rule.importNoId'))
     return false
   }
   return true
@@ -281,8 +289,8 @@ function validateCustomRule(hasName: boolean, hasId: boolean, noDuplicates: bool
 
 function validateGroupRule(hasName: boolean, hasId: boolean, noDuplicates: boolean): boolean {
   if (!hasName || hasId || !noDuplicates) {
-    if (!noDuplicates) $toast.warning(`存在重名值`)
-    if (hasId) $toast.error(`导入失败！发现有规则存在相同ID，可能属于自定义规则！`)
+    if (!noDuplicates) $toast.warning(t('setting.rule.duplicateValue'))
+    if (hasId) $toast.error(t('setting.rule.importHasId'))
     return false
   }
   return true
@@ -367,8 +375,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>自定义规则</VCardTitle>
-          <VCardSubtitle>自定义优先级规则项</VCardSubtitle>
+          <VCardTitle>{{ t('setting.rule.customRules') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.rule.customRulesDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <draggable
@@ -391,7 +399,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" class="me-2" @click="saveCustomRules"> 保存 </VBtn>
+              <VBtn type="submit" class="me-2" @click="saveCustomRules"> {{ t('common.save') }} </VBtn>
               <VBtnGroup density="comfortable">
                 <VBtn color="success" variant="tonal" @click="addCustomRule">
                   <VIcon icon="mdi-plus" />
@@ -416,8 +424,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>优先级规则组</VCardTitle>
-          <VCardSubtitle>预设优先级规则组，以便在搜索和订阅中使用。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.rule.priorityRuleGroups') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.rule.priorityRuleGroupsDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <draggable
@@ -442,7 +450,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups"> 保存 </VBtn>
+              <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups"> {{ t('common.save') }} </VBtn>
               <VBtnGroup density="comfortable">
                 <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
                   <VIcon icon="mdi-plus" />
@@ -466,7 +474,7 @@ onMounted(() => {
   <ImportCodeDialog
     v-if="importCodeDialog"
     v-model="importCodeDialog"
-    :title="`导入${importCodeType === 'custom' ? '自定义规则' : '优先级规则组'}`"
+    :title="importCodeType === 'custom' ? t('setting.rule.importCustomRules') : t('setting.rule.importRuleGroups')"
     :dataType="importCodeType"
     @close="importCodeDialog = false"
     @save="saveCodeString"
@@ -475,8 +483,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>下载规则</VCardTitle>
-          <VCardSubtitle>同时命中多个资源时择优下载。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.rule.downloadRules') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.rule.downloadRulesDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VForm>
@@ -488,8 +496,8 @@ onMounted(() => {
                   multiple
                   clearable
                   chips
-                  label="当前使用下载优先规则"
-                  hint="排在前面的优先级越高，未选择的项不纳入排序"
+                  :label="t('setting.rule.currentPriorityRules')"
+                  :hint="t('setting.rule.currentPriorityRulesHint')"
                   persistent-hint
                 />
               </VCol>
@@ -499,7 +507,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveTorrentPriority"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveTorrentPriority"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>

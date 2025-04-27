@@ -3,6 +3,7 @@ import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { FilterRuleGroup, Site } from '@/api/types'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
 
 // 提示框
 const $toast = useToast()
@@ -24,8 +25,8 @@ const selectedBestVersionRuleGroup = ref([])
 
 // 订阅模式选择项
 const subscribeModeItems = [
-  { title: '自动', value: 'spider' },
-  { title: '站点RSS', value: 'rss' },
+  { title: t('setting.subscribe.modes.auto'), value: 'spider' },
+  { title: t('setting.subscribe.modes.rss'), value: 'rss' },
 ]
 
 // 所有规则组列表
@@ -41,13 +42,13 @@ const filterRuleGroupOptions = computed(() => {
 
 // RSS运行周期选择项
 const rssIntervalItems = [
-  { title: '5分钟', value: 5 },
-  { title: '10分钟', value: 10 },
-  { title: '20分钟', value: 20 },
-  { title: '半小时', value: 30 },
-  { title: '1小时', value: 60 },
-  { title: '12小时', value: 720 },
-  { title: '1天', value: 1440 },
+  { title: t('setting.subscribe.intervals.min5'), value: 5 },
+  { title: t('setting.subscribe.intervals.min10'), value: 10 },
+  { title: t('setting.subscribe.intervals.min20'), value: 20 },
+  { title: t('setting.subscribe.intervals.min30'), value: 30 },
+  { title: t('setting.subscribe.intervals.hour1'), value: 60 },
+  { title: t('setting.subscribe.intervals.hour12'), value: 720 },
+  { title: t('setting.subscribe.intervals.day1'), value: 1440 },
 ]
 
 // 系统设置项
@@ -99,8 +100,8 @@ async function saveSelectedRssSites() {
   try {
     const result1: { [key: string]: any } = await api.post('system/setting/RssSites', selectedRssSites.value)
 
-    if (result1.success) $toast.success('订阅站点保存成功')
-    else $toast.error('订阅站点保存失败！')
+    if (result1.success) $toast.success(t('setting.subscribe.saveSuccess'))
+    else $toast.error(t('setting.subscribe.saveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -154,8 +155,8 @@ async function reloadSystem() {
   progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success('系统配置已生效')
-    else $toast.error('重载系统失败！')
+    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
+    else $toast.error(t('setting.system.reloadFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -178,13 +179,15 @@ async function saveSubscribeSetting() {
     const result3 = await saveSystemSetting(SystemSettings.value.Basic)
 
     if (result1.success && result2.success && result3) {
-      $toast.success('订阅基础设置保存成功')
+      $toast.success(t('setting.subscribe.settingsSaveSuccess'))
       await reloadSystem()
-    } else $toast.error('订阅基础设置保存失败！')
+    } else $toast.error(t('setting.subscribe.settingsSaveFailed'))
   } catch (error) {
     console.log(error)
   }
 }
+
+const { t } = useI18n()
 
 onMounted(() => {
   querySites()
@@ -200,8 +203,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>基础设置</VCardTitle>
-          <VCardSubtitle>设定订阅模式、周期等基础设置</VCardSubtitle>
+          <VCardTitle>{{ t('setting.subscribe.basicSettings') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.subscribe.basicSettingsDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VForm>
@@ -210,8 +213,8 @@ onMounted(() => {
                 <VSelect
                   v-model="SystemSettings.Basic.SUBSCRIBE_MODE"
                   :items="subscribeModeItems"
-                  label="订阅模式"
-                  hint="自动：自动爬取站点首页，站点RSS：通过站点RSS链接订阅"
+                  :label="t('setting.subscribe.mode')"
+                  :hint="t('setting.subscribe.modeHint')"
                   persistent-hint
                 />
               </VCol>
@@ -219,8 +222,8 @@ onMounted(() => {
                 <VSelect
                   v-model="SystemSettings.Basic.SUBSCRIBE_RSS_INTERVAL"
                   :items="rssIntervalItems"
-                  label="站点RSS周期"
-                  hint="设置站点RSS运行周期，在订阅模式为`站点RSS`时生效"
+                  :label="t('setting.subscribe.rssInterval')"
+                  :hint="t('setting.subscribe.rssIntervalHint')"
                   persistent-hint
                 />
               </VCol>
@@ -231,8 +234,8 @@ onMounted(() => {
                   chips
                   multiple
                   clearable
-                  label="订阅优先级规则组"
-                  hint="按选定的过滤规则组对订阅进行过滤"
+                  :label="t('setting.subscribe.filterRuleGroup')"
+                  :hint="t('setting.subscribe.filterRuleGroupHint')"
                   persistent-hint
                 />
               </VCol>
@@ -243,8 +246,8 @@ onMounted(() => {
                   chips
                   multiple
                   clearable
-                  label="洗版优先级规则组"
-                  hint="按选定的过滤规则组对洗版订阅进行过滤"
+                  :label="t('setting.subscribe.bestVersionRuleGroup')"
+                  :hint="t('setting.subscribe.bestVersionRuleGroupHint')"
                   persistent-hint
                 />
               </VCol>
@@ -253,16 +256,16 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="SystemSettings.Basic.SUBSCRIBE_SEARCH"
-                  label="订阅定时搜索"
-                  hint="每隔24小时全站搜索，以补全订阅可能漏掉的资源"
+                  :label="t('setting.subscribe.timedSearch')"
+                  :hint="t('setting.subscribe.timedSearchHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="SystemSettings.Basic.LOCAL_EXISTS_SEARCH"
-                  label="检查本地媒体库资源"
-                  hint="检查存储盘是否存在资源，以避免重复下载"
+                  :label="t('setting.subscribe.checkLocalMedia')"
+                  :hint="t('setting.subscribe.checkLocalMediaHint')"
                   persistent-hint
                 />
               </VCol>
@@ -272,7 +275,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSubscribeSetting"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveSubscribeSetting"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -283,8 +286,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>订阅站点</VCardTitle>
-          <VCardSubtitle>只有选中的站点才会在订阅中使用。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.subscribe.subscribeSites') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.subscribe.subscribeSitesDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VChipGroup v-model="selectedRssSites" column multiple>
@@ -303,7 +306,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSelectedRssSites"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveSelectedRssSites"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -311,5 +314,5 @@ onMounted(() => {
     </VCol>
   </VRow>
   <!-- 进度框 -->
-  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
+  <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="t('setting.system.reloading')" />
 </template>

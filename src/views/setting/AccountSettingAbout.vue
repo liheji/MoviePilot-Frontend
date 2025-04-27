@@ -140,7 +140,9 @@ onMounted(() => {
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
               <dt class="block text-sm font-bold">{{ t('setting.about.dataDir') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
-                <span class="flex-grow undefined"><code>/moviepilot</code></span>
+                <span class="flex-grow undefined"
+                  ><code>{{ t('setting.about.dataDirectory') }}</code></span
+                >
               </dd>
             </div>
           </div>

@@ -8,6 +8,9 @@ import { TransferDirectoryConf, StorageConf } from '@/api/types'
 import DirectoryCard from '@/components/cards/DirectoryCard.vue'
 import StorageCard from '@/components/cards/StorageCard.vue'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 所有下载目录
 const directories = ref<TransferDirectoryConf[]>([])
@@ -195,8 +198,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>存储</VCardTitle>
-          <VCardSubtitle>设置本地或网盘存储。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.directory.storage') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.directory.storageDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <draggable
@@ -214,7 +217,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" class="me-2" @click="saveStorages"> 保存 </VBtn>
+              <VBtn type="submit" class="me-2" @click="saveStorages"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -225,8 +228,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>目录</VCardTitle>
-          <VCardSubtitle>设置媒体文件整理目录结构，按先后顺序依次匹配。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.directory.directory') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.directory.directoryDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <draggable
@@ -250,7 +253,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveDirectories"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveDirectories"> {{ t('common.save') }} </VBtn>
               <VBtn color="success" variant="tonal" @click="addDirectory">
                 <VIcon icon="mdi-plus" />
               </VBtn>
@@ -264,8 +267,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>整理 & 刮削</VCardTitle>
-          <VCardSubtitle>设置重命名格式、刮削选项等。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.directory.organizeAndScrap') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.directory.organizeAndScrapDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VRow>
@@ -273,16 +276,16 @@ onMounted(() => {
               <VSelect
                 v-model="SystemSettings.Basic.SCRAP_SOURCE"
                 :items="sourceItems"
-                label="刮削数据源"
-                hint="刮削时的元数据来源"
+                :label="t('setting.directory.scrapSource')"
+                :hint="t('setting.directory.scrapSourceHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12">
               <VTextarea
                 v-model="SystemSettings.Basic.MOVIE_RENAME_FORMAT"
-                label="电影重命名格式"
-                hint="使用Jinja2语法，格式参考：https://jinja.palletsprojects.com/en/3.0.x/templates"
+                :label="t('setting.directory.movieRenameFormat')"
+                :hint="t('setting.directory.movieRenameFormatHint')"
                 persistent-hint
                 clearable
                 active
@@ -291,8 +294,8 @@ onMounted(() => {
             <VCol cols="12">
               <VTextarea
                 v-model="SystemSettings.Basic.TV_RENAME_FORMAT"
-                label="电视剧重命名格式"
-                hint="使用Jinja2语法，格式参考：https://jinja.palletsprojects.com/en/3.0.x/templates"
+                :label="t('setting.directory.tvRenameFormat')"
+                :hint="t('setting.directory.tvRenameFormatHint')"
                 persistent-hint
                 clearable
                 active
@@ -303,7 +306,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSystemSettings(SystemSettings.Basic)"> 保存</VBtn>
+              <VBtn type="submit" @click="saveSystemSettings(SystemSettings.Basic)"> {{ t('common.save') }}</VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -311,5 +314,5 @@ onMounted(() => {
     </VCol>
   </VRow>
   <!-- 进度框 -->
-  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
+  <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="t('setting.system.reloading')" />
 </template>

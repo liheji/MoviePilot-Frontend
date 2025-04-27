@@ -2,6 +2,7 @@
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { FilterRuleGroup, Site } from '@/api/types'
+import { useI18n } from 'vue-i18n'
 
 // 提示框
 const $toast = useToast()
@@ -172,6 +173,8 @@ async function loadSystemSettings() {
   }
 }
 
+const { t } = useI18n()
+
 onMounted(() => {
   querySites()
   queryFilterRuleGroups()
@@ -186,8 +189,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>基础设置</VCardTitle>
-          <VCardSubtitle>设定数据源、规则组等基础信息。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.search.basicSettings') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.search.basicSettingsDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VRow>
@@ -198,8 +201,8 @@ onMounted(() => {
                 clearable
                 chips
                 :items="mediaSourcesDict"
-                label="媒体搜索数据源"
-                hint="搜索媒体信息时使用的数据源以及排序"
+                :label="t('setting.search.mediaSource')"
+                :hint="t('setting.search.mediaSourceHint')"
                 persistent-hint
               />
             </VCol>
@@ -210,8 +213,8 @@ onMounted(() => {
                 clearable
                 chips
                 :items="filterRuleGroupOptions"
-                label="优先级规则组"
-                hint="搜索媒体信息时按选定的过滤规则组对结果进行过滤"
+                :label="t('setting.search.filterRuleGroup')"
+                :hint="t('setting.search.filterRuleGroupHint')"
                 persistent-hint
               />
             </VCol>
@@ -220,34 +223,34 @@ onMounted(() => {
             <VCol cols="12" md="6">
               <VTextField
                 v-model="SystemSettings.Basic.TORRENT_TAG"
-                label="下载任务标签"
+                :label="t('setting.search.downloadLabel')"
                 placeholder="MOVIEPILOT"
-                hint="MoviePilot添加的下载任务标签"
+                :hint="t('setting.search.downloadLabelHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
               <VCombobox
                 v-model="SystemSettings.Basic.AUTO_DOWNLOAD_USER"
-                label="远程搜索自动下载用户名单"
-                placeholder="用户ID1,用户ID2"
-                hint="使用Telegram、微信等搜索时是否自动下载，使用逗号分割，设置为 all 代表所有用户自动择优下载"
+                :label="t('setting.search.downloadUser')"
+                :placeholder="t('setting.search.downloadUserPlaceholder')"
+                :hint="t('setting.search.downloadUserHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
               <VSwitch
                 v-model="SystemSettings.Basic.SEARCH_MULTIPLE_NAME"
-                label="多名称资源搜索"
-                hint="使用中英文等多个名称搜索站点资源并合并搜索结果，将会增加站点访问频率"
+                :label="t('setting.search.multipleNameSearch')"
+                :hint="t('setting.search.multipleNameSearchHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
               <VSwitch
                 v-model="SystemSettings.Basic.DOWNLOAD_SUBTITLE"
-                label="下载站点字幕"
-                hint="检查站点资源是否有独立的字幕文件，有则自动下载"
+                :label="t('setting.search.downloadSubtitle')"
+                :hint="t('setting.search.downloadSubtitleHint')"
                 persistent-hint
               />
             </VCol>
@@ -256,7 +259,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSearchSetting"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveSearchSetting"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -267,8 +270,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>搜索站点</VCardTitle>
-          <VCardSubtitle> 只有选中的站点才会在搜索中使用。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.search.downloadSite') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.search.downloadSiteDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VChipGroup v-model="selectedSites" column multiple>
@@ -287,7 +290,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSelectedSites"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveSelectedSites"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>

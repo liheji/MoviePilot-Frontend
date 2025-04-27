@@ -532,10 +532,10 @@ onDeactivated(() => {
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
                     <VListItem @click="addDownloader('qbittorrent')">
-                      <VListItemTitle>Qbittorrent</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.system.qbittorrent') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addDownloader('transmission')">
-                      <VListItemTitle>Transmission</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.system.transmission') }}</VListItemTitle>
                     </VListItem>
                   </VList>
                 </VMenu>
@@ -580,13 +580,13 @@ onDeactivated(() => {
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
                     <VListItem @click="addMediaServer('emby')">
-                      <VListItemTitle>Emby</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.system.emby') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addMediaServer('jellyfin')">
-                      <VListItemTitle>Jellyfin</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.system.jellyfin') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addMediaServer('plex')">
-                      <VListItemTitle>Plex</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.system.plex') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addMediaServer('trimemedia')">
                       <VListItemTitle>{{ t('setting.system.trimeMedia') }}</VListItemTitle>

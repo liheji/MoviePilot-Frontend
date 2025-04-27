@@ -216,19 +216,19 @@ onMounted(() => {
                       <VListItemTitle>{{ t('setting.notification.wechat') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addNotification('telegram')">
-                      <VListItemTitle>Telegram</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.notification.telegram') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addNotification('slack')">
-                      <VListItemTitle>Slack</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.notification.slack') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addNotification('synologychat')">
-                      <VListItemTitle>SynologyChat</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.notification.synologyChat') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addNotification('vocechat')">
-                      <VListItemTitle>VoceChat</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.notification.voceChat') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addNotification('webpush')">
-                      <VListItemTitle>WebPush</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.notification.webPush') }}</VListItemTitle>
                     </VListItem>
                   </VList>
                 </VMenu>

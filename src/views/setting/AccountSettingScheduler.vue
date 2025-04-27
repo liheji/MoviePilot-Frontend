@@ -2,6 +2,10 @@
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import type { ScheduleInfo } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 提示框
 const $toast = useToast()
@@ -26,11 +30,11 @@ async function loadSchedulerList() {
 // 任务状态颜色
 function getSchedulerColor(status: string) {
   switch (status) {
-    case '正在运行':
+    case t('setting.scheduler.running'):
       return 'success'
-    case '已停止':
+    case t('setting.scheduler.stopped'):
       return 'error'
-    case '等待':
+    case t('setting.scheduler.waiting'):
       return ''
     default:
       return ''
@@ -46,7 +50,7 @@ function runCommand(id: string) {
         jobid: id,
       },
     })
-    $toast.success('定时作业执行请求提交成功！')
+    $toast.success(t('setting.scheduler.executeSuccess'))
     // 1秒后刷新数据
     setTimeout(() => {
       loadSchedulerList()
@@ -77,16 +81,16 @@ onUnmounted(() => {
 <template>
   <VCard>
     <VCardItem>
-      <VCardTitle>定时作业</VCardTitle>
-      <VCardSubtitle>包含系统内置服务以及插件提供的服务，手动执行不会影响作业正常的时间表。</VCardSubtitle>
+      <VCardTitle>{{ t('setting.scheduler.title') }}</VCardTitle>
+      <VCardSubtitle>{{ t('setting.scheduler.subtitle') }}</VCardSubtitle>
     </VCardItem>
     <VTable class="text-no-wrap">
       <thead>
         <tr>
-          <th scope="col">提供者</th>
-          <th scope="col">任务名称</th>
-          <th scope="col">任务状态</th>
-          <th scope="col">下一次执行时间</th>
+          <th scope="col">{{ t('setting.scheduler.provider') }}</th>
+          <th scope="col">{{ t('setting.scheduler.taskName') }}</th>
+          <th scope="col">{{ t('setting.scheduler.taskStatus') }}</th>
+          <th scope="col">{{ t('setting.scheduler.nextRunTime') }}</th>
           <th scope="col" />
         </tr>
       </thead>
@@ -107,16 +111,20 @@ onUnmounted(() => {
             {{ scheduler.next_run }}
           </td>
           <td>
-            <VBtn size="small" :disabled="scheduler.status === '正在运行'" @click="runCommand(scheduler.id)">
+            <VBtn
+              size="small"
+              :disabled="scheduler.status === t('setting.scheduler.running')"
+              @click="runCommand(scheduler.id)"
+            >
               <template #prepend>
                 <VIcon>mdi-play</VIcon>
               </template>
-              执行
+              {{ t('setting.scheduler.execute') }}
             </VBtn>
           </td>
         </tr>
         <tr v-if="schedulerList.length === 0">
-          <td colspan="4" class="text-center">没有后台服务</td>
+          <td colspan="4" class="text-center">{{ t('setting.scheduler.noService') }}</td>
         </tr>
       </tbody>
     </VTable>
