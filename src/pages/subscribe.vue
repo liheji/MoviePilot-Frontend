@@ -3,8 +3,12 @@ import SubscribeListView from '@/views/subscribe/SubscribeListView.vue'
 import SubscribePopularView from '@/views/subscribe/SubscribePopularView.vue'
 import SubscribeShareView from '@/views/subscribe/SubscribeShareView.vue'
 import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
+import { useI18n } from 'vue-i18n'
 
 import { getSubscribeMovieTabs, getSubscribeTvTabs } from '@/router/i18n-menu'
+
+// 国际化
+const { t } = useI18n()
 
 const route = useRoute()
 
@@ -69,12 +73,12 @@ const searchShares = () => {
             <VCardItem>
               <VCardTitle>
                 <VIcon icon="mdi-filter-multiple-outline" class="mr-2" />
-                筛选订阅
+                {{ t('subscribe.filterSubscriptions') }}
               </VCardTitle>
               <VDialogCloseBtn @click="filterSubscribeDialog = false" />
             </VCardItem>
             <VCardText>
-              <VTextField v-model="subscribeFilter" label="名称" clearable density="comfortable" />
+              <VTextField v-model="subscribeFilter" :label="t('subscribe.name')" clearable density="comfortable" />
             </VCardText>
           </VCard>
         </VMenu>
@@ -99,14 +103,14 @@ const searchShares = () => {
             <VCardItem>
               <VCardTitle>
                 <VIcon icon="mdi-movie-search-outline" class="mr-2" />
-                搜索订阅分享
+                {{ t('subscribe.searchShares') }}
               </VCardTitle>
               <VDialogCloseBtn @click="searchShareDialog = false" />
             </VCardItem>
             <VCardText>
-              <VTextField v-model="shareKeyword" label="关键词" clearable density="comfortable">
+              <VTextField v-model="shareKeyword" :label="t('subscribe.keyword')" clearable density="comfortable">
                 <template #append>
-                  <VBtn prepend-icon="mdi-magnify" color="primary" @click="searchShares">搜索</VBtn>
+                  <VBtn prepend-icon="mdi-magnify" color="primary" @click="searchShares">{{ t('common.search') }}</VBtn>
                 </template>
               </VTextField>
             </VCardText>

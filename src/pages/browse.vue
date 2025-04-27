@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import MediaCardListView from '@/views/discover/MediaCardListView.vue'
 import PersonCardListView from '@/views/discover/PersonCardListView.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -16,7 +20,7 @@ let title = route.query?.title?.toString()
 
 // 类型
 const type = route.query?.type?.toString()
-if (type === 'person') title = '演员：' + title
+if (type === 'person') title = t('browse.actor') + ': ' + title
 
 // 计算API路径
 function getApiPath(paths: string[] | string) {

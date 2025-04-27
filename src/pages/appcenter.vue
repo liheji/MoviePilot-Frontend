@@ -2,6 +2,10 @@
 import { NavMenu } from '@/@layouts/types'
 import { getNavMenus } from '@/router/i18n-menu'
 import { useUserStore } from '@/stores'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 从 Store 中获取superuser信息
 const superUser = useUserStore().superUser
@@ -18,7 +22,7 @@ function categorizeApps() {
   const groupedMenus: Record<string, NavMenu[]> = {}
 
   menus.forEach(menu => {
-    const header = menu.header || '其他'
+    const header = menu.header || t('appcenter.others')
     if (!groupedMenus[header]) {
       groupedMenus[header] = []
     }

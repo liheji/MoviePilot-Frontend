@@ -3,6 +3,10 @@ import api from '@/api'
 import { DownloaderConf } from '@/api/types'
 import DownloadingListView from '@/views/reorganize/DownloadingListView.vue'
 import NoDataFound from '@/components/NoDataFound.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 const route = useRoute()
 const activeTab = ref(route.query.tab)
@@ -54,7 +58,7 @@ onActivated(async () => {
   <NoDataFound
     v-else
     error-code="404"
-    error-title="没有下载器"
-    error-description="请先在设置中正确配置并启用下载器。"
+    :error-title="t('downloading.noDownloader')"
+    :error-description="t('downloading.configureDownloader')"
   />
 </template>

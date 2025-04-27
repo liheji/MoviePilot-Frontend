@@ -2,94 +2,98 @@
 import api from '@/api'
 import { RecommendSource } from '@/api/types'
 import MediaCardSlideView from '@/views/discover/MediaCardSlideView.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 当前选择的分类
-const currentCategory = ref('全部')
+const currentCategory = ref(t('recommend.all'))
 
 const viewList = reactive<{ apipath: string; linkurl: string; title: string; type: string }[]>([
   {
     apipath: 'recommend/tmdb_trending',
-    linkurl: '/browse/recommend/tmdb_trending?title=流行趋势',
-    title: '流行趋势',
-    type: '榜单',
+    linkurl: '/browse/recommend/tmdb_trending?title=' + t('recommend.trendingNow'),
+    title: t('recommend.trendingNow'),
+    type: t('recommend.categoryRankings'),
   },
   {
     apipath: 'recommend/douban_showing',
-    linkurl: '/browse/recommend/douban_showing?title=正在热映',
-    title: '正在热映',
-    type: '电影',
+    linkurl: '/browse/recommend/douban_showing?title=' + t('recommend.nowShowing'),
+    title: t('recommend.nowShowing'),
+    type: t('recommend.categoryMovie'),
   },
   {
     apipath: 'recommend/bangumi_calendar',
-    linkurl: '/browse/recommend/bangumi_calendar?title=Bangumi每日放送',
-    title: 'Bangumi每日放送',
-    type: '动漫',
+    linkurl: '/browse/recommend/bangumi_calendar?title=' + t('recommend.bangumiDaily'),
+    title: t('recommend.bangumiDaily'),
+    type: t('recommend.categoryAnime'),
   },
   {
     apipath: 'recommend/tmdb_movies',
-    linkurl: '/browse/recommend/tmdb_movies?title=TMDB热门电影',
-    title: 'TMDB热门电影',
-    type: '电影',
+    linkurl: '/browse/recommend/tmdb_movies?title=' + t('recommend.tmdbHotMovies'),
+    title: t('recommend.tmdbHotMovies'),
+    type: t('recommend.categoryMovie'),
   },
   {
     apipath: 'recommend/tmdb_tvs?with_original_language=zh|en|ja|ko',
-    linkurl: '/browse/recommend/tmdb_tvs??with_original_language=zh|en|ja|ko&title=TMDB热门电视剧',
-    title: 'TMDB热门电视剧',
-    type: '电视剧',
+    linkurl: '/browse/recommend/tmdb_tvs??with_original_language=zh|en|ja|ko&title=' + t('recommend.tmdbHotTVShows'),
+    title: t('recommend.tmdbHotTVShows'),
+    type: t('recommend.categoryTV'),
   },
   {
     apipath: 'recommend/douban_movie_hot',
-    linkurl: '/browse/recommend/douban_movie_hot?title=豆瓣热门电影',
-    title: '豆瓣热门电影',
-    type: '电影',
+    linkurl: '/browse/recommend/douban_movie_hot?title=' + t('recommend.doubanHotMovies'),
+    title: t('recommend.doubanHotMovies'),
+    type: t('recommend.categoryMovie'),
   },
   {
     apipath: 'recommend/douban_tv_hot',
-    linkurl: '/browse/recommend/douban_tv_hot?title=豆瓣热门电视剧',
-    title: '豆瓣热门电视剧',
-    type: '电视剧',
+    linkurl: '/browse/recommend/douban_tv_hot?title=' + t('recommend.doubanHotTVShows'),
+    title: t('recommend.doubanHotTVShows'),
+    type: t('recommend.categoryTV'),
   },
   {
     apipath: 'recommend/douban_tv_animation',
-    linkurl: '/browse/recommend/douban_tv_animation?title=豆瓣热门动漫',
-    title: '豆瓣热门动漫',
-    type: '动漫',
+    linkurl: '/browse/recommend/douban_tv_animation?title=' + t('recommend.doubanHotAnime'),
+    title: t('recommend.doubanHotAnime'),
+    type: t('recommend.categoryAnime'),
   },
   {
     apipath: 'recommend/douban_movies',
-    linkurl: '/browse/recommend/douban_movies?title=豆瓣最新电影',
-    title: '豆瓣最新电影',
-    type: '电影',
+    linkurl: '/browse/recommend/douban_movies?title=' + t('recommend.doubanNewMovies'),
+    title: t('recommend.doubanNewMovies'),
+    type: t('recommend.categoryMovie'),
   },
   {
     apipath: 'recommend/douban_tvs',
-    linkurl: '/browse/recommend/douban_tvs?title=豆瓣最新电视剧',
-    title: '豆瓣最新电视剧',
-    type: '电视剧',
+    linkurl: '/browse/recommend/douban_tvs?title=' + t('recommend.doubanNewTVShows'),
+    title: t('recommend.doubanNewTVShows'),
+    type: t('recommend.categoryTV'),
   },
   {
     apipath: 'recommend/douban_movie_top250',
-    linkurl: '/browse/recommend/douban_movie_top250?title=电影TOP250',
-    title: '豆瓣电影TOP250',
-    type: '榜单',
+    linkurl: '/browse/recommend/douban_movie_top250?title=' + t('recommend.doubanTop250'),
+    title: t('recommend.doubanTop250'),
+    type: t('recommend.categoryRankings'),
   },
   {
     apipath: 'recommend/douban_tv_weekly_chinese',
-    linkurl: '/browse/recommend/douban_tv_weekly_chinese?title=豆瓣国产剧集榜',
-    title: '豆瓣国产剧集榜',
-    type: '榜单',
+    linkurl: '/browse/recommend/douban_tv_weekly_chinese?title=' + t('recommend.doubanChineseTVRankings'),
+    title: t('recommend.doubanChineseTVRankings'),
+    type: t('recommend.categoryRankings'),
   },
   {
     apipath: 'recommend/douban_tv_weekly_global',
-    linkurl: '/browse/recommend/douban_tv_weekly_global?title=豆瓣全球剧集榜',
-    title: '豆瓣全球剧集榜',
-    type: '榜单',
+    linkurl: '/browse/recommend/douban_tv_weekly_global?title=' + t('recommend.doubanGlobalTVRankings'),
+    title: t('recommend.doubanGlobalTVRankings'),
+    type: t('recommend.categoryRankings'),
   },
 ])
 
 // 计算当前分类下显示的视图
 const filteredViews = computed(() => {
-  if (currentCategory.value === '全部') {
+  if (currentCategory.value === t('recommend.all')) {
     return viewList.filter(item => enableConfig.value[item.title])
   }
   return viewList.filter(item => enableConfig.value[item.title] && item.type === currentCategory.value)
@@ -158,29 +162,29 @@ async function saveConfig() {
 // 标签图标映射
 const categoryItems: Record<string, string>[] = [
   {
-    title: '全部',
+    title: t('recommend.all'),
     icon: 'mdi-filmstrip-box-multiple',
-    tab: '全部',
+    tab: t('recommend.all'),
   },
   {
-    title: '电影',
+    title: t('recommend.categoryMovie'),
     icon: 'mdi-movie',
-    tab: '电影',
+    tab: t('recommend.categoryMovie'),
   },
   {
-    title: '电视剧',
+    title: t('recommend.categoryTV'),
     icon: 'mdi-television-classic',
-    tab: '电视剧',
+    tab: t('recommend.categoryTV'),
   },
   {
-    title: '动漫',
+    title: t('recommend.categoryAnime'),
     icon: 'mdi-animation',
-    tab: '动漫',
+    tab: t('recommend.categoryAnime'),
   },
   {
-    title: '榜单',
+    title: t('recommend.categoryRankings'),
     icon: 'mdi-trophy',
-    tab: '榜单',
+    tab: t('recommend.categoryRankings'),
   },
 ]
 
@@ -221,8 +225,10 @@ onActivated(async () => {
 
       <div v-if="filteredViews.length === 0" class="empty-category">
         <VIcon icon="mdi-alert-circle-outline" size="large" class="empty-icon" />
-        <p class="empty-text">当前分类下没有可显示的内容</p>
-        <VBtn color="primary" variant="tonal" size="small" @click="dialog = true"> 设置显示内容 </VBtn>
+        <p class="empty-text">{{ t('recommend.noCategoryContent') }}</p>
+        <VBtn color="primary" variant="tonal" size="small" @click="dialog = true">
+          {{ t('recommend.configureContent') }}
+        </VBtn>
       </div>
     </div>
 
@@ -232,13 +238,13 @@ onActivated(async () => {
         <VCardItem class="settings-card-header">
           <VCardTitle>
             <VIcon icon="mdi-tune" size="small" class="me-2" />
-            自定义内容
+            {{ t('recommend.customizeContent') }}
           </VCardTitle>
           <VDialogCloseBtn @click="dialog = false" />
         </VCardItem>
         <VDivider />
         <VCardText>
-          <p class="settings-hint">选择您想在页面显示的内容</p>
+          <p class="settings-hint">{{ t('recommend.selectContentToDisplay') }}</p>
           <div class="settings-grid">
             <div
               v-for="(item, index) in viewList"
@@ -266,17 +272,17 @@ onActivated(async () => {
         <VDivider />
         <VCardActions class="pt-5">
           <VBtn variant="text" @click="Object.keys(enableConfig).forEach(key => (enableConfig[key] = true))">
-            全选
+            {{ t('recommend.selectAll') }}
           </VBtn>
           <VBtn variant="text" @click="Object.keys(enableConfig).forEach(key => (enableConfig[key] = false))">
-            全不选
+            {{ t('recommend.selectNone') }}
           </VBtn>
           <VSpacer />
           <VBtn @click="saveConfig" variant="elevated" color="primary" class="px-5">
             <template #prepend>
               <VIcon icon="mdi-content-save" />
             </template>
-            保存
+            {{ t('common.save') }}
           </VBtn>
         </VCardActions>
       </VCard>

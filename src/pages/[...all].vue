@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import NoDataFound from '@/components/NoDataFound.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 </script>
 
 <template>
-  <NoDataFound
-    error-code="404"
-    error-title="页面不存在 ⚠️"
-    error-description="您想要访问的页面不存在，请检查地址是否正确。"
-  >
+  <NoDataFound error-code="404" :error-title="t('notFound.title')" :error-description="t('notFound.description')">
     <template #button>
-      <VBtn
-        to="/"
-        class="mt-10"
-      >
-        返回
+      <VBtn to="/" class="mt-10">
+        {{ t('notFound.backButton') }}
       </VBtn>
     </template>
   </NoDataFound>

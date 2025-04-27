@@ -4,6 +4,10 @@ import api from '@/api'
 import type { Context } from '@/api/types'
 import TorrentCardListView from '@/views/torrent/TorrentCardListView.vue'
 import TorrentRowListView from '@/views/torrent/TorrentRowListView.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 路由参数
 const route = useRoute()
@@ -51,14 +55,14 @@ const progressValue = ref(0)
 const progressEventSource = ref<EventSource>()
 
 // 错误标题
-const errorTitle = ref('没有数据')
+const errorTitle = ref(t('resource.noData'))
 
 // 错误描述
-const errorDescription = ref('未搜索到任何资源')
+const errorDescription = ref(t('resource.noResourceFound'))
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
-  progressText.value = '正在搜索，请稍候...'
+  progressText.value = t('resource.searching')
   progressValue.value = 10 // 初始进度设为10%，确保进度条显示
   progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/search`)
   progressEventSource.value.onmessage = event => {
@@ -199,14 +203,20 @@ onUnmounted(() => {
     <!-- 精简标题栏 -->
     <VCard v-if="isRefreshed" class="search-header d-flex align-center mb-3">
       <div class="search-info-container d-flex align-center flex-wrap">
-        <div class="search-title text-primary">资源搜索结果</div>
+        <div class="search-title text-primary">{{ t('resource.searchResults') }}</div>
         <div class="search-tags d-flex flex-wrap">
           <VChip v-if="keyword" class="search-tag" color="primary" size="small" variant="flat">
-            关键词: {{ keyword }}
+            {{ t('resource.keyword') }}: {{ keyword }}
           </VChip>
-          <VChip v-if="title" class="search-tag" color="primary" size="small" variant="flat"> 标题: {{ title }} </VChip>
-          <VChip v-if="year" class="search-tag" color="primary" size="small" variant="flat"> 年份: {{ year }} </VChip>
-          <VChip v-if="season" class="search-tag" color="primary" size="small" variant="flat"> 季: {{ season }} </VChip>
+          <VChip v-if="title" class="search-tag" color="primary" size="small" variant="flat">
+            {{ t('resource.title') }}: {{ title }}
+          </VChip>
+          <VChip v-if="year" class="search-tag" color="primary" size="small" variant="flat">
+            {{ t('resource.year') }}: {{ year }}
+          </VChip>
+          <VChip v-if="season" class="search-tag" color="primary" size="small" variant="flat">
+            {{ t('resource.season') }}: {{ season }}
+          </VChip>
         </div>
       </div>
       <VSpacer />
@@ -232,7 +242,7 @@ onUnmounted(() => {
             <div class="pulse-circle"></div>
             <div class="pulse-circle"></div>
           </div>
-          <div class="view-changing-text">切换视图</div>
+          <div class="view-changing-text">{{ t('resource.switchingView') }}</div>
         </div>
       </div>
     </VFadeTransition>
@@ -257,7 +267,7 @@ onUnmounted(() => {
     <!-- 无数据显示 -->
     <div v-else-if="isRefreshed && !isViewChanging" class="d-flex flex-column align-center justify-center py-8">
       <NoDataFound :errorTitle="errorTitle" :errorDescription="errorDescription" />
-      <VBtn class="mt-4" color="primary" prepend-icon="mdi-magnify" to="/"> 返回首页 </VBtn>
+      <VBtn class="mt-4" color="primary" prepend-icon="mdi-magnify" to="/">{{ t('resource.backToHome') }}</VBtn>
     </div>
 
     <!-- 初始加载状态 -->
@@ -269,7 +279,7 @@ onUnmounted(() => {
           <div class="wave-dot"></div>
           <div class="wave-dot"></div>
         </div>
-        <div class="initial-loading-text">搜索中</div>
+        <div class="initial-loading-text">{{ t('resource.searching') }}</div>
       </div>
     </div>
     <!-- 滚动到顶部按钮 -->

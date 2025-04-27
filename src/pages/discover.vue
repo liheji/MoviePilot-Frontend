@@ -7,6 +7,10 @@ import BangumiView from '@/views/discover/BangumiView.vue'
 import ExtraSourceView from '@/views/discover/ExtraSourceView.vue'
 import { DiscoverSource } from '@/api/types'
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 const activeTab = ref('')
 
@@ -180,13 +184,13 @@ onActivated(async () => {
         <VCardItem>
           <VCardTitle>
             <VIcon icon="mdi-order-alphabetical-ascending" size="small" class="me-2" />
-            设置标签顺序
+            {{ t('discover.setTabOrder') }}
           </VCardTitle>
           <VDialogCloseBtn @click="orderConfigDialog = false" />
         </VCardItem>
         <VDivider />
         <VCardText>
-          <p class="settings-hint">拖动对标签页进行排序</p>
+          <p class="settings-hint">{{ t('discover.dragToReorder') }}</p>
           <draggable
             v-model="discoverTabs"
             handle=".cursor-move"
@@ -210,7 +214,7 @@ onActivated(async () => {
             <template #prepend>
               <VIcon icon="mdi-content-save" />
             </template>
-            保存
+            {{ t('common.save') }}
           </VBtn>
         </VCardText>
       </VCard>

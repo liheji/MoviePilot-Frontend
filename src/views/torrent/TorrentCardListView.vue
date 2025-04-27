@@ -2,6 +2,10 @@
 import { cloneDeepWith } from 'lodash-es'
 import type { Context } from '@/api/types'
 import TorrentCard from '@/components/cards/TorrentCard.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 interface SearchTorrent extends Context {
   more?: Array<Context>
@@ -34,21 +38,21 @@ const filterForm: Record<string, string[]> = reactive({
 // 排序选项
 const sortField = ref('default')
 const sortTitles: Record<string, string> = {
-  default: '默认',
-  site: '站点',
-  size: '大小',
-  seeder: '做种数',
+  default: t('torrent.sortDefault'),
+  site: t('torrent.sortSite'),
+  size: t('torrent.sortSize'),
+  seeder: t('torrent.sortSeeder'),
 }
 
-// 过滤项映射（保持中文标题）
+// 过滤项映射
 const filterTitles: Record<string, string> = {
-  site: '站点',
-  season: '季集',
-  freeState: '促销状态',
-  videoCode: '视频编码',
-  edition: '质量',
-  resolution: '分辨率',
-  releaseGroup: '制作组',
+  site: t('torrent.filterSite'),
+  season: t('torrent.filterSeason'),
+  freeState: t('torrent.filterFreeState'),
+  videoCode: t('torrent.filterVideoCode'),
+  edition: t('torrent.filterEdition'),
+  resolution: t('torrent.filterResolution'),
+  releaseGroup: t('torrent.filterReleaseGroup'),
 }
 
 // 统一存储过滤选项
