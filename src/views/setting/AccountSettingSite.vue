@@ -2,6 +2,10 @@
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 提示框
 const $toast = useToast()
@@ -13,7 +17,7 @@ const progressDialog = ref(false)
 const isConfirmResetSites = ref(false)
 
 // 站点重置按钮文本
-const resetSitesText = ref('重置站点数据')
+const resetSitesText = ref(t('site.resetSites'))
 
 // 站点重置按钮可用状态
 const resetSitesDisabled = ref(false)
@@ -39,37 +43,37 @@ const siteSetting = ref<any>({
 
 // 同步间隔下拉框
 const CookieCloudIntervalItems = [
-  { title: '每小时', value: 60 },
-  { title: '每6小时', value: 360 },
-  { title: '每12小时', value: 720 },
-  { title: '每天', value: 1440 },
-  { title: '每周', value: 10080 },
-  { title: '每月', value: 43200 },
-  { title: '永不', value: 0 },
+  { title: t('site.syncInterval.hourly'), value: 60 },
+  { title: t('site.syncInterval.every6Hours'), value: 360 },
+  { title: t('site.syncInterval.every12Hours'), value: 720 },
+  { title: t('site.syncInterval.daily'), value: 1440 },
+  { title: t('site.syncInterval.weekly'), value: 10080 },
+  { title: t('site.syncInterval.monthly'), value: 43200 },
+  { title: t('site.syncInterval.never'), value: 0 },
 ]
 
 // 站点数据刷新间隔
 const SiteDataRefreshIntervalItems = [
-  { title: '每小时', value: 1 },
-  { title: '每6小时', value: 6 },
-  { title: '每12小时', value: 12 },
-  { title: '每天', value: 24 },
-  { title: '每周', value: 168 },
-  { title: '永不', value: 0 },
+  { title: t('site.syncInterval.hourly'), value: 1 },
+  { title: t('site.syncInterval.every6Hours'), value: 6 },
+  { title: t('site.syncInterval.every12Hours'), value: 12 },
+  { title: t('site.syncInterval.daily'), value: 24 },
+  { title: t('site.syncInterval.weekly'), value: 168 },
+  { title: t('site.syncInterval.never'), value: 0 },
 ]
 
 // 重置站点
 async function resetSites() {
   try {
     resetSitesDisabled.value = true
-    resetSitesText.value = '正在重置...'
+    resetSitesText.value = t('site.resettingSites')
 
     const result: { [key: string]: any } = await api.get('site/reset')
-    if (result.success) $toast.success('站点重置成功，请等待CookieCloud同步完成！')
-    else $toast.error('站点重置失败！')
+    if (result.success) $toast.success(t('site.resetSuccess'))
+    else $toast.error(t('site.resetFailed'))
 
     resetSitesDisabled.value = false
-    resetSitesText.value = '重置站点数据'
+    resetSitesText.value = t('site.resetSites')
   } catch (error) {
     console.log(error)
   }
@@ -97,8 +101,8 @@ async function reloadSystem() {
   progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success('系统配置已生效')
-    else $toast.error('重载系统失败！')
+    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
+    else $toast.error(t('setting.system.reloadFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -111,14 +115,14 @@ async function saveSiteSetting(value: { [key: string]: any }) {
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
-      $toast.success('保存站点设置成功')
+      $toast.success(t('site.saveSuccess'))
       await reloadSystem()
     } else {
-      $toast.error('站点设置保存失败！')
+      $toast.error(t('site.saveFailed'))
     }
   } catch (error) {
     console.log(error)
-    $toast.error('保存设置失败！')
+    $toast.error(t('setting.system.saveFailed', { message: error }))
   }
 }
 
@@ -133,8 +137,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>站点同步</VCardTitle>
-          <VCardSubtitle>从CookieCloud快速同步站点数据。</VCardSubtitle>
+          <VCardTitle>{{ t('site.siteSync') }}</VCardTitle>
+          <VCardSubtitle>{{ t('site.siteSyncDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VForm>
@@ -142,8 +146,8 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VCheckbox
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_ENABLE_LOCAL"
-                  label="启用本地CookieCloud服务器"
-                  hint="使用内建CookieCloud服务同步站点数据，服务地址为：http://localhost:3000/cookiecloud"
+                  :label="t('site.enableLocalCookieCloud')"
+                  :hint="t('site.enableLocalCookieCloudHint')"
                   persistent-hint
                 />
               </VCol>
@@ -152,18 +156,18 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_HOST"
-                  label="服务地址"
-                  placeholder="https://movie-pilot.org/cookiecloud"
+                  :label="t('site.serviceAddress')"
+                  :placeholder="t('site.serviceAddressPlaceholder')"
                   :disabled="siteSetting.CookieCloud.COOKIECLOUD_ENABLE_LOCAL"
-                  hint="远端CookieCloud服务地址，格式：https://movie-pilot.org/cookiecloud"
+                  :hint="t('site.serviceAddressHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_KEY"
-                  label="用户KEY"
-                  hint="CookieCloud浏览器插件生成的用户KEY"
+                  :label="t('site.userKey')"
+                  :hint="t('site.userKeyHint')"
                   persistent-hint
                 />
               </VCol>
@@ -173,34 +177,34 @@ onMounted(() => {
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                  label="端对端加密密码"
-                  hint="CookieCloud浏览器插件生成的端对端加密密码"
+                  :label="t('site.e2ePassword')"
+                  :hint="t('site.e2ePasswordHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VSelect
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_INTERVAL"
-                  label="自动同步间隔"
+                  :label="t('site.autoSyncInterval')"
                   :items="CookieCloudIntervalItems"
-                  hint="从CookieCloud服务器自动同步站点Cookie到MoviePilot的时间间隔"
+                  :hint="t('site.autoSyncIntervalHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_BLACKLIST"
-                  label="同步域名黑名单"
-                  placeholder="多个域名,分割"
-                  hint="CookieCloud同步域名黑名单，多个域名,分割"
+                  :label="t('site.syncBlacklist')"
+                  :placeholder="t('site.syncBlacklistPlaceholder')"
+                  :hint="t('site.syncBlacklistHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="siteSetting.CookieCloud.USER_AGENT"
-                  label="浏览器User-Agent"
-                  hint="CookieCloud插件所在的浏览器的User-Agent"
+                  :label="t('site.userAgent')"
+                  :hint="t('site.userAgentHint')"
                   persistent-hint
                 />
               </VCol>
@@ -210,7 +214,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSiteSetting(siteSetting.CookieCloud)"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveSiteSetting(siteSetting.CookieCloud)"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -219,16 +223,16 @@ onMounted(() => {
   </VRow>
   <VRow>
     <VCol cols="12">
-      <VCard title="站点数据刷新">
+      <VCard :title="t('site.siteDataRefresh')">
         <VCardText>
           <VForm>
             <VRow>
               <VCol cols="12" md="6">
                 <VSelect
                   v-model="siteSetting.Site.SITEDATA_REFRESH_INTERVAL"
-                  label="站点数据刷新间隔"
+                  :label="t('site.siteDataRefreshInterval')"
                   :items="SiteDataRefreshIntervalItems"
-                  hint="刷新站点用户上传下载等数据的时间间隔"
+                  :hint="t('site.siteDataRefreshIntervalHint')"
                   persistent-hint
                 />
               </VCol>
@@ -237,8 +241,8 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="siteSetting.Site.SITE_MESSAGE"
-                  label="阅读站点消息"
-                  hint="刷新数据时读取站点消息并发送通知"
+                  :label="t('site.readSiteMessage')"
+                  :hint="t('site.readSiteMessageHint')"
                   persistent-hint
                 />
               </VCol>
@@ -248,7 +252,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSiteSetting(siteSetting.Site)"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveSiteSetting(siteSetting.Site)"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -257,13 +261,13 @@ onMounted(() => {
   </VRow>
   <VRow>
     <VCol cols="12">
-      <VCard title="站点重置">
+      <VCard :title="t('site.siteReset')">
         <VCardText>
           <div>
             <VCheckbox
               v-model="isConfirmResetSites"
-              label="确认删除所有站点数据并重新同步。"
-              hint="删除所有站点数据并重新从CookieCloud同步，操作请先清空涉及站点的相关设置。"
+              :label="t('site.confirmReset')"
+              :hint="t('site.confirmResetHint')"
               persistent-hint
             />
           </div>
@@ -276,5 +280,10 @@ onMounted(() => {
     </VCol>
   </VRow>
   <!-- 进度框 -->
-  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
+  <ProgressDialog
+    v-if="progressDialog"
+    v-model="progressDialog"
+    :text="t('setting.system.reloading')"
+    :indeterminate="true"
+  />
 </template>

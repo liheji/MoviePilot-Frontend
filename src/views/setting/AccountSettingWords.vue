@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 提示框
 const $toast = useToast()
@@ -60,14 +64,13 @@ async function queryTransferExcludeWords() {
 // 保存用户设置的识别词
 async function saveCustomIdentifiers() {
   try {
-    // 用户名密码
     const result: { [key: string]: any } = await api.post(
       'system/setting/CustomIdentifiers',
       customIdentifiers.value.split('\n'),
     )
 
-    if (result.success) $toast.success('自定义识别词保存成功')
-    else $toast.error('自定义识别词保存失败！')
+    if (result.success) $toast.success(t('setting.words.identifierSaveSuccess'))
+    else $toast.error(t('setting.words.identifierSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -76,14 +79,13 @@ async function saveCustomIdentifiers() {
 // 保存自定义制作组
 async function saveCustomReleaseGroups() {
   try {
-    // 用户名密码
     const result: { [key: string]: any } = await api.post(
       'system/setting/CustomReleaseGroups',
       customReleaseGroups.value.split('\n'),
     )
 
-    if (result.success) $toast.success('自定义制作组/字幕组保存成功')
-    else $toast.error('自定义制作组/字幕组保存失败！')
+    if (result.success) $toast.success(t('setting.words.releaseGroupSaveSuccess'))
+    else $toast.error(t('setting.words.releaseGroupSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -92,14 +94,13 @@ async function saveCustomReleaseGroups() {
 // 保存自定义占位符
 async function saveCustomization() {
   try {
-    // 用户名密码
     const result: { [key: string]: any } = await api.post(
       'system/setting/Customization',
       customization.value.split('\n'),
     )
 
-    if (result.success) $toast.success('自定义占位符保存成功')
-    else $toast.error('自定义占位符保存失败！')
+    if (result.success) $toast.success(t('setting.words.customizationSaveSuccess'))
+    else $toast.error(t('setting.words.customizationSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -108,14 +109,13 @@ async function saveCustomization() {
 // 保存文件整理屏蔽词
 async function saveTransferExcludeWords() {
   try {
-    // 用户名密码
     const result: { [key: string]: any } = await api.post(
       'system/setting/TransferExcludeWords',
       transferExcludeWords.value.split('\n'),
     )
 
-    if (result.success) $toast.success('文件整理屏蔽词保存成功')
-    else $toast.error('文件整理屏蔽词保存失败！')
+    if (result.success) $toast.success(t('setting.words.excludeWordsSaveSuccess'))
+    else $toast.error(t('setting.words.excludeWordsSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -134,36 +134,26 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>自定义识别词</VCardTitle>
-          <VCardSubtitle> 添加规则对种子名或者文件名进行预处理以校正识别。 </VCardSubtitle>
+          <VCardTitle>{{ t('setting.words.customIdentifiers') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.words.identifiersDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VTextarea
             v-model="customIdentifiers"
-            placeholder="支持正则表达式，特殊字符需要\转义，一行为一组"
-            hint="支持正则表达式，特殊字符需要\转义，一行为一组"
+            :placeholder="t('setting.words.identifiersPlaceholder')"
+            :hint="t('setting.words.identifiersHint')"
             persistent-hint
           />
         </VCardText>
         <VCardText>
-          <VAlert type="info" variant="tonal" title="支持的配置格式（注意空格）：">
-            <span
-              v-html="
-                `
-              屏蔽词<br>
-              被替换词 => 替换词<br>
-              前定位词 <> 后定位词 >> 集偏移量（EP）<br>
-              被替换词 => 替换词 && 前定位词 <> 后定位词 >> 集偏移量（EP）<br>
-              其中替换词支持格式：{[tmdbid/doubanid=xxx;type=movie/tv;s=xxx;e=xxx]} 直接指定TMDBID/豆瓣ID识别，其中s、e为季数和集数（可选）<br>
-              `
-              "
-            />
+          <VAlert type="info" variant="tonal" :title="t('setting.words.formatTitle')">
+            <div style="white-space: pre-line" v-html="t('setting.words.formatContent').split('\n').join('<br>')"></div>
           </VAlert>
         </VCardText>
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveCustomIdentifiers"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveCustomIdentifiers">{{ t('common.save') }}</VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -174,21 +164,21 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>自定义制作组/字幕组</VCardTitle>
-          <VCardSubtitle> 添加无法识别的制作组/字幕组。 </VCardSubtitle>
+          <VCardTitle>{{ t('setting.words.customReleaseGroups') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.words.releaseGroupsDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VTextarea
             v-model="customReleaseGroups"
-            placeholder="支持正则表达式，特殊字符需要\转义，一行代表一个制作组/字幕组"
-            hint="支持正则表达式，特殊字符需要\转义，一行代表一个制作组/字幕组"
+            :placeholder="t('setting.words.releaseGroupsPlaceholder')"
+            :hint="t('setting.words.releaseGroupsHint')"
             persistent-hint
           />
         </VCardText>
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveCustomReleaseGroups"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveCustomReleaseGroups">{{ t('common.save') }}</VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -199,21 +189,21 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>自定义占位符</VCardTitle>
-          <VCardSubtitle> 添加自定义占位符识别正则，重命名格式中添加{customization}使用。 </VCardSubtitle>
+          <VCardTitle>{{ t('setting.words.customization') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.words.customizationDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VTextarea
             v-model="customization"
-            placeholder="支持正则表达式，特殊字符需要\转义，多个匹配对象请换行分隔"
-            hint="支持正则表达式，特殊字符需要\转义，多个匹配对象请换行分隔"
+            :placeholder="t('setting.words.customizationPlaceholder')"
+            :hint="t('setting.words.customizationHint')"
             persistent-hint
           />
         </VCardText>
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveCustomization"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveCustomization">{{ t('common.save') }}</VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -224,21 +214,21 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>文件整理屏蔽词</VCardTitle>
-          <VCardSubtitle> 目录名或文件名中包含屏蔽词时不进行整理。 </VCardSubtitle>
+          <VCardTitle>{{ t('setting.words.transferExcludeWords') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.words.excludeWordsDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VTextarea
             v-model="transferExcludeWords"
-            placeholder="支持正则表达式，特殊字符需要\转义，一行代表一个屏蔽词"
-            hint="支持正则表达式，特殊字符需要\转义，一行代表一个屏蔽词"
+            :placeholder="t('setting.words.excludeWordsPlaceholder')"
+            :hint="t('setting.words.excludeWordsHint')"
             persistent-hint
           />
         </VCardText>
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveTransferExcludeWords"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveTransferExcludeWords">{{ t('common.save') }}</VBtn>
             </div>
           </VForm>
         </VCardText>

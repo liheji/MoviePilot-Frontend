@@ -36,10 +36,9 @@ const themes: ThemeSwitcherTheme[] = [
 
 <template>
   <div class="d-flex align-center">
-    <!-- 语言切换 -->
-    <LocaleSwitcher class="me-2" />
-
     <!-- 主题切换 -->
     <ThemeSwitcher :themes="themes" />
+    <!-- 语言切换 -->
+    <LocaleSwitcher class="me-2" />
   </div>
 </template>

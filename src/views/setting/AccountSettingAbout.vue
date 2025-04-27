@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { formatDateDifference } from '@/@core/utils/formatters'
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 系统环境变量
 const systemEnv = ref<any>({})
@@ -68,13 +72,13 @@ onMounted(() => {
   <div class="px-3">
     <div class="section">
       <div>
-        <h3 class="heading">关于 MoviePilot</h3>
+        <h3 class="heading">{{ t('setting.about.title') }}</h3>
       </div>
       <div class="section border-t border-gray-800">
         <dl>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">软件版本</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.softwareVersion') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow flex flex-row items-center truncate">
                   <code class="truncate">{{ systemEnv.VERSION }}</code>
@@ -87,7 +91,7 @@ onMounted(() => {
                     <span
                       class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full whitespace-nowrap bg-green-500 bg-opacity-80 border border-green-500 !text-green-100 ml-2 !cursor-pointer transition hover:bg-green-400"
                     >
-                      最新
+                      {{ t('setting.about.latest') }}
                     </span>
                   </a>
                 </span>
@@ -96,7 +100,7 @@ onMounted(() => {
           </div>
           <div v-if="systemEnv.FRONTEND_VERSION">
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">前端版本</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.frontendVersion') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow flex flex-row items-center truncate">
                   <code class="truncate">{{ systemEnv.FRONTEND_VERSION }}</code>
@@ -106,7 +110,7 @@ onMounted(() => {
           </div>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">认证资源版本</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.authVersion') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow flex flex-row items-center truncate">
                   <code class="truncate">{{ systemEnv.AUTH_VERSION }}</code>
@@ -116,7 +120,7 @@ onMounted(() => {
           </div>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">站点资源版本</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.indexerVersion') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow flex flex-row items-center truncate">
                   <code class="truncate">{{ systemEnv.INDEXER_VERSION }}</code>
@@ -126,7 +130,7 @@ onMounted(() => {
           </div>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">配置目录</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.configDir') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow undefined">
                   <code>{{ systemEnv.CONFIG_DIR }}</code>
@@ -134,7 +138,7 @@ onMounted(() => {
               </dd>
             </div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">数据目录</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.dataDir') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow undefined"><code>/moviepilot</code></span>
               </dd>
@@ -142,7 +146,7 @@ onMounted(() => {
           </div>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">时区</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.timezone') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow undefined">
                   <code>{{ systemEnv.TZ }}</code>
@@ -155,13 +159,13 @@ onMounted(() => {
     </div>
     <div class="section">
       <div>
-        <h3 class="heading">支援</h3>
+        <h3 class="heading">{{ t('setting.about.support') }}</h3>
       </div>
       <div class="section border-t border-gray-800">
         <dl>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">文档</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.documentation') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow undefined">
                   <a
@@ -178,7 +182,7 @@ onMounted(() => {
           </div>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">问题反馈</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.feedback') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow undefined">
                   <a
@@ -195,7 +199,7 @@ onMounted(() => {
           </div>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="block text-sm font-bold">发布频道</dt>
+              <dt class="block text-sm font-bold">{{ t('setting.about.channel') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <span class="flex-grow undefined">
                   <a
@@ -215,7 +219,7 @@ onMounted(() => {
     </div>
     <div class="section">
       <div>
-        <h3 class="heading">软件版本</h3>
+        <h3 class="heading">{{ t('setting.about.versions') }}</h3>
         <div class="section space-y-3">
           <div>
             <div
@@ -234,20 +238,20 @@ onMounted(() => {
                   v-if="release.tag_name === latestRelease"
                   class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full whitespace-nowrap cursor-default bg-green-500 bg-opacity-80 border border-green-500 !text-green-100"
                 >
-                  最新软件版本
+                  {{ t('setting.about.latestVersion') }}
                 </span>
                 <span
                   v-if="release.tag_name === systemEnv.VERSION"
                   class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full whitespace-nowrap cursor-default bg-indigo-500 bg-opacity-80 border border-indigo-500 !text-indigo-100"
                 >
-                  当前版本
+                  {{ t('setting.about.currentVersion') }}
                 </span>
               </div>
               <VBtn @click.stop="showReleaseDialog(release.tag_name, release.body)">
                 <template #prepend>
                   <VIcon icon="mdi-text-box-outline" />
                 </template>
-                查看变更日志
+                {{ t('setting.about.viewChangelog') }}
               </VBtn>
             </div>
           </div>
@@ -259,7 +263,7 @@ onMounted(() => {
     <VCard>
       <VCardItem>
         <VDialogCloseBtn @click="releaseDialog = false" />
-        <VCardTitle>{{ releaseDialogTitle }} 变更日志</VCardTitle>
+        <VCardTitle>{{ releaseDialogTitle }} {{ t('setting.about.changelog') }}</VCardTitle>
       </VCardItem>
       <VCardText v-html="releaseDialogBody" />
     </VCard>

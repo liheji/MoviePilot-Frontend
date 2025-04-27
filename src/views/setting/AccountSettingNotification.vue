@@ -5,6 +5,10 @@ import draggable from 'vuedraggable'
 import type { NotificationConf, NotificationSwitchConf } from '@/api/types'
 import NotificationChannelCard from '@/components/cards/NotificationChannelCard.vue'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 所有消息渠道
 const notifications = ref<NotificationConf[]>([])
@@ -18,35 +22,35 @@ const progressDialog = ref(false)
 // 消息类型开关
 const notificationSwitchs = ref<NotificationSwitchConf[]>([
   {
-    type: '资源下载',
+    type: t('setting.notification.resourceDownload'),
     action: 'all',
   },
   {
-    type: '整理入库',
+    type: t('setting.notification.mediaImport'),
     action: 'all',
   },
   {
-    type: '订阅',
+    type: t('setting.notification.subscription'),
     action: 'all',
   },
   {
-    type: '站点',
+    type: t('setting.notification.site'),
     action: 'admin',
   },
   {
-    type: '媒体服务器',
+    type: t('setting.notification.mediaServer'),
     action: 'admin',
   },
   {
-    type: '手动处理',
+    type: t('setting.notification.manualProcess'),
     action: 'admin',
   },
   {
-    type: '插件',
+    type: t('setting.notification.plugin'),
     action: 'admin',
   },
   {
-    type: '其它',
+    type: t('setting.notification.other'),
     action: 'admin',
   },
 ])
@@ -62,8 +66,8 @@ async function reloadSystem() {
   progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success('系统配置已生效')
-    else $toast.error('重载系统失败！')
+    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
+    else $toast.error(t('setting.system.reloadFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -72,9 +76,9 @@ async function reloadSystem() {
 
 // 添加通知渠道
 function addNotification(notification: string) {
-  let name = `通知${notifications.value.length + 1}`
+  let name = `${t('setting.notification.channel')}${notifications.value.length + 1}`
   while (notifications.value.some(item => item.name === name)) {
-    name = `通知${parseInt(name.split('通知')[1]) + 1}`
+    name = `${t('setting.notification.channel')}${parseInt(name.split(t('setting.notification.channel'))[1]) + 1}`
   }
   notifications.value.push({
     name: name,
@@ -115,9 +119,9 @@ async function saveNotificationSetting() {
   try {
     const result: { [key: string]: any } = await api.post('system/setting/Notifications', notifications.value)
     if (result.success) {
-      $toast.success('通知设置保存成功')
+      $toast.success(t('setting.notification.saveSuccess'))
       await reloadSystem()
-    } else $toast.error('通知设置保存失败！')
+    } else $toast.error(t('setting.notification.saveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -128,9 +132,9 @@ async function saveNotificationTime() {
   try {
     const result: { [key: string]: any } = await api.post('system/setting/NotificationSendTime', notificationTime.value)
     if (result.success) {
-      $toast.success('通知发送时间保存成功')
+      $toast.success(t('setting.notification.timeSaveSuccess'))
       await reloadSystem()
-    } else $toast.error('通知发送时间保存失败！')
+    } else $toast.error(t('setting.notification.timeSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -159,8 +163,8 @@ async function saveNotificationSwitchs() {
       'system/setting/NotificationSwitchs',
       notificationSwitchs.value,
     )
-    if (result.success) $toast.success('消息类型开关保存成功')
-    else $toast.error('消息类型开关保存失败！')
+    if (result.success) $toast.success(t('setting.notification.switchSaveSuccess'))
+    else $toast.error(t('setting.notification.switchSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -179,8 +183,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>通知渠道</VCardTitle>
-          <VCardSubtitle>设置消息发送渠道参数。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.notification.channels') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.notification.channelsDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <draggable
@@ -203,13 +207,13 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn mtype="submit" @click="saveNotificationSetting"> 保存 </VBtn>
+              <VBtn mtype="submit" @click="saveNotificationSetting"> {{ t('common.save') }} </VBtn>
               <VBtn color="success" variant="tonal">
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
                     <VListItem @click="addNotification('wechat')">
-                      <VListItemTitle>微信</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.notification.wechat') }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addNotification('telegram')">
                       <VListItemTitle>Telegram</VListItemTitle>
@@ -239,14 +243,14 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>通知发送范围</VCardTitle>
-          <VCardSubtitle>对应消息类型只会发送给设定的用户。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.notification.scope') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.notification.scopeDesc') }}</VCardSubtitle>
         </VCardItem>
         <VTable class="text-no-wrap">
           <thead>
             <tr>
-              <th scope="col">消息类型</th>
-              <th scope="col">范围</th>
+              <th scope="col">{{ t('setting.notification.messageType') }}</th>
+              <th scope="col">{{ t('setting.notification.scopeRange') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -256,10 +260,10 @@ onMounted(() => {
               </td>
               <td>
                 <VRadioGroup v-model="item.action" inline>
-                  <VRadio value="user" label="仅操作用户" />
-                  <VRadio value="admin" label="仅管理员" />
-                  <VRadio value="user,admin" label="操作用户和管理员" />
-                  <VRadio value="all" label="所有用户" />
+                  <VRadio value="user" :label="t('setting.notification.operationUserOnly')" />
+                  <VRadio value="admin" :label="t('setting.notification.adminOnly')" />
+                  <VRadio value="user,admin" :label="t('setting.notification.userAndAdmin')" />
+                  <VRadio value="all" :label="t('setting.notification.allUsers')" />
                 </VRadioGroup>
               </td>
             </tr>
@@ -269,7 +273,7 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveNotificationSwitchs"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveNotificationSwitchs"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -280,23 +284,23 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>通知发送时间</VCardTitle>
-          <VCardSubtitle>设定消息发送的时间范围。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.notification.sendTime') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.notification.sendTimeDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VRow>
             <VCol cols="6">
-              <VTextField v-model="notificationTime.start" label="开始时间" type="time" />
+              <VTextField v-model="notificationTime.start" :label="t('setting.notification.startTime')" type="time" />
             </VCol>
             <VCol cols="6">
-              <VTextField v-model="notificationTime.end" label="结束时间" type="time" />
+              <VTextField v-model="notificationTime.end" :label="t('setting.notification.endTime')" type="time" />
             </VCol>
           </VRow>
         </VCardText>
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveNotificationTime"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveNotificationTime"> {{ t('common.save') }} </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -304,5 +308,10 @@ onMounted(() => {
     </VCol>
   </VRow>
   <!-- 进度框 -->
-  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
+  <ProgressDialog
+    v-if="progressDialog"
+    v-model="progressDialog"
+    :text="t('setting.system.reloading')"
+    :indeterminate="true"
+  />
 </template>

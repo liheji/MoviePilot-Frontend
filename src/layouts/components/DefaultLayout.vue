@@ -78,12 +78,12 @@ onMounted(() => {
         <SearchBar />
         <!-- 👉 Spacer -->
         <VSpacer />
-        <!-- 👉 Theme & Language -->
-        <NavbarActions />
         <!-- 👉 Shortcuts -->
         <ShortcutBar v-if="superUser" />
         <!-- 👉 Notification -->
         <UserNofification />
+        <!-- 👉 Theme & Language -->
+        <NavbarActions />
         <!-- 👉 UserProfile -->
         <UserProfile />
       </div>

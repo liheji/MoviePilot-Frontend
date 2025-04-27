@@ -9,6 +9,10 @@ import DownloaderCard from '@/components/cards/DownloaderCard.vue'
 import MediaServerCard from '@/components/cards/MediaServerCard.vue'
 import { copyToClipboard } from '@/@core/utils/navigator'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 系统设置项
 const SystemSettings = ref<any>({
@@ -92,8 +96,8 @@ async function reloadSystem() {
   progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success('系统配置已生效')
-    else $toast.error('重载系统失败！')
+    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
+    else $toast.error(t('setting.system.reloadFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -110,8 +114,8 @@ async function saveDownloaderSetting() {
       downloaders.value = handleDefaultDownloaders(enabledDownloaders, downloaders.value)
     }
     const result: { [key: string]: any } = await api.post('system/setting/Downloaders', downloaders.value)
-    if (result.success) $toast.success('下载器设置保存成功')
-    else $toast.error('下载器设置保存失败！')
+    if (result.success) $toast.success(t('setting.system.downloaderSaveSuccess'))
+    else $toast.error(t('setting.system.downloaderSaveFailed'))
 
     await loadDownloaderSetting()
     await reloadSystem()
@@ -126,7 +130,7 @@ function handleDefaultDownloaders(enabledDownloaders: any[], downloaders: any[])
   if (enabledDownloaders.length > 0 && !enabledDefaultDownloader) {
     downloaders = downloaders.map(item => {
       if (item === enabledDownloaders[0]) {
-        $toast.info(`未设置默认下载器，已将【${item.name}】作为默认下载器`)
+        $toast.info(t('setting.system.defaultDownloaderNotice', { name: item.name }))
         return { ...item, default: true }
       }
       // 清除其他下载器的默认下载器状态
@@ -150,8 +154,8 @@ async function loadMediaServerSetting() {
 async function saveMediaServerSetting() {
   try {
     const result: { [key: string]: any } = await api.post('system/setting/MediaServers', mediaServers.value)
-    if (result.success) $toast.success('媒体服务器设置保存成功')
-    else $toast.error('媒体服务器设置保存失败！')
+    if (result.success) $toast.success(t('setting.system.mediaServerSaveSuccess'))
+    else $toast.error(t('setting.system.mediaServerSaveFailed'))
 
     await loadMediaServerSetting()
     await reloadSystem()
@@ -184,7 +188,7 @@ async function saveSystemSetting(value: { [key: string]: any }) {
     if (result.success) {
       return true
     } else {
-      $toast.error(`设置保存失败：${result?.message}！`)
+      $toast.error(t('setting.system.saveFailed', { message: result?.message }))
       return false
     }
   } catch (error) {
@@ -196,7 +200,7 @@ async function saveSystemSetting(value: { [key: string]: any }) {
 // 保存基础设置
 async function saveBasicSettings() {
   if (await saveSystemSetting(SystemSettings.value.Basic)) {
-    $toast.success('基础设置保存成功')
+    $toast.success(t('setting.system.basicSaveSuccess'))
     await reloadSystem()
   }
 }
@@ -207,7 +211,7 @@ async function saveAdvancedSettings() {
 
   if (await saveSystemSetting(SystemSettings.value.Advanced)) {
     advancedDialog.value = false
-    $toast.success('高级设置保存成功')
+    $toast.success(t('setting.system.advancedSaveSuccess'))
     await reloadSystem()
   }
 }
@@ -226,10 +230,10 @@ async function copyValue(value: string) {
   try {
     let success
     success = copyToClipboard(value)
-    if (await success) $toast.success('已复制到剪贴板！')
-    else $toast.error(`复制失败：可能是浏览器不支持或被用户阻止！`)
+    if (await success) $toast.success(t('setting.system.copySuccess'))
+    else $toast.error(t('setting.system.copyFailed'))
   } catch (error) {
-    $toast.error('复制失败！')
+    $toast.error(t('setting.system.copyError'))
     console.log(error)
   }
 }
@@ -367,71 +371,97 @@ onDeactivated(() => {
 </script>
 
 <template>
+  <ProgressDialog
+    v-if="progressDialog"
+    v-model="progressDialog"
+    :text="t('setting.system.reloading')"
+    :indeterminate="true"
+  />
+
   <VRow>
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>基础设置</VCardTitle>
-          <VCardSubtitle>设置服务器的全局功能。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.system.basicSettings') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.system.basicSettingsDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
-          <VForm>
+          <VForm @submit.prevent="() => {}">
             <VRow>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="SystemSettings.Basic.APP_DOMAIN"
-                  label="访问域名"
-                  placeholder="格式：http(s)://domain:port"
-                  hint="用于发送通知时，添加快捷跳转地址"
+                  :label="t('setting.system.appDomain')"
+                  :hint="t('setting.system.appDomainHint')"
+                  placeholder="http://localhost:3000"
                   persistent-hint
                 />
               </VCol>
-              <VCol cols="12" md="3">
+              <VCol cols="12" md="6">
                 <VSelect
                   v-model="SystemSettings.Basic.WALLPAPER"
-                  label="背景壁纸"
-                  hint="选择登陆页面背景来源"
+                  :label="t('setting.system.wallpaper')"
+                  :hint="t('setting.system.wallpaperHint')"
                   persistent-hint
-                  :items="wallpaperItems"
+                  :items="[
+                    { title: 'TMDB', value: 'tmdb' },
+                    { title: 'Bing', value: 'bing' },
+                    { title: 'Bing每日图片', value: 'bing-daily' },
+                    { title: '无壁纸', value: 'none' },
+                  ]"
                 />
               </VCol>
-
-              <VCol cols="12" md="3">
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="SystemSettings.Basic.RECOGNIZE_SOURCE"
+                  :label="t('setting.system.recognizeSource')"
+                  :hint="t('setting.system.recognizeSourceHint')"
+                  persistent-hint
+                  :items="[
+                    { title: 'TheMovieDb', value: 'themoviedb' },
+                    { title: '豆瓣', value: 'douban' },
+                  ]"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
                 <VTextField
                   v-model="SystemSettings.Basic.MEDIASERVER_SYNC_INTERVAL"
-                  label="媒体服务器同步间隔"
-                  hint="定时同步媒体服务器数据到本地的时间间隔"
+                  :label="t('setting.system.mediaServerSyncInterval')"
+                  :hint="t('setting.system.mediaServerSyncIntervalHint')"
                   persistent-hint
-                  suffix="小时"
+                  :suffix="t('setting.system.hours')"
                   type="number"
                   min="1"
                   :rules="[
-                    (v: any) => !!v || '必选项，请勿留空',
-                    (v: any) => !isNaN(v) || '仅支持输入数字，请勿输入其他字符',
-                    (v: any) => v >= 1 || '间隔不能小于1个小时',
+                    (v: any) => !!v || t('setting.system.required'),
+                    (v: any) => !isNaN(v) || t('setting.system.numbersOnly'),
+                    (v: any) => v >= 1 || t('setting.system.minInterval'),
                   ]"
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="SystemSettings.Basic.API_TOKEN"
-                  label="API令牌"
-                  hint="设置外部请求MoviePilot API时使用的token值"
-                  placeholder="不能小于16位字符"
+                  :label="t('setting.system.apiToken')"
+                  :hint="t('setting.system.apiTokenHint')"
+                  :placeholder="t('setting.system.apiTokenMinChars')"
                   persistent-hint
                   prependInnerIcon="mdi-reload"
                   :appendInnerIcon="SystemSettings.Basic.API_TOKEN ? 'mdi-content-copy' : ''"
                   @click:prependInner="createRandomString"
                   @click:appendInner="copyValue(SystemSettings.Basic.API_TOKEN)"
-                  :rules="[(v: string) => !!v || '必填项；请输入API Token', (v: string) => v.length >= 16 || 'API Token不得低于16位']"
+                  :rules="[
+                    (v: string) => !!v || t('setting.system.apiTokenRequired'),
+                    (v: string) => v.length >= 16 || t('setting.system.apiTokenLength'),
+                  ]"
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="SystemSettings.Basic.GITHUB_TOKEN"
-                  label="Github Token"
-                  placeholder="ghp_**** 或 github_pat_****"
-                  hint="用于提高插件等访问Github API时的限流阈值"
+                  :label="t('setting.system.githubToken')"
+                  :placeholder="t('setting.system.githubTokenFormat')"
+                  :hint="t('setting.system.githubTokenHint')"
                   persistent-hint
                 >
                 </VTextField>
@@ -439,9 +469,9 @@ onDeactivated(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="SystemSettings.Basic.OCR_HOST"
-                  label="验证码识别服务器"
+                  :label="t('setting.system.ocrHost')"
                   placeholder="https://movie-pilot.org"
-                  hint="用于站点签到、更新站点Cookie等识别验证码"
+                  :hint="t('setting.system.ocrHostHint')"
                   persistent-hint
                 />
               </VCol>
@@ -451,7 +481,7 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveBasicSettings"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveBasicSettings"> {{ t('common.save') }} </VBtn>
               <VSpacer />
               <VBtn
                 color="error"
@@ -459,7 +489,7 @@ onDeactivated(() => {
                 prepend-icon="mdi-cog"
                 append-icon="mdi-dots-horizontal"
               >
-                高级设置
+                {{ t('setting.system.advancedSettings') }}
               </VBtn>
             </div>
           </VForm>
@@ -471,8 +501,8 @@ onDeactivated(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>下载器</VCardTitle>
-          <VCardSubtitle>只有默认下载器才会被默认使用。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.system.downloaders') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.system.downloadersDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <draggable
@@ -496,7 +526,7 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveDownloaderSetting"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveDownloaderSetting"> {{ t('common.save') }} </VBtn>
               <VBtn color="success" variant="tonal">
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
@@ -520,8 +550,8 @@ onDeactivated(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>媒体服务器</VCardTitle>
-          <VCardSubtitle>所有启用的媒体服务器都会被使用。</VCardSubtitle>
+          <VCardTitle>{{ t('setting.system.mediaServers') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.system.mediaServersDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <draggable
@@ -544,7 +574,7 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveMediaServerSetting"> 保存 </VBtn>
+              <VBtn type="submit" @click="saveMediaServerSetting"> {{ t('common.save') }} </VBtn>
               <VBtn color="success" variant="tonal">
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
@@ -559,7 +589,7 @@ onDeactivated(() => {
                       <VListItemTitle>Plex</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addMediaServer('trimemedia')">
-                      <VListItemTitle>飞牛影视</VListItemTitle>
+                      <VListItemTitle>{{ t('setting.system.trimeMedia') }}</VListItemTitle>
                     </VListItem>
                   </VList>
                 </VMenu>
@@ -575,25 +605,25 @@ onDeactivated(() => {
     <VCard>
       <VCardItem>
         <VDialogCloseBtn @click="advancedDialog = false" />
-        <VCardTitle>高级设置</VCardTitle>
-        <VCardSubtitle>系统进阶设置，特殊情况下才需要调整</VCardSubtitle>
+        <VCardTitle>{{ t('setting.system.advancedSettings') }}</VCardTitle>
+        <VCardSubtitle>{{ t('setting.system.advancedSettingsDesc') }}</VCardSubtitle>
       </VCardItem>
       <VCardText>
         <VTabs v-model="activeTab" show-arrows>
           <VTab value="system">
-            <div>系统</div>
+            <div>{{ t('setting.system.system') }}</div>
           </VTab>
           <VTab value="media">
-            <div>媒体</div>
+            <div>{{ t('setting.system.media') }}</div>
           </VTab>
           <VTab value="network">
-            <div>网络</div>
+            <div>{{ t('setting.system.network') }}</div>
           </VTab>
           <VTab value="log">
-            <div>日志</div>
+            <div>{{ t('setting.system.log') }}</div>
           </VTab>
           <VTab value="dev">
-            <div>实验室</div>
+            <div>{{ t('setting.system.lab') }}</div>
           </VTab>
         </VTabs>
         <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
@@ -862,13 +892,11 @@ onDeactivated(() => {
               @click="saveAdvancedSettings"
               class="px-5"
             >
-              保存
+              {{ t('common.save') }}
             </VBtn>
           </div>
         </VForm>
       </VCardActions>
     </VCard>
   </VDialog>
-  <!-- 进度框 -->
-  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在应用配置..." />
 </template>
