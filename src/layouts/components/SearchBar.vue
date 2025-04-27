@@ -2,8 +2,10 @@
 import * as Mousetrap from 'mousetrap'
 import SearchBarDialog from '@/components/dialog/SearchBarDialog.vue'
 import { useDisplay } from 'vuetify'
+import { useI18n } from 'vue-i18n'
 
 const display = useDisplay()
+const { t } = useI18n()
 
 const searchDialog = ref(false)
 
@@ -31,7 +33,7 @@ const metaKey = computed(() => (isMac() ? '⌘+K' : 'Ctrl+K'))
       <VIcon icon="ri-search-line" />
     </IconBtn>
     <span v-if="display.lgAndUp.value" class="flex align-center text-disabled ms-2" @click="openSearchDialog">
-      <span class="me-3">搜索</span>
+      <span class="me-3">{{ t('common.search') }}</span>
       <span class="meta-key">{{ metaKey }}</span>
     </span>
   </div>

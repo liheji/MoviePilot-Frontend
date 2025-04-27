@@ -2,9 +2,11 @@
 import { getNavMenus } from '@/router/i18n-menu'
 import { useDisplay } from 'vuetify'
 import { NavMenu } from '@/@layouts/types'
+import { useI18n } from 'vue-i18n'
 
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
+const { t } = useI18n()
 
 const route = useRoute()
 
@@ -130,7 +132,7 @@ const showDynamicButton = computed(() => {
             >
               <div class="btn-content">
                 <VIcon icon="mdi-dots-horizontal" size="24"></VIcon>
-                <span class="btn-text">更多</span>
+                <span class="btn-text">{{ t('nav.more') }}</span>
               </div>
             </VBtn>
           </VBtnToggle>

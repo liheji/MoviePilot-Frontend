@@ -99,7 +99,7 @@ const userLevel = computed(() => userStore.level)
           </template>
           <div>
             <span class="text-primary text-sm font-medium d-block">
-              {{ superUser ? '管理员' : '普通用户' }}
+              {{ superUser ? t('user.admin') : t('user.normalUser') }}
             </span>
             <span class="text-high-emphasis text-lg font-weight-bold">
               {{ userName }}
@@ -113,14 +113,14 @@ const userLevel = computed(() => userStore.level)
             <template #prepend>
               <VIcon icon="mdi-account-outline" />
             </template>
-            <VListItemTitle>个人信息</VListItemTitle>
+            <VListItemTitle>{{ t('user.profile') }}</VListItemTitle>
           </VListItem>
 
           <VListItem link @click="router.push('/setting')" class="mb-1 rounded-lg" hover>
             <template #prepend>
               <VIcon icon="mdi-cog-outline" />
             </template>
-            <VListItemTitle>系统设定</VListItemTitle>
+            <VListItemTitle>{{ t('user.systemSettings') }}</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Site Auth -->
@@ -128,7 +128,7 @@ const userLevel = computed(() => userStore.level)
             <template #prepend>
               <VIcon icon="mdi-lock-check-outline" />
             </template>
-            <VListItemTitle>用户认证</VListItemTitle>
+            <VListItemTitle>{{ t('user.siteAuth') }}</VListItemTitle>
           </VListItem>
 
           <!-- 👉 FAQ -->
@@ -136,7 +136,7 @@ const userLevel = computed(() => userStore.level)
             <template #prepend>
               <VIcon icon="mdi-help-circle-outline" />
             </template>
-            <VListItemTitle>帮助文档</VListItemTitle>
+            <VListItemTitle>{{ t('user.helpDocs') }}</VListItemTitle>
           </VListItem>
 
           <!-- Divider -->
@@ -147,7 +147,7 @@ const userLevel = computed(() => userStore.level)
             <template #prepend>
               <VIcon icon="mdi-restart" />
             </template>
-            <VListItemTitle>重启</VListItemTitle>
+            <VListItemTitle>{{ t('user.restart') }}</VListItemTitle>
           </VListItem>
         </div>
         <!-- 👉 Logout -->

@@ -10,6 +10,9 @@ export default {
     loading: 'Loading',
     success: 'Success',
     error: 'Error',
+    openInNewWindow: 'Open in New Window',
+    inputMessage: 'Enter message or command',
+    send: 'Send',
   },
   theme: {
     light: 'Light',
@@ -145,5 +148,56 @@ export default {
     themoviedb: 'TheMovieDb',
     douban: 'Douban',
     bangumi: 'Bangumi',
+  },
+  user: {
+    admin: 'Administrator',
+    normalUser: 'Normal User',
+    profile: 'Profile',
+    systemSettings: 'System Settings',
+    siteAuth: 'User Authentication',
+    helpDocs: 'Help Docs',
+    restart: 'Restart',
+  },
+  nav: {
+    more: 'More',
+  },
+  notification: {
+    center: 'Notification Center',
+    markRead: 'Mark as Read',
+    empty: 'No Notifications',
+  },
+  shortcut: {
+    title: 'Shortcuts',
+    recognition: {
+      title: 'Recognition',
+      subtitle: 'Name Recognition Test',
+    },
+    rule: {
+      title: 'Rules',
+      subtitle: 'Rule Test',
+    },
+    log: {
+      title: 'Logs',
+      subtitle: 'Real-time Logs',
+    },
+    network: {
+      title: 'Network',
+      subtitle: 'Speed & Connectivity Test',
+    },
+    system: {
+      title: 'System',
+      subtitle: 'Health Check',
+    },
+    message: {
+      title: 'Messages',
+      subtitle: 'Message Center',
+    },
+  },
+  workflow: {
+    components: 'Action Components',
+    clickToAdd: 'Click to Add',
+    dragToCanvas: 'Drag to Canvas',
+    tapComponentHint: 'Tap component to add to canvas',
+    dragComponentHint: 'Drag components to canvas',
   },
 }

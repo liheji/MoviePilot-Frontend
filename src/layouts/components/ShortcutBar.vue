@@ -8,6 +8,10 @@ import MessageView from '@/views/system/MessageView.vue'
 import api from '@/api'
 import { useDisplay } from 'vuetify'
 import { getQueryValue } from '@/@core/utils'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -48,43 +52,43 @@ const chatContainer = ref<HTMLElement>()
 // 定义捷径列表
 const shortcuts = [
   {
-    title: '识别',
-    subtitle: '名称识别测试',
+    title: t('shortcut.recognition.title'),
+    subtitle: t('shortcut.recognition.subtitle'),
     icon: 'mdi-text-recognition',
     dialog: 'nameTest',
     dialogRef: nameTestDialog,
   },
   {
-    title: '规则',
-    subtitle: '规则测试',
+    title: t('shortcut.rule.title'),
+    subtitle: t('shortcut.rule.subtitle'),
     icon: 'mdi-filter-cog',
     dialog: 'ruleTest',
     dialogRef: ruleTestDialog,
   },
   {
-    title: '日志',
-    subtitle: '实时日志',
+    title: t('shortcut.log.title'),
+    subtitle: t('shortcut.log.subtitle'),
     icon: 'mdi-file-document',
     dialog: 'logging',
     dialogRef: loggingDialog,
   },
   {
-    title: '网络',
-    subtitle: '网速连通性测试',
+    title: t('shortcut.network.title'),
+    subtitle: t('shortcut.network.subtitle'),
     icon: 'mdi-network',
     dialog: 'netTest',
     dialogRef: netTestDialog,
   },
   {
-    title: '系统',
-    subtitle: '健康检查',
+    title: t('shortcut.system.title'),
+    subtitle: t('shortcut.system.subtitle'),
     icon: 'mdi-cog',
     dialog: 'systemTest',
     dialogRef: systemTestDialog,
   },
   {
-    title: '消息',
-    subtitle: '消息中心',
+    title: t('shortcut.message.title'),
+    subtitle: t('shortcut.message.subtitle'),
     icon: 'mdi-message',
     dialog: 'message',
     dialogRef: messageDialog,
@@ -158,7 +162,7 @@ onMounted(() => {
     <!-- Menu Content -->
     <VCard class="overflow-hidden">
       <VCardItem class="py-3">
-        <VCardTitle>捷径</VCardTitle>
+        <VCardTitle>{{ t('shortcut.title') }}</VCardTitle>
         <template #append>
           <IconBtn @click="appsMenu = false">
             <VIcon icon="mdi-close" />
@@ -196,7 +200,7 @@ onMounted(() => {
       <VCardItem>
         <VCardTitle>
           <VIcon icon="mdi-text-recognition" class="me-2" />
-          名称识别测试
+          {{ t('shortcut.recognition.title') }}
         </VCardTitle>
         <VDialogCloseBtn @click="nameTestDialog = false" />
       </VCardItem>
@@ -212,7 +216,7 @@ onMounted(() => {
       <VCardItem>
         <VCardTitle>
           <VIcon icon="mdi-network" class="me-2" />
-          网速连通性测试
+          {{ t('shortcut.network.subtitle') }}
         </VCardTitle>
         <VDialogCloseBtn @click="netTestDialog = false" />
       </VCardItem>
@@ -235,11 +239,11 @@ onMounted(() => {
       <VCardItem>
         <VCardTitle class="d-inline-flex">
           <VIcon icon="mdi-file-document" class="me-2" />
-          实时日志
+          {{ t('shortcut.log.subtitle') }}
           <a class="mx-2 d-inline-flex align-center" :href="allLoggingUrl()" target="_blank">
             <VChip color="grey-darken-1" size="small" class="ml-2">
               <VIcon icon="mdi-open-in-new" size="small" start />
-              在新窗口中打开
+              {{ t('common.openInNewWindow') }}
             </VChip>
           </a>
         </VCardTitle>
@@ -250,13 +254,13 @@ onMounted(() => {
       </VCardText>
     </VCard>
   </VDialog>
-  <!-- 规则测试弹窗 -->
-  <VDialog v-if="ruleTestDialog" v-model="ruleTestDialog" max-width="40rem" scrollable>
+  <!-- 过滤规则弹窗 -->
+  <VDialog v-if="ruleTestDialog" v-model="ruleTestDialog" max-width="35rem" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>
           <VIcon icon="mdi-filter-cog" class="me-2" />
-          规则测试
+          {{ t('shortcut.rule.subtitle') }}
         </VCardTitle>
         <VDialogCloseBtn @click="ruleTestDialog = false" />
       </VCardItem>
@@ -267,12 +271,12 @@ onMounted(() => {
     </VCard>
   </VDialog>
   <!-- 系统健康检查弹窗 -->
-  <VDialog v-if="systemTestDialog" v-model="systemTestDialog" max-width="35rem" max-height="85vh" scrollable>
+  <VDialog v-if="systemTestDialog" v-model="systemTestDialog" max-width="35rem" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>
           <VIcon icon="mdi-cog" class="me-2" />
-          系统健康检查
+          {{ t('shortcut.system.subtitle') }}
         </VCardTitle>
         <VDialogCloseBtn @click="systemTestDialog = false" />
       </VCardItem>
@@ -283,39 +287,42 @@ onMounted(() => {
     </VCard>
   </VDialog>
   <!-- 消息中心弹窗 -->
-  <VDialog
-    v-if="messageDialog"
-    v-model="messageDialog"
-    max-width="45rem"
-    scrollable
-    :fullscreen="!display.mdAndUp.value"
-  >
+  <VDialog v-if="messageDialog" v-model="messageDialog" max-width="35rem" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>
           <VIcon icon="mdi-message" class="me-2" />
-          消息中心
+          {{ t('shortcut.message.subtitle') }}
         </VCardTitle>
         <VDialogCloseBtn @click="messageDialog = false" />
       </VCardItem>
       <VDivider />
-      <VCardText ref="chatContainer">
-        <MessageView @scroll="scrollMessageToEnd" />
+      <VCardText>
+        <MessageView ref="chatContainer" />
       </VCardText>
-      <VCardItem>
-        <VTextField
-          v-model="user_message"
-          variant="solo"
-          placeholder="输入消息或命令"
-          clearable
-          :disabled="sendButtonDisabled"
-          @keydown.enter="sendMessage"
-        >
-          <template #append-inner>
-            <VBtn color="primary" :disabled="sendButtonDisabled" @click="sendMessage"> 发送 </VBtn>
-          </template>
-        </VTextField>
-      </VCardItem>
+      <VDivider />
+      <VCardActions class="pa-4">
+        <div class="d-flex w-100 gap-2">
+          <VTextField
+            v-model="user_message"
+            variant="outlined"
+            hide-details
+            density="compact"
+            :placeholder="t('common.inputMessage')"
+            @keyup.enter="sendMessage"
+          />
+          <VBtn
+            :disabled="sendButtonDisabled"
+            @click="sendMessage"
+            :loading="sendButtonDisabled"
+            color="primary"
+            min-width="auto"
+            width="46"
+            height="38"
+            >{{ t('common.send') }}</VBtn
+          >
+        </div>
+      </VCardActions>
     </VCard>
   </VDialog>
 </template>

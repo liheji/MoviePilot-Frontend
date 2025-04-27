@@ -1,30 +1,33 @@
 <script setup lang="ts">
 import type { ThemeSwitcherTheme } from '@layouts/types'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const themes: ThemeSwitcherTheme[] = [
   {
     name: 'auto',
-    title: '跟随系统',
+    title: t('theme.auto'),
     icon: 'mdi-laptop',
   },
   {
     name: 'light',
-    title: '明亮',
+    title: t('theme.light'),
     icon: 'mdi-weather-sunny',
   },
   {
     name: 'dark',
-    title: '暗黑',
+    title: t('theme.dark'),
     icon: 'mdi-weather-night',
   },
   {
     name: 'purple',
-    title: '幻紫',
+    title: t('theme.purple'),
     icon: 'mdi-brightness-4',
   },
   {
     name: 'transparent',
-    title: '透明',
+    title: t('theme.transparent'),
     icon: 'mdi-gradient-horizontal',
   },
 ]

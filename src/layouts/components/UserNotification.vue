@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { formatDateDifference } from '@core/utils/formatters'
 import { SystemNotification } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 是否有新消息
 const hasNewMessage = ref(false)
@@ -63,9 +66,9 @@ onBeforeUnmount(() => {
     <!-- Menu Content -->
     <VCard>
       <VCardItem class="py-3">
-        <VCardTitle>通知中心</VCardTitle>
+        <VCardTitle>{{ t('notification.center') }}</VCardTitle>
         <template #append>
-          <VTooltip text="设为已读">
+          <VTooltip :text="t('notification.markRead')">
             <template #activator="{ props }">
               <IconBtn
                 v-bind="props"
@@ -107,7 +110,7 @@ onBeforeUnmount(() => {
       </div>
       <div v-else class="py-8 text-center">
         <VIcon icon="mdi-bell-sleep-outline" size="40" class="mb-3" />
-        <div>暂无通知</div>
+        <div>{{ t('notification.empty') }}</div>
       </div>
     </VCard>
   </VMenu>

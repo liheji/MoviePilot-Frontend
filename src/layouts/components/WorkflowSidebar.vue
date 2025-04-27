@@ -2,6 +2,7 @@
 import api from '@/api'
 import useDragAndDrop from '@core/utils/workflow'
 import { useDisplay } from 'vuetify'
+import { useI18n } from 'vue-i18n'
 
 interface ActionItem {
   name: string
@@ -12,6 +13,7 @@ interface ActionItem {
 const display = useDisplay()
 // APP
 const appMode = inject('pwaMode') && display.mdAndDown.value
+const { t } = useI18n()
 
 const { onDragStart } = useDragAndDrop()
 
@@ -119,7 +121,9 @@ onMounted(() => {
           <VAvatar size="36" class="workflow-logo">
             <VIcon icon="mdi-puzzle" />
           </VAvatar>
-          <span v-if="!isSidebarCollapsed || display.smAndDown.value" class="header-title">动作组件</span>
+          <span v-if="!isSidebarCollapsed || display.smAndDown.value" class="header-title">{{
+            t('workflow.components')
+          }}</span>
           <IconBtn v-if="!display.smAndDown.value" @click="toggleSidebar" class="collapse-btn">
             <VIcon :icon="isSidebarCollapsed ? 'mdi-chevron-right' : 'mdi-chevron-left'" />
           </IconBtn>
@@ -142,7 +146,9 @@ onMounted(() => {
             </VAvatar>
             <div v-if="!isSidebarCollapsed || display.smAndDown.value" class="component-info">
               <div class="component-name">{{ action.name }}</div>
-              <div class="component-desc">{{ display.smAndDown.value ? '点击添加' : '拖动到画布' }}</div>
+              <div class="component-desc">
+                {{ display.smAndDown.value ? t('workflow.clickToAdd') : t('workflow.dragToCanvas') }}
+              </div>
             </div>
           </VCard>
         </div>
@@ -155,7 +161,9 @@ onMounted(() => {
             <VIcon v-if="isSidebarCollapsed && !display.smAndDown.value" class="footer-icon" icon="mdi-gesture-swipe" />
             <template v-else>
               <VIcon :icon="display.smAndDown.value ? 'mdi-gesture-tap' : 'mdi-gesture-swipe'" class="me-2" />
-              <span>{{ display.smAndDown.value ? '点击组件添加到画布' : '拖动组件到画布' }}</span>
+              <span>{{
+                display.smAndDown.value ? t('workflow.tapComponentHint') : t('workflow.dragComponentHint')
+              }}</span>
             </template>
           </div>
         </VBtn>

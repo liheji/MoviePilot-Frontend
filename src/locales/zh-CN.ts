@@ -10,6 +10,9 @@ export default {
     loading: '加载中',
     success: '成功',
     error: '错误',
+    openInNewWindow: '在新窗口中打开',
+    inputMessage: '输入消息或命令',
+    send: '发送',
   },
   theme: {
     light: '浅色',
@@ -145,5 +148,56 @@ export default {
     themoviedb: 'TheMovieDb',
     douban: '豆瓣',
     bangumi: 'Bangumi',
+  },
+  user: {
+    admin: '管理员',
+    normalUser: '普通用户',
+    profile: '个人信息',
+    systemSettings: '系统设定',
+    siteAuth: '用户认证',
+    helpDocs: '帮助文档',
+    restart: '重启',
+  },
+  nav: {
+    more: '更多',
+  },
+  notification: {
+    center: '通知中心',
+    markRead: '设为已读',
+    empty: '暂无通知',
+  },
+  shortcut: {
+    title: '捷径',
+    recognition: {
+      title: '识别',
+      subtitle: '名称识别测试',
+    },
+    rule: {
+      title: '规则',
+      subtitle: '规则测试',
+    },
+    log: {
+      title: '日志',
+      subtitle: '实时日志',
+    },
+    network: {
+      title: '网络',
+      subtitle: '网速连通性测试',
+    },
+    system: {
+      title: '系统',
+      subtitle: '健康检查',
+    },
+    message: {
+      title: '消息',
+      subtitle: '消息中心',
+    },
+  },
+  workflow: {
+    components: '动作组件',
+    clickToAdd: '点击添加',
+    dragToCanvas: '拖动到画布',
+    tapComponentHint: '点击组件添加到画布',
+    dragComponentHint: '拖动组件到画布',
   },
 }
