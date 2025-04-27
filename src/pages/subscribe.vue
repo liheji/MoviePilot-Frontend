@@ -4,7 +4,7 @@ import SubscribePopularView from '@/views/subscribe/SubscribePopularView.vue'
 import SubscribeShareView from '@/views/subscribe/SubscribeShareView.vue'
 import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
 
-import { SubscribeMovieTabs, SubscribeTvTabs } from '@/router/menu'
+import { getSubscribeMovieTabs, getSubscribeTvTabs } from '@/router/i18n-menu'
 
 const route = useRoute()
 
@@ -12,6 +12,15 @@ const subType = route.meta.subType?.toString()
 const subId = ref(route.query.id as string)
 const activeTab = ref(route.query.tab)
 const shareViewKey = ref(0)
+
+// 获取标签页
+const subscribeTabs = computed(() => {
+  if (subType === '电影') {
+    return getSubscribeMovieTabs()
+  } else {
+    return getSubscribeTvTabs()
+  }
+})
 
 // 默认订阅设置弹窗
 const subscribeEditDialog = ref(false)
@@ -37,10 +46,10 @@ const searchShares = () => {
 
 <template>
   <div>
-    <VHeaderTab :items="subType == '电影' ? SubscribeMovieTabs : SubscribeTvTabs" v-model="activeTab">
+    <VHeaderTab :items="subscribeTabs" v-model="activeTab">
       <template #append>
         <VMenu
-          v-if="activeTab === '我的订阅'"
+          v-if="activeTab === 'mysub'"
           v-model="filterSubscribeDialog"
           width="20rem"
           :close-on-content-click="false"
@@ -70,7 +79,7 @@ const searchShares = () => {
           </VCard>
         </VMenu>
         <VMenu
-          v-if="activeTab === '订阅分享'"
+          v-if="activeTab === 'share'"
           v-model="searchShareDialog"
           width="25rem"
           :close-on-content-click="false"
@@ -104,7 +113,7 @@ const searchShares = () => {
           </VCard>
         </VMenu>
         <VBtn
-          v-if="activeTab === '我的订阅'"
+          v-if="activeTab === 'mysub'"
           icon="mdi-clipboard-edit-outline"
           variant="text"
           color="gray"
@@ -116,21 +125,21 @@ const searchShares = () => {
     </VHeaderTab>
 
     <VWindow v-model="activeTab" class="disable-tab-transition" :touch="false">
-      <VWindowItem value="我的订阅">
+      <VWindowItem value="mysub">
         <transition name="fade-slide" appear>
           <div>
             <SubscribeListView :type="subType" :subid="subId" :keyword="subscribeFilter" />
           </div>
         </transition>
       </VWindowItem>
-      <VWindowItem value="热门订阅">
+      <VWindowItem value="popular">
         <transition name="fade-slide" appear>
           <div>
             <SubscribePopularView :type="subType" />
           </div>
         </transition>
       </VWindowItem>
-      <VWindowItem value="订阅分享">
+      <VWindowItem value="share">
         <transition name="fade-slide" appear>
           <div>
             <SubscribeShareView :keyword="shareKeyword" :key="shareViewKey" />

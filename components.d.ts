@@ -11,6 +11,7 @@ declare module 'vue' {
     ErrorHeader: typeof import('./src/@core/components/ErrorHeader.vue')['default']
     ExistIcon: typeof import('./src/@core/components/ExistIcon.vue')['default']
     LoadingBanner: typeof import('./src/@core/components/LoadingBanner.vue')['default']
+    LocaleSwitcher: typeof import('./src/@core/components/LocaleSwitcher.vue')['default']
     MoreBtn: typeof import('./src/@core/components/MoreBtn.vue')['default']
     PageContentTitle: typeof import('./src/@core/components/PageContentTitle.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

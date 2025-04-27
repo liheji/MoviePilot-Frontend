@@ -2,10 +2,10 @@
 const props = defineProps({
   modelValue: {
     type: String,
-    default: '* * * * *',
+    default: '',
   },
   items: {
-    type: Array as PropType<{ title: string; icon: string }[]>,
+    type: Array as PropType<{ title: string; icon: string; tab: string }[]>,
     default: () => [],
   },
 })
@@ -76,8 +76,8 @@ onUnmounted(() => {
         v-for="(item, index) in items"
         :key="index"
         class="header-tab"
-        :class="{ 'active': currentValue === item.title }"
-        @click="currentValue = item.title"
+        :class="{ 'active': currentValue === item.tab }"
+        @click="currentValue = item.tab"
       >
         <VIcon v-if="item.icon" :icon="item.icon" size="small" class="header-tab-icon" />
         <span>{{ item.title }}</span>

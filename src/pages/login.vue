@@ -8,9 +8,10 @@ import api from '@/api'
 import router from '@/router'
 import logo from '@images/logo.png'
 import { useTheme } from 'vuetify'
-import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { urlBase64ToUint8Array } from '@/@core/utils/navigator'
-import { saveLocalTheme } from '@/@core/utils/theme'
+import { useI18n } from 'vue-i18n'
+import { SUPPORTED_LOCALES, SupportedLocale } from '@/locales/types'
+import { getCurrentLocale, setI18nLanguage } from '@/plugins/i18n'
 
 // 主题
 const { global: globalTheme } = useTheme()
@@ -18,6 +19,8 @@ const { global: globalTheme } = useTheme()
 const authStore = useAuthStore()
 //用户 Store
 const userStore = useUserStore()
+// 国际化
+const { t } = useI18n()
 
 // 表单
 const form = ref({
@@ -41,6 +44,21 @@ const isOTP = ref(false)
 // 用户名称输入框
 const usernameInput = ref()
 
+// 语言选择菜单
+const langMenu = ref(false)
+// 当前语言
+const currentLocale = ref(getCurrentLocale())
+
+// 可用的语言列表
+const locales = Object.values(SUPPORTED_LOCALES)
+
+// 切换语言
+async function switchLanguage(locale: SupportedLocale) {
+  await setI18nLanguage(locale)
+  currentLocale.value = locale
+  langMenu.value = false
+}
+
 // 查询是否开启双重验证
 const fetchOTP = debounce(async () => {
   const userid = usernameInput.value?.value
@@ -57,24 +75,6 @@ const fetchOTP = debounce(async () => {
       console.log(error)
     })
 }, 500)
-
-// 获取用户主题配置
-async function fetchThemeConfig() {
-  const response = await api.get('/user/config/Layout')
-  if (response && response.data && response.data.value) {
-    return response.data.value?.theme
-  }
-  return null
-}
-
-// 生效主题
-async function setTheme() {
-  let themeValue = (await fetchThemeConfig()) || localStorage.getItem('theme') || 'light'
-  const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
-  globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
-  // 存储主题到本地
-  saveLocalTheme(themeValue, globalTheme)
-}
 
 // 订阅推送通知
 async function subscribeForPushNotifications() {
@@ -103,8 +103,6 @@ async function subscribeForPushNotifications() {
 
 // 登录后处理
 async function afterLogin(superuser: boolean) {
-  // 生效主题配置
-  await setTheme()
   // 跳转到首页或回原始页面
   router.push(authStore.originalPath ?? '/')
   // 订阅推送通知
@@ -156,11 +154,11 @@ function login() {
     })
     .catch((error: any) => {
       // 登录失败，显示错误提示
-      if (!error.response) errorMessage.value = '登录失败，请检查网络连接！'
-      else if (error.response.status === 401) errorMessage.value = '登录失败，请检查用户名、密码或双重验证是否正确！'
-      else if (error.response.status === 403) errorMessage.value = '登录失败，您没有权限访问！'
-      else if (error.response.status === 500) errorMessage.value = '登录失败，服务器错误！'
-      else errorMessage.value = `登录失败 ${error.response.status}，请检查用户名、密码或双重验证码是否正确！`
+      if (!error.response) errorMessage.value = t('login.networkError')
+      else if (error.response.status === 401) errorMessage.value = t('login.authFailure')
+      else if (error.response.status === 403) errorMessage.value = t('login.permissionDenied')
+      else if (error.response.status === 500) errorMessage.value = t('login.serverError')
+      else errorMessage.value = `${t('login.loginFailed')} ${error.response.status}，${t('login.checkCredentials')}`
     })
 }
 
@@ -195,6 +193,35 @@ onMounted(async () => {
             </div>
           </template>
           <VCardTitle class="font-weight-bold text-2xl text-uppercase"> MoviePilot </VCardTitle>
+
+          <!-- 语言切换按钮 -->
+          <template #append>
+            <VMenu v-model="langMenu" :close-on-content-click="false">
+              <template #activator="{ props }">
+                <VBtn variant="text" size="small" v-bind="props" class="lang-switch-btn">
+                  <span v-if="SUPPORTED_LOCALES[currentLocale].flag">{{ SUPPORTED_LOCALES[currentLocale].flag }}</span>
+                  <VIcon v-else icon="mdi-translate" />
+                  <span class="ms-1">{{ SUPPORTED_LOCALES[currentLocale].title }}</span>
+                </VBtn>
+              </template>
+              <VCard min-width="180">
+                <VList>
+                  <VListItem
+                    v-for="locale in locales"
+                    :key="locale.name"
+                    :value="locale.name"
+                    @click="switchLanguage(locale.name as SupportedLocale)"
+                  >
+                    <template #prepend>
+                      <span v-if="locale.flag" class="mr-2">{{ locale.flag }}</span>
+                      <VIcon v-else icon="mdi-translate" size="small" />
+                    </template>
+                    <VListItemTitle>{{ locale.title }}</VListItemTitle>
+                  </VListItem>
+                </VList>
+              </VCard>
+            </VMenu>
+          </template>
         </VCardItem>
         <VCardText>
           <VForm ref="refForm" autocomplete="on" @submit.prevent="() => {}">
@@ -204,7 +231,7 @@ onMounted(async () => {
                 <VTextField
                   ref="usernameInput"
                   v-model="form.username"
-                  label="用户名"
+                  :label="t('login.username')"
                   type="text"
                   name="username"
                   autocomplete="username"
@@ -216,7 +243,7 @@ onMounted(async () => {
               <VCol cols="12">
                 <VTextField
                   v-model="form.password"
-                  label="密码"
+                  :label="t('login.password')"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   name="current-password"
                   autocomplete="current-password"
@@ -226,15 +253,15 @@ onMounted(async () => {
                 />
               </VCol>
               <VCol cols="12">
-                <VTextField v-if="isOTP" v-model="form.otp_password" label="双重验证码" type="input" />
+                <VTextField v-if="isOTP" v-model="form.otp_password" :label="t('login.otpCode')" type="input" />
                 <!-- remember me checkbox -->
                 <div class="d-flex align-center justify-space-between flex-wrap">
-                  <VCheckbox v-model="form.remember" label="保持登录" required />
+                  <VCheckbox v-model="form.remember" :label="t('login.stayLoggedIn')" required />
                 </div>
               </VCol>
               <VCol cols="12">
                 <!-- login button -->
-                <VBtn block type="submit" @click="login" prepend-icon="mdi-login"> 登录 </VBtn>
+                <VBtn block type="submit" @click="login" prepend-icon="mdi-login"> {{ t('login.login') }} </VBtn>
                 <VAlert v-if="errorMessage" type="error" variant="tonal" class="mt-3">
                   {{ errorMessage }}
                 </VAlert>
@@ -257,5 +284,11 @@ onMounted(async () => {
 .auth-wrapper {
   overflow: hidden;
   block-size: auto;
+}
+
+.lang-switch-btn {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-end: 8px;
 }
 </style>

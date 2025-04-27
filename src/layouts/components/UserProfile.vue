@@ -7,11 +7,14 @@ import api from '@/api'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import UserAuthDialog from '@/components/dialog/UserAuthDialog.vue'
 import { useAuthStore, useUserStore } from '@/stores'
+import { useI18n } from 'vue-i18n'
 
 // 认证 Store
 const authStore = useAuthStore()
 // 用户 Store
 const userStore = useUserStore()
+// 国际化
+const { t } = useI18n()
 
 // 确认框
 const createConfirm = useConfirm()
@@ -153,7 +156,7 @@ const userLevel = computed(() => userStore.level)
             <template #prepend>
               <VIcon icon="mdi-logout" />
             </template>
-            退出登录
+            {{ t('app.logout') }}
           </VBtn>
         </div>
       </VList>
@@ -161,7 +164,7 @@ const userLevel = computed(() => userStore.level)
     <!-- !SECTION -->
   </VAvatar>
   <!-- 重启进度框 -->
-  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在重启 ..." />
+  <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="t('app.restarting')" />
   <!-- 用户认证对话框 -->
   <UserAuthDialog v-if="siteAuthDialog" v-model="siteAuthDialog" @done="siteAuthDone" @close="siteAuthDialog = false" />
   <!-- 重启确认对话框 -->
@@ -173,14 +176,18 @@ const userLevel = computed(() => userStore.level)
             <VIcon size="x-large" icon="mdi-alert" />
           </VAvatar>
           <div class="ms-3">
-            <p class="font-weight-bold text-xl text-high-emphasis">确认重启系统吗？</p>
-            <p>重启后，您将被注销并需要重新登录。</p>
+            <p class="font-weight-bold text-xl text-high-emphasis">{{ t('app.confirmRestart') }}</p>
+            <p>{{ t('app.restartTip') }}</p>
           </div>
         </div>
       </VCardItem>
       <VCardActions class="mx-auto">
-        <VBtn variant="tonal" color="secondary" class="px-5" @click="restartDialog = false">取消</VBtn>
-        <VBtn variant="elevated" color="error" @click="restart" prepend-icon="mdi-restart" class="px-5"> 确定 </VBtn>
+        <VBtn variant="tonal" color="secondary" class="px-5" @click="restartDialog = false">{{
+          t('common.cancel')
+        }}</VBtn>
+        <VBtn variant="elevated" color="error" @click="restart" prepend-icon="mdi-restart" class="px-5">{{
+          t('common.confirm')
+        }}</VBtn>
       </VCardActions>
       <VDialogCloseBtn @click="restartDialog = false" />
     </VCard>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DiscoverTabs } from '@/router/menu'
+import { getDiscoverTabs } from '@/router/i18n-menu'
 import draggable from 'vuedraggable'
 import TheMovieDbView from '@/views/discover/TheMovieDbView.vue'
 import DoubanView from '@/views/discover/DoubanView.vue'
@@ -7,7 +7,6 @@ import BangumiView from '@/views/discover/BangumiView.vue'
 import ExtraSourceView from '@/views/discover/ExtraSourceView.vue'
 import { DiscoverSource } from '@/api/types'
 import api from '@/api'
-import { or } from '@vueuse/math'
 
 const activeTab = ref('')
 
@@ -24,6 +23,7 @@ const discoverTabs = ref<DiscoverSource[]>([])
 const discoverTabItems = computed(() => {
   return discoverTabs.value.map(item => ({
     title: item.name,
+    tab: item.mediaid_prefix,
   }))
 })
 
@@ -35,7 +35,8 @@ const orderConfigDialog = ref(false)
 
 // 初始化发现标签
 function initDiscoverTabs() {
-  for (const tab of DiscoverTabs) {
+  const tabs = getDiscoverTabs()
+  for (const tab of tabs) {
     discoverTabs.value.push({
       name: tab.name,
       mediaid_prefix: tab.tab,

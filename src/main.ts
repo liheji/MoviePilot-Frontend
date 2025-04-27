@@ -9,6 +9,7 @@ import { createApp } from 'vue'
 import vuetify from '@/plugins/vuetify'
 import router from '@/router'
 import pinia from '@/stores/index'
+import i18n from '@/plugins/i18n'
 
 // 3. 全局组件
 import App from '@/App.vue'
@@ -117,5 +118,6 @@ initializeApp().then(() => {
         cancellationText: '取消',
       },
     })
+    .use(i18n)
     .mount('#app')
 })

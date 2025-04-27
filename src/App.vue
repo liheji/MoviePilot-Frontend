@@ -4,12 +4,22 @@ import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { ensureRenderComplete, removeEl } from './@core/utils/dom'
 import api from '@/api'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
+import { getBrowserLocale, setI18nLanguage } from './plugins/i18n'
+import { SupportedLocale } from './locales/types'
+
+// 国际化
+const { t } = useI18n()
 
 // 生效主题
 const { global: globalTheme } = useTheme()
 let themeValue = localStorage.getItem('theme') || 'light'
 const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
 globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
+
+// 生效语言
+const localeValue = getBrowserLocale()
+setI18nLanguage(localeValue as SupportedLocale)
 
 // 从 provide 中获取全局设置
 const globalSettings: any = inject('globalSettings')
@@ -67,7 +77,7 @@ function updateHtmlThemeAttribute(themeName: string) {
 // 获取背景图片
 async function fetchBackgroundImages() {
   try {
-    backgroundImages.value = await api.get('/login/wallpapers')
+    backgroundImages.value = await api.get(`/login/${t('login.wallpapers')}`)
   } catch (e) {
     console.error(e)
   }

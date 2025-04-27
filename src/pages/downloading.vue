@@ -14,6 +14,7 @@ const downloaders = ref<DownloaderConf[]>([])
 const downloaderItems = computed(() => {
   return downloaders.value.map(item => ({
     title: item.name,
+    tab: item.name,
   }))
 })
 

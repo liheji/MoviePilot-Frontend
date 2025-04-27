@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import api from '@/api'
 import type { Site, Plugin, Subscribe } from '@/api/types'
-import { SystemNavMenus, SettingTabs } from '@/router/menu'
+import { getNavMenus, getSettingTabs } from '@/router/i18n-menu'
 import { NavMenu } from '@/@layouts/types'
 import { useUserStore } from '@/stores'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
@@ -73,7 +73,7 @@ function loadRecentSearches() {
 function getMenus(): NavMenu[] {
   let menus: NavMenu[] = []
   // 导航菜单
-  SystemNavMenus.forEach(
+  getNavMenus().forEach(
     item =>
       item &&
       menus.push({
@@ -85,7 +85,7 @@ function getMenus(): NavMenu[] {
       }),
   )
   // 设置标签页
-  SettingTabs.forEach(
+  getSettingTabs().forEach(
     item =>
       item &&
       menus.push({

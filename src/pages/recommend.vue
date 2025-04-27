@@ -160,27 +160,27 @@ const categoryItems: Record<string, string>[] = [
   {
     title: '全部',
     icon: 'mdi-filmstrip-box-multiple',
-    key: 'all',
+    tab: '全部',
   },
   {
     title: '电影',
     icon: 'mdi-movie',
-    key: 'movie',
+    tab: '电影',
   },
   {
     title: '电视剧',
     icon: 'mdi-television-classic',
-    key: 'tv',
+    tab: '电视剧',
   },
   {
     title: '动漫',
     icon: 'mdi-animation',
-    key: 'anime',
+    tab: '动漫',
   },
   {
     title: '榜单',
     icon: 'mdi-trophy',
-    key: 'rank',
+    tab: '榜单',
   },
 ]
 

@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import { SystemNavMenus } from '@/router/menu'
+import { getNavMenus } from '@/router/i18n-menu'
 import { useDisplay } from 'vuetify'
+import { NavMenu } from '@/@layouts/types'
 
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
 
 const route = useRoute()
 
+// 获取导航菜单
+const navMenus = computed(() => getNavMenus())
+
 // 根据当前路径获取匹配的菜单路径
 function getMenuPathFromRoute(path: string): string {
-  const matchedMenu = SystemNavMenus.find(menu => menu.footer === true && path.startsWith(menu.to))
-  return matchedMenu ? matchedMenu.to : '/apps'
+  const matchedMenu = navMenus.value.find((menu: NavMenu) => menu.footer === true && path.startsWith(menu.to as string))
+  return matchedMenu ? (matchedMenu.to as string) : '/apps'
 }
 
 // 当前选中的菜单，初始值基于当前路由
@@ -18,7 +22,7 @@ const currentMenu = ref<string>(getMenuPathFromRoute(route.path))
 
 // 过滤出底部菜单项
 const footerMenus = computed(() => {
-  return SystemNavMenus.filter(menu => menu.footer === true)
+  return navMenus.value.filter((menu: NavMenu) => menu.footer === true)
 })
 
 // 监听路由变化来更新currentMenu

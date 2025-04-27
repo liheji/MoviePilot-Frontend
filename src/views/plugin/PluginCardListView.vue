@@ -9,7 +9,7 @@ import PluginCard from '@/components/cards/PluginCard.vue'
 import noImage from '@images/logos/plugin.png'
 import { useDisplay } from 'vuetify'
 import { isNullOrEmptyObject } from '@/@core/utils'
-import { PluginTabs } from '@/router/menu'
+import { getPluginTabs } from '@/router/i18n-menu'
 import PluginMarketSettingDialog from '@/components/dialog/PluginMarketSettingDialog.vue'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 
@@ -22,7 +22,10 @@ const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
 
 // 当前标签
-const activeTab = ref('我的插件')
+const activeTab = ref('installed')
+
+// 获取插件标签页
+const pluginTabs = computed(() => getPluginTabs())
 
 // 插件ID参数
 const pluginId = ref(route.query.id)
@@ -326,7 +329,7 @@ async function fetchUninstalledPlugins() {
     loading.value = false
     isRefreshed.value = true
     // 更新插件市场列表
-    // 排除已安装且有更新的，上面的问题在于“本地存在未安装的旧版本插件且云端有更新时”不会在插件市场展示
+    // 排除已安装且有更新的，上面的问题在于"本地存在未安装的旧版本插件且云端有更新时"不会在插件市场展示
     marketList.value = uninstalledList.value.filter(item => !(item.has_update && item.installed))
     // 初始化过滤选项
     marketList.value.forEach(initOptions)
@@ -467,10 +470,10 @@ useDynamicButton({
 
 <template>
   <div>
-    <VHeaderTab :items="PluginTabs" v-model="activeTab">
+    <VHeaderTab :items="pluginTabs" v-model="activeTab">
       <template #append>
         <VMenu
-          v-if="activeTab === '我的插件'"
+          v-if="activeTab === 'installed'"
           v-model="filterInstalledPluginDialog"
           width="20rem"
           :close-on-content-click="false"
@@ -513,7 +516,7 @@ useDynamicButton({
           </VCard>
         </VMenu>
         <VMenu
-          v-if="activeTab === '插件市场'"
+          v-if="activeTab === 'market'"
           v-model="filterMarketPluginDialog"
           width="25rem"
           :close-on-content-click="false"
@@ -586,7 +589,7 @@ useDynamicButton({
           </VCard>
         </VMenu>
         <VBtn
-          v-if="activeTab === '插件市场'"
+          v-if="activeTab === 'market'"
           icon="mdi-store-cog"
           variant="text"
           color="gray"
@@ -599,7 +602,7 @@ useDynamicButton({
 
     <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
       <!-- 我的插件 -->
-      <VWindowItem value="我的插件">
+      <VWindowItem value="installed">
         <transition name="fade-slide" appear>
           <div>
             <VPageContentTitle v-if="installedFilter" :title="`筛选：${installedFilter}`" />
@@ -638,7 +641,7 @@ useDynamicButton({
         </transition>
       </VWindowItem>
       <!-- 插件市场 -->
-      <VWindowItem value="插件市场">
+      <VWindowItem value="market">
         <transition name="fade-slide" appear>
           <div>
             <LoadingBanner v-if="!isAppMarketLoaded" class="mt-12" />

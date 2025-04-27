@@ -11,23 +11,20 @@ import AccountSettingSystem from '@/views/setting/AccountSettingSystem.vue'
 import AccountSettingScheduler from '@/views/setting/AccountSettingScheduler.vue'
 import AccountSettingDirectory from '@/views/setting/AccountSettingDirectory.vue'
 import AccountSettingRule from '@/views/setting/AccountSettingRule.vue'
-import { SettingTabs } from '@/router/menu'
+import { getSettingTabs } from '@/router/i18n-menu'
 
 const route = useRoute()
 
 const activeTab = ref(route.query.tab)
-
-function jumpTab(tab: string) {
-  router.push('/setting?tab=' + tab)
-}
+const settingTabs = computed(() => getSettingTabs())
 </script>
 
 <template>
   <div>
-    <VHeaderTab :items="SettingTabs" v-model="activeTab" />
+    <VHeaderTab :items="settingTabs" v-model="activeTab" />
     <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
       <!-- 系统 -->
-      <VWindowItem value="系统">
+      <VWindowItem value="system">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSystem />
@@ -36,7 +33,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 目录 -->
-      <VWindowItem value="存储 & 目录">
+      <VWindowItem value="directory">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingDirectory />
@@ -45,7 +42,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 站点 -->
-      <VWindowItem value="站点">
+      <VWindowItem value="site">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSite />
@@ -54,7 +51,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 规则 -->
-      <VWindowItem value="规则">
+      <VWindowItem value="rule">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingRule />
@@ -63,7 +60,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 搜索 -->
-      <VWindowItem value="搜索 & 下载">
+      <VWindowItem value="search">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSearch />
@@ -72,7 +69,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 订阅 -->
-      <VWindowItem value="订阅">
+      <VWindowItem value="subscribe">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingSubscribe />
@@ -81,7 +78,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 服务 -->
-      <VWindowItem value="服务">
+      <VWindowItem value="scheduler">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingScheduler />
@@ -90,7 +87,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 通知 -->
-      <VWindowItem value="通知">
+      <VWindowItem value="notification">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingNotification />
@@ -99,7 +96,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 词表 -->
-      <VWindowItem value="词表">
+      <VWindowItem value="words">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingWords />
@@ -108,7 +105,7 @@ function jumpTab(tab: string) {
       </VWindowItem>
 
       <!-- 关于 -->
-      <VWindowItem value="关于">
+      <VWindowItem value="about">
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingAbout />

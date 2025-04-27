@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NavMenu } from '@/@layouts/types'
-import { SystemNavMenus } from '@/router/menu'
+import { getNavMenus } from '@/router/i18n-menu'
 import { useUserStore } from '@/stores'
 
 // 从 Store 中获取superuser信息
@@ -12,7 +12,7 @@ const appGroups = ref<Record<string, NavMenu[]>>({})
 // 根据header属性对应用进行分类
 function categorizeApps() {
   // 获取可见的菜单项
-  const menus = SystemNavMenus.filter((item: NavMenu) => (!item.admin || superUser) && !item.footer)
+  const menus = getNavMenus().filter((item: NavMenu) => (!item.admin || superUser) && !item.footer)
 
   // 按header属性分组
   const groupedMenus: Record<string, NavMenu[]> = {}
@@ -80,16 +80,16 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .app-settings-container {
-  max-width: 960px;
-  margin: 0 auto;
+  margin-block: 0;
+  margin-inline: auto;
+  max-inline-size: 960px;
 }
 
 .settings-section-card {
   overflow: hidden;
-  background-color: rgb(var(--v-theme-surface));
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: rgb(var(--v-theme-surface));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 8%);
 }
 
 .settings-list {
@@ -97,11 +97,12 @@ onMounted(() => {
 }
 
 .settings-list-item {
-  padding: 8px 12px;
+  padding-block: 8px;
+  padding-inline: 12px;
   transition: background-color 0.2s;
 
   &:not(:last-child) {
-    border-bottom: 1px solid rgba(var(--v-border-color), 0.12);
+    border-block-end: 1px solid rgba(var(--v-border-color), 0.12);
   }
 
   &:hover {

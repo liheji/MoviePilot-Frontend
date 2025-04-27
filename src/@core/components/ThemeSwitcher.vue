@@ -6,6 +6,7 @@ import api from '@/api'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { useToast } from 'vue-toast-notification'
 import { saveLocalTheme } from '../utils/theme'
+import { useI18n } from 'vue-i18n'
 
 // 显示器宽度
 const display = useDisplay()
@@ -26,6 +27,8 @@ const getNextThemeName = () => {
 }
 
 const $toast = useToast()
+
+const { t } = useI18n()
 
 // 自定义CSS弹窗
 const cssDialog = ref(false)
@@ -62,14 +65,6 @@ function changeTheme(theme: string) {
   } catch (e) {
     console.error(e)
   }
-}
-
-// 是否有滚动条
-function hasScrollbar(el?: Element | null) {
-  if (!el || el.nodeType !== Node.ELEMENT_NODE) return false
-
-  const style = window.getComputedStyle(el)
-  return style.overflowY === 'scroll' || (style.overflowY === 'auto' && el.scrollHeight > el.clientHeight)
 }
 
 // 监听系统主题变化
@@ -158,7 +153,7 @@ onMounted(() => {
           <template #prepend>
             <VIcon icon="mdi-palette" />
           </template>
-          <VListItemTitle>自定义主题</VListItemTitle>
+          <VListItemTitle>{{ t('theme.custom') }}</VListItemTitle>
         </VListItem>
       </div>
     </VList>
