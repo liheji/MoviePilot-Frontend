@@ -79,9 +79,42 @@ function startBackgroundRotation() {
 
   if (backgroundImages.value.length > 1) {
     backgroundRotationTimer = setInterval(() => {
-      activeImageIndex.value = (activeImageIndex.value + 1) % backgroundImages.value.length
+      // 计算下一个图片索引
+      const nextIndex = (activeImageIndex.value + 1) % backgroundImages.value.length
+      // 预加载下一张图片
+      preloadImage(backgroundImages.value[nextIndex]).then(success => {
+        // 只有图片成功加载才切换
+        if (success) {
+          activeImageIndex.value = nextIndex
+        }
+      })
     }, 10000) // 每10秒切换一次
   }
+}
+
+// 预加载图片
+function preloadImage(url: string): Promise<boolean> {
+  return new Promise(resolve => {
+    const img = new Image()
+    const imageUrl = getImgUrl(url)
+
+    img.onload = () => resolve(true)
+    img.onerror = () => resolve(false)
+
+    // 设置超时，防止图片长时间加载
+    const timeout = setTimeout(() => {
+      img.src = ''
+      resolve(false)
+    }, 5000) // 5秒超时
+
+    img.src = imageUrl
+
+    // 如果图片已经缓存，onload可能不会触发
+    if (img.complete) {
+      clearTimeout(timeout)
+      resolve(true)
+    }
+  })
 }
 
 // 计算图片地址
