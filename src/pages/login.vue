@@ -186,6 +186,7 @@ onMounted(async () => {
         class="auth-card px-7 py-3 w-full h-full"
         :class="{ 'opacity-75': globalTheme.name.value !== 'transparent' }"
         max-width="24rem"
+        border
       >
         <VCardItem class="justify-center">
           <template #prepend>
@@ -233,7 +234,7 @@ onMounted(async () => {
               </VCol>
               <VCol cols="12">
                 <!-- login button -->
-                <VBtn block type="submit" @click="login"> 登录 </VBtn>
+                <VBtn block type="submit" @click="login" prepend-icon="mdi-login"> 登录 </VBtn>
                 <VAlert v-if="errorMessage" type="error" variant="tonal" class="mt-3">
                   {{ errorMessage }}
                 </VAlert>

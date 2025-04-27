@@ -205,7 +205,7 @@ onUnmounted(() => {
           :style="{ backgroundImage: `url(${getImgUrl(imageUrl)})` }"
         ></div>
         <!-- 全局磨砂层 -->
-        <div class="global-blur-layer"></div>
+        <div v-if="isLogin" class="global-blur-layer"></div>
       </div>
     </template>
 

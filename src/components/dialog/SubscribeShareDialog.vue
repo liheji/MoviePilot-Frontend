@@ -51,7 +51,7 @@ const $toast = useToast()
 </script>
 
 <template>
-  <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="30rem" :fullscreen="!display.mdAndUp.value">
     <VCard
       :title="`分享订阅 - ${props.sub?.name} ${props.sub?.season ? `第 ${props.sub?.season} 季` : ''}`"
       class="rounded-t"
