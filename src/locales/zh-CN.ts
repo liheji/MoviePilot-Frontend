@@ -424,8 +424,6 @@ export default {
       network: '网络',
       log: '日志',
       lab: '实验室',
-      reloadSuccess: '系统配置已生效',
-      reloadFailed: '重载系统失败！',
       downloaderSaveSuccess: '下载器设置保存成功',
       downloaderSaveFailed: '下载器设置保存失败！',
       defaultDownloaderNotice: '未设置默认下载器，已将【{name}】作为默认下载器',
@@ -443,6 +441,8 @@ export default {
       emby: 'Emby',
       jellyfin: 'Jellyfin',
       plex: 'Plex',
+      reloadSuccess: '系统配置已生效',
+      reloadFailed: '重载系统失败！',
     },
     site: {
       siteSync: '站点同步',
@@ -616,6 +616,9 @@ export default {
       organizeSaveSuccess: '整理选项设置保存成功',
       organizeSaveFailed: '整理选项设置保存失败！',
       duplicateDirectoryName: '存在重复目录名称！无法保存，请修改！',
+      defaultDirName: '目录',
+      storageSaveSuccess: '存储设置保存成功',
+      storageSaveFailed: '存储设置保存失败！',
     },
     rule: {
       customRules: '自定义规则',

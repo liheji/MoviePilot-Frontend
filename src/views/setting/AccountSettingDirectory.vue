@@ -64,8 +64,8 @@ async function reloadSystem() {
   progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success('系统配置已生效')
-    else $toast.error('重载系统失败！')
+    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
+    else $toast.error(t('setting.system.reloadFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -95,8 +95,8 @@ async function loadStorages() {
 async function saveStorages() {
   try {
     const result: { [key: string]: any } = await api.post('system/setting/Storages', storages.value)
-    if (result.success) $toast.success('存储设置保存成功')
-    else $toast.error('存储设置保存失败！')
+    if (result.success) $toast.success(t('setting.directory.storageSaveSuccess'))
+    else $toast.error(t('setting.directory.storageSaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -123,14 +123,14 @@ async function saveDirectories() {
   try {
     const names = directories.value.map(item => item.name)
     if (new Set(names).size !== names.length) {
-      $toast.error('存在重复目录名称！无法保存，请修改！')
+      $toast.error(t('setting.directory.duplicateDirectoryName'))
       return
     }
     const result: { [key: string]: any } = await api.post('system/setting/Directories', directories.value)
     if (result.success) {
-      $toast.success('目录设置保存成功')
+      $toast.success(t('setting.directory.directorySaveSuccess'))
       await reloadSystem()
-    } else $toast.error('目录设置保存失败！')
+    } else $toast.error(t('setting.directory.directorySaveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -138,9 +138,11 @@ async function saveDirectories() {
 
 // 添加媒体库目录
 function addDirectory() {
-  let name = `目录${directories.value.length + 1}`
+  let name = `${t('setting.directory.defaultDirName')}${directories.value.length + 1}`
   while (directories.value.some(item => item.name === name)) {
-    name = `目录${parseInt(name.split('目录')[1]) + 1}`
+    name = `${t('setting.directory.defaultDirName')}${
+      parseInt(name.split(t('setting.directory.defaultDirName'))[1]) + 1
+    }`
   }
   directories.value.push({
     name: name,
@@ -177,8 +179,8 @@ async function saveSystemSettings(value: any) {
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
-      $toast.success('整理选项设置保存成功')
-    } else $toast.error('整理选项设置保存失败！')
+      $toast.success(t('setting.directory.organizeSaveSuccess'))
+    } else $toast.error(t('setting.directory.organizeSaveFailed'))
   } catch (error) {
     console.log(error)
   }

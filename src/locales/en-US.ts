@@ -426,8 +426,6 @@ export default {
       network: 'Network',
       log: 'Log',
       lab: 'Lab',
-      reloadSuccess: 'System configuration has taken effect',
-      reloadFailed: 'Failed to reload system!',
       downloaderSaveSuccess: 'Downloader settings saved successfully',
       downloaderSaveFailed: 'Failed to save downloader settings!',
       defaultDownloaderNotice: 'No default downloader set, [{name}] has been set as the default downloader',
@@ -445,6 +443,8 @@ export default {
       emby: 'Emby',
       jellyfin: 'Jellyfin',
       plex: 'Plex',
+      reloadSuccess: 'System configuration has taken effect',
+      reloadFailed: 'Failed to reload system!',
     },
     site: {
       siteSync: 'Site Synchronization',
@@ -629,6 +629,9 @@ export default {
       organizeSaveSuccess: 'Organization options saved successfully',
       organizeSaveFailed: 'Failed to save organization options!',
       duplicateDirectoryName: 'Duplicate directory names exist! Cannot save, please modify!',
+      defaultDirName: 'Directory',
+      storageSaveSuccess: 'Storage settings saved successfully',
+      storageSaveFailed: 'Failed to save storage settings!',
     },
     rule: {
       customRules: 'Custom Rules',

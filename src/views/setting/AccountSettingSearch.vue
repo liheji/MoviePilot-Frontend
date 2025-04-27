@@ -4,6 +4,9 @@ import api from '@/api'
 import type { FilterRuleGroup, Site } from '@/api/types'
 import { useI18n } from 'vue-i18n'
 
+// 国际化
+const { t } = useI18n()
+
 // 提示框
 const $toast = useToast()
 
@@ -172,8 +175,6 @@ async function loadSystemSettings() {
     console.log(error)
   }
 }
-
-const { t } = useI18n()
 
 onMounted(() => {
   querySites()
