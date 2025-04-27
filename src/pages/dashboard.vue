@@ -7,6 +7,10 @@ import { useUserStore } from '@/stores'
 import DashboardElement from '@/components/misc/DashboardElement.vue'
 import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // APP
 const display = useDisplay()
@@ -53,7 +57,7 @@ const orderConfig = ref<{ id: string; key: string }[]>([])
 const dashboardConfigs = ref<DashboardItem[]>([
   {
     id: 'storage',
-    name: '存储空间',
+    name: t('dashboard.storage'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 4 },
@@ -61,7 +65,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'mediaStatistic',
-    name: '媒体统计',
+    name: t('dashboard.mediaStatistic'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 8 },
@@ -69,7 +73,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'weeklyOverview',
-    name: '最近入库',
+    name: t('dashboard.weeklyOverview'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 4 },
@@ -77,7 +81,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'speed',
-    name: '实时速率',
+    name: t('dashboard.speed'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 4 },
@@ -85,7 +89,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'scheduler',
-    name: '后台任务',
+    name: t('dashboard.scheduler'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 4 },
@@ -93,7 +97,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'cpu',
-    name: 'CPU',
+    name: t('dashboard.cpu'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 6 },
@@ -101,7 +105,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'memory',
-    name: '内存',
+    name: t('dashboard.memory'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 6 },
@@ -109,7 +113,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'library',
-    name: '我的媒体库',
+    name: t('dashboard.library'),
     key: '',
     attrs: {},
     cols: { cols: 12 },
@@ -117,7 +121,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'playing',
-    name: '继续观看',
+    name: t('dashboard.playing'),
     key: '',
     attrs: {},
     cols: { cols: 12 },
@@ -125,7 +129,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'latest',
-    name: '最近添加',
+    name: t('dashboard.latest'),
     key: '',
     attrs: {},
     cols: { cols: 12 },
@@ -354,13 +358,13 @@ onDeactivated(() => {
       <VCardItem>
         <VCardTitle>
           <VIcon icon="mdi-tune" size="small" class="me-2" />
-          设置仪表板
+          {{ t('dashboard.settings') }}
         </VCardTitle>
         <VDialogCloseBtn @click="dialog = false" />
       </VCardItem>
       <VDivider />
       <VCardText>
-        <p class="settings-hint">选择您想在页面显示的内容</p>
+        <p class="settings-hint">{{ t('dashboard.chooseContent') }}</p>
         <div class="settings-grid">
           <div
             v-for="item in dashboardConfigs"
@@ -389,7 +393,7 @@ onDeactivated(() => {
           </div>
         </div>
         <p class="mt-3">
-          <VSwitch v-model="isElevated" label="自适应组件高度" />
+          <VSwitch v-model="isElevated" :label="t('dashboard.adaptiveHeight')" />
         </p>
       </VCardText>
       <VDivider />
@@ -399,7 +403,7 @@ onDeactivated(() => {
           <template #prepend>
             <VIcon icon="mdi-content-save" />
           </template>
-          保存
+          {{ t('common.save') }}
         </VBtn>
       </VCardText>
     </VCard>

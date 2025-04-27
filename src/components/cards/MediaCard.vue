@@ -13,6 +13,10 @@ import { useUserStore } from '@/stores'
 import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import SubscribeSeasonDialog from '../dialog/SubscribeSeasonDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -114,14 +118,14 @@ function getMediaId() {
 
 // 角标颜色
 function getChipColor(type: string) {
-  if (type === '电影') return 'border-blue-500 bg-blue-600'
-  else if (type === '电视剧') return ' bg-indigo-500 border-indigo-600'
+  if (type === t('media.movie')) return 'border-blue-500 bg-blue-600'
+  else if (type === t('media.tv')) return ' bg-indigo-500 border-indigo-600'
   else return 'border-purple-600 bg-purple-600'
 }
 
 // 添加订阅处理
 async function handleAddSubscribe() {
-  if (props.media?.type === '电视剧') {
+  if (props.media?.type === t('media.tv')) {
     // 弹出季选择列表，支持多选
     seasonsSelected.value = []
     subscribeSeasonDialog.value = true
@@ -137,7 +141,7 @@ async function addSubscribe(season: number = 0, best_version: number = 0) {
   startNProgress()
   try {
     // 是否洗版
-    if (!best_version && props.media?.type == '电影') best_version = isExists.value ? 1 : 0
+    if (!best_version && props.media?.type == t('media.movie')) best_version = isExists.value ? 1 : 0
     // 请求API
     const result: { [key: string]: any } = await api.post('subscribe/', {
       name: props.media?.title,
@@ -180,11 +184,11 @@ async function addSubscribe(season: number = 0, best_version: number = 0) {
 function showSubscribeAddToast(result: boolean, title: string, season: number, message: string, best_version: number) {
   if (season) title = `${title} ${formatSeason(season.toString())}`
 
-  let subname = '订阅'
-  if (best_version > 0) subname = '洗版订阅'
+  let subname = t('subscribe.normalSub')
+  if (best_version > 0) subname = t('subscribe.versionSub')
 
-  if (result) $toast.success(`${title} 添加${subname}成功！`)
-  else if (!result) $toast.error(`${title} 添加${subname}失败：${message}！`)
+  if (result) $toast.success(`${title} ${t('subscribe.addSuccess', { name: subname })}`)
+  else if (!result) $toast.error(`${title} ${t('subscribe.addFailed', { name: subname, message: message })}`)
 }
 
 // 调用API取消订阅
@@ -202,9 +206,9 @@ async function removeSubscribe() {
 
     if (result.success) {
       isSubscribed.value = false
-      $toast.success(`${props.media?.title} 已取消订阅！`)
+      $toast.success(`${props.media?.title} ${t('subscribe.cancelSuccess')}`)
     } else {
-      $toast.error(`${props.media?.title} 取消订阅失败：${result.message}！`)
+      $toast.error(`${props.media?.title} ${t('subscribe.cancelFailed', { message: result.message })}`)
     }
   } catch (error) {
     console.error(error)
@@ -275,7 +279,7 @@ async function queryDefaultSubscribeConfig() {
   if (!userStore.superUser) return false
   try {
     let subscribe_config_url = ''
-    if (props.media?.type === '电影') subscribe_config_url = 'system/setting/DefaultMovieSubscribeConfig'
+    if (props.media?.type === t('media.movie')) subscribe_config_url = 'system/setting/DefaultMovieSubscribeConfig'
     else subscribe_config_url = 'system/setting/DefaultTvSubscribeConfig'
     const result: { [key: string]: any } = await api.get(subscribe_config_url)
     if (result.data?.value) return result.data.value.show_edit_dialog

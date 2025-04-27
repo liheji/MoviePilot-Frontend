@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
+
 const props = defineProps<Props>()
 
 interface Props {
@@ -28,12 +33,12 @@ interface Props {
 
     <!-- 标题 -->
     <div class="error-title">
-      {{ props.errorTitle || '暂无数据' }}
+      {{ props.errorTitle || t('common.noData') }}
     </div>
 
     <!-- 描述 -->
     <div class="error-description">
-      {{ props.errorDescription || '没有找到相关内容' }}
+      {{ props.errorDescription || t('common.noContent') }}
     </div>
 
     <!-- 按钮插槽 -->

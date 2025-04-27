@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import type { MediaServerPlayItem } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
