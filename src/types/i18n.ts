@@ -1,5 +1,6 @@
-import zhCN from './zh-CN'
+import zhCN from '@/locales/zh-CN'
 
+// 导出类型和常量，而不是作为语言消息文件
 export type MessageSchema = typeof zhCN
 export type LocaleKey = keyof typeof zhCN
 

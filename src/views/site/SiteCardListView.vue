@@ -7,6 +7,10 @@ import NoDataFound from '@/components/NoDataFound.vue'
 import SiteAddEditDialog from '@/components/dialog/SiteAddEditDialog.vue'
 import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // APP
 const display = useDisplay()
@@ -98,7 +102,7 @@ useDynamicButton({
 <template>
   <div class="card-list-container">
     <!-- 页面标题 -->
-    <VPageContentTitle title="站点管理" />
+    <VPageContentTitle :title="t('navItems.siteManager')" />
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <draggable
       v-if="siteList.length > 0"
@@ -117,8 +121,8 @@ useDynamicButton({
   <NoDataFound
     v-if="siteList.length === 0 && isRefreshed"
     error-code="404"
-    error-title="没有站点"
-    error-description="已添加并支持的站点将会在这里显示。"
+    :error-title="t('site.noSites')"
+    :error-description="t('site.sitesWillBeShownHere')"
   />
   <!-- 新增站点按钮 -->
   <VFab

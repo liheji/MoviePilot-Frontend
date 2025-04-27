@@ -9,6 +9,11 @@ import type { MediaInfo, Subscribe, TmdbEpisode } from '@/api/types'
 import api from '@/api'
 import { formatEp, parseDate } from '@/@core/utils/formatters'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
+import { getCurrentLocale } from '@/plugins/i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 进度框
 const progressDialog = ref(false)
@@ -19,10 +24,13 @@ const loading = ref(false)
 // 已加载过
 const isLoaded = ref(false)
 
+// 获取当前语言
+const currentLocale = getCurrentLocale().split('-')[0]
+
 // 日历属性
 const calendarOptions: Ref<CalendarOptions> = ref({
   height: 'auto',
-  locale: 'zh-cn',
+  locale: currentLocale,
   plugins: [
     dayGridPlugin,
     timeGridPlugin,
@@ -46,7 +54,7 @@ const calendarOptions: Ref<CalendarOptions> = ref({
 
 async function eventsHander(subscribe: Subscribe) {
   // 如果是电影直接返回
-  if (subscribe.type === '电影') {
+  if (subscribe.type === t('media.movie')) {
     // 调用API查询TMDB详情
     const movie: MediaInfo = await api.get(`media/tmdb:${subscribe.tmdbid}`, {
       params: { type_name: subscribe.type },
@@ -160,14 +168,14 @@ onActivated(() => {
                 {{ arg.event.title }}
               </VCardSubtitle>
               <VCardText v-if="arg.event.extendedProps.subtitle" class="pa-0 px-2 break-words">
-                第{{ arg.event.extendedProps.subtitle }}集
+                {{ t('calendar.episode', { number: arg.event.extendedProps.subtitle }) }}
               </VCardText>
             </div>
           </div>
         </VCard>
       </div>
       <div class="md:hidden">
-        <VTooltip :text="`${arg.event.title} 第 ${arg.event.extendedProps.subtitle} 集`">
+        <VTooltip :text="`${arg.event.title} ${t('calendar.episode', { number: arg.event.extendedProps.subtitle })}`">
           <template #activator="{ props }">
             <VImg
               height="60"
@@ -198,7 +206,7 @@ onActivated(() => {
       </div>
     </template>
   </FullCalendar>
-  <ProgressDialog v-if="progressDialog" v-model="progressDialog" text="正在加载 ..." />
+  <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="t('common.loading') + ' ...'" />
 </template>
 
 <style lang="scss">

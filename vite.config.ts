@@ -29,7 +29,7 @@ export default defineConfig({
       vueTemplate: true,
     }),
     VueI18n({
-      include: [resolve(__dirname, 'src/locales/**')],
+      include: [resolve(__dirname, 'src/locales/*.ts')],
     }),
     VitePWA({
       injectRegister: 'script',

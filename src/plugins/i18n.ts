@@ -1,6 +1,6 @@
 import { createI18n } from 'vue-i18n'
 import { nextTick } from 'vue'
-import { SUPPORTED_LOCALES, SupportedLocale } from '@/locales/types'
+import { SUPPORTED_LOCALES, SupportedLocale } from '@/types/i18n'
 
 // 导入语言文件
 import zhCN from '@/locales/zh-CN'

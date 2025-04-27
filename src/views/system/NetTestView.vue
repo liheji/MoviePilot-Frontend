@@ -8,6 +8,10 @@ import tmdb from '@images/logos/tmdb.png'
 import wechat from '@images/logos/wechat.png'
 import fanart from '@images/logos/fanart.webp'
 import tvdb from '@images/logos/thetvdb.jpeg'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 interface Status {
   OK: string
@@ -46,7 +50,7 @@ const targets = ref<Address[]>([
     proxy: true,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -56,7 +60,7 @@ const targets = ref<Address[]>([
     proxy: true,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -66,7 +70,7 @@ const targets = ref<Address[]>([
     proxy: true,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -76,7 +80,7 @@ const targets = ref<Address[]>([
     proxy: true,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -86,7 +90,7 @@ const targets = ref<Address[]>([
     proxy: true,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -96,7 +100,7 @@ const targets = ref<Address[]>([
     proxy: false,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -106,7 +110,7 @@ const targets = ref<Address[]>([
     proxy: false,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -116,7 +120,7 @@ const targets = ref<Address[]>([
     proxy: false,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -126,7 +130,7 @@ const targets = ref<Address[]>([
     proxy: true,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -136,7 +140,7 @@ const targets = ref<Address[]>([
     proxy: true,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
   {
@@ -146,7 +150,7 @@ const targets = ref<Address[]>([
     proxy: true,
     status: 'Normal',
     time: '',
-    message: '未测试',
+    message: t('netTest.notTested'),
     btndisable: false,
   },
 ])
@@ -165,7 +169,7 @@ async function netTest(index: number) {
 
     target.btndisable = true
     target.status = 'Doing'
-    target.message = '测试中...'
+    target.message = t('netTest.testing')
 
     const result: { [key: string]: any } = await api.get('system/nettest', {
       params: {
@@ -176,7 +180,7 @@ async function netTest(index: number) {
 
     if (result.success) {
       target.status = 'OK'
-      target.message = '正常'
+      target.message = t('netTest.normal')
     } else {
       target.status = 'Fail'
       target.message = result.message

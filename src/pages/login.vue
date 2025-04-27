@@ -10,7 +10,7 @@ import logo from '@images/logo.png'
 import { useTheme } from 'vuetify'
 import { urlBase64ToUint8Array } from '@/@core/utils/navigator'
 import { useI18n } from 'vue-i18n'
-import { SUPPORTED_LOCALES, SupportedLocale } from '@/locales/types'
+import { SUPPORTED_LOCALES, SupportedLocale } from '@/types/i18n'
 import { getCurrentLocale, setI18nLanguage } from '@/plugins/i18n'
 
 // 主题

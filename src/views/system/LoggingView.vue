@@ -1,13 +1,18 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
+
 // 已解析的日志列表
 const parsedLogs = ref<{ level: string; time: string; program: string; content: string }[]>([])
 
 // 表头
 const headers = [
-  { title: '级别', value: 'level' },
-  { title: '时间', value: 'time' },
-  { title: '程序', value: 'program' },
-  { title: '内容', value: 'content' },
+  { title: t('logging.level'), value: 'level' },
+  { title: t('logging.time'), value: 'time' },
+  { title: t('logging.program'), value: 'program' },
+  { title: t('logging.content'), value: 'content' },
 ]
 
 // SSE消息对象
@@ -73,7 +78,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <LoadingBanner v-if="parsedLogs.length === 0" class="mt-12" text="正在刷新 ..." />
+  <LoadingBanner v-if="parsedLogs.length === 0" class="mt-12" :text="t('logging.refreshing') + ' ...'" />
   <div v-else>
     <VTable class="table-rounded" hide-default-footer disable-sort>
       <tbody>

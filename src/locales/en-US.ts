@@ -232,6 +232,18 @@ export default {
     name: 'Name',
     searchShares: 'Search Subscription Shares',
     keyword: 'Keyword',
+    noShareData:
+      'No shared subscription data available, data sharing is not enabled or the server cannot be connected.',
+    noPopularData:
+      'No popular subscription data available, data sharing is not enabled or the server cannot be connected.',
+    noFilterData: 'No matching content found. Please change the filter criteria.',
+    noSubscribeData: 'Please search to add movie or TV show subscriptions.',
+    sharer: 'Shared by',
+    follow: 'Follow',
+    unfollow: 'Unfollow',
+    recognitionWords: 'Recognition Words',
+    cancelShare: 'Cancel Share',
+    usageCount: 'Used {count} times',
   },
   recommend: {
     all: 'All',
@@ -306,5 +318,53 @@ export default {
     selectAll: 'Select All',
     loadMore: 'Load More',
     noMatchingResults: 'No matching results',
+  },
+  calendar: {
+    episode: 'Episode {number}',
+  },
+  storage: {
+    usedPercent: 'Used {percent}%',
+  },
+  site: {
+    noSites: 'No Sites',
+    sitesWillBeShownHere: 'Added and supported sites will be displayed here.',
+  },
+  message: {
+    loadMore: 'Load More',
+    noMoreData: 'No More Data',
+  },
+  logging: {
+    level: 'Level',
+    time: 'Time',
+    program: 'Program',
+    content: 'Content',
+    refreshing: 'Refreshing',
+  },
+  moduleTest: {
+    normal: 'Normal',
+    disabled: 'Disabled',
+    error: 'Error',
+  },
+  nameTest: {
+    recognize: 'Recognize',
+    recognizing: 'Recognizing...',
+    recognizeAgain: 'Recognize Again',
+    title: 'Title',
+    subtitle: 'Subtitle',
+  },
+  netTest: {
+    notTested: 'Not Tested',
+    testing: 'Testing...',
+    normal: 'Normal',
+  },
+  ruleTest: {
+    test: 'Test',
+    testing: 'Testing...',
+    testAgain: 'Test Again',
+    title: 'Title',
+    subtitle: 'Subtitle',
+    ruleGroup: 'Rule Group',
+    priority: 'Priority: {value}',
+    noPriorityRule: 'No priority rule matched!',
   },
 }

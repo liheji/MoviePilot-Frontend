@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 定义所有的模块ID、名称列表
 const modules = ref<
@@ -41,13 +45,13 @@ async function moduleTest(index: number) {
     target.loading = false
     if (result.success) {
       target.state = 'success'
-      target.name = `${target.name} - 正常`
+      target.name = `${target.name} - ${t('moduleTest.normal')}`
     } else if (!result.message) {
       target.state = undefined
-      target.name = `${target.name} - 未启用`
+      target.name = `${target.name} - ${t('moduleTest.disabled')}`
     } else {
       target.state = 'error'
-      target.name = `${target.name} - 错误！`
+      target.name = `${target.name} - ${t('moduleTest.error')}！`
       target.errmsg = result.message
     }
   } catch (error) {

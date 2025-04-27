@@ -3,6 +3,10 @@ import api from '@/api'
 import type { SubscribeShare } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import SubscribeShareCard from '@/components/cards/SubscribeShareCard.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 定义输入参数
 const props = defineProps({
@@ -115,7 +119,7 @@ function removeData(id: number) {
 </script>
 
 <template>
-  <VPageContentTitle v-if="keyword" :title="`搜索：${keyword}`" />
+  <VPageContentTitle v-if="keyword" :title="`${t('common.search')}：${keyword}`" />
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
   <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-visible" @load="fetchData">
     <template #loading />
@@ -128,10 +132,8 @@ function removeData(id: number) {
     <NoDataFound
       v-if="dataList.length === 0 && isRefreshed"
       error-code="404"
-      error-title="没有数据"
-      :error-description="
-        keyword ? '没有搜索到相关内容，请更换搜索关键词。' : '未获取到分享订阅数据，未开启数据分享或服务器无法连接。'
-      "
+      :error-title="t('common.noData')"
+      :error-description="keyword ? t('common.noContent') : t('subscribe.noShareData')"
     />
   </VInfiniteScroll>
 </template>

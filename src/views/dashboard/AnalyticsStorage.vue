@@ -5,6 +5,10 @@ import api from '@/api'
 import trophy from '@images/misc/storage.png'
 import triangleDark from '@images/misc/triangle-dark.png'
 import triangleLight from '@images/misc/triangle-light.png'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 const { global } = useTheme()
 
@@ -52,13 +56,13 @@ onActivated(() => {
           <template #append>
             <VIcon class="cursor-move" v-if="hover.isHovering">mdi-drag</VIcon>
           </template>
-          <VCardTitle>存储空间</VCardTitle>
+          <VCardTitle>{{ t('dashboard.storage') }}</VCardTitle>
         </VCardItem>
         <VCardText>
           <h5 class="text-2xl font-weight-medium text-primary">
             {{ formatFileSize(storage) }}
           </h5>
-          <p class="mt-2">已使用 {{ usedPercent }}% 🚀</p>
+          <p class="mt-2">{{ t('storage.usedPercent', { percent: usedPercent }) }} 🚀</p>
           <p class="mt-1">
             <VProgressLinear :model-value="usedPercent" color="primary" />
           </p>

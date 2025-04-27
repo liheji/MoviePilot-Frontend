@@ -2,6 +2,10 @@
 import api from '@/api'
 import type { MediaServerConf, MediaServerLibrary } from '@/api/types'
 import LibraryCard from '@/components/cards/LibraryCard.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 媒体库列表
 const libraryList = ref<MediaServerLibrary[]>([])
@@ -63,7 +67,7 @@ onActivated(() => {
           <template #append>
             <VIcon class="cursor-move" v-if="hover.isHovering">mdi-drag</VIcon>
           </template>
-          <VCardTitle>我的媒体库</VCardTitle>
+          <VCardTitle>{{ t('dashboard.library') }}</VCardTitle>
         </VCardItem>
         <div class="grid gap-4 grid-backdrop-card mx-3" tabindex="0">
           <LibraryCard v-for="item in libraryList" :key="item.id" :media="item" height="10rem" />

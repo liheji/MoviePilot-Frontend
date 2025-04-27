@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SUPPORTED_LOCALES, SupportedLocale } from '@/locales/types'
+import { SUPPORTED_LOCALES, SupportedLocale } from '@/types/i18n'
 import { setI18nLanguage, getCurrentLocale } from '@/plugins/i18n'
 
 // 当前语言

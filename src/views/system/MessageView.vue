@@ -2,6 +2,10 @@
 import type { Message } from '@/api/types'
 import MessageCard from '@/components/cards/MessageCard.vue'
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 定义事件
 const emit = defineEmits(['scroll'])
@@ -103,12 +107,12 @@ onBeforeUnmount(() => {
     :items="messages"
     class="overflow-visible"
     @load="loadMessages"
-    load-more-text="加载更多 ..."
+    :load-more-text="t('message.loadMore') + ' ...'"
   >
     <template #loading>
       <LoadingBanner />
     </template>
-    <template #empty> 没有更多数据 </template>
+    <template #empty> {{ t('message.noMoreData') }} </template>
     <div>
       <div
         v-for="(msg, index) in messages"

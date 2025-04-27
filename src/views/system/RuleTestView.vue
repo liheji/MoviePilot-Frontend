@@ -3,6 +3,10 @@ import { reactive, ref } from 'vue'
 import { requiredValidator } from '@/@validators'
 import api from '@/api'
 import { FilterRuleGroup } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 识别结果
 const ruleTestResult = ref('')
@@ -18,7 +22,7 @@ const ruleTestForm = reactive({
 const ruleTestLoading = ref(false)
 
 // 识别按钮文本
-const ruleTestText = ref('测试')
+const ruleTestText = ref(t('ruleTest.test'))
 
 // 是否显示结果
 const showResult = ref(false)
@@ -47,7 +51,7 @@ async function ruleTest() {
 
   try {
     ruleTestLoading.value = true
-    ruleTestText.value = '正在测试...'
+    ruleTestText.value = t('ruleTest.testing')
     showResult.value = false
     const result: { [key: string]: any } = await api.get('system/ruletest', {
       params: {
@@ -56,11 +60,11 @@ async function ruleTest() {
         rulegroup_name: ruleTestForm.rulegroup,
       },
     })
-    if (result.success) ruleTestResult.value = `优先级：${result.data.priority}`
-    else ruleTestResult.value = '未命中任何优先级规则！'
+    if (result.success) ruleTestResult.value = t('ruleTest.priority', { value: result.data.priority })
+    else ruleTestResult.value = t('ruleTest.noPriorityRule')
 
     ruleTestLoading.value = false
-    ruleTestText.value = '重新测试'
+    ruleTestText.value = t('ruleTest.testAgain')
     showResult.value = true
   } catch (error) {
     console.error(error)
@@ -76,13 +80,13 @@ onMounted(() => {
   <VForm @submit.prevent="() => {}">
     <VRow class="pt-2">
       <VCol cols="12" md="8">
-        <VTextField v-model="ruleTestForm.title" label="标题" :rules="[requiredValidator]" />
+        <VTextField v-model="ruleTestForm.title" :label="t('ruleTest.title')" :rules="[requiredValidator]" />
       </VCol>
       <VCol cols="12" md="4">
-        <VSelect v-model="ruleTestForm.rulegroup" label="规则组" :items="filterRuleGroupItems" />
+        <VSelect v-model="ruleTestForm.rulegroup" :label="t('ruleTest.ruleGroup')" :items="filterRuleGroupItems" />
       </VCol>
       <VCol cols="12">
-        <VTextarea v-model="ruleTestForm.subtitle" label="副标题" rows="2" auto-grow />
+        <VTextarea v-model="ruleTestForm.subtitle" :label="t('ruleTest.subtitle')" rows="2" auto-grow />
       </VCol>
     </VRow>
     <VRow>

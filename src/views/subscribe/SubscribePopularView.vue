@@ -3,6 +3,10 @@ import api from '@/api'
 import type { MediaInfo } from '@/api/types'
 import MediaCard from '@/components/cards/MediaCard.vue'
 import NoDataFound from '@/components/NoDataFound.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -122,8 +126,8 @@ async function fetchData({ done }: { done: any }) {
     <NoDataFound
       v-if="dataList.length === 0 && isRefreshed"
       error-code="404"
-      error-title="没有数据"
-      error-description="未获取到热门订阅数据，未开启数据分享或服务器无法连接。"
+      :error-title="t('common.noData')"
+      :error-description="t('subscribe.noPopularData')"
     />
   </VInfiniteScroll>
 </template>

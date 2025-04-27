@@ -5,6 +5,10 @@ import { SubscribeShare } from '@/api/types'
 import router from '@/router'
 import { useToast } from 'vue-toast-notification'
 import { VBtn } from 'vuetify/lib/components/index.mjs'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -116,11 +120,11 @@ async function doFork() {
     const result: { [key: string]: any } = await api.post('subscribe/fork', props.media)
     // 订阅状态
     if (result.success) {
-      $toast.success(`${props.media?.share_title} 添加订阅成功！`)
+      $toast.success(t('subscribe.addSuccess', { name: props.media?.share_title }))
       // 完成
       emit('fork', result.data.id)
     } else {
-      $toast.error(`${props.media?.share_title} 添加订阅失败：${result.message}！`)
+      $toast.error(t('subscribe.addFailed', { name: props.media?.share_title, message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -144,11 +148,11 @@ async function doDelete() {
     })
     // 订阅状态
     if (result.success) {
-      $toast.success(`${props.media?.share_title} 取消分享成功！`)
+      $toast.success(t('subscribe.cancelSuccess'))
       // 完成
       emit('delete', result.data.id)
     } else {
-      $toast.error(`${props.media?.share_title} 取消分享失败：${result.message}！`)
+      $toast.error(t('subscribe.cancelFailed', { message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -200,13 +204,13 @@ onMounted(() => {
                 <VList lines="one">
                   <VListItem class="ps-0">
                     <VListItemTitle class="text-center text-md-left">
-                      <span class="font-weight-medium">分享人：</span>
+                      <span class="font-weight-medium">{{ t('subscribe.sharer') }}：</span>
                       <span class="text-body-1"> {{ media?.share_user }}</span>
                     </VListItemTitle>
                   </VListItem>
                   <VListItem class="ps-0" v-if="media?.keyword">
                     <VListItemTitle class="text-center text-md-left">
-                      <span class="font-weight-medium">搜索词：</span>
+                      <span class="font-weight-medium">{{ t('subscribe.keyword') }}：</span>
                       <span class="text-body-1"> {{ media?.keyword }}</span>
                     </VListItemTitle>
                   </VListItem>
@@ -217,7 +221,7 @@ onMounted(() => {
                         'line-clamp-4 overflow-hidden text-ellipsis': !isExpanded,
                       }"
                     >
-                      <span class="font-weight-medium">识别词：</span>
+                      <span class="font-weight-medium">{{ t('subscribe.recognitionWords') }}：</span>
                       <span class="text-body-1"> {{ media?.custom_words }}</span>
                     </VListItemTitle>
                   </VListItem>
@@ -232,7 +236,7 @@ onMounted(() => {
                       :loading="processing"
                       class="mb-2 me-2"
                     >
-                      订阅
+                      {{ t('subscribe.normalSub') }}
                     </VBtn>
                     <VBtn
                       v-if="isFollowed && props.media?.share_uid"
@@ -241,7 +245,7 @@ onMounted(() => {
                       prepend-icon="mdi-account-remove"
                       class="mb-2 me-2"
                     >
-                      取消关注
+                      {{ t('subscribe.unfollow') }}
                     </VBtn>
                     <VBtn
                       v-else-if="props.media?.share_uid"
@@ -250,7 +254,7 @@ onMounted(() => {
                       prepend-icon="mdi-account-plus"
                       class="mb-2 me-2"
                     >
-                      关注
+                      {{ t('subscribe.follow') }}
                     </VBtn>
                     <VBtn
                       v-if="
@@ -264,11 +268,13 @@ onMounted(() => {
                       :loading="deleting"
                       class="mb-2 me-2"
                     >
-                      取消分享
+                      {{ t('subscribe.cancelShare') }}
                     </VBtn>
                   </div>
                   <div class="text-xs mt-2" v-if="props.media?.count">
-                    <VIcon icon="mdi-fire" />共 {{ props.media?.count?.toLocaleString() }} 次复用
+                    <VIcon icon="mdi-fire" />{{
+                      t('subscribe.usageCount', { count: props.media?.count?.toLocaleString() })
+                    }}
                   </div>
                 </div>
               </VCardItem>

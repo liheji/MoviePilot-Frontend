@@ -4,6 +4,10 @@ import { requiredValidator } from '@/@validators'
 import api from '@/api'
 import type { Context } from '@/api/types'
 import MediaInfoCard from '@/components/cards/MediaInfoCard.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 识别结果
 const nameTestResult = ref<Context>()
@@ -18,19 +22,18 @@ const nameTestForm = reactive({
 const nameTestLoading = ref(false)
 
 // 识别按钮文本
-const nameTestText = ref('识别')
+const nameTestText = ref(t('nameTest.recognize'))
 
 // 是否显示结果
 const showResult = ref(false)
 
 // 调用API识别
 async function nameTest() {
-  if (!nameTestForm.title)
-    return
+  if (!nameTestForm.title) return
 
   try {
     nameTestLoading.value = true
-    nameTestText.value = '识别中...'
+    nameTestText.value = t('nameTest.recognizing')
     showResult.value = false
     nameTestResult.value = await api.get('media/recognize', {
       params: {
@@ -39,10 +42,9 @@ async function nameTest() {
       },
     })
     nameTestLoading.value = false
-    nameTestText.value = '重新识别'
+    nameTestText.value = t('nameTest.recognizeAgain')
     showResult.value = true
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
   }
 }
@@ -52,30 +54,15 @@ async function nameTest() {
   <VForm @submit.prevent="() => {}">
     <VRow class="pt-2">
       <VCol cols="12">
-        <VTextField
-          v-model="nameTestForm.title"
-          label="标题"
-          :rules="[requiredValidator]"
-        />
+        <VTextField v-model="nameTestForm.title" :label="t('nameTest.title')" :rules="[requiredValidator]" />
       </VCol>
       <VCol cols="12">
-        <VTextarea
-          v-model="nameTestForm.subtitle"
-          label="副标题"
-          rows="2"
-          auto-grow
-        />
+        <VTextarea v-model="nameTestForm.subtitle" :label="t('nameTest.subtitle')" rows="2" auto-grow />
       </VCol>
     </VRow>
     <VRow>
-      <VCol
-        cols="12"
-        class="text-center"
-      >
-        <VBtn
-          :disabled="nameTestLoading"
-          @click="nameTest"
-        >
+      <VCol cols="12" class="text-center">
+        <VBtn :disabled="nameTestLoading" @click="nameTest">
           <template #prepend>
             <VIcon icon="mdi-text-recognition" />
           </template>

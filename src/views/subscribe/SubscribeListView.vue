@@ -8,6 +8,10 @@ import SubscribeHistoryDialog from '@/components/dialog/SubscribeHistoryDialog.v
 import { useUserStore } from '@/stores'
 import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // APP
 const display = useDisplay()
@@ -31,8 +35,8 @@ const props = defineProps({
 let isRefreshed = ref(false)
 
 // 顺序存储键值
-const localOrderKey = props.type === '电影' ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'
-const orderRequestKey = props.type === '电影' ? 'SubscribeMovieOrder' : 'SubscribeTvOrder'
+const localOrderKey = props.type === t('media.movie') ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'
+const orderRequestKey = props.type === t('media.movie') ? 'SubscribeMovieOrder' : 'SubscribeTvOrder'
 
 // 刷新状态
 const loading = ref(false)
@@ -160,7 +164,7 @@ useDynamicButton({
 </script>
 
 <template>
-  <VPageContentTitle v-if="keyword" :title="`筛选：${keyword}`" />
+  <VPageContentTitle v-if="keyword" :title="`${t('subscribe.filterSubscriptions')}：${keyword}`" />
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
   <draggable
     v-if="displayList.length > 0"
@@ -178,8 +182,8 @@ useDynamicButton({
   <NoDataFound
     v-if="displayList.length === 0 && isRefreshed"
     error-code="404"
-    error-title="没有数据"
-    :error-description="keyword ? '没有筛选到相关内容，请更换筛选条件。' : '请通过搜索添加电影、电视剧订阅。'"
+    :error-title="t('common.noData')"
+    :error-description="keyword ? t('subscribe.noFilterData') : t('subscribe.noSubscribeData')"
   />
   <!-- 底部操作按钮 -->
   <div v-if="isRefreshed">
