@@ -17,7 +17,7 @@ const progressDialog = ref(false)
 const isConfirmResetSites = ref(false)
 
 // 站点重置按钮文本
-const resetSitesText = ref(t('site.resetSites'))
+const resetSitesText = ref(t('setting.site.resetSites'))
 
 // 站点重置按钮可用状态
 const resetSitesDisabled = ref(false)
@@ -43,37 +43,37 @@ const siteSetting = ref<any>({
 
 // 同步间隔下拉框
 const CookieCloudIntervalItems = [
-  { title: t('site.syncInterval.hourly'), value: 60 },
-  { title: t('site.syncInterval.every6Hours'), value: 360 },
-  { title: t('site.syncInterval.every12Hours'), value: 720 },
-  { title: t('site.syncInterval.daily'), value: 1440 },
-  { title: t('site.syncInterval.weekly'), value: 10080 },
-  { title: t('site.syncInterval.monthly'), value: 43200 },
-  { title: t('site.syncInterval.never'), value: 0 },
+  { title: t('setting.site.syncInterval.hourly'), value: 60 },
+  { title: t('setting.site.syncInterval.every6Hours'), value: 360 },
+  { title: t('setting.site.syncInterval.every12Hours'), value: 720 },
+  { title: t('setting.site.syncInterval.daily'), value: 1440 },
+  { title: t('setting.site.syncInterval.weekly'), value: 10080 },
+  { title: t('setting.site.syncInterval.monthly'), value: 43200 },
+  { title: t('setting.site.syncInterval.never'), value: 0 },
 ]
 
 // 站点数据刷新间隔
 const SiteDataRefreshIntervalItems = [
-  { title: t('site.syncInterval.hourly'), value: 1 },
-  { title: t('site.syncInterval.every6Hours'), value: 6 },
-  { title: t('site.syncInterval.every12Hours'), value: 12 },
-  { title: t('site.syncInterval.daily'), value: 24 },
-  { title: t('site.syncInterval.weekly'), value: 168 },
-  { title: t('site.syncInterval.never'), value: 0 },
+  { title: t('setting.site.syncInterval.hourly'), value: 1 },
+  { title: t('setting.site.syncInterval.every6Hours'), value: 6 },
+  { title: t('setting.site.syncInterval.every12Hours'), value: 12 },
+  { title: t('setting.site.syncInterval.daily'), value: 24 },
+  { title: t('setting.site.syncInterval.weekly'), value: 168 },
+  { title: t('setting.site.syncInterval.never'), value: 0 },
 ]
 
 // 重置站点
 async function resetSites() {
   try {
     resetSitesDisabled.value = true
-    resetSitesText.value = t('site.resettingSites')
+    resetSitesText.value = t('setting.site.resettingSites')
 
     const result: { [key: string]: any } = await api.get('site/reset')
-    if (result.success) $toast.success(t('site.resetSuccess'))
-    else $toast.error(t('site.resetFailed'))
+    if (result.success) $toast.success(t('setting.site.resetSuccess'))
+    else $toast.error(t('setting.site.resetFailed'))
 
     resetSitesDisabled.value = false
-    resetSitesText.value = t('site.resetSites')
+    resetSitesText.value = t('setting.site.resetSites')
   } catch (error) {
     console.log(error)
   }
@@ -115,10 +115,10 @@ async function saveSiteSetting(value: { [key: string]: any }) {
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
-      $toast.success(t('site.saveSuccess'))
+      $toast.success(t('setting.site.saveSuccess'))
       await reloadSystem()
     } else {
-      $toast.error(t('site.saveFailed'))
+      $toast.error(t('setting.site.saveFailed'))
     }
   } catch (error) {
     console.log(error)
@@ -137,8 +137,8 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VCardTitle>{{ t('site.siteSync') }}</VCardTitle>
-          <VCardSubtitle>{{ t('site.siteSyncDesc') }}</VCardSubtitle>
+          <VCardTitle>{{ t('setting.site.siteSync') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.site.siteSyncDesc') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VForm>
@@ -146,8 +146,8 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VCheckbox
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_ENABLE_LOCAL"
-                  :label="t('site.enableLocalCookieCloud')"
-                  :hint="t('site.enableLocalCookieCloudHint')"
+                  :label="t('setting.site.enableLocalCookieCloud')"
+                  :hint="t('setting.site.enableLocalCookieCloudHint')"
                   persistent-hint
                 />
               </VCol>
@@ -156,18 +156,18 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_HOST"
-                  :label="t('site.serviceAddress')"
-                  :placeholder="t('site.serviceAddressPlaceholder')"
+                  :label="t('setting.site.serviceAddress')"
+                  :placeholder="t('setting.site.serviceAddressPlaceholder')"
                   :disabled="siteSetting.CookieCloud.COOKIECLOUD_ENABLE_LOCAL"
-                  :hint="t('site.serviceAddressHint')"
+                  :hint="t('setting.site.serviceAddressHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_KEY"
-                  :label="t('site.userKey')"
-                  :hint="t('site.userKeyHint')"
+                  :label="t('setting.site.userKey')"
+                  :hint="t('setting.site.userKeyHint')"
                   persistent-hint
                 />
               </VCol>
@@ -177,34 +177,34 @@ onMounted(() => {
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                  :label="t('site.e2ePassword')"
-                  :hint="t('site.e2ePasswordHint')"
+                  :label="t('setting.site.e2ePassword')"
+                  :hint="t('setting.site.e2ePasswordHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VSelect
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_INTERVAL"
-                  :label="t('site.autoSyncInterval')"
+                  :label="t('setting.site.autoSyncInterval')"
                   :items="CookieCloudIntervalItems"
-                  :hint="t('site.autoSyncIntervalHint')"
+                  :hint="t('setting.site.autoSyncIntervalHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="siteSetting.CookieCloud.COOKIECLOUD_BLACKLIST"
-                  :label="t('site.syncBlacklist')"
-                  :placeholder="t('site.syncBlacklistPlaceholder')"
-                  :hint="t('site.syncBlacklistHint')"
+                  :label="t('setting.site.syncBlacklist')"
+                  :placeholder="t('setting.site.syncBlacklistPlaceholder')"
+                  :hint="t('setting.site.syncBlacklistHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="siteSetting.CookieCloud.USER_AGENT"
-                  :label="t('site.userAgent')"
-                  :hint="t('site.userAgentHint')"
+                  :label="t('setting.site.userAgent')"
+                  :hint="t('setting.site.userAgentHint')"
                   persistent-hint
                 />
               </VCol>
@@ -223,16 +223,16 @@ onMounted(() => {
   </VRow>
   <VRow>
     <VCol cols="12">
-      <VCard :title="t('site.siteDataRefresh')">
+      <VCard :title="t('setting.site.siteDataRefresh')">
         <VCardText>
           <VForm>
             <VRow>
               <VCol cols="12" md="6">
                 <VSelect
                   v-model="siteSetting.Site.SITEDATA_REFRESH_INTERVAL"
-                  :label="t('site.siteDataRefreshInterval')"
+                  :label="t('setting.site.siteDataRefreshInterval')"
                   :items="SiteDataRefreshIntervalItems"
-                  :hint="t('site.siteDataRefreshIntervalHint')"
+                  :hint="t('setting.site.siteDataRefreshIntervalHint')"
                   persistent-hint
                 />
               </VCol>
@@ -241,8 +241,8 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="siteSetting.Site.SITE_MESSAGE"
-                  :label="t('site.readSiteMessage')"
-                  :hint="t('site.readSiteMessageHint')"
+                  :label="t('setting.site.readSiteMessage')"
+                  :hint="t('setting.site.readSiteMessageHint')"
                   persistent-hint
                 />
               </VCol>
@@ -261,13 +261,13 @@ onMounted(() => {
   </VRow>
   <VRow>
     <VCol cols="12">
-      <VCard :title="t('site.siteReset')">
+      <VCard :title="t('setting.site.siteReset')">
         <VCardText>
           <div>
             <VCheckbox
               v-model="isConfirmResetSites"
-              :label="t('site.confirmReset')"
-              :hint="t('site.confirmResetHint')"
+              :label="t('setting.site.confirmReset')"
+              :hint="t('setting.site.confirmResetHint')"
               persistent-hint
             />
           </div>
