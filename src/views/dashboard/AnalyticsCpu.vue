@@ -2,6 +2,10 @@
 import { useTheme } from 'vuetify'
 import { hexToRgb } from '@layouts/utils'
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -149,7 +153,7 @@ onActivated(() => {
         </VCardItem>
         <VCardText>
           <VApexChart :key="chartKey" type="line" :options="chartOptions" :series="series" :height="150" />
-          <p class="text-center font-weight-medium mb-0">当前：{{ current }}%</p>
+          <p class="text-center font-weight-medium mb-0">{{ t('dashboard.current') }}：{{ current }}%</p>
         </VCardText>
       </VCard>
     </template>

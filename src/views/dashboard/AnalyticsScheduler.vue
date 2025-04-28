@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import api from '@/api'
 import type { ScheduleInfo } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -57,7 +61,7 @@ onUnmounted(() => {
           <template #append>
             <VIcon class="cursor-move" v-if="hover.isHovering">mdi-drag</VIcon>
           </template>
-          <VCardTitle>后台任务</VCardTitle>
+          <VCardTitle>{{ t('dashboard.scheduler') }}</VCardTitle>
         </VCardItem>
 
         <VCardText>
@@ -86,7 +90,7 @@ onUnmounted(() => {
               </template>
             </VListItem>
             <VListItem v-if="schedulerList.length === 0">
-              <VListItemTitle class="text-center"> 没有后台服务 </VListItemTitle>
+              <VListItemTitle class="text-center"> {{ t('dashboard.noSchedulers') }} </VListItemTitle>
             </VListItem>
           </VList>
         </VCardText>

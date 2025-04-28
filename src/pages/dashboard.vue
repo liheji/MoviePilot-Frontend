@@ -81,7 +81,7 @@ const dashboardConfigs = ref<DashboardItem[]>([
   },
   {
     id: 'speed',
-    name: t('dashboard.speed'),
+    name: t('dashboard.realTimeSpeed'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 4 },

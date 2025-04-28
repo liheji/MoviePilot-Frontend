@@ -2,6 +2,10 @@
 import { formatFileSize } from '@/@core/utils/formatters'
 import api from '@/api'
 import type { DownloaderInfo } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -55,17 +59,17 @@ async function loadDownloaderInfo() {
     infoItems.value = [
       {
         avatar: 'mdi-cloud-upload',
-        title: '总上传量',
+        title: t('dashboard.speed.totalUpload'),
         amount: formatFileSize(res.upload_size),
       },
       {
         avatar: 'mdi-download-box',
-        title: '总下载量',
+        title: t('dashboard.speed.totalDownload'),
         amount: formatFileSize(res.download_size),
       },
       {
         avatar: 'mdi-content-save',
-        title: '磁盘剩余空间',
+        title: t('dashboard.speed.freeSpace'),
         amount: formatFileSize(res.free_space),
       },
     ]
@@ -100,7 +104,7 @@ onUnmounted(() => {
           <template #append>
             <VIcon class="cursor-move" v-if="hover.isHovering">mdi-drag</VIcon>
           </template>
-          <VCardTitle>实时速率</VCardTitle>
+          <VCardTitle>{{ t('dashboard.realTimeSpeed') }}</VCardTitle>
         </VCardItem>
 
         <VCardText class="pt-4">

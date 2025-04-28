@@ -24,6 +24,7 @@ export default {
     theme: '主題',
     language: '語言',
     pleaseWait: '請稍候...',
+    viewDetails: '查看詳情',
   },
   mediaType: {
     movie: '電影',
@@ -239,7 +240,7 @@ export default {
     storage: '存儲空間',
     mediaStatistic: '媒體統計',
     weeklyOverview: '最近入庫',
-    speed: '實時速率',
+    realTimeSpeed: '實時速率',
     scheduler: '後台任務',
     cpu: 'CPU',
     memory: '內存',
@@ -249,6 +250,27 @@ export default {
     settings: '設置儀表板',
     chooseContent: '選擇您想在頁面顯示的內容',
     adaptiveHeight: '自適應組件高度',
+    current: '當前',
+    episodes: '劇集',
+    users: '用戶',
+    noSchedulers: '沒有後台服務',
+    weeklyOverviewDescription: '最近一週入庫了 {count} 部影片',
+    speed: {
+      totalUpload: '總上傳量',
+      totalDownload: '總下載量',
+      freeSpace: '磁盤剩餘空間',
+    },
+    processes: {
+      title: '系統進程',
+      pid: '進程ID',
+      name: '進程名稱',
+      runtime: '運行時間',
+      memory: '內存佔用',
+    },
+    errors: {
+      loadMediaServer: '加載媒體服務器設置失敗:',
+      loadLatest: '加載媒體服務器 "{server}" 的最近入庫失敗:',
+    },
   },
   media: {
     status: {

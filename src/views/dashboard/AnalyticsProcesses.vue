@@ -2,9 +2,18 @@
 import { formatSeconds } from '@/@core/utils/formatters'
 import api from '@/api'
 import type { Process } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 表头
-const headers = ['进程ID', '进程名称', '运行时间', '内存占用']
+const headers = [
+  t('dashboard.processes.pid'),
+  t('dashboard.processes.name'),
+  t('dashboard.processes.runtime'),
+  t('dashboard.processes.memory'),
+]
 
 // 数据列表
 const processList = ref<Process[]>([])
@@ -47,7 +56,7 @@ onUnmounted(() => {
       <template #append>
         <VIcon class="cursor-move">mdi-drag</VIcon>
       </template>
-      <VCardTitle>系统进程</VCardTitle>
+      <VCardTitle>{{ t('dashboard.processes.title') }}</VCardTitle>
     </VCardItem>
     <VTable item-key="fullName" class="table-rounded" hide-default-footer disable-sort>
       <thead>

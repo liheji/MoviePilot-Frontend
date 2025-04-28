@@ -3,6 +3,10 @@ import { ref, onMounted } from 'vue'
 import api from '@/api'
 import type { MediaServerConf, MediaServerPlayItem } from '@/api/types'
 import PosterCard from '@/components/cards/PosterCard.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 最近入库列表
 const latestList = ref<{ [key: string]: MediaServerPlayItem[] }>({})
@@ -16,7 +20,7 @@ async function loadMediaServerSetting() {
     const response: { data: { value: MediaServerConf[] } } = await api.get('system/setting/MediaServers')
     mediaServers.value = response.data?.value ?? []
   } catch (error) {
-    console.log('加载媒体服务器设置失败:', error)
+    console.log(t('dashboard.errors.loadMediaServer'), error)
   }
 }
 
@@ -29,7 +33,7 @@ async function loadLatest(server: string) {
       latestList.value[server] = response
     }
   } catch (e) {
-    console.log(`加载媒体服务器 "${server}" 的最近入库失败:`, e)
+    console.log(t('dashboard.errors.loadLatest', { server }), e)
   }
 }
 
@@ -60,7 +64,7 @@ onActivated(() => {
             <template #append>
               <VIcon class="cursor-move" v-if="hover.isHovering">mdi-drag</VIcon>
             </template>
-            <VCardTitle>最近添加 - {{ name }}</VCardTitle>
+            <VCardTitle>{{ t('dashboard.latest') }} - {{ name }}</VCardTitle>
           </VCardItem>
 
           <div class="grid gap-4 grid-media-card mx-3 mb-3" tabindex="0">

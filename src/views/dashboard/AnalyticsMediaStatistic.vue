@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import api from '@/api'
 import type { MediaStatistic } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 const statistics = ref<{ [key: string]: string }[]>([])
 
@@ -11,25 +15,25 @@ async function loadMediaStatistic() {
 
     statistics.value = [
       {
-        title: '电影',
+        title: t('mediaType.movie'),
         stats: res.movie_count.toLocaleString(),
         icon: 'mdi-movie-roll',
         color: 'primary',
       },
       {
-        title: '电视剧',
+        title: t('mediaType.tv'),
         stats: res.tv_count.toLocaleString(),
         icon: 'mdi-television-box',
         color: 'success',
       },
       {
-        title: '剧集',
+        title: t('dashboard.episodes'),
         stats: res.episode_count.toLocaleString(),
         icon: 'mdi-television-classic',
         color: 'warning',
       },
       {
-        title: '用户',
+        title: t('dashboard.users'),
         stats: res.user_count.toLocaleString(),
         icon: 'mdi-account',
         color: 'info',
@@ -57,7 +61,7 @@ onActivated(() => {
           <template #append>
             <VIcon class="cursor-move" v-if="hover.isHovering">mdi-drag</VIcon>
           </template>
-          <VCardTitle>媒体统计</VCardTitle>
+          <VCardTitle>{{ t('dashboard.mediaStatistic') }}</VCardTitle>
         </VCardItem>
 
         <VCardText>

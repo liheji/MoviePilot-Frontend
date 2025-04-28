@@ -2,6 +2,10 @@
 import api from '@/api'
 import type { MediaServerConf, MediaServerPlayItem } from '@/api/types'
 import BackdropCard from '@/components/cards/BackdropCard.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 继续播放列表
 const playingList = ref<MediaServerPlayItem[]>([])
@@ -63,7 +67,7 @@ onActivated(() => {
           <template #append>
             <VIcon class="cursor-move" v-if="hover.isHovering">mdi-drag</VIcon>
           </template>
-          <VCardTitle>继续观看</VCardTitle>
+          <VCardTitle>{{ t('dashboard.playing') }}</VCardTitle>
         </VCardItem>
 
         <div class="grid gap-4 grid-backdrop-card mx-3" tabindex="0">

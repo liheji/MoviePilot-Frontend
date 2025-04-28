@@ -24,6 +24,7 @@ export default {
     theme: '主题',
     language: '语言',
     pleaseWait: '请稍候...',
+    viewDetails: '查看详情',
   },
   mediaType: {
     movie: '电影',
@@ -239,7 +240,7 @@ export default {
     storage: '存储空间',
     mediaStatistic: '媒体统计',
     weeklyOverview: '最近入库',
-    speed: '实时速率',
+    realTimeSpeed: '实时速率',
     scheduler: '后台任务',
     cpu: 'CPU',
     memory: '内存',
@@ -249,6 +250,27 @@ export default {
     settings: '设置仪表板',
     chooseContent: '选择您想在页面显示的内容',
     adaptiveHeight: '自适应组件高度',
+    current: '当前',
+    episodes: '剧集',
+    users: '用户',
+    noSchedulers: '没有后台服务',
+    weeklyOverviewDescription: '最近一周入库了 {count} 部影片',
+    speed: {
+      totalUpload: '总上传量',
+      totalDownload: '总下载量',
+      freeSpace: '磁盘剩余空间',
+    },
+    processes: {
+      title: '系统进程',
+      pid: '进程ID',
+      name: '进程名称',
+      runtime: '运行时间',
+      memory: '内存占用',
+    },
+    errors: {
+      loadMediaServer: '加载媒体服务器设置失败:',
+      loadLatest: '加载媒体服务器 "{server}" 的最近入库失败:',
+    },
   },
   media: {
     status: {

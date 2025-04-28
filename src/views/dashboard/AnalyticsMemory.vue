@@ -3,6 +3,10 @@ import { useTheme } from 'vuetify'
 import { hexToRgb } from '@layouts/utils'
 import api from '@/api'
 import { formatBytes } from '@/@core/utils/formatters'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -151,11 +155,11 @@ onActivated(() => {
           <template #append>
             <VIcon class="cursor-move" v-if="hover.isHovering">mdi-drag</VIcon>
           </template>
-          <VCardTitle>内存</VCardTitle>
+          <VCardTitle>{{ t('dashboard.memory') }}</VCardTitle>
         </VCardItem>
         <VCardText>
           <VApexChart :key="chartKey" type="area" :options="chartOptions" :series="series" :height="150" />
-          <p class="text-center font-weight-medium mb-0">当前：{{ formatBytes(usedMemory) }}</p>
+          <p class="text-center font-weight-medium mb-0">{{ t('dashboard.current') }}：{{ formatBytes(usedMemory) }}</p>
         </VCardText>
       </VCard>
     </template>
