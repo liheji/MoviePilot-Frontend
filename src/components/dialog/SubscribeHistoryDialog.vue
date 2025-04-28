@@ -4,6 +4,11 @@ import { Subscribe } from '@/api/types'
 import { formatDateDifference } from '@core/utils/formatters'
 import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
+import { getMediaTypeText } from '@/types/i18n-type'
+
+// 国际化
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -38,7 +43,7 @@ const isRefreshed = ref(false)
 const progressDialog = ref(false)
 
 // 进度文字
-const progressText = ref('正在重新订阅...')
+const progressText = ref('')
 
 // 调用API查询列表
 async function loadHistory({ done }: { done: any }) {
@@ -82,8 +87,11 @@ async function loadHistory({ done }: { done: any }) {
 
 // 重新订阅
 async function reSubscribe(item: Subscribe) {
-  if (item.type === '电影') progressText.value = `正在重新订阅 ${item.name} ...`
-  else progressText.value = `正在重新订阅 ${item.name} 第 ${item.season} 季 ...`
+  if (item.type === '电影') {
+    progressText.value = t('dialog.subscribeHistory.resubscribeMovie', { name: item.name })
+  } else {
+    progressText.value = t('dialog.subscribeHistory.resubscribeTv', { name: item.name, season: item.season })
+  }
   progressDialog.value = true
   try {
     const result: { [key: string]: any } = await api.post('subscribe/', item)
@@ -111,7 +119,7 @@ async function deleteHistory(item: Subscribe) {
 // 弹出菜单
 const dropdownItems = ref([
   {
-    title: '重新订阅',
+    title: t('dialog.subscribeHistory.resubscribe'),
     value: 1,
     color: '',
     props: {
@@ -120,7 +128,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '删除',
+    title: t('common.delete'),
     value: 2,
     color: 'error',
     props: {
@@ -135,7 +143,7 @@ const dropdownItems = ref([
   <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard class="mx-auto" width="100%">
       <VCardItem>
-        <VCardTitle>{{ props.type + '订阅历史' }}</VCardTitle>
+        <VCardTitle>{{ t('dialog.subscribeHistory.title', { type: getMediaTypeText(props.type) }) }}</VCardTitle>
       </VCardItem>
       <VDivider />
       <VDialogCloseBtn @click="emit('close')" />
@@ -165,7 +173,8 @@ const dropdownItems = ref([
                   </VImg>
                 </template>
                 <VListItemTitle v-if="item.type == '电视剧'">
-                  {{ item.name }} <span class="text-sm">第 {{ item.season }} 季</span>
+                  {{ item.name }}
+                  <span class="text-sm">{{ t('dialog.subscribeHistory.season', { season: item.season }) }}</span>
                 </VListItemTitle>
                 <VListItemTitle v-else>
                   {{ item.name }}
@@ -199,7 +208,9 @@ const dropdownItems = ref([
           </template>
         </VInfiniteScroll>
       </VList>
-      <VCardText v-if="historyList.length === 0 && isRefreshed" class="text-center"> 没有已完成的订阅 </VCardText>
+      <VCardText v-if="historyList.length === 0 && isRefreshed" class="text-center">{{
+        t('dialog.subscribeHistory.noData')
+      }}</VCardText>
     </VCard>
     <!-- 进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
