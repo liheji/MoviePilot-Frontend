@@ -247,8 +247,8 @@ onActivated(async () => {
           <p class="settings-hint">{{ t('recommend.selectContentToDisplay') }}</p>
           <div class="settings-grid">
             <div
-              v-for="(item, index) in viewList"
-              :key="index"
+              v-for="item in viewList"
+              :key="item.title"
               class="setting-item"
               :class="{
                 'enabled': enableConfig[item.title],
