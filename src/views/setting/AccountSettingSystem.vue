@@ -38,6 +38,7 @@ const SystemSettings = ref<any>({
     // 媒体
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
+    TMDB_LANGUAGE: null,
     META_CACHE_EXPIRE: 0,
     SCRAP_FOLLOW_TMDB: true,
     FANART_ENABLE: false,
@@ -80,6 +81,13 @@ const progressDialog = ref(false)
 const advancedDialog = ref(false)
 
 const activeTab = ref('system')
+
+// 元数据语言
+const tmdbLanguageItems = [
+  { title: '简体中文', value: 'zh' },
+  { title: '繁体中文', value: 'zh-TW' },
+  { title: '英文', value: 'en' },
+]
 
 // 调用API查询下载器设置
 async function loadDownloaderSetting() {
@@ -704,6 +712,16 @@ onDeactivated(() => {
                     persistent-hint
                     :items="['image.tmdb.org', 'static-mdb.v.geilijiasu.com']"
                     :rules="[(v: string) => !!v || '请输入图片服务域名']"
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSelect
+                    v-model="SystemSettings.Advanced.TMDB_LANGUAGE"
+                    label="TMDB 元数据语言"
+                    placeholder="zh"
+                    hint="自定义themoviedb元数据语言"
+                    persistent-hint
+                    :items="tmdbLanguageItems"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
