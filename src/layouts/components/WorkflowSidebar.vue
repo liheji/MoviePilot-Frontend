@@ -119,7 +119,7 @@ onMounted(() => {
       <div class="sidebar-header">
         <div class="header-content">
           <VAvatar size="36" class="workflow-logo">
-            <VIcon icon="mdi-puzzle" />
+            <VIcon icon="mdi-apps" />
           </VAvatar>
           <span v-if="!isSidebarCollapsed || display.smAndDown.value" class="header-title">{{
             t('workflow.components')

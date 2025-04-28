@@ -561,7 +561,7 @@ onMounted(() => {
                 >
                   <template #prepend>
                     <div class="option-icon-wrapper d-flex align-center justify-center">
-                      <VIcon icon="mdi-puzzle" :color="hover.isHovering ? 'primary' : 'medium-emphasis'" size="small" />
+                      <VIcon icon="mdi-apps" :color="hover.isHovering ? 'primary' : 'medium-emphasis'" size="small" />
                     </div>
                   </template>
                   <VListItemTitle class="font-weight-medium">

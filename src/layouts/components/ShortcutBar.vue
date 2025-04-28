@@ -156,7 +156,7 @@ onMounted(() => {
     <!-- Menu Activator -->
     <template #activator="{ props }">
       <IconBtn class="ms-2" v-bind="props">
-        <VIcon icon="mdi-apps" />
+        <VIcon icon="mdi-card-multiple-outline" />
       </IconBtn>
     </template>
     <!-- Menu Content -->

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useConfirm } from 'vuetify-use-dialog'
 import { useToast } from 'vue-toast-notification'
 import router from '@/router'
 import avatar1 from '@images/avatars/avatar-1.png'
@@ -23,9 +22,6 @@ const userStore = useUserStore()
 const { t } = useI18n()
 // 显示器
 const display = useDisplay()
-
-// 确认框
-const createConfirm = useConfirm()
 
 // 提示框
 const $toast = useToast()
@@ -256,7 +252,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VAvatar class="cursor-pointer ms-3" color="primary" variant="tonal">
+  <VAvatar class="cursor-pointer ms-3 border" color="primary" variant="tonal">
     <VImg :src="avatar" />
 
     <VMenu

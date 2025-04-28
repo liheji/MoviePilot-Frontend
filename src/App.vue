@@ -77,7 +77,7 @@ function updateHtmlThemeAttribute(themeName: string) {
 // 获取背景图片
 async function fetchBackgroundImages() {
   try {
-    backgroundImages.value = await api.get(`/login/${t('login.wallpapers')}`)
+    backgroundImages.value = await api.get(`/login/wallpapers`)
   } catch (e) {
     console.error(e)
   }

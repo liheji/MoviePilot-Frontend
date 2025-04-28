@@ -94,7 +94,7 @@ export function getNavMenus() {
     },
     {
       title: t('navItems.pluginManager'),
-      icon: 'mdi-puzzle-outline',
+      icon: 'mdi-apps',
       to: '/plugins',
       header: t('menu.system'),
       admin: true,
@@ -240,7 +240,7 @@ export function getPluginTabs() {
     {
       title: t('pluginTabs.installed'),
       tab: 'installed',
-      icon: 'mdi-puzzle',
+      icon: 'mdi-apps',
     },
     {
       title: t('pluginTabs.market'),
