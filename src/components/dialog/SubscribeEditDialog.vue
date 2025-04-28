@@ -5,6 +5,10 @@ import api from '@/api'
 import type { DownloaderConf, FilterRuleGroup, Site, Subscribe, TransferDirectoryConf } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import { useConfirm } from 'vuetify-use-dialog'
+import { useI18n } from 'vue-i18n'
+
+// i18n
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -80,7 +84,7 @@ const episodeGroupOptions = computed(() => {
 // 生成1到100季的下拉框选项
 const seasonItems = ref(
   Array.from({ length: 101 }, (_, i) => i).map(item => ({
-    title: `第 ${item} 季`,
+    title: t('dialog.subscribeEdit.seasonFormat', { number: item }),
     value: item,
   })),
 )
@@ -106,7 +110,7 @@ async function loadDownloaderSetting() {
   try {
     const downloaders: DownloaderConf[] = await api.get('download/clients')
     downloaderOptions.value = [
-      { title: '默认', value: '' },
+      { title: t('common.default'), value: '' },
       ...downloaders.map((item: { name: any }) => ({
         title: item.name,
         value: item.name,
@@ -229,8 +233,8 @@ async function getSubscribeInfo() {
 // 删除订阅
 async function removeSubscribe() {
   const isConfirmed = await createConfirm({
-    title: '确认',
-    content: `是否确认取消订阅？`,
+    title: t('common.confirm'),
+    content: t('dialog.subscribeEdit.cancelSubscribeConfirm'),
   })
 
   if (!isConfirmed) return
@@ -268,7 +272,7 @@ const targetDirectories = computed(() => {
 // 质量选择框数据
 const qualityOptions = ref([
   {
-    title: '全部',
+    title: t('common.all'),
     value: '',
   },
   {
@@ -308,7 +312,7 @@ const qualityOptions = ref([
 // 分辨率选择框数据
 const resolutionOptions = ref([
   {
-    title: '全部',
+    title: t('common.all'),
     value: '',
   },
   {
@@ -328,7 +332,7 @@ const resolutionOptions = ref([
 // 特效选择框数据
 const effectOptions = ref([
   {
-    title: '全部',
+    title: t('common.all'),
     value: '',
   },
   {
@@ -362,11 +366,16 @@ onMounted(() => {
 <template>
   <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard
-      :title="`${
+      :title="
         props.default
-          ? `${props.type}默认订阅规则`
-          : `编辑订阅 - ${subscribeForm.name} ${subscribeForm.season ? `第 ${subscribeForm.season} 季` : ''}`
-      }`"
+          ? t('dialog.subscribeEdit.titleDefault')
+          : t('dialog.subscribeEdit.titleEditFormat', {
+              name: subscribeForm.name,
+              season: subscribeForm.season
+                ? t('dialog.subscribeEdit.seasonFormat', { number: subscribeForm.season })
+                : '',
+            })
+      "
       class="rounded-t"
     >
       <VCardText>
@@ -374,10 +383,10 @@ onMounted(() => {
         <VForm @submit.prevent="() => {}">
           <VTabs v-model="activeTab" show-arrows>
             <VTab value="basic">
-              <div>基础</div>
+              <div>{{ t('dialog.subscribeEdit.tabs.basic') }}</div>
             </VTab>
             <VTab value="advance">
-              <div>进阶</div>
+              <div>{{ t('dialog.subscribeEdit.tabs.advance') }}</div>
             </VTab>
           </VTabs>
           <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
@@ -387,26 +396,26 @@ onMounted(() => {
                   <VCol cols="12" md="4">
                     <VTextField
                       v-model="subscribeForm.keyword"
-                      label="搜索关键词"
-                      hint="指定搜索站点时使用的关键词"
+                      :label="t('dialog.subscribeEdit.searchKeyword')"
+                      :hint="t('dialog.subscribeEdit.searchKeywordHint')"
                       persistent-hint
                     />
                   </VCol>
                   <VCol v-if="subscribeForm.type === '电视剧'" cols="12" md="4">
                     <VTextField
                       v-model="subscribeForm.total_episode"
-                      label="总集数"
+                      :label="t('dialog.subscribeEdit.totalEpisode')"
                       :rules="[numberValidator]"
-                      hint="剧集总集数"
+                      :hint="t('dialog.subscribeEdit.totalEpisodeHint')"
                       persistent-hint
                     />
                   </VCol>
                   <VCol v-if="subscribeForm.type === '电视剧'" cols="12" md="4">
                     <VTextField
                       v-model="subscribeForm.start_episode"
-                      label="开始集数"
+                      :label="t('dialog.subscribeEdit.startEpisode')"
                       :rules="[numberValidator]"
-                      hint="开始订阅集数"
+                      :hint="t('dialog.subscribeEdit.startEpisodeHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -415,27 +424,27 @@ onMounted(() => {
                   <VCol cols="12" md="4">
                     <VSelect
                       v-model="subscribeForm.quality"
-                      label="质量"
+                      :label="t('dialog.subscribeEdit.quality')"
                       :items="qualityOptions"
-                      hint="订阅资源质量"
+                      :hint="t('dialog.subscribeEdit.qualityHint')"
                       persistent-hint
                     />
                   </VCol>
                   <VCol cols="12" md="4">
                     <VSelect
                       v-model="subscribeForm.resolution"
-                      label="分辨率"
+                      :label="t('dialog.subscribeEdit.resolution')"
                       :items="resolutionOptions"
-                      hint="订阅资源分辨率"
+                      :hint="t('dialog.subscribeEdit.resolutionHint')"
                       persistent-hint
                     />
                   </VCol>
                   <VCol cols="12" md="4">
                     <VSelect
                       v-model="subscribeForm.effect"
-                      label="特效"
+                      :label="t('dialog.subscribeEdit.effect')"
                       :items="effectOptions"
-                      hint="订阅资源特效"
+                      :hint="t('dialog.subscribeEdit.effectHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -446,10 +455,10 @@ onMounted(() => {
                       v-model="subscribeForm.sites"
                       :items="selectSitesOptions"
                       chips
-                      label="订阅站点"
+                      :label="t('dialog.subscribeEdit.subscribeSites')"
                       multiple
                       clearable
-                      hint="订阅的站点范围，不选使用系统设置"
+                      :hint="t('dialog.subscribeEdit.subscribeSitesHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -459,8 +468,8 @@ onMounted(() => {
                     <VSelect
                       v-model="subscribeForm.downloader"
                       :items="downloaderOptions"
-                      label="下载器"
-                      hint="指定该订阅使用的下载器"
+                      :label="t('dialog.subscribeEdit.downloader')"
+                      :hint="t('dialog.subscribeEdit.downloaderHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -468,8 +477,8 @@ onMounted(() => {
                     <VCombobox
                       v-model="subscribeForm.save_path"
                       :items="targetDirectories"
-                      label="保存路径"
-                      hint="指定该订阅的下载保存路径，留空自动使用设定的下载目录"
+                      :label="t('dialog.subscribeEdit.savePath')"
+                      :hint="t('dialog.subscribeEdit.savePathHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -478,24 +487,24 @@ onMounted(() => {
                   <VCol cols="12" md="4">
                     <VSwitch
                       v-model="subscribeForm.best_version"
-                      label="洗版"
-                      hint="根据洗版优先级进行洗版订阅"
+                      :label="t('dialog.subscribeEdit.bestVersion')"
+                      :hint="t('dialog.subscribeEdit.bestVersionHint')"
                       persistent-hint
                     />
                   </VCol>
                   <VCol cols="12" md="4">
                     <VSwitch
                       v-model="subscribeForm.search_imdbid"
-                      label="使用 ImdbID 搜索"
-                      hint="开使用 ImdbID 精确搜索资源"
+                      :label="t('dialog.subscribeEdit.searchImdbid')"
+                      :hint="t('dialog.subscribeEdit.searchImdbidHint')"
                       persistent-hint
                     />
                   </VCol>
                   <VCol v-if="props.default" cols="12" md="4">
                     <VSwitch
                       v-model="subscribeForm.show_edit_dialog"
-                      label="订阅时编辑更多规则"
-                      hint="添加订阅时显示此编辑订阅对话框"
+                      :label="t('dialog.subscribeEdit.showEditDialog')"
+                      :hint="t('dialog.subscribeEdit.showEditDialogHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -508,16 +517,16 @@ onMounted(() => {
                   <VCol cols="12" md="6">
                     <VTextField
                       v-model="subscribeForm.include"
-                      label="包含（关键字、正则式）"
-                      hint="包含规则，支持正则表达式"
+                      :label="t('dialog.subscribeEdit.include')"
+                      :hint="t('dialog.subscribeEdit.includeHint')"
                       persistent-hint
                     />
                   </VCol>
                   <VCol cols="12" md="6">
                     <VTextField
                       v-model="subscribeForm.exclude"
-                      label="排除（关键字、正则式）"
-                      hint="排除规则，支持正则表达式"
+                      :label="t('dialog.subscribeEdit.exclude')"
+                      :hint="t('dialog.subscribeEdit.excludeHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -530,8 +539,8 @@ onMounted(() => {
                       chips
                       multiple
                       clearable
-                      label="优先级规则组"
-                      hint="按选定的过滤规则组对订阅进行过滤"
+                      :label="t('dialog.subscribeEdit.filterGroups')"
+                      :hint="t('dialog.subscribeEdit.filterGroupsHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -540,8 +549,8 @@ onMounted(() => {
                       v-model="subscribeForm.episode_group"
                       :items="episodeGroupOptions"
                       :item-props="episodeGroupItemProps"
-                      label="指定剧集组"
-                      hint="按特定剧集组识别和刮削"
+                      :label="t('dialog.subscribeEdit.episodeGroup')"
+                      :hint="t('dialog.subscribeEdit.episodeGroupHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -549,16 +558,16 @@ onMounted(() => {
                     <VSelect
                       v-model="subscribeForm.season"
                       :items="seasonItems"
-                      label="指定季"
-                      hint="指定任意季订阅"
+                      :label="t('dialog.subscribeEdit.season')"
+                      :hint="t('dialog.subscribeEdit.seasonHint')"
                       persistent-hint
                     />
                   </VCol>
                   <VCol cols="12" v-if="!props.default">
                     <VTextField
                       v-model="subscribeForm.media_category"
-                      label="自定义类别"
-                      hint="指定类别名称，留空自动识别"
+                      :label="t('dialog.subscribeEdit.mediaCategory')"
+                      :hint="t('dialog.subscribeEdit.mediaCategoryHint')"
                       persistent-hint
                     />
                   </VCol>
@@ -567,14 +576,10 @@ onMounted(() => {
                   <VCol cols="12">
                     <VTextarea
                       v-model="subscribeForm.custom_words"
-                      label="自定义识别词"
-                      hint="只对该订阅使用的识别词"
+                      :label="t('dialog.subscribeEdit.customWords')"
+                      :hint="t('dialog.subscribeEdit.customWordsHint')"
                       persistent-hint
-                      placeholder="屏蔽词
-被替换词 => 替换词
-前定位词 <> 后定位词 >> 集偏移量（EP）
-被替换词 => 替换词 && 前定位词 <> 后定位词 >> 集偏移量（EP）
-其中替换词支持格式：{[tmdbid/doubanid=xxx;type=movie/tv;s=xxx;e=xxx]} 直接指定TMDBID/豆瓣ID识别，其中s、e为季数和集数（可选）"
+                      :placeholder="t('dialog.subscribeEdit.customWordsPlaceholder')"
                     />
                   </VCol>
                 </VRow>
@@ -585,7 +590,7 @@ onMounted(() => {
       </VCardText>
       <VCardActions class="pt-3">
         <VBtn v-if="!props.default" color="error" @click="removeSubscribe" variant="outlined" class="me-3">
-          取消订阅
+          {{ t('dialog.subscribeEdit.cancelSubscribe') }}
         </VBtn>
         <VSpacer />
         <VBtn
@@ -594,7 +599,7 @@ onMounted(() => {
           prepend-icon="mdi-content-save"
           class="px-5"
         >
-          保存
+          {{ t('dialog.subscribeEdit.save') }}
         </VBtn>
       </VCardActions>
     </VCard>

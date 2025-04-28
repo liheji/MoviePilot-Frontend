@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 定义输入
 const props = defineProps({
@@ -30,22 +34,32 @@ async function savaAlistConfig() {
 
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
-    <VCard title="AList配置" class="rounded-t">
+    <VCard :title="t('dialog.alistConfig.title')" class="rounded-t">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VTextField v-model="props.conf.url" hint="AList服务地址" label="地址" persistent-hint />
+            <VTextField
+              v-model="props.conf.url"
+              :hint="t('dialog.alistConfig.serverUrl')"
+              :label="t('dialog.alistConfig.serverUrl')"
+              persistent-hint
+            />
           </VCol>
           <VCol cols="12" md="6">
-            <VTextField v-model="props.conf.username" hint="AList登录用户名" label="用户名" persistent-hint />
+            <VTextField
+              v-model="props.conf.username"
+              :hint="t('dialog.alistConfig.username')"
+              :label="t('dialog.alistConfig.username')"
+              persistent-hint
+            />
           </VCol>
           <VCol cols="12" md="6">
             <VTextField
               type="password"
               v-model="props.conf.password"
-              hint="AList登录密码"
-              label="密码"
+              :hint="t('dialog.alistConfig.password')"
+              :label="t('dialog.alistConfig.password')"
               persistent-hint
             />
           </VCol>
@@ -53,7 +67,9 @@ async function savaAlistConfig() {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3"> 完成 </VBtn>
+        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
+          {{ t('dialog.alistConfig.complete') }}
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>

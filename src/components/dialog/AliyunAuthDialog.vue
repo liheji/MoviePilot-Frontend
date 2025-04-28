@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 定义输入
 defineProps({
@@ -16,7 +20,7 @@ const emit = defineEmits(['done', 'close'])
 const qrCodeUrl = ref('')
 
 // 下方的提示信息
-const text = ref('请用阿里云盘 App 扫码')
+const text = ref(t('dialog.aliyunAuth.scanQrCode'))
 
 // 提醒类型
 const alertType = ref<'success' | 'info' | 'error' | 'warning' | undefined>('info')
@@ -85,7 +89,7 @@ onUnmounted(() => {
 
 <template>
   <VDialog width="40rem" scrollable max-height="85vh">
-    <VCard title="阿里云盘登录" class="rounded-t">
+    <VCard :title="t('dialog.aliyunAuth.loginTitle')" class="rounded-t">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText class="pt-2 flex flex-col items-center">
         <div class="my-6 rounded text-center p-3 border">
@@ -103,7 +107,9 @@ onUnmounted(() => {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3"> 完成 </VBtn>
+        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
+          {{ t('dialog.aliyunAuth.complete') }}
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>

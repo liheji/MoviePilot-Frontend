@@ -9,6 +9,10 @@ import api from '@/api'
 import WorkflowSidebar from '@/layouts/components/WorkflowSidebar.vue'
 import DropzoneBackground from '@/layouts/components/DropzoneBackground.vue'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 const { onConnect, addEdges, nodes, edges, addNodes, screenToFlowCoordinate } = useVueFlow()
 
@@ -18,7 +22,7 @@ const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
 onConnect((connection: Connection) => {
   // 双重校验
   if (!isValidConnection(connection)) {
-    $toast.warning('非法连接：不能连接自身或同类型端口！')
+    $toast.warning(t('dialog.workflowActions.invalidConnection'))
     return
   }
   addEdges(connection)
@@ -67,7 +71,7 @@ const loadComponent = async (componentName: string) => {
   if (component) {
     return ((await component()) as any).default
   }
-  throw new Error(`组件 ${componentName} 未找到`)
+  throw new Error(t('dialog.workflowActions.componentNotFound', { component: componentName }))
 }
 
 // 将所有components中的组件加载到nodeTypes中
@@ -132,7 +136,7 @@ function handleComponentClick(action: any) {
   addNodes(newNode)
 
   // 显示提示
-  $toast.success('已添加组件到画布')
+  $toast.success(t('dialog.workflowActions.componentAdded'))
 }
 
 // 调用API 编辑任务
@@ -144,10 +148,10 @@ async function updateWorkflow() {
   try {
     const result: { [key: string]: string } = await api.put(`workflow/${workflowForm.value.id}`, workflowForm.value)
     if (result.success) {
-      $toast.success(`保存任务流程成功！`)
+      $toast.success(t('dialog.workflowActions.saveSuccess'))
       emit('save')
     } else {
-      $toast.error(`保存任务流程失败：${result.message}`)
+      $toast.error(t('dialog.workflowActions.saveFailed', { message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -164,10 +168,10 @@ function saveCodeString(type: string, code: any) {
         edges.value = codeObject.flows || []
       }
       importCodeDialog.value = false
-      $toast.success('导入成功！')
+      $toast.success(t('dialog.workflowActions.importSuccess'))
     }
   } catch (error) {
-    $toast.error('导入失败！')
+    $toast.error(t('dialog.workflowActions.importFailed'))
     console.error(error)
   }
 }
@@ -176,7 +180,7 @@ function saveCodeString(type: string, code: any) {
 function shareWorkflow() {
   const codeString = JSON.stringify({ actions: nodes.value, flows: edges.value })
   navigator.clipboard.writeText(codeString)
-  $toast.success('任务流程代码已复制到剪贴板！')
+  $toast.success(t('dialog.workflowActions.codeCopied'))
 }
 
 onMounted(() => {
@@ -202,7 +206,7 @@ const isMacOS = computed(() => {
             <VIcon size="large" color="white" icon="mdi-close" />
           </VBtn>
         </VToolbarItems>
-        <VToolbarTitle> 编辑流程 - {{ workflow?.name }} </VToolbarTitle>
+        <VToolbarTitle> {{ t('dialog.workflowActions.title') }} - {{ workflow?.name }} </VToolbarTitle>
         <VSpacer></VSpacer>
         <VToolbarItems>
           <VBtn icon variant="text" @click="importCodeDialog = true" class="ms-2">
@@ -248,7 +252,7 @@ const isMacOS = computed(() => {
     <ImportCodeDialog
       v-if="importCodeDialog"
       v-model="importCodeDialog"
-      title="导入任务流程"
+      :title="t('dialog.workflowActions.importTitle')"
       dataType="workflow"
       @close="importCodeDialog = false"
       @save="saveCodeString"

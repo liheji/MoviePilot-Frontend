@@ -3,6 +3,10 @@ import { formatFileSize } from '@/@core/utils/formatters'
 import api from '@/api'
 import { FileItem, TransferQueue } from '@/api/types'
 import { useDisplay } from 'vuetify'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -16,7 +20,7 @@ const dataList = ref<TransferQueue[]>([])
 const progressEventSource = ref<EventSource>()
 
 // 整理进度文本
-const progressText = ref('请稍候 ...')
+const progressText = ref(t('dialog.transferQueue.processing'))
 
 // 整理进度
 const progressValue = ref(0)
@@ -29,10 +33,11 @@ const activeTab = ref('')
 
 // 状态标签
 const stateDict: { [key: string]: string } = {
-  'waiting': '等待中',
-  'running': '正在整理',
-  'completed': '完成',
-  'failed': '失败',
+  'waiting': t('dialog.transferQueue.waitingState'),
+  'running': t('dialog.transferQueue.runningState'),
+  'completed': t('dialog.transferQueue.finishedState'),
+  'failed': t('dialog.transferQueue.failedState'),
+  'cancelled': t('dialog.transferQueue.cancelledState'),
 }
 
 // 获取状态颜色
@@ -88,13 +93,13 @@ async function remove_queue_task(fileitem: FileItem) {
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
-  progressText.value = '请稍候 ...'
+  progressText.value = t('dialog.transferQueue.processing')
   progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`)
   progressEventSource.value.onmessage = event => {
     const progress = JSON.parse(event.data)
     if (progress) {
       if (!progress.enable) {
-        progressText.value = '请稍候 ...'
+        progressText.value = t('dialog.transferQueue.processing')
         progressValue.value = 0
         if (refreshFlag.value) {
           refreshFlag.value = false
@@ -138,7 +143,7 @@ onUnmounted(() => {
   <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard class="mx-auto" width="100%">
       <VCardItem>
-        <VCardTitle>整理队列</VCardTitle>
+        <VCardTitle>{{ t('dialog.transferQueue.title') }}</VCardTitle>
       </VCardItem>
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
@@ -151,7 +156,7 @@ onUnmounted(() => {
       <VCardItem v-if="dataList.length > 0 && progressValue > 0" class="text-center pt-2">
         <span class="text-sm">{{ progressText }}</span>
       </VCardItem>
-      <VCardText v-if="dataList.length === 0" class="text-center"> 没有正在整理的任务 </VCardText>
+      <VCardText v-if="dataList.length === 0" class="text-center"> {{ t('dialog.transferQueue.noTasks') }} </VCardText>
       <VCardText>
         <VTabs v-model="activeTab" show-arrows class="v-tabs-pill" stacked>
           <VTab
@@ -169,7 +174,7 @@ onUnmounted(() => {
               <VListItem v-for="task in activeTasks">
                 <VListItemTitle>{{ task.fileitem.name }}</VListItemTitle>
                 <VListItemSubtitle>
-                  大小：{{ formatFileSize(task.fileitem.size || 0) }}
+                  {{ t('dialog.transferQueue.sizeTitle') }}：{{ formatFileSize(task.fileitem.size || 0) }}
                   <VChip size="small" :color="getStateColor(task.state)" class="ms-2">
                     {{ stateDict[task.state] }}
                   </VChip>

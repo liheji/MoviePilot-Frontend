@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import api from '@/api'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 定义输入
 const props = defineProps({
@@ -14,7 +18,7 @@ if (!props.conf.filepath) {
 }
 
 if (!props.conf.content) {
-  props.conf.content = '# 请在此处填写rclone配置文件内容 \n# 请参考 https://rclone.org/docs/ \n# 存储节点名必须为：MP'
+  props.conf.content = t('dialog.rcloneConfig.defaultContent')
 }
 
 // 定义事件
@@ -38,12 +42,12 @@ async function savaRcloneConfig() {
 
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
-    <VCard title="RClone配置" class="rounded-t">
+    <VCard :title="t('dialog.rcloneConfig.title')" class="rounded-t">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VTextField v-model="props.conf.filepath" label="rclone配置文件路径" />
+            <VTextField v-model="props.conf.filepath" :label="t('dialog.rcloneConfig.filePath')" />
           </VCol>
           <VCol cols="12">
             <VAceEditor
@@ -59,7 +63,9 @@ async function savaRcloneConfig() {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3"> 完成 </VBtn>
+        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
+          {{ t('dialog.rcloneConfig.complete') }}
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
