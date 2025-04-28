@@ -4,6 +4,10 @@ import api from '@/api'
 import type { TorrentInfo, SiteCategory } from '@/api/types'
 import { formatFileSize } from '@core/utils/formatters'
 import AddDownloadDialog from '../dialog/AddDownloadDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -49,11 +53,11 @@ const torrent = ref<TorrentInfo>()
 
 // 资源浏览表头
 const resourceHeaders = [
-  { title: '标题', key: 'title', sortable: false },
-  { title: '时间', key: 'pubdate', sortable: true },
-  { title: '大小', key: 'size', sortable: true },
-  { title: '做种', key: 'seeders', sortable: true },
-  { title: '下载', key: 'peers', sortable: true },
+  { title: t('dialog.siteResource.titleColumn'), key: 'title', sortable: false },
+  { title: t('dialog.siteResource.timeColumn'), key: 'pubdate', sortable: true },
+  { title: t('dialog.siteResource.sizeColumn'), key: 'size', sortable: true },
+  { title: t('dialog.siteResource.seedersColumn'), key: 'seeders', sortable: true },
+  { title: t('dialog.siteResource.peersColumn'), key: 'peers', sortable: true },
   { title: '', key: 'actions', sortable: false },
 ]
 
@@ -131,7 +135,7 @@ onMounted(() => {
       <!-- Toolbar -->
       <div>
         <VToolbar color="primary">
-          <VToolbarTitle>{{ `浏览 - ${props.site?.name}` }}</VToolbarTitle>
+          <VToolbarTitle>{{ t('dialog.siteResource.browseTitle', { name: props.site?.name }) }}</VToolbarTitle>
           <VSpacer />
           <VToolbarItems>
             <VBtn icon @click="emit('close')" class="me-3">
@@ -143,7 +147,13 @@ onMounted(() => {
       <div class="p-3">
         <VRow>
           <VCol cols="6" md="5">
-            <VTextField v-model="keyword" size="small" density="compact" label="搜索关键字" clearable />
+            <VTextField
+              v-model="keyword"
+              size="small"
+              density="compact"
+              :label="t('dialog.siteResource.searchKeyword')"
+              clearable
+            />
           </VCol>
           <VCol cols="6" md="5">
             <VSelect
@@ -152,13 +162,13 @@ onMounted(() => {
               size="small"
               density="compact"
               chips
-              label="资源分类"
+              :label="t('dialog.siteResource.resourceCategory')"
               multiple
               clearable
             />
           </VCol>
           <VCol cols="12" md="2" class="text-center">
-            <VBtn block prepend-icon="mdi-magnify" @click="getResourceList">搜索</VBtn>
+            <VBtn block prepend-icon="mdi-magnify" @click="getResourceList">{{ t('dialog.siteResource.search') }}</VBtn>
           </VCol>
         </VRow>
       </div>
@@ -175,9 +185,9 @@ onMounted(() => {
           return-object
           fixed-header
           hover
-          items-per-page-text="每页条数"
-          page-text="{0}-{1} 共 {2} 条"
-          loading-text="加载中..."
+          :items-per-page-text="t('dialog.siteResource.itemsPerPage')"
+          :page-text="t('dialog.siteResource.pageText')"
+          :loading-text="t('dialog.siteResource.loading')"
           class="h-full"
         >
           <template #item.title="{ item }">
@@ -242,20 +252,20 @@ onMounted(() => {
                       <template #prepend>
                         <VIcon icon="mdi-information" />
                       </template>
-                      <VListItemTitle>查看详情</VListItemTitle>
+                      <VListItemTitle>{{ t('dialog.siteResource.viewDetails') }}</VListItemTitle>
                     </VListItem>
                     <VListItem v-if="item.enclosure?.startsWith('http')" @click="downloadTorrentFile(item.enclosure)">
                       <template #prepend>
                         <VIcon icon="mdi-download" />
                       </template>
-                      <VListItemTitle>下载种子文件</VListItemTitle>
+                      <VListItemTitle>{{ t('dialog.siteResource.downloadTorrent') }}</VListItemTitle>
                     </VListItem>
                   </VList>
                 </VMenu>
               </IconBtn>
             </div>
           </template>
-          <template #no-data> 没有数据 </template>
+          <template #no-data>{{ t('dialog.siteResource.noData') }}</template>
         </VDataTable>
       </VCardText>
     </VCard>
