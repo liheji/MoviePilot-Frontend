@@ -8,6 +8,9 @@ import slack_image from '@images/logos/slack.webp'
 import chrome_image from '@images/logos/chrome.png'
 import { useToast } from 'vue-toast-notification'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 定义输入
 const props = defineProps({
@@ -42,24 +45,24 @@ const notificationInfo = ref<NotificationConf>({
 
 // 各通知类型的名称字典
 const notificationTypeNames: { [key: string]: string } = {
-  wechat: '企业微信',
-  telegram: 'Telegram',
-  vocechat: 'VoceChat',
-  synologychat: 'Synology Chat',
-  slack: 'Slack',
-  webpush: 'WebPush',
+  wechat: t('notification.wechat.name'),
+  telegram: t('notification.telegram.name'),
+  vocechat: t('notification.vocechat.name'),
+  synologychat: t('notification.synologychat.name'),
+  slack: t('notification.slack.name'),
+  webpush: t('notification.webpush.name'),
 }
 
 // 消息类型下拉字典
 const notificationTypes = [
-  { value: '资源下载', title: '资源下载' },
-  { value: '整理入库', title: '整理入库' },
-  { value: '订阅', title: '订阅' },
-  { value: '站点', title: '站点' },
-  { value: '媒体服务器', title: '媒体服务器' },
-  { value: '手动处理', title: '手动处理' },
-  { value: '插件', title: '插件' },
-  { value: '其它', title: '其它' },
+  { value: '资源下载', title: t('notificationSwitch.resourceDownload') },
+  { value: '整理入库', title: t('notificationSwitch.organize') },
+  { value: '订阅', title: t('notificationSwitch.subscribe') },
+  { value: '站点', title: t('notificationSwitch.site') },
+  { value: '媒体服务器', title: t('notificationSwitch.mediaServer') },
+  { value: '手动处理', title: t('notificationSwitch.manual') },
+  { value: '插件', title: t('notificationSwitch.plugin') },
+  { value: '其它', title: t('notificationSwitch.other') },
 ]
 
 // 打开详情弹窗
@@ -73,12 +76,12 @@ function openNotificationInfoDialog() {
 function saveNotificationInfo() {
   // 为空不保存，跳出警告框
   if (!notificationInfo.value.name) {
-    $toast.error('名称不能为空，请输入后再确定')
+    $toast.error(t('notification.name') + t('common.required'))
     return
   }
   // 重名判断
   if (props.notifications.some(item => item.name === notificationInfo.value.name && item !== props.notification)) {
-    $toast.error(`通知渠道【${notificationInfo.value.name}】已存在，请替换`)
+    $toast.error(t('notification.channel') + `【${notificationInfo.value.name}】` + t('common.exists'))
     return
   }
   notificationInfoDialog.value = false
@@ -132,21 +135,21 @@ function onClose() {
       </VCardText>
     </VCard>
     <VDialog v-if="notificationInfoDialog" v-model="notificationInfoDialog" scrollable max-width="40rem" persistent>
-      <VCard :title="`${props.notification.name} - 配置`" class="rounded-t">
+      <VCard :title="`${props.notification.name} - ${t('notification.config')}`" class="rounded-t">
         <VDialogCloseBtn v-model="notificationInfoDialog" />
         <VDivider />
         <VCardText>
           <VForm>
             <VRow>
               <VCol cols="12" md="6">
-                <VSwitch v-model="notificationInfo.enabled" label="启用通知" />
+                <VSwitch v-model="notificationInfo.enabled" :label="t('notification.enabled')" />
               </VCol>
               <VCol cols="12">
                 <VSelect
                   v-model="notificationInfo.switchs"
                   :items="notificationTypes"
-                  label="消息类型"
-                  hint="开启通知的消息类型"
+                  :label="t('notification.type')"
+                  :hint="t('notification.typeHint')"
                   multiple
                   clearable
                   chips
@@ -158,66 +161,66 @@ function onClose() {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
-                  label="名称"
-                  placeholder="别名"
-                  hint="通知渠道的别名"
+                  :label="t('notification.name')"
+                  :placeholder="t('notification.name')"
+                  :hint="t('notification.nameHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.WECHAT_CORPID"
-                  label="企业ID"
-                  hint="企业微信后台企业信息中的企业ID"
+                  :label="t('notification.wechat.corpId')"
+                  :hint="t('notification.wechat.corpIdHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.WECHAT_APP_ID"
-                  label="应用 AgentId"
-                  hint="企业微信自建应用的AgentId"
+                  :label="t('notification.wechat.appId')"
+                  :hint="t('notification.wechat.appIdHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.WECHAT_APP_SECRET"
-                  label="应用 Secret"
-                  hint="企业微信自建应用的Secret"
+                  :label="t('notification.wechat.appSecret')"
+                  :hint="t('notification.wechat.appSecretHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.WECHAT_PROXY"
-                  label="代理地址"
-                  hint="微信消息的转发代理地址，2022年6月20日后创建的自建应用才需要，不使用代理时需要保留默认值"
+                  :label="t('notification.wechat.proxy')"
+                  :hint="t('notification.wechat.proxyHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.WECHAT_TOKEN"
-                  label="Token"
-                  hint="微信企业自建应用->API接收消息配置中的Token"
+                  :label="t('notification.wechat.token')"
+                  :hint="t('notification.wechat.tokenHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.WECHAT_ENCODING_AESKEY"
-                  label="EncodingAESKey"
-                  hint="微信企业自建应用->API接收消息配置中的EncodingAESKey"
+                  :label="t('notification.wechat.encodingAesKey')"
+                  :hint="t('notification.wechat.encodingAesKeyHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.WECHAT_ADMINS"
-                  label="管理员白名单"
-                  placeholder="多个用,分隔"
-                  hint="可使用管理菜单及命令的用户ID列表，多个ID使用,分隔"
+                  :label="t('notification.wechat.admins')"
+                  :placeholder="t('notification.wechat.adminsPlaceholder')"
+                  :hint="t('notification.wechat.adminsHint')"
                   persistent-hint
                 />
               </VCol>
@@ -226,43 +229,43 @@ function onClose() {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
-                  label="名称"
-                  placeholder="别名"
-                  hint="通知渠道的别名"
+                  :label="t('notification.name')"
+                  :placeholder="t('notification.name')"
+                  :hint="t('notification.nameHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.TELEGRAM_TOKEN"
-                  label="Bot Token"
-                  hint="Telegram机器人token，格式：123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+                  :label="t('notification.telegram.token')"
+                  :hint="t('notification.telegram.tokenHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.TELEGRAM_CHAT_ID"
-                  label="Chat ID"
-                  hint="接受消息通知的用户、群组或频道Chat ID"
+                  :label="t('notification.telegram.chatId')"
+                  :hint="t('notification.telegram.chatIdHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.TELEGRAM_USERS"
-                  label="用户白名单"
-                  placeholder="多个用,分隔"
-                  hint="可使用Telegram机器人的用户ID清单，多个用户用,分隔，不填写则所有用户都能使用"
+                  :label="t('notification.telegram.users')"
+                  :placeholder="t('notification.telegram.usersPlaceholder')"
+                  :hint="t('notification.telegram.usersHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.TELEGRAM_ADMINS"
-                  label="管理员白名单"
-                  placeholder="多个用,分隔"
-                  hint="可使用管理菜单及命令的用户ID列表，多个ID使用,分隔"
+                  :label="t('notification.telegram.admins')"
+                  :placeholder="t('notification.telegram.adminsPlaceholder')"
+                  :hint="t('notification.telegram.adminsHint')"
                   persistent-hint
                 />
               </VCol>
@@ -271,36 +274,36 @@ function onClose() {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
-                  label="名称"
-                  placeholder="别名"
-                  hint="通知渠道的别名"
+                  :label="t('notification.name')"
+                  :placeholder="t('notification.name')"
+                  :hint="t('notification.nameHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.SLACK_OAUTH_TOKEN"
-                  label="Slack Bot User OAuth Token"
-                  placeholder="xoxb-xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx"
-                  hint="Slack应用`OAuth & Permissions`页面中的`Bot User OAuth Token`"
+                  :label="t('notification.slack.oauthToken')"
+                  :placeholder="t('notification.slack.oauthTokenPlaceholder')"
+                  :hint="t('notification.slack.oauthTokenHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.SLACK_APP_TOKEN"
-                  label="Slack App-Level Token"
-                  placeholder="xapp-xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx"
-                  hint="Slack应用`OAuth & Permissions`页面中的`App-Level Token`"
+                  :label="t('notification.slack.appToken')"
+                  :placeholder="t('notification.slack.appTokenPlaceholder')"
+                  :hint="t('notification.slack.appTokenHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.SLACK_CHANNEL"
-                  label="频道名称"
-                  placeholder="全体"
-                  hint="消息发送频道，默认`全体`"
+                  :label="t('notification.slack.channel')"
+                  :placeholder="t('notification.slack.channelPlaceholder')"
+                  :hint="t('notification.slack.channelHint')"
                   persistent-hint
                 />
               </VCol>
@@ -309,25 +312,25 @@ function onClose() {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
-                  label="名称"
-                  placeholder="别名"
-                  hint="通知渠道的别名"
+                  :label="t('notification.name')"
+                  :placeholder="t('notification.name')"
+                  :hint="t('notification.nameHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.SYNOLOGYCHAT_WEBHOOK"
-                  label="机器人传入URL"
-                  hint="Synology Chat机器人传入URL"
+                  :label="t('notification.synologychat.webhook')"
+                  :hint="t('notification.synologychat.webhookHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.SYNOLOGYCHAT_TOKEN"
-                  label="令牌"
-                  hint="Synology Chat机器人令牌"
+                  :label="t('notification.synologychat.token')"
+                  :hint="t('notification.synologychat.tokenHint')"
                   persistent-hint
                 />
               </VCol>
@@ -336,34 +339,34 @@ function onClose() {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
-                  label="名称"
-                  placeholder="别名"
-                  hint="通知渠道的别名"
+                  :label="t('notification.name')"
+                  :placeholder="t('notification.name')"
+                  :hint="t('notification.nameHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.VOCECHAT_HOST"
-                  label="地址"
-                  hint="VoceChat服务端地址，格式：http(s)://ip:port"
+                  :label="t('notification.vocechat.host')"
+                  :hint="t('notification.vocechat.hostHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.VOCECHAT_API_KEY"
-                  label="机器人密钥"
-                  hint="VoceChat机器人密钥"
+                  :label="t('notification.vocechat.apiKey')"
+                  :hint="t('notification.vocechat.apiKeyHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.VOCECHAT_CHANNEL_ID"
-                  label="频道ID"
-                  placeholder="不包含#号"
-                  hint="VoceChat的频道ID，不包含#号"
+                  :label="t('notification.vocechat.channelId')"
+                  :placeholder="t('notification.vocechat.channelIdPlaceholder')"
+                  :hint="t('notification.vocechat.channelIdHint')"
                   persistent-hint
                 />
               </VCol>
@@ -372,17 +375,17 @@ function onClose() {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
-                  label="名称"
-                  placeholder="别名"
-                  hint="通知渠道的别名"
+                  :label="t('notification.name')"
+                  :placeholder="t('notification.name')"
+                  :hint="t('notification.nameHint')"
                   persistent-hint
                 />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.config.WEBPUSH_USERNAME"
-                  label="登录用户名"
-                  hint="只有对应的用户登录后才会推送消息"
+                  :label="t('notification.webpush.username')"
+                  :hint="t('notification.webpush.usernameHint')"
                   persistent-hint
                 />
               </VCol>
@@ -391,7 +394,7 @@ function onClose() {
         </VCardText>
         <VCardActions class="pt-3">
           <VBtn @click="saveNotificationInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
-            确定
+            {{ t('common.confirm') }}
           </VBtn>
         </VCardActions>
       </VCard>
