@@ -30,6 +30,13 @@ export default {
     viewDetails: 'View Details',
     user: 'User',
     config: 'Configuration',
+    pause: 'Pause',
+    enable: 'Enable',
+    confirmAction: 'Confirm {action}',
+    details: 'Details',
+    files: 'Files',
+    share: 'Share',
+    unsubscribe: 'Unsubscribe',
   },
   mediaType: {
     movie: 'Movie',
@@ -453,6 +460,13 @@ export default {
     recognitionWords: 'Recognition Words',
     cancelShare: 'Cancel Share',
     usageCount: '{count} Uses',
+    confirmToggle: 'Are you sure you want to {action} subscription {name}?',
+    toggleSuccess: '{name} has been {action}d!',
+    toggleFailed: '{action} failed: {message}',
+    resetConfirm:
+      'After reset, {name} will be restored to its initial state, downloaded records will be cleared, and unimported content will be downloaded again. Are you sure?',
+    resetSuccess: '{name} has been reset successfully!',
+    resetFailed: '{name} reset failed: {message}',
   },
   recommend: {
     all: 'All',

@@ -8,6 +8,10 @@ import { formatDateDifference, formatSeason } from '@/@core/utils/formatters'
 import api from '@/api'
 import type { Subscribe } from '@/api/types'
 import router from '@/router'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -88,22 +92,22 @@ async function searchSubscribe() {
 async function toggleSubscribeStatus(state: 'R' | 'S') {
   try {
     // 根据传入的 state 判断对应的操作文字
-    const action = state === 'S' ? '暂停' : '启用'
+    const action = state === 'S' ? t('common.pause') : t('common.enable')
     // 弹出确认框
     const isConfirmed = await createConfirm({
-      title: `确认${action}`,
-      content: `是否${action}订阅 ${props.media?.name}？`,
+      title: t('common.confirmAction', { action }),
+      content: t('subscribe.confirmToggle', { action, name: props.media?.name }),
     })
     if (!isConfirmed) return
     // 调用 API 更新订阅状态
     const result: { [key: string]: any } = await api.put(`subscribe/status/${props.media?.id}?state=${state}`)
     // 提示
     if (result.success) {
-      $toast.success(`${props.media?.name} 已${action}！`)
+      $toast.success(t('subscribe.toggleSuccess', { name: props.media?.name, action }))
       subscribeState.value = state
       emit('save')
     } else {
-      $toast.error(`${action}失败：${result.message}`)
+      $toast.error(t('subscribe.toggleFailed', { action, message: result.message }))
     }
   } catch (e) {
     console.log(e)
@@ -115,18 +119,18 @@ async function resetSubscribe() {
   // 确认
   try {
     const isConfirmed = await createConfirm({
-      title: '确认',
-      content: `重置后 ${props.media?.name} 将恢复初始状态，已下载记录将被清除，未入库的内容将会重新下载，是否确认？`,
+      title: t('common.confirm'),
+      content: t('subscribe.resetConfirm', { name: props.media?.name }),
     })
     if (!isConfirmed) return
     // 重置
     const result: { [key: string]: any } = await api.get(`subscribe/reset/${props.media?.id}`)
     // 提示
     if (result.success) {
-      $toast.success(`${props.media?.name} 重置成功！`)
+      $toast.success(t('subscribe.resetSuccess', { name: props.media?.name }))
       subscribeState.value = 'R'
       emit('save')
-    } else $toast.error(`${props.media?.name} 重置失败：${result.message}`)
+    } else $toast.error(t('subscribe.resetFailed', { name: props.media?.name, message: result.message }))
   } catch (e) {
     console.log(e)
   }
@@ -171,7 +175,7 @@ async function viewSubscribeFiles() {
 // 弹出菜单
 const dropdownItems = computed(() => [
   {
-    title: '编辑',
+    title: t('common.edit'),
     value: 1,
     props: {
       prependIcon: 'mdi-file-edit-outline',
@@ -179,7 +183,7 @@ const dropdownItems = computed(() => [
     },
   },
   {
-    title: '搜索',
+    title: t('common.search'),
     value: 2,
     props: {
       prependIcon: 'mdi-magnify',
@@ -187,7 +191,7 @@ const dropdownItems = computed(() => [
     },
   },
   {
-    title: '详情',
+    title: t('common.details'),
     value: 3,
     props: {
       prependIcon: 'mdi-information-outline',
@@ -195,7 +199,7 @@ const dropdownItems = computed(() => [
     },
   },
   {
-    title: '文件',
+    title: t('common.files'),
     value: 4,
     props: {
       prependIcon: 'mdi-file-document-outline',
@@ -203,7 +207,7 @@ const dropdownItems = computed(() => [
     },
   },
   {
-    title: subscribeState.value === 'S' ? '启用' : '暂停',
+    title: subscribeState.value === 'S' ? t('common.enable') : t('common.pause'),
     value: 5,
     props: {
       prependIcon: subscribeState.value === 'S' ? 'mdi-play' : 'mdi-pause',
@@ -212,7 +216,7 @@ const dropdownItems = computed(() => [
     },
   },
   {
-    title: '重置',
+    title: t('common.reset'),
     value: 6,
     props: {
       prependIcon: 'mdi-restore-alert',
@@ -221,7 +225,7 @@ const dropdownItems = computed(() => [
     },
   },
   {
-    title: '分享',
+    title: t('common.share'),
     value: 7,
     props: {
       prependIcon: 'mdi-share',
@@ -231,7 +235,7 @@ const dropdownItems = computed(() => [
     show: props.media?.type === '电视剧',
   },
   {
-    title: '取消订阅',
+    title: t('common.unsubscribe'),
     value: 8,
     props: {
       prependIcon: 'mdi-trash-can-outline',
