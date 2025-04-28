@@ -29,6 +29,25 @@ watch(
 const tabsContainerRef = ref<HTMLElement | null>(null)
 // State for showing the scroll indicator
 const showTabsScrollIndicator = ref(false)
+// State for showing the scroll buttons
+const showLeftButton = ref(false)
+const showRightButton = ref(false)
+
+// Function to scroll the tabs
+const scrollTabs = (direction: 'left' | 'right') => {
+  const el = tabsContainerRef.value
+  if (!el) return
+  
+  const scrollAmount = 200 // 可以根据需要调整滚动量
+  const scrollPosition = direction === 'left' 
+    ? el.scrollLeft - scrollAmount 
+    : el.scrollLeft + scrollAmount
+  
+  el.scrollTo({
+    left: scrollPosition,
+    behavior: 'smooth'
+  })
+}
 
 // Function to check and update the indicator state
 const updateTabsIndicator = () => {
@@ -38,8 +57,11 @@ const updateTabsIndicator = () => {
   const tolerance = 1 // Allow 1px tolerance
   const hasOverflow = el.scrollWidth > el.clientWidth + tolerance
   const isScrolledToEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - tolerance
+  const isScrolledToStart = el.scrollLeft <= tolerance
 
   showTabsScrollIndicator.value = hasOverflow && !isScrolledToEnd
+  showLeftButton.value = hasOverflow && !isScrolledToStart
+  showRightButton.value = hasOverflow && !isScrolledToEnd
 }
 
 // Debounce resize handler
@@ -71,6 +93,16 @@ onUnmounted(() => {
 </script>
 <template>
   <div class="tab-header rounded-t-lg">
+    <VBtn 
+      v-if="showLeftButton" 
+      class="scroll-button left-button"
+      @click="scrollTabs('left')"
+      variant="text"
+      icon
+    >
+      <VIcon icon="tabler-chevron-left" size="small" />
+    </VBtn>
+    
     <div ref="tabsContainerRef" class="header-tabs" :class="{ 'show-indicator': showTabsScrollIndicator }">
       <div
         v-for="(item, index) in items"
@@ -83,6 +115,17 @@ onUnmounted(() => {
         <span>{{ item.title }}</span>
       </div>
     </div>
+    
+    <VBtn 
+      v-if="showRightButton" 
+      class="scroll-button right-button"
+      @click="scrollTabs('right')"
+      variant="text"
+      icon
+    >
+      <VIcon icon="tabler-chevron-right" size="small" />
+    </VBtn>
+    
     <slot name="append" />
   </div>
 </template>
@@ -99,6 +142,34 @@ onUnmounted(() => {
   margin-block-end: 16px;
   padding-block: 8px;
   padding-inline: 16px;
+}
+
+.scroll-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+  background-color: rgba(var(--v-theme-primary), 0.1);
+  color: rgb(var(--v-theme-primary));
+  cursor: pointer;
+  border: none;
+  outline: none;
+  z-index: 2;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.2);
+  }
+  
+  &.left-button {
+    margin-right: 6px;
+  }
+  
+  &.right-button {
+    margin-left: 6px;
+  }
 }
 
 .header-tabs {
