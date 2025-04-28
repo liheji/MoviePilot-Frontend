@@ -21,6 +21,8 @@ export default {
     create: 'Create',
     saving: 'Saving',
     reset: 'Reset',
+    theme: 'Theme',
+    language: 'Language',
   },
   mediaType: {
     movie: 'Movie',
@@ -36,6 +38,9 @@ export default {
     transparent: 'Transparent',
     purple: 'Purple',
     custom: 'Custom Theme',
+    customCssSaveSuccess: 'Custom CSS saved successfully, please refresh the page to take effect!',
+    customCssSaveFailed: 'Failed to save custom CSS to server',
+    deviceNotSupport: 'Current device does not support monitoring system theme changes',
   },
   app: {
     moviepilot: 'MoviePilot',
@@ -43,7 +48,6 @@ export default {
     subscribeMovie: 'Movie Subscription',
     subscribeTv: 'TV Subscription',
     settings: 'Settings',
-    language: 'Language',
     selectLanguage: 'Select Language',
     logout: 'Logout',
     restarting: 'Restarting...',
@@ -137,7 +141,8 @@ export default {
     },
     words: {
       title: 'Word Lists',
-      description: 'Custom recognition words, custom production/subtitle groups, custom placeholders, file organization block words',
+      description:
+        'Custom recognition words, custom production/subtitle groups, custom placeholders, file organization block words',
     },
     about: {
       title: 'About',
@@ -937,9 +942,10 @@ export default {
       season: 'Season {number}',
       title: 'Title',
       description: 'Description',
-      descriptionHint: 'Add a description about this subscription. Search terms, recognition words, etc. will be included in the share by default',
+      descriptionHint:
+        'Add a description about this subscription. Search terms, recognition words, etc. will be included in the share by default',
       shareUser: 'Share User',
-      shareUserHint: 'Sharer\'s nickname',
+      shareUserHint: "Sharer's nickname",
       confirmShare: 'Confirm Share',
       shareSuccess: '{name} shared successfully!',
       shareFailed: '{name} share failed: {message}!',
@@ -960,7 +966,8 @@ export default {
       title: 'RClone Configuration',
       filePath: 'rclone config file path',
       fileContent: 'rclone config file content',
-      defaultContent: '# Please fill in your rclone config file content here \n# Please refer to https://rclone.org/docs/ \n# Storage node name must be: MP',
+      defaultContent:
+        '# Please fill in your rclone config file content here \n# Please refer to https://rclone.org/docs/ \n# Storage node name must be: MP',
       complete: 'Complete',
     },
     alistConfig: {
@@ -1030,7 +1037,7 @@ export default {
       title: 'Update Site Cookie',
       checkHint: 'Checking login status, please wait...',
       confirmUpdateTitle: 'Confirm Update',
-      confirmUpdateMessage: 'Do you want to update this site\'s cookie with the local cookie?',
+      confirmUpdateMessage: "Do you want to update this site's cookie with the local cookie?",
       processing: 'Processing...',
       success: 'Cookie updated successfully',
       failed: 'Failed to update cookie',
@@ -1229,7 +1236,8 @@ export default {
       mediaCategoryHint: 'Specify category name, leave empty for auto-recognition',
       customWords: 'Custom Recognition Words',
       customWordsHint: 'Recognition words only used for this subscription',
-      customWordsPlaceholder: 'Block word\nReplaced word => Replacement word\nPrefix <> Suffix >> Episode offset (EP)\nReplaced word => Replacement word && Prefix <> Suffix >> Episode offset (EP)\nReplacement word supports format: &#123; tmdbid/doubanid=xxx;type=movie/tv;s=xxx;e=xxx &#125; to directly specify TMDBID/Douban ID recognition, where s, e are season and episode numbers (optional)',
+      customWordsPlaceholder:
+        'Block word\nReplaced word => Replacement word\nPrefix <> Suffix >> Episode offset (EP)\nReplaced word => Replacement word && Prefix <> Suffix >> Episode offset (EP)\nReplacement word supports format: &#123; tmdbid/doubanid=xxx;type=movie/tv;s=xxx;e=xxx &#125; to directly specify TMDBID/Douban ID recognition, where s, e are season and episode numbers (optional)',
       cancelSubscribe: 'Cancel Subscription',
       save: 'Save',
       cancelSubscribeConfirm: 'Are you sure you want to cancel the subscription?',
@@ -1409,9 +1417,11 @@ export default {
     otpEnableSuccess: 'Two-factor authentication enabled successfully!',
     otpEnableFailed: 'Failed to enable OTP: {message}!',
     authenticatorApp: 'Authenticator App',
-    authenticatorAppDescription: 'Use an authenticator app like Google Authenticator, Microsoft Authenticator, Authy, or 1Password to scan the QR code. It will generate a 6-digit code for you to enter below.',
-    secretKeyTip: 'If you\'re having trouble with the QR code, select manual entry in your app and enter the code above.',
+    authenticatorAppDescription:
+      'Use an authenticator app like Google Authenticator, Microsoft Authenticator, Authy, or 1Password to scan the QR code. It will generate a 6-digit code for you to enter below.',
+    secretKeyTip:
+      "If you're having trouble with the QR code, select manual entry in your app and enter the code above.",
     enterVerificationCode: 'Enter verification code to confirm enabling two-factor authentication',
     avatarFormatTip: 'JPG, PNG, GIF, WEBP formats allowed, maximum size 800KB.',
   },
-} 
+}

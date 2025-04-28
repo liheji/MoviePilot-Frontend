@@ -21,6 +21,8 @@ export default {
     create: '新建',
     saving: '保存中',
     reset: '重置',
+    theme: '主题',
+    language: '语言',
   },
   mediaType: {
     movie: '电影',
@@ -36,6 +38,9 @@ export default {
     transparent: '透明',
     purple: '幻紫',
     custom: '自定义主题',
+    customCssSaveSuccess: '自定义CSS保存成功，请刷新页面生效！',
+    customCssSaveFailed: '保存自定义CSS到服务端失败',
+    deviceNotSupport: '当前设备不支持监听系统主题变化',
   },
   app: {
     moviepilot: 'MoviePilot',

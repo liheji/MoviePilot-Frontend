@@ -3,7 +3,6 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 import Footer from '@/layouts/components/Footer.vue'
-import NavbarActions from '@/layouts/components/NavbarActions.vue'
 import UserNofification from '@/layouts/components/UserNotification.vue'
 import SearchBar from '@/layouts/components/SearchBar.vue'
 import ShortcutBar from '@/layouts/components/ShortcutBar.vue'
@@ -82,8 +81,6 @@ onMounted(() => {
         <ShortcutBar v-if="superUser" />
         <!-- 👉 Notification -->
         <UserNofification />
-        <!-- 👉 Theme & Language -->
-        <NavbarActions />
         <!-- 👉 UserProfile -->
         <UserProfile />
       </div>
