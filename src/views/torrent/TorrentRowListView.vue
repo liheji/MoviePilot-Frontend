@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import type { Context } from '@/api/types'
 import TorrentItem from '@/components/cards/TorrentItem.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 定义输入参数
 const props = defineProps({
@@ -27,21 +31,21 @@ const filterForm: Record<string, string[]> = reactive({
 
 // 过滤项映射（保持中文标题）
 const filterTitles: Record<string, string> = {
-  site: '站点',
-  season: '季集',
-  freeState: '促销状态',
-  videoCode: '视频编码',
-  edition: '质量',
-  resolution: '分辨率',
-  releaseGroup: '制作组',
+  site: t('torrent.filterSite'),
+  season: t('torrent.filterSeason'),
+  freeState: t('torrent.filterFreeState'),
+  videoCode: t('torrent.filterVideoCode'),
+  edition: t('torrent.filterEdition'),
+  resolution: t('torrent.filterResolution'),
+  releaseGroup: t('torrent.filterReleaseGroup'),
 }
 
 // 排序中文名
 const sortTitles: Record<string, string> = {
-  default: '默认',
-  site: '站点',
-  size: '大小',
-  seeder: '做种数',
+  default: t('torrent.sortDefault'),
+  site: t('torrent.sortSite'),
+  size: t('torrent.sortSize'),
+  seeder: t('torrent.sortSeeder'),
 }
 
 // 统一存储过滤选项
@@ -340,7 +344,7 @@ onMounted(() => {
       <VCard class="view-header mb-3">
         <div class="d-flex align-center flex-wrap pa-3">
           <VChip color="primary" variant="flat" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
-            {{ dataList.length }} 个资源
+            {{ dataList.length }} {{ t('torrent.resources') }}
           </VChip>
           <div class="filter-bar">
             <!-- 排序选择 -->
@@ -377,7 +381,9 @@ onMounted(() => {
                 <VCard max-width="20rem">
                   <VCardText class="filter-menu-content">
                     <div class="flex justify-between">
-                      <VBtn variant="text" size="small" color="primary" @click="selectAll(key)"> 全选 </VBtn>
+                      <VBtn variant="text" size="small" color="primary" @click="selectAll(key)">
+                        {{ t('torrent.selectAll') }}
+                      </VBtn>
                       <VBtn
                         v-if="filterForm[key].length > 0"
                         variant="text"
@@ -385,7 +391,7 @@ onMounted(() => {
                         color="error"
                         @click="clearFilter(key)"
                       >
-                        清除
+                        {{ t('torrent.clear') }}
                       </VBtn>
                     </div>
                     <VChipGroup v-model="filterForm[key]" column multiple class="filter-options">
@@ -416,7 +422,7 @@ onMounted(() => {
               class="filter-btn"
               prepend-icon="mdi-close-circle-outline"
             >
-              清除筛选
+              {{ t('torrent.clearFilters') }}
             </VBtn>
           </div>
         </div>
@@ -538,7 +544,7 @@ onMounted(() => {
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> 确定 </VBtn>
+          <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> {{ t('torrent.confirm') }} </VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
@@ -548,7 +554,7 @@ onMounted(() => {
       <!-- 无结果时显示 -->
       <div v-if="displayDataList.length === 0" class="no-results">
         <VIcon icon="mdi-file-search-outline" size="64" color="grey-lighten-1" />
-        <div class="text-h6 text-grey mt-4">暂无符合条件的资源</div>
+        <div class="text-h6 text-grey mt-4">{{ t('torrent.noResults') }}</div>
       </div>
       <!-- 资源列表 -->
       <VInfiniteScroll

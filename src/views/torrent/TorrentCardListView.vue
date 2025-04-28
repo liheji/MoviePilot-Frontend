@@ -363,7 +363,7 @@ function loadMore({ done }: { done: any }) {
     <VCard class="view-header rounded-xl">
       <div class="d-flex align-center flex-wrap pa-3">
         <VChip color="primary" variant="elevated" size="small" class="search-count me-3" prepend-icon="mdi-magnify">
-          {{ props.items?.length || 0 }} 个资源
+          {{ props.items?.length || 0 }} {{ t('torrent.resources') }}
         </VChip>
         <!-- 排序选择 -->
         <div class="sort-container me-4">
@@ -401,7 +401,9 @@ function loadMore({ done }: { done: any }) {
               <VCard max-width="25rem">
                 <VCardText class="filter-menu-content">
                   <div class="flex justify-between">
-                    <VBtn variant="text" size="small" color="primary" @click="selectAll(key)"> 全选 </VBtn>
+                    <VBtn variant="text" size="small" color="primary" @click="selectAll(key)">
+                      {{ t('torrent.selectAll') }}
+                    </VBtn>
                     <VBtn
                       v-if="filterForm[key].length > 0"
                       variant="text"
@@ -409,7 +411,7 @@ function loadMore({ done }: { done: any }) {
                       color="error"
                       @click="clearFilter(key)"
                     >
-                      清除
+                      {{ t('torrent.clear') }}
                     </VBtn>
                   </div>
                   <VChipGroup v-model="filterForm[key]" column multiple class="filter-options">
@@ -441,7 +443,7 @@ function loadMore({ done }: { done: any }) {
             prepend-icon="mdi-close-circle-outline"
             rounded="pill"
           >
-            清除筛选
+            {{ t('torrent.clearFilters') }}
           </VBtn>
         </div>
       </div>
@@ -482,7 +484,7 @@ function loadMore({ done }: { done: any }) {
             class="search-count me-auto"
             prepend-icon="mdi-magnify"
           >
-            {{ props.items?.length || 0 }} 个资源
+            {{ props.items?.length || 0 }} {{ t('torrent.resources') }}
           </VChip>
 
           <!-- 排序选择 -->
@@ -541,9 +543,11 @@ function loadMore({ done }: { done: any }) {
           color="error"
           @click="clearFilter(currentFilter)"
         >
-          清除
+          {{ t('torrent.clear') }}
         </VBtn>
-        <VBtn variant="text" size="small" color="primary" @click="selectAll(currentFilter)"> 全选 </VBtn>
+        <VBtn variant="text" size="small" color="primary" @click="selectAll(currentFilter)">
+          {{ t('torrent.selectAll') }}
+        </VBtn>
       </VCardTitle>
       <VDivider />
       <VCardText class="filter-menu-content pt-4">
@@ -563,7 +567,7 @@ function loadMore({ done }: { done: any }) {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> 确定 </VBtn>
+        <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false"> {{ t('torrent.confirm') }} </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
@@ -581,6 +585,12 @@ function loadMore({ done }: { done: any }) {
       />
     </div>
   </VInfiniteScroll>
+
+  <!-- 无结果时显示 -->
+  <div v-if="displayDataList.length === 0" class="no-results">
+    <VIcon icon="mdi-file-search-outline" size="64" color="grey-lighten-1" />
+    <div class="text-h6 text-grey mt-4">{{ t('torrent.noResults') }}</div>
+  </div>
 </template>
 
 <style scoped>
