@@ -4,6 +4,10 @@ import { Site } from '@/api/types'
 import { requiredValidator } from '@/@validators'
 import { useToast } from 'vue-toast-notification'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const cardProps = defineProps({
@@ -33,7 +37,7 @@ const updateButtonDisable = ref(false)
 const progressDialog = ref(false)
 
 // 进度文本
-const progressText = ref('请稍候 ...')
+const progressText = ref(t('dialog.siteCookieUpdate.processing'))
 
 // 调用API，更新站点Cookie UA
 async function updateSiteCookie() {
@@ -44,7 +48,7 @@ async function updateSiteCookie() {
     updateButtonDisable.value = true
 
     progressDialog.value = true
-    progressText.value = `正在更新 ${cardProps.site?.name} Cookie & UA ...`
+    progressText.value = t('dialog.siteCookieUpdate.updating', { site: cardProps.site?.name })
 
     const result: { [key: string]: any } = await api.get(`site/cookie/${cardProps.site?.id}`, {
       params: {
@@ -55,9 +59,9 @@ async function updateSiteCookie() {
     })
 
     if (result.success) {
-      $toast.success(`${cardProps.site?.name} 更新Cookie & UA 成功！`)
+      $toast.success(t('dialog.siteCookieUpdate.success', { site: cardProps.site?.name }))
       emit('done')
-    } else $toast.error(`${cardProps.site?.name} 更新失败：${result.message}`)
+    } else $toast.error(t('dialog.siteCookieUpdate.failed', { site: cardProps.site?.name, message: result.message }))
 
     progressDialog.value = false
     updateButtonDisable.value = false
@@ -69,19 +73,19 @@ async function updateSiteCookie() {
 <template>
   <VDialog max-width="30rem">
     <!-- Dialog Content -->
-    <VCard title="更新站点Cookie & UA">
+    <VCard :title="t('dialog.siteCookieUpdate.title')">
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>
         <VForm @submit.prevent="() => {}">
           <VRow>
             <VCol cols="12">
-              <VTextField v-model="userPwForm.username" label="用户名" :rules="[requiredValidator]" />
+              <VTextField v-model="userPwForm.username" :label="t('login.username')" :rules="[requiredValidator]" />
             </VCol>
             <VCol cols="12">
               <VTextField
                 v-model="userPwForm.password"
-                label="密码"
+                :label="t('login.password')"
                 :type="isPasswordVisible ? 'text' : 'password'"
                 :append-inner-icon="isPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                 :rules="[requiredValidator]"
@@ -90,7 +94,7 @@ async function updateSiteCookie() {
               />
             </VCol>
             <VCol cols="12">
-              <VTextField v-model="userPwForm.code" label="两步验证" />
+              <VTextField v-model="userPwForm.code" :label="t('login.otpCode')" />
             </VCol>
           </VRow>
         </VForm>
@@ -105,7 +109,7 @@ async function updateSiteCookie() {
           prepend-icon="mdi-refresh"
           class="px-5"
         >
-          开始更新
+          {{ t('dialog.siteCookieUpdate.updateButton') }}
         </VBtn>
       </VCardActions>
     </VCard>
