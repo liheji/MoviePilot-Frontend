@@ -2,6 +2,10 @@
 import api from '@/api'
 import { FileItem, StorageConf, TransferDirectoryConf } from '@/api/types'
 import FileBrowser from '@/components/FileBrowser.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 const endpoints = {
   list: {
@@ -179,7 +183,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .file-browser-view {
-  height: 100%;
   position: relative;
+  block-size: 100%;
 }
 </style>

@@ -3,5 +3,7 @@ import TransferHistoryView from '@/views/reorganize/TransferHistoryView.vue'
 </script>
 
 <template>
-  <TransferHistoryView />
+  <div>
+    <TransferHistoryView />
+  </div>
 </template>

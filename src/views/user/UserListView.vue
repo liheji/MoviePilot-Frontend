@@ -6,6 +6,11 @@ import UserCard from '@/components/cards/UserCard.vue'
 import UserAddEditDialog from '@/components/dialog/UserAddEditDialog.vue'
 import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
+
 // APP
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
@@ -68,7 +73,7 @@ useDynamicButton({
 
 <template>
   <!-- 页面标题 -->
-  <VPageContentTitle title="用户管理" />
+  <VPageContentTitle :title="t('user.management')" />
   <div class="card-list-container">
     <!-- 加载中提示 -->
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
@@ -87,7 +92,7 @@ useDynamicButton({
 
     <!-- 无数据提示 -->
     <div v-if="allUsers.length === 0 && isRefreshed">
-      <NoDataFound error-code="404" error-title="没有用户" error-description="点击添加用户卡片添加用户" />
+      <NoDataFound error-code="404" :error-title="t('user.noUsers')" :error-description="t('user.clickToAddUser')" />
     </div>
 
     <!-- 新增用户按钮 -->

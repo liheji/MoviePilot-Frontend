@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import SiteListView from '@/views/site/SiteCardListView.vue'
+import SiteCardListView from '@/views/site/SiteCardListView.vue'
 </script>
 
 <template>
   <div>
-    <SiteListView />
+    <SiteCardListView />
   </div>
 </template>

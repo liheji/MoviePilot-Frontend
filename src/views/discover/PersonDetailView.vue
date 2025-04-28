@@ -4,6 +4,10 @@ import api from '@/api'
 import personIcon from '@images/misc/person.png'
 import type { Person } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const personProps = defineProps({
@@ -67,7 +71,7 @@ function getPersonImage() {
 function getAlsoKnownAs() {
   if (!personDetail.value?.also_known_as) return ''
   if (personProps.source === 'themoviedb') {
-    return '别名：' + personDetail.value.also_known_as.join('、')
+    return t('person.alias') + personDetail.value.also_known_as.join('、')
   } else {
     return personDetail.value.also_known_as.join('，')
   }
@@ -81,7 +85,7 @@ function getPersonCreditsPath() {
   } else if (personProps.source === 'bangumi') {
     apipath = 'bangumi'
   }
-  return `/browse/${apipath}/person/credits/${personDetail.value.id}?title=参演作品`
+  return `/browse/${apipath}/person/credits/${personDetail.value.id}?title=${t('person.credits')}`
 }
 
 // 参演作品API路径
@@ -136,7 +140,7 @@ onBeforeMount(() => {
     <div>
       <div class="slider-header">
         <RouterLink :to="getPersonCreditsPath()" class="slider-title">
-          <span>参演作品</span>
+          <span>{{ t('person.credits') }}</span>
           <VIcon icon="mdi-arrow-right-circle-outline" class="ms-1" />
         </RouterLink>
       </div>
@@ -146,7 +150,7 @@ onBeforeMount(() => {
   <NoDataFound
     v-if="!personDetail.id && isRefreshed"
     error-code="500"
-    error-title="出错啦！"
-    error-description="无法获取到媒体信息，请检查网络连接。"
+    :error-title="t('error.title')"
+    :error-description="t('error.networkError')"
   />
 </template>

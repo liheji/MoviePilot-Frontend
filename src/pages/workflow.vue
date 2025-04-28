@@ -3,5 +3,7 @@ import WorkflowListView from '@/views/workflow/WorkflowListView.vue'
 </script>
 
 <template>
-  <WorkflowListView />
+  <div>
+    <WorkflowListView />
+  </div>
 </template>

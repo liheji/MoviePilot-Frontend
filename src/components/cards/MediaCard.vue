@@ -118,14 +118,14 @@ function getMediaId() {
 
 // 角标颜色
 function getChipColor(type: string) {
-  if (type === t('media.movie')) return 'border-blue-500 bg-blue-600'
-  else if (type === t('media.tv')) return ' bg-indigo-500 border-indigo-600'
+  if (type === '电影') return 'border-blue-500 bg-blue-600'
+  else if (type === '电视剧') return ' bg-indigo-500 border-indigo-600'
   else return 'border-purple-600 bg-purple-600'
 }
 
 // 添加订阅处理
 async function handleAddSubscribe() {
-  if (props.media?.type === t('media.tv')) {
+  if (props.media?.type === '电视剧') {
     // 弹出季选择列表，支持多选
     seasonsSelected.value = []
     subscribeSeasonDialog.value = true
@@ -141,7 +141,7 @@ async function addSubscribe(season: number = 0, best_version: number = 0) {
   startNProgress()
   try {
     // 是否洗版
-    if (!best_version && props.media?.type == t('media.movie')) best_version = isExists.value ? 1 : 0
+    if (!best_version && props.media?.type == '电影') best_version = isExists.value ? 1 : 0
     // 请求API
     const result: { [key: string]: any } = await api.post('subscribe/', {
       name: props.media?.title,
@@ -279,7 +279,7 @@ async function queryDefaultSubscribeConfig() {
   if (!userStore.superUser) return false
   try {
     let subscribe_config_url = ''
-    if (props.media?.type === t('media.movie')) subscribe_config_url = 'system/setting/DefaultMovieSubscribeConfig'
+    if (props.media?.type === '电影') subscribe_config_url = 'system/setting/DefaultMovieSubscribeConfig'
     else subscribe_config_url = 'system/setting/DefaultTvSubscribeConfig'
     const result: { [key: string]: any } = await api.get(subscribe_config_url)
     if (result.data?.value) return result.data.value.show_edit_dialog

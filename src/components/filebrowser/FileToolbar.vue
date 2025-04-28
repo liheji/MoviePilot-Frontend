@@ -2,6 +2,10 @@
 import type { AxiosRequestConfig } from 'axios'
 import type { EndPoints, FileItem } from '@/api/types'
 import { useDisplay } from 'vuetify'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -167,16 +171,16 @@ const sortIcon = computed(() => {
           <VIcon v-bind="props" icon="mdi-folder-plus-outline" />
         </IconBtn>
       </template>
-      <VCard title="新建文件夹">
+      <VCard :title="t('file.newFolder')">
         <VDialogCloseBtn @click="newFolderPopper = false" />
         <VDivider />
         <VCardText>
-          <VTextField v-model="newFolderName" label="名称" />
+          <VTextField v-model="newFolderName" :label="t('common.name')" />
         </VCardText>
         <VCardActions>
           <div class="flex-grow-1" />
           <VBtn :disabled="!newFolderName" variant="elevated" @click="mkdir" prepend-icon="mdi-check" class="px-5 me-3">
-            新建
+            {{ t('common.create') }}
           </VBtn>
         </VCardActions>
       </VCard>

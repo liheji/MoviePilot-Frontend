@@ -6,7 +6,7 @@ import api from '@/api'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { getBrowserLocale, setI18nLanguage } from './plugins/i18n'
-import { SupportedLocale } from './locales/types'
+import { SupportedLocale } from '@/types/i18n'
 
 // 国际化
 const { t } = useI18n()

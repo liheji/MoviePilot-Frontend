@@ -12,6 +12,14 @@
  */
 import { promises as fs } from 'node:fs'
 import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
+
+// Get current directory
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+// Create require function for importing JSON files in ESM
+const require = createRequire(import.meta.url)
 
 // Installation: npm install --save-dev @iconify/tools @iconify/utils @iconify/json @iconify/iconify
 import {

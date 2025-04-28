@@ -10,6 +10,10 @@ import api from '@/api'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useDisplay } from 'vuetify'
 import MediaInfoDialog from '../dialog/MediaInfoDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -687,25 +691,31 @@ onMounted(() => {
   </VCard>
   <!-- 重命名弹窗 -->
   <VDialog v-if="renamePopper" v-model="renamePopper" max-width="35rem">
-    <VCard title="重命名">
+    <VCard :title="t('file.rename')">
       <VDialogCloseBtn @click="renamePopper = false" />
       <VDivider />
       <VCardText>
-        <VRow>
-          <VCol cols="12">
-            <VTextField v-model="newName" label="新名称" :loading="renameLoading" />
-          </VCol>
-          <VCol cols="12" v-if="currentItem && currentItem.type == 'dir'">
-            <VSwitch v-model="renameAll" label="自动重命名目录内所有媒体文件" />
-          </VCol>
-        </VRow>
+        <div class="mb-3">
+          <span>{{ t('file.currentName') }}: {{ currentItem?.name }}</span>
+        </div>
+        <VTextField v-model="newName" :label="t('file.newName')" />
+        <VCheckbox
+          v-if="false && currentItem?.type == 'dir'"
+          v-model="renameAll"
+          :label="t('file.includeSubfolders')"
+        ></VCheckbox>
       </VCardText>
       <VCardActions>
-        <VBtn color="success" variant="elevated" @click="get_recommend_name" prepend-icon="mdi-magic" class="px-5 me-3">
-          自动识别名称
-        </VBtn>
-        <VBtn :disabled="!newName" variant="elevated" @click="rename" prepend-icon="mdi-check" class="px-5 me-3">
-          确定
+        <div class="flex-grow-1" />
+        <VBtn
+          :disabled="!newName"
+          variant="elevated"
+          :loading="renameLoading"
+          @click="rename"
+          prepend-icon="mdi-check"
+          class="px-5 me-3"
+        >
+          {{ t('common.save') }}
         </VBtn>
       </VCardActions>
     </VCard>
