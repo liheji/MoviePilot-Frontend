@@ -114,8 +114,8 @@ initializeApp().then(() => {
           color: 'secondary',
           class: 'me-3',
         },
-        confirmationText: '确认',
-        cancellationText: '取消',
+        confirmationText: i18n.global.t('common.confirm'),
+        cancellationText: i18n.global.t('common.cancel'),
       },
     })
     .use(i18n)

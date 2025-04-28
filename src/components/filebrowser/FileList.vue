@@ -67,7 +67,7 @@ const renameLoading = ref(false)
 const progressDialog = ref(false)
 
 // 识别进度文本
-const progressText = ref('请稍候 ...')
+const progressText = ref(t('common.pleaseWait'))
 
 // 识别进度
 const progressValue = ref(0)
@@ -162,8 +162,11 @@ async function list_files() {
 async function deleteItem(item: FileItem, confirm: boolean = true) {
   if (confirm) {
     const confirmed = await createConfirm({
-      title: '确认',
-      content: `是否确认删除${item.type === 'dir' ? '目录' : '文件'} ${item.name}？`,
+      title: t('common.confirm'),
+      content: t('file.confirmFileDelete', {
+        type: item.type === 'dir' ? t('file.directory') : t('file.file'),
+        name: item.name,
+      }),
     })
     if (!confirmed) return
   }
@@ -191,8 +194,8 @@ async function deleteItem(item: FileItem, confirm: boolean = true) {
 // 批量删除
 async function batchDelete() {
   const confirmed = await createConfirm({
-    title: '确认',
-    content: `是否确认删除选中的 ${selected.value.length} 个项目？`,
+    title: t('common.confirm'),
+    content: t('file.confirmBatchDelete', { count: selected.value.length }),
   })
 
   if (!confirmed) return
@@ -203,7 +206,7 @@ async function batchDelete() {
 
   // 删除选中的项目
   selected.value.every(async item => {
-    progressText.value = `正在删除 ${item.name} ...`
+    progressText.value = t('file.deleting', { name: item.name })
     await deleteItem(item, false)
   })
 
@@ -322,9 +325,9 @@ async function rename() {
   progressDialog.value = true
   progressValue.value = 0
   if (renameAll.value) {
-    progressText.value = `正在重命名 ${currentItem.value?.path} 及目录内所有文件 ...`
+    progressText.value = t('file.renamingAll', { path: currentItem.value?.path })
   } else {
-    progressText.value = `正在重命名 ${currentItem.value?.name} ...`
+    progressText.value = t('file.renaming', { name: currentItem.value?.name })
   }
   if (renameAll.value) {
     startLoadingProgress()
@@ -410,7 +413,7 @@ watch(
     // 重置菜单
     dropdownItems.value = [
       {
-        title: '识别',
+        title: t('file.recognize'),
         value: 1,
         show: true,
         props: {
@@ -421,7 +424,7 @@ watch(
         },
       },
       {
-        title: '刮削',
+        title: t('file.scrape'),
         value: 2,
         show: true,
         props: {
@@ -432,7 +435,7 @@ watch(
         },
       },
       {
-        title: '重命名',
+        title: t('file.rename'),
         value: 3,
         show: true,
         props: {
@@ -441,7 +444,7 @@ watch(
         },
       },
       {
-        title: '整理',
+        title: t('file.reorganize'),
         value: 4,
         show: true,
         props: {
@@ -450,7 +453,7 @@ watch(
         },
       },
       {
-        title: '删除',
+        title: t('common.delete'),
         value: 5,
         show: true,
         props: {
@@ -470,7 +473,7 @@ async function recognize(path: string) {
   try {
     // 显示进度条
     progressDialog.value = true
-    progressText.value = `正在识别 ${path} ...`
+    progressText.value = t('file.recognizing', { path })
     progressValue.value = 0
     nameTestResult.value = await api.get('media/recognize_file', {
       params: {
@@ -479,7 +482,7 @@ async function recognize(path: string) {
     })
     // 关闭进度条
     progressDialog.value = false
-    if (!nameTestResult.value) $toast.error(`${path} 识别失败！`)
+    if (!nameTestResult.value) $toast.error(t('file.recognizeFailed', { path }))
     nameTestDialog.value = !!nameTestResult.value?.meta_info?.name
   } catch (error) {
     console.error(error)
@@ -492,22 +495,22 @@ async function scrape(item: FileItem, confirm: boolean = true) {
     if (confirm) {
       // 确认
       const confirmed = await createConfirm({
-        title: '确认',
-        content: `是否确认刮削 ${item.path}？`,
+        title: t('common.confirm'),
+        content: t('file.confirmScrape', { path: item.path }),
       })
       if (!confirmed) return
     }
 
     // 显示进度条
     progressDialog.value = true
-    progressText.value = `正在刮削 ${item.path} ...`
+    progressText.value = t('file.scraping', { path: item.path })
 
     const result: { [key: string]: any } = await api.post(`media/scrape/${inProps.storage}`, item)
 
     // 关闭进度条
     progressDialog.value = false
     if (!result.success) $toast.error(result.message)
-    else $toast.success(`${item.path} 削刮完成！`)
+    else $toast.success(t('file.scrapeCompleted', { path: item.path }))
   } catch (error) {
     console.error(error)
   }
@@ -517,8 +520,8 @@ async function scrape(item: FileItem, confirm: boolean = true) {
 async function batchScrape() {
   // 确认
   const confirmed = await createConfirm({
-    title: '确认',
-    content: `是否确认刮削选中的 ${selected.value.length} 项？`,
+    title: t('common.confirm'),
+    content: t('file.confirmBatchScrape', { count: selected.value.length }),
   })
   if (!confirmed) return
 
@@ -529,7 +532,7 @@ async function batchScrape() {
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
-  progressText.value = '请稍候 ...'
+  progressText.value = t('common.pleaseWait')
   progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/batchrename`)
   progressEventSource.value.onmessage = event => {
     const progress = JSON.parse(event.data)
@@ -564,7 +567,7 @@ onMounted(() => {
         flat
         density="compact"
         variant="plain"
-        placeholder="搜索 ..."
+        :placeholder="t('common.search')"
         prepend-inner-icon="mdi-filter-outline"
         class="mx-2"
         rounded
@@ -610,8 +613,8 @@ onMounted(() => {
       </div>
       <div class="text-xl text-high-emphasis mt-3">{{ items[0]?.name }}</div>
       <p class="mt-2" v-if="items[0]?.size && items[0].modify_time">
-        大小：{{ formatBytes(items[0]?.size || 0) }}<br />
-        修改时间：{{ formatTime(items[0]?.modify_time || 0) }}
+        {{ t('file.size') }}：{{ formatBytes(items[0]?.size || 0) }}<br />
+        {{ t('file.modifyTime') }}：{{ formatTime(items[0]?.modify_time || 0) }}
       </p>
     </VCardText>
     <!-- 图片 -->
@@ -685,9 +688,11 @@ onMounted(() => {
       </VList>
     </VCardText>
     <VCardText v-else-if="filter" class="grow d-flex justify-center align-center grey--text py-5">
-      没有目录或文件
+      {{ t('file.noFiles') }}
     </VCardText>
-    <VCardText v-else-if="!loading" class="grow d-flex justify-center align-center grey--text py-5"> 空目录 </VCardText>
+    <VCardText v-else-if="!loading" class="grow d-flex justify-center align-center grey--text py-5">
+      {{ t('file.emptyDirectory') }}
+    </VCardText>
   </VCard>
   <!-- 重命名弹窗 -->
   <VDialog v-if="renamePopper" v-model="renamePopper" max-width="35rem">

@@ -287,7 +287,7 @@ function getIndentLevel(path: string, ancestorPath: string) {
       <!-- 加载根目录 -->
       <div v-if="loading['/']" class="tree-loading">
         <VProgressCircular indeterminate size="24" color="primary" class="ma-2" />
-        <span>加载目录结构...</span>
+        <span>{{ t('file.loadingDirectoryStructure') }}</span>
       </div>
 
       <!-- 目录树结构 -->
@@ -328,7 +328,7 @@ function getIndentLevel(path: string, ancestorPath: string) {
             <!-- 加载中状态 -->
             <div v-if="loading[directory.path || '']" class="tree-loading pl-8">
               <VProgressCircular indeterminate size="14" color="primary" class="ma-2" />
-              <span class="text-caption">加载中...</span>
+              <span class="text-caption">{{ t('common.loading') }}</span>
             </div>
 
             <!-- 所有层级的子目录列表 -->
