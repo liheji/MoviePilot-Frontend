@@ -46,9 +46,6 @@ export function getBrowserLocale(): SupportedLocale | null {
  * 设置i18n语言环境
  */
 export async function setI18nLanguage(locale: SupportedLocale) {
-  // 加载语言文件(如果使用动态导入)
-  // await loadLocaleMessages(i18n, locale)
-
   // 更新 i18n 实例语言
   i18n.global.locale.value = locale as any as any
 
@@ -57,8 +54,6 @@ export async function setI18nLanguage(locale: SupportedLocale) {
 
   // 更新 HTML 标签 lang 属性
   document.querySelector('html')?.setAttribute('lang', locale)
-
-  return nextTick()
 }
 
 /**
