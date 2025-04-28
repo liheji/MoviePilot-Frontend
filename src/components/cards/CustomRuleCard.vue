@@ -4,6 +4,7 @@ import { useToast } from 'vue-toast-notification'
 import filter_svg from '@images/svg/filter.svg'
 import { cloneDeep } from 'lodash-es'
 import { innerFilterRules } from '@/api/constants'
+import { useI18n } from 'vue-i18n'
 
 // 输入参数
 const props = defineProps({
@@ -21,6 +22,7 @@ const props = defineProps({
 
 // 提示框
 const $toast = useToast()
+const { t } = useI18n()
 
 // 定义触发的自定义事件
 const emit = defineEmits(['close', 'change', 'done'])
@@ -51,28 +53,28 @@ function saveRuleInfo() {
   // 有空值
   if (!ruleInfo.value.id || !ruleInfo.value.name) {
     if (!ruleInfo.value.id && !ruleInfo.value.name) {
-      $toast.error('规则ID和规则名称不能为空')
+      $toast.error(t('customRule.error.emptyIdName'))
     }
     return
   }
   // 检查ID是否在内置的规则中
   if (innerFilterRules.find(option => option.value === ruleInfo.value.id)) {
-    $toast.error('当前规则ID已被内置规则占用')
+    $toast.error(t('customRule.error.idOccupied'))
     return
   }
   // 检查规则名称是否在内置的规则中
   if (innerFilterRules.find(option => option.title === ruleInfo.value.name)) {
-    $toast.error('当前规则名称已被内置规则占用')
+    $toast.error(t('customRule.error.nameOccupied'))
     return
   }
   // ID已存在
   if (ruleInfo.value.id !== props.rule.id && props.rules.find(rule => rule.id === ruleInfo.value.id)) {
-    $toast.error(`规则ID【${ruleInfo.value.id}】已存在`)
+    $toast.error(t('customRule.error.idExists', { id: ruleInfo.value.id }))
     return
   }
   // 规则名称已存在
   if (ruleInfo.value.name !== props.rule.name && props.rules.find(rule => rule.name === ruleInfo.value.name)) {
-    $toast.error(`规则名称【${ruleInfo.value.name}】已存在`)
+    $toast.error(t('customRule.error.nameExists', { name: ruleInfo.value.name }))
     return
   }
   // 保存数据
@@ -105,7 +107,7 @@ function onClose() {
       </VCardText>
     </VCard>
     <VDialog v-if="ruleInfoDialog" v-model="ruleInfoDialog" scrollable max-width="40rem" persistent>
-      <VCard :title="`${props.rule.id} - 配置`" class="rounded-t">
+      <VCard :title="t('customRule.title', { id: props.rule.id })" class="rounded-t">
         <VDialogCloseBtn v-model="ruleInfoDialog" />
         <VDivider />
         <VCardText>
@@ -114,9 +116,9 @@ function onClose() {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="ruleInfo.id"
-                  label="规则ID"
-                  placeholder="必填；不可与其他规则ID重名"
-                  hint="字符与数字组合，不能含空格"
+                  :label="t('customRule.field.ruleId')"
+                  :placeholder="t('customRule.placeholder.ruleId')"
+                  :hint="t('customRule.hint.ruleId')"
                   persistent-hint
                   active
                 />
@@ -124,9 +126,9 @@ function onClose() {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="ruleInfo.name"
-                  label="规则名称"
-                  placeholder="必填；不可与其他规则名称重名"
-                  hint="使用别名便于区分规则"
+                  :label="t('customRule.field.ruleName')"
+                  :placeholder="t('customRule.placeholder.ruleName')"
+                  :hint="t('customRule.hint.ruleName')"
                   persistent-hint
                   active
                 />
@@ -134,9 +136,9 @@ function onClose() {
               <VCol cols="12">
                 <VTextField
                   v-model="ruleInfo.include"
-                  placeholder="关键字/正则表达式"
-                  label="包含"
-                  hint="必须包含的关键字或正则表达式，多个值使用｜分隔"
+                  :label="t('customRule.field.include')"
+                  :placeholder="t('customRule.placeholder.include')"
+                  :hint="t('customRule.hint.include')"
                   persistent-hint
                   active
                 />
@@ -144,9 +146,9 @@ function onClose() {
               <VCol cols="12">
                 <VTextField
                   v-model="ruleInfo.exclude"
-                  placeholder="关键字/正则表达式"
-                  label="排除"
-                  hint="不能包含的关键字或正则表达式，多个值使用｜分隔"
+                  :label="t('customRule.field.exclude')"
+                  :placeholder="t('customRule.placeholder.exclude')"
+                  :hint="t('customRule.hint.exclude')"
                   persistent-hint
                   active
                 />
@@ -154,9 +156,9 @@ function onClose() {
               <VCol cols="6">
                 <VTextField
                   v-model="ruleInfo.size_range"
-                  placeholder="0/1-10"
-                  label="资源体积（MB）"
-                  hint="最小资源文件体积或体积范围（剧集计算单集平均大小）"
+                  :label="t('customRule.field.sizeRange')"
+                  :placeholder="t('customRule.placeholder.sizeRange')"
+                  :hint="t('customRule.hint.sizeRange')"
                   persistent-hint
                   active
                 />
@@ -164,9 +166,9 @@ function onClose() {
               <VCol cols="6">
                 <VTextField
                   v-model="ruleInfo.seeders"
-                  placeholder="0/1-10"
-                  label="做种人数"
-                  hint="最小做种人数或做种人数范围"
+                  :label="t('customRule.field.seeders')"
+                  :placeholder="t('customRule.placeholder.seeders')"
+                  :hint="t('customRule.hint.seeders')"
                   persistent-hint
                   active
                 />
@@ -174,9 +176,9 @@ function onClose() {
               <VCol cols="6">
                 <VTextField
                   v-model="ruleInfo.publish_time"
-                  placeholder="0/1-10"
-                  label="发布时间（分钟）"
-                  hint="距离资源发布的最小时间间隔或时间区间"
+                  :label="t('customRule.field.publishTime')"
+                  :placeholder="t('customRule.placeholder.publishTime')"
+                  :hint="t('customRule.hint.publishTime')"
                   persistent-hint
                   active
                 />
@@ -185,7 +187,9 @@ function onClose() {
           </VForm>
         </VCardText>
         <VCardActions class="pt-3">
-          <VBtn @click="saveRuleInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5"> 确定 </VBtn>
+          <VBtn @click="saveRuleInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">{{
+            t('customRule.action.confirm')
+          }}</VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
