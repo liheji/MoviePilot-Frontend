@@ -7,6 +7,10 @@ import { useToast } from 'vue-toast-notification'
 import { useConfirm } from 'vuetify-use-dialog'
 import UserAddEditDialog from '@/components/dialog/UserAddEditDialog.vue'
 import { useDisplay } from 'vuetify'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 扩展User类型以包含昵称字段
 interface ExtendedUser extends User {
@@ -77,21 +81,21 @@ async function fetchSubscriptions() {
 // 删除用户
 async function removeUser() {
   if (props.user.id === currentLoginUserId.value) {
-    $toast.error('不能删除当前登录用户！')
+    $toast.error(t('user.cannotDeleteCurrentUser'))
     return
   }
   try {
     const isConfirmed = await createConfirm({
-      title: '注意',
-      content: `删除用户 ${props.user?.name} 的所有数据，是否确认？`,
+      title: t('common.confirm'),
+      content: t('user.confirmDeleteUser', { username: props.user?.name }),
     })
     if (!isConfirmed) return
     const result: { [key: string]: any } = await api.delete(`user/id/${props.user.id}`)
     if (result.success) {
-      $toast.success('用户删除成功')
+      $toast.success(t('user.deleteSuccess'))
       emit('remove')
     } else {
-      $toast.error('用户删除失败！')
+      $toast.error(t('user.deleteFailed'))
     }
   } catch (error) {
     console.log(error)
@@ -170,10 +174,12 @@ onMounted(() => {
             </span>
           </div>
           <div class="d-flex flex-wrap gap-1 overflow-auto">
-            <VChip v-if="user.is_superuser" size="x-small" color="error" variant="outlined" label>管理员</VChip>
-            <VChip v-else size="x-small" label>普通用户</VChip>
+            <VChip v-if="user.is_superuser" size="x-small" color="error" variant="outlined" label>{{
+              t('user.admin')
+            }}</VChip>
+            <VChip v-else size="x-small" label>{{ t('user.normal') }}</VChip>
             <VChip size="x-small" :color="user.is_active ? 'success' : 'grey'" variant="tonal" label>
-              {{ user.is_active ? '激活' : '已停用' }}
+              {{ user.is_active ? t('user.active') : t('user.inactive') }}
             </VChip>
             <VChip v-if="user.is_otp" size="x-small" color="info" variant="tonal" label>2FA</VChip>
           </div>
@@ -226,7 +232,7 @@ onMounted(() => {
 
     <VCardText class="d-flex align-center py-2 px-4 text-medium-emphasis">
       <VIcon icon="mdi-email-outline" size="small" color="primary" class="mr-2 opacity-70" />
-      <span class="text-body-2 truncate">{{ user.email || '未设置邮箱' }}</span>
+      <span class="text-body-2 truncate">{{ user.email || t('user.noEmail') }}</span>
     </VCardText>
 
     <!-- PC端显示订阅统计信息 -->
@@ -246,7 +252,7 @@ onMounted(() => {
           </VAvatar>
           <div class="d-flex flex-column">
             <span class="text-lg text-medium-emphasis font-weight-bold">{{ movieSubscriptions }}</span>
-            <span class="text-caption text-medium-emphasis">电影订阅</span>
+            <span class="text-caption text-medium-emphasis">{{ t('user.movieSubscriptions') }}</span>
           </div>
         </div>
         <div class="d-flex align-center gap-3">
@@ -263,7 +269,7 @@ onMounted(() => {
           </VAvatar>
           <div class="d-flex flex-column">
             <span class="text-lg text-medium-emphasis">{{ tvShowSubscriptions }}</span>
-            <span class="text-caption text-medium-emphasis">剧集订阅</span>
+            <span class="text-caption text-medium-emphasis">{{ t('user.tvSubscriptions') }}</span>
           </div>
         </div>
       </div>
