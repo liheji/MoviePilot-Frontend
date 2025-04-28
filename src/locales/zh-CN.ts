@@ -282,7 +282,7 @@ export default {
         running: '运行中',
         failed: '失败',
         paused: '暂停',
-        waiting: '等待'
+        waiting: '等待',
       },
       info: {
         timer: '定时',
@@ -290,6 +290,9 @@ export default {
         actionCount: '动作数',
         runCount: '已执行次数',
         progress: '进度',
+        error: '错误信息',
+      },
+    },
   },
   dashboard: {
     storage: '存储空间',
