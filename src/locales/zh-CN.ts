@@ -22,6 +22,13 @@ export default {
     saving: '保存中',
     reset: '重置',
   },
+  mediaType: {
+    movie: '电影',
+    tv: '电视剧',
+    anime: '动漫',
+    collection: '合集',
+    unknown: '未知',
+  },
   theme: {
     light: '浅色',
     dark: '深色',

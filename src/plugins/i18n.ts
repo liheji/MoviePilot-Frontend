@@ -4,6 +4,7 @@ import { SUPPORTED_LOCALES, SupportedLocale } from '@/types/i18n'
 
 // 导入语言文件
 import zhCN from '@/locales/zh-CN'
+import zhTW from '@/locales/zh-TW'
 import enUS from '@/locales/en-US'
 
 // 创建 i18n 实例
@@ -13,6 +14,7 @@ const i18n = createI18n({
   fallbackLocale: 'zh-CN', // 回退语言
   messages: {
     'zh-CN': zhCN,
+    'zh-TW': zhTW,
     'en-US': enUS,
   },
   silentTranslationWarn: true,

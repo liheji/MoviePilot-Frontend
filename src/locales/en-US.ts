@@ -22,6 +22,13 @@ export default {
     saving: 'Saving',
     reset: 'Reset',
   },
+  mediaType: {
+    movie: 'Movie',
+    tv: 'TV Show',
+    anime: 'Anime',
+    collection: 'Collection',
+    unknown: 'Unknown',
+  },
   theme: {
     light: 'Light',
     dark: 'Dark',

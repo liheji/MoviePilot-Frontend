@@ -14,6 +14,7 @@ import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import SubscribeSeasonDialog from '../dialog/SubscribeSeasonDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { getMeidaTypeText } from '@/types/i18n-type'
 
 // 国际化
 const { t } = useI18n()
@@ -486,7 +487,7 @@ function onRemoveSubscribe() {
             :class="getChipColor(props.media?.type || '')"
             class="absolute left-2 top-2 bg-opacity-80 text-white font-bold"
           >
-            {{ props.media?.type }}
+            {{ getMeidaTypeText(props.media?.type) }}
           </VChip>
           <!-- 本地存在标识 -->
           <ExistIcon v-if="isExists && !hover.isHovering" />
