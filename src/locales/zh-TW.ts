@@ -1092,6 +1092,23 @@ export default {
     progress: {
       processing: '處理中',
     },
+    subscribeSeason: {
+      title: '訂閱 - {title}',
+      selectGroup: '選擇劇集組',
+      defaultGroup: '默認',
+      seasonCount: '{count} 季',
+      episodeCount: '{count} 集',
+      seasonNumber: '第 {number} 季',
+      airDate: '首播於 {date}',
+      voteAverage: '{score}',
+      status: {
+        exists: '已入庫',
+        partial: '部分缺失',
+        missing: '缺失',
+      },
+      submit: '提交訂閱',
+      selectSeasons: '請選擇訂閱季',
+    },
     userAddEdit: {
       add: '添加用戶',
       edit: '編輯用戶',
@@ -1509,12 +1526,6 @@ export default {
       resubscribeTv: '正在重新訂閱 {name} 第 {season} 季...',
       season: '第 {season} 季',
       noData: '沒有已完成的訂閱',
-    },
-    subscribeSeason: {
-      title: '選擇季',
-      seasonTitle: '第 {number} 季',
-      close: '關閉',
-      confirm: '確認',
     },
     siteUserData: {
       title: '站點用戶數據',

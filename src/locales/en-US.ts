@@ -1116,6 +1116,23 @@ export default {
     progress: {
       processing: 'Processing',
     },
+    subscribeSeason: {
+      title: 'Subscribe - {title}',
+      selectGroup: 'Select Episode Group',
+      defaultGroup: 'Default',
+      seasonCount: '{count} Seasons',
+      episodeCount: '{count} Episodes',
+      seasonNumber: 'Season {number}',
+      airDate: 'First aired on {date}',
+      voteAverage: '{score}',
+      status: {
+        exists: 'Exists',
+        partial: 'Partially Missing',
+        missing: 'Missing',
+      },
+      submit: 'Submit Subscription',
+      selectSeasons: 'Please select seasons to subscribe',
+    },
     userAddEdit: {
       add: 'Add User',
       edit: 'Edit User',
@@ -1535,12 +1552,6 @@ export default {
       resubscribeTv: 'Resubscribing {name} Season {season}...',
       season: 'Season {season}',
       noData: 'No completed subscriptions',
-    },
-    subscribeSeason: {
-      title: 'Select Season',
-      seasonTitle: 'Season {number}',
-      close: 'Close',
-      confirm: 'Confirm',
     },
     siteUserData: {
       title: 'Site User Data',

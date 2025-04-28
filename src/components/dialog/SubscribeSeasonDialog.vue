@@ -3,6 +3,10 @@ import api from '@/api'
 import { MediaInfo, MediaSeason, NotExistMediaInfo } from '@/api/types'
 import { PropType } from 'vue'
 import NoDataFound from '@/components/NoDataFound.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 定义事件
 const emit = defineEmits(['subscribe', 'close'])
@@ -47,15 +51,18 @@ const episodeGroupOptions = computed(() => {
     item => {
       return {
         title: item.name,
-        subtitle: `${item.group_count} 季 • ${item.episode_count} 集`,
+        subtitle: `${t('dialog.subscribeSeason.seasonCount', { count: item.group_count })} • ${t(
+          'dialog.subscribeSeason.episodeCount',
+          { count: item.episode_count },
+        )}`,
         value: item.id,
       }
     },
   )
   // 添加不使用选项
   options.unshift({
-    title: '默认',
-    subtitle: `${seasonInfos.value.length} 季`,
+    title: t('dialog.subscribeSeason.defaultGroup'),
+    subtitle: t('dialog.subscribeSeason.seasonCount', { count: seasonInfos.value.length }),
     value: '',
   })
   return options
@@ -142,11 +149,11 @@ function getExistColor(season: number) {
 // 计算存在状态的文本
 function getExistText(season: number) {
   const state = seasonsNotExisted.value[season]
-  if (!state) return '已入库'
+  if (!state) return t('dialog.subscribeSeason.status.exists')
 
-  if (state === 1) return '部分缺失'
-  else if (state === 2) return '缺失'
-  else return '已入库'
+  if (state === 1) return t('dialog.subscribeSeason.status.partial')
+  else if (state === 2) return t('dialog.subscribeSeason.status.missing')
+  else return t('dialog.subscribeSeason.status.exists')
 }
 
 // 拼装季图片地址
@@ -191,7 +198,7 @@ onMounted(async () => {
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
-        <VCardTitle class="pe-10"> 订阅 - {{ props.media?.title }} </VCardTitle>
+        <VCardTitle class="pe-10"> {{ t('dialog.subscribeSeason.title', { title: props.media?.title }) }} </VCardTitle>
       </VCardItem>
       <VDivider />
       <VCardText>
@@ -199,7 +206,7 @@ onMounted(async () => {
           v-model="episodeGroup"
           :items="episodeGroupOptions"
           :item-props="episodeGroupItemProps"
-          label="选择剧集组"
+          :label="t('dialog.subscribeSeason.selectGroup')"
           persistent-hint
         />
         <LoadingBanner v-if="!isRefreshed" class="mt-5" />
@@ -222,15 +229,18 @@ onMounted(async () => {
                   </template>
                 </VImg>
               </template>
-              <VListItemTitle> 第 {{ item.season_number }} 季 </VListItemTitle>
+              <VListItemTitle>
+                {{ t('dialog.subscribeSeason.seasonNumber', { number: item.season_number }) }}
+              </VListItemTitle>
               <VListItemSubtitle class="mt-1 me-2">
                 <VChip v-if="item.vote_average" color="primary" size="small" class="mb-1">
-                  <VIcon icon="mdi-star" /> {{ item.vote_average }}
+                  <VIcon icon="mdi-star" /> {{ t('dialog.subscribeSeason.voteAverage', { score: item.vote_average }) }}
                 </VChip>
-                {{ getYear(item.air_date || '') }} • {{ item.episode_count }} 集
+                {{ getYear(item.air_date || '') }} •
+                {{ t('dialog.subscribeSeason.episodeCount', { count: item.episode_count }) }}
               </VListItemSubtitle>
               <VListItemSubtitle>
-                《{{ media?.title }}》第 {{ item.season_number }} 季于 {{ formatAirDate(item.air_date || '') }} 首播。
+                {{ t('dialog.subscribeSeason.airDate', { date: formatAirDate(item.air_date || '') }) }}
               </VListItemSubtitle>
               <VListItemSubtitle>
                 <VChip
@@ -254,7 +264,11 @@ onMounted(async () => {
       </VCardText>
       <div class="my-2 text-center">
         <VBtn :disabled="seasonsSelected.length === 0" width="30%" @click="subscribeSeasons">
-          {{ seasonsSelected.length === 0 ? '请选择订阅季' : '提交订阅' }}
+          {{
+            seasonsSelected.length === 0
+              ? t('dialog.subscribeSeason.selectSeasons')
+              : t('dialog.subscribeSeason.submit')
+          }}
         </VBtn>
       </div>
     </VCard>
