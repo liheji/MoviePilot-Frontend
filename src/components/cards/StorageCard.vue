@@ -13,6 +13,10 @@ import RcloneConfigDialog from '../dialog/RcloneConfigDialog.vue'
 import AlistConfigDialog from '../dialog/AlistConfigDialog.vue'
 import { useToast } from 'vue-toast-notification'
 import { isNullOrEmptyObject } from '@/@core/utils'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 定义输入
 const props = defineProps({
@@ -64,7 +68,7 @@ function openStorageDialog() {
       aListConfigDialog.value = true
       break
     default:
-      $toast.info('此存储类型无需配置参数，请直接配置目录！')
+      $toast.info(t('storage.noConfigNeeded'))
       break
   }
 }
@@ -134,7 +138,7 @@ onMounted(() => {
         <div class="align-self-start flex-1">
           <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
           <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
-          <div v-else-if="isNullOrEmptyObject(storage.config)">未配置</div>
+          <div v-else-if="isNullOrEmptyObject(storage.config)">{{ t('storage.notConfigured') }}</div>
         </div>
         <VImg :src="getIcon" cover class="mt-5" max-width="3rem" min-width="3rem" />
       </VCardText>

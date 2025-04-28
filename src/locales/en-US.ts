@@ -535,6 +535,8 @@ export default {
   },
   storage: {
     usedPercent: '{percent}% Used',
+    noConfigNeeded: 'This storage type does not require configuration, please configure the directory directly!',
+    notConfigured: 'Not Configured',
   },
   site: {
     noSites: 'No Sites',

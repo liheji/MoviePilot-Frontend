@@ -530,6 +530,8 @@ export default {
   },
   storage: {
     usedPercent: '已使用 {percent}%',
+    noConfigNeeded: '此存儲類型無需配置參數，請直接配置目錄！',
+    notConfigured: '未配置',
   },
   site: {
     noSites: '沒有站點',
