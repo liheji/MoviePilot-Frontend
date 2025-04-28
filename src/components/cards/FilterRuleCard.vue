@@ -2,6 +2,10 @@
 import { innerFilterRules } from '@/api/constants'
 import { CustomRule } from '@/api/types'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+// 获取i18n实例
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -49,7 +53,7 @@ onMounted(() => {
     </span>
     <VDialogCloseBtn @click="onClose" />
     <VCardItem>
-      <VCardTitle>优先级 {{ props.pri }}</VCardTitle>
+      <VCardTitle>{{ t('filterRule.priority') }} {{ props.pri }}</VCardTitle>
       <VRow>
         <VCol>
           <VSelect
@@ -57,7 +61,7 @@ onMounted(() => {
             variant="underlined"
             :items="selectFilterOptions"
             chips
-            label=""
+            :label="t('filterRule.rules')"
             multiple
             clearable
             @update:modelValue="filtersChanged"

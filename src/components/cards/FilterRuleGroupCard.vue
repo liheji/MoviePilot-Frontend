@@ -7,6 +7,10 @@ import { useToast } from 'vue-toast-notification'
 import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
 import filter_group_svg from '@images/svg/filter-group.svg'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+// 获取i18n实例
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -56,14 +60,14 @@ const groupInfo = ref<FilterRuleGroup>({
 
 // 媒体类型字典
 const mediaTypeItems = [
-  { title: '通用', value: '' },
-  { title: '电影', value: '电影' },
-  { title: '电视剧', value: '电视剧' },
+  { title: t('common.all'), value: '' },
+  { title: t('mediaType.movie'), value: '电影' },
+  { title: t('mediaType.tv'), value: '电视剧' },
 ]
 
 // 根据选中的媒体类型，获取对应的媒体类别
 const getCategories = computed(() => {
-  const default_value = [{ title: '全部', value: '' }]
+  const default_value = [{ title: t('common.all'), value: '' }]
   if (!props.categories || !groupInfo.value.media_type || !props.categories[groupInfo.value.media_type]) {
     return default_value
   }
@@ -72,11 +76,6 @@ const getCategories = computed(() => {
 
 // 规则组规则卡片列表
 const filterRuleCards = ref<FilterCard[]>([])
-// 规则组类型，仅用于导入判断
-const filterRuleCardsType = ref<FilterCard>({
-  pri: '',
-  rules: [],
-})
 
 // 导入代码弹窗
 const importCodeDialog = ref(false)
@@ -112,10 +111,10 @@ async function shareRules() {
   try {
     let success
     success = copyToClipboard(value)
-    if (await success) $toast.success('优先级规则已复制到剪贴板！')
-    else $toast.error('优先级规则复制失败：可能是浏览器不支持或被用户阻止！')
+    if (await success) $toast.success(t('filterRule.shareSuccess'))
+    else $toast.error(t('filterRule.shareFailed'))
   } catch (error) {
-    $toast.error('优先级规则复制失败！')
+    $toast.error(t('filterRule.shareFailed'))
     console.error(error)
   }
 }
@@ -143,7 +142,7 @@ function saveCodeString(type: string, code: any) {
       }))
     }
   } catch (error) {
-    $toast.error('导入失败！')
+    $toast.error(t('filterRule.importFailed'))
     console.error(error)
   }
 }
@@ -177,11 +176,11 @@ function opengroupInfoDialog() {
 // 保存详情数据
 function saveGroupInfo() {
   if (!groupInfo.value.name.trim()) {
-    $toast.error('规则组名称不能为空')
+    $toast.error(t('filterRule.nameRequired'))
     return
   }
   if (props.groups.some(item => item.name === groupInfo.value.name && item !== props.group)) {
-    $toast.error(`规则组名称【${groupInfo.value.name}】已存在，请替换`)
+    $toast.error(t('filterRule.nameDuplicate'))
     return
   }
 
@@ -213,7 +212,7 @@ function onClose() {
         <div class="align-self-start">
           <h5 class="text-h6 mb-1">{{ props.group.name }}</h5>
           <div class="text-body-1 mb-3">
-            <span v-if="!props.group.category">{{ props.group.media_type || '通用' }}</span>
+            <span v-if="!props.group.category">{{ props.group.media_type || t('common.all') }}</span>
             <span v-else>{{ props.group.category }}</span>
           </div>
         </div>
@@ -221,7 +220,7 @@ function onClose() {
       </VCardText>
     </VCard>
     <VDialog v-if="groupInfoDialog" v-model="groupInfoDialog" scrollable max-width="80rem" persistent>
-      <VCard :title="`${props.group.name} - 配置`" class="rounded-t">
+      <VCard :title="`${props.group.name} - ${t('filterRule.title')}`" class="rounded-t">
         <VDialogCloseBtn v-model="groupInfoDialog" />
         <VDivider />
         <VCardItem class="pt-1">
@@ -229,9 +228,9 @@ function onClose() {
             <VCol cols="12" md="6">
               <VTextField
                 v-model="groupInfo.name"
-                label="规则组名称"
-                placeholder="必填；不可与其他规则组重名"
-                hint="自定义规则组名称"
+                :label="t('filterRule.name')"
+                :placeholder="t('filterRule.nameRequired')"
+                :hint="t('filterRule.name')"
                 persistent-hint
                 active
               />
@@ -239,9 +238,9 @@ function onClose() {
             <VCol cols="6" md="3">
               <VSelect
                 v-model="groupInfo.media_type"
-                label="适用媒体类型"
+                :label="t('filterRule.mediaType')"
                 :items="mediaTypeItems"
-                hint="选择规则组适用的媒体类型"
+                :hint="t('filterRule.mediaType')"
                 persistent-hint
                 active
               />
@@ -250,8 +249,8 @@ function onClose() {
               <VSelect
                 v-model="groupInfo.category"
                 :items="getCategories"
-                label="适用媒体类别"
-                hint="选择规则组适用的媒体类别"
+                :label="t('filterRule.category')"
+                :hint="t('filterRule.category')"
                 persistent-hint
                 active
               />
@@ -278,7 +277,7 @@ function onClose() {
               />
             </template>
           </draggable>
-          <div class="text-center" v-if="filterRuleCards.length == 0">请添加或导入规则</div>
+          <div class="text-center" v-if="filterRuleCards.length == 0">{{ t('filterRule.add') }}</div>
         </VCardText>
         <VCardActions class="pt-3">
           <VBtn color="primary" variant="tonal" @click="addFilterCard">
@@ -291,14 +290,16 @@ function onClose() {
             <VIcon icon="mdi-share" />
           </VBtn>
           <VSpacer />
-          <VBtn @click="saveGroupInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5"> 确定 </VBtn>
+          <VBtn @click="saveGroupInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
+            {{ t('common.save') }}
+          </VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
     <ImportCodeDialog
       v-if="importCodeDialog"
       v-model="importCodeDialog"
-      title="导入规则优先级"
+      :title="t('filterRule.import')"
       :dataType="importCodeType"
       @close="importCodeDialog = false"
       @save="saveCodeString"

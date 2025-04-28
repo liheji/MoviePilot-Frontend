@@ -7,6 +7,10 @@ import type { DownloaderInfo } from '@/api/types'
 import qbittorrent_image from '@images/logos/qbittorrent.png'
 import transmission_image from '@images/logos/transmission.png'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+// 获取i18n实例
+const { t } = useI18n()
 
 // 定义输入
 const props = defineProps({
@@ -91,12 +95,12 @@ function openDownloaderInfoDialog() {
 function saveDownloaderInfo() {
   // 为空不保存，跳出警告框
   if (!downloaderInfo.value.name) {
-    $toast.error('名称不能为空，请输入后再确定')
+    $toast.error(t('downloader.nameRequired'))
     return
   }
   // 重名判断
   if (props.downloaders.some(item => item.name === downloaderInfo.value.name && item !== props.downloader)) {
-    $toast.error(`【${downloaderInfo.value.name}】已存在，请替换为其他名称`)
+    $toast.error(t('downloader.nameDuplicate'))
     return
   }
   // 默认下载器去重
@@ -104,7 +108,7 @@ function saveDownloaderInfo() {
     props.downloaders.forEach(item => {
       if (item.default && item !== props.downloader) {
         item.default = false
-        $toast.info(`存在默认下载器【${item.name}】，已替换成【${downloaderInfo.value.name}】`)
+        $toast.info(t('downloader.defaultChanged'))
       }
     })
   }
@@ -180,26 +184,30 @@ onUnmounted(() => {
       </VCard>
     </VHover>
     <VDialog v-if="downloaderInfoDialog" v-model="downloaderInfoDialog" scrollable max-width="40rem" persistent>
-      <VCard :title="`${props.downloader.name} - 配置`" class="rounded-t">
+      <VCard :title="`${props.downloader.name} - ${t('downloader.title')}`" class="rounded-t">
         <VDialogCloseBtn v-model="downloaderInfoDialog" />
         <VDivider />
         <VCardText>
           <VForm>
             <VRow>
               <VCol cols="12" md="6">
-                <VSwitch v-model="downloaderInfo.enabled" label="启用下载器" />
+                <VSwitch v-model="downloaderInfo.enabled" :label="t('downloader.enabled')" />
               </VCol>
               <VCol cols="12" md="6">
-                <VSwitch v-model="downloaderInfo.default" label="默认下载器" :disabled="!downloaderInfo.enabled" />
+                <VSwitch
+                  v-model="downloaderInfo.default"
+                  :label="t('downloader.default')"
+                  :disabled="!downloaderInfo.enabled"
+                />
               </VCol>
             </VRow>
             <VRow v-if="downloaderInfo.type == 'qbittorrent'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="downloaderInfo.name"
-                  label="名称"
-                  placeholder="必填；不可与其他名称重名"
-                  hint="下载器的别名"
+                  :label="t('downloader.name')"
+                  :placeholder="t('downloader.nameRequired')"
+                  :hint="t('downloader.name')"
                   persistent-hint
                   active
                 />
@@ -207,9 +215,9 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="downloaderInfo.config.host"
-                  label="地址"
+                  :label="t('downloader.host')"
                   placeholder="http(s)://ip:port"
-                  hint="服务端地址，格式：http(s)://ip:port"
+                  :hint="t('downloader.host')"
                   persistent-hint
                   active
                 />
@@ -217,8 +225,8 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="downloaderInfo.config.username"
-                  label="用户名"
-                  hint="登录使用的用户名"
+                  :label="t('downloader.username')"
+                  :hint="t('downloader.username')"
                   persistent-hint
                   active
                 />
@@ -227,8 +235,8 @@ onUnmounted(() => {
                 <VTextField
                   v-model="downloaderInfo.config.password"
                   type="password"
-                  label="密码"
-                  hint="登录使用的密码"
+                  :label="t('downloader.password')"
+                  :hint="t('downloader.password')"
                   persistent-hint
                   active
                 />
@@ -236,8 +244,8 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="downloaderInfo.config.category"
-                  label="自动分类管理"
-                  hint="由下载器自动管理分类和下载目录"
+                  :label="t('downloader.category')"
+                  :hint="t('downloader.category')"
                   persistent-hint
                   active
                 />
@@ -245,8 +253,8 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="downloaderInfo.config.sequentail"
-                  label="顺序下载"
-                  hint="按顺序依次下载文件"
+                  :label="t('downloader.sequentail')"
+                  :hint="t('downloader.sequentail')"
                   persistent-hint
                   active
                 />
@@ -254,8 +262,8 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="downloaderInfo.config.force_resume"
-                  label="强制继续"
-                  hint="强制继续、强制上传模式"
+                  :label="t('downloader.force_resume')"
+                  :hint="t('downloader.force_resume')"
                   persistent-hint
                   active
                 />
@@ -263,8 +271,8 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VSwitch
                   v-model="downloaderInfo.config.first_last_piece"
-                  label="优先首尾文件"
-                  hint="优先下载首尾文件块"
+                  :label="t('downloader.first_last_piece')"
+                  :hint="t('downloader.first_last_piece')"
                   persistent-hint
                   active
                 />
@@ -274,9 +282,9 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="downloaderInfo.name"
-                  label="名称"
-                  placeholder="必填；不可与其他名称重名"
-                  hint="下载器的别名"
+                  :label="t('downloader.name')"
+                  :placeholder="t('downloader.nameRequired')"
+                  :hint="t('downloader.name')"
                   persistent-hint
                   active
                 />
@@ -284,9 +292,9 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="downloaderInfo.config.host"
-                  label="地址"
+                  :label="t('downloader.host')"
                   placeholder="http(s)://ip:port"
-                  hint="服务端地址，格式：http(s)://ip:port"
+                  :hint="t('downloader.host')"
                   persistent-hint
                   active
                 />
@@ -294,8 +302,8 @@ onUnmounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="downloaderInfo.config.username"
-                  label="用户名"
-                  hint="登录使用的用户名"
+                  :label="t('downloader.username')"
+                  :hint="t('downloader.username')"
                   persistent-hint
                   active
                 />
@@ -304,8 +312,8 @@ onUnmounted(() => {
                 <VTextField
                   v-model="downloaderInfo.config.password"
                   type="password"
-                  label="密码"
-                  hint="登录使用的密码"
+                  :label="t('downloader.password')"
+                  :hint="t('downloader.password')"
                   persistent-hint
                   active
                 />
@@ -315,7 +323,7 @@ onUnmounted(() => {
         </VCardText>
         <VCardActions class="pt-3">
           <VBtn @click="saveDownloaderInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
-            确定
+            {{ t('common.save') }}
           </VBtn>
         </VCardActions>
       </VCard>
