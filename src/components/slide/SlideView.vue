@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import SlideViewTitle from '@/components/slide/SlideViewTitle.vue'
-import { ref, onMounted, onUnmounted, inject, computed } from 'vue'
+import { useDisplay } from 'vuetify'
+
+// 判断是否可以触摸
+const display = useDisplay()
+const isTouch = computed(() => display.mobile.value)
 
 // 元素
 const slideview_content = ref<HTMLElement | null>(null)
@@ -142,26 +146,32 @@ onActivated(() => {
       </div>
 
       <!-- 左侧导航按钮 -->
-      <button
+      <VBtn
         class="nav-button nav-button-left"
         @click.stop="slideNext(false)"
-        v-show="disabled !== 0 && disabled !== 3"
+        v-show="disabled !== 0 && disabled !== 3 && !isTouch"
+        variant="text"
+        icon
+        color="secondary"
       >
         <svg width="24" height="24" viewBox="0 0 24 24">
           <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
         </svg>
-      </button>
+      </VBtn>
 
       <!-- 右侧导航按钮 -->
-      <button
+      <VBtn
         class="nav-button nav-button-right"
         @click.stop="slideNext(true)"
-        v-show="disabled !== 2 && disabled !== 3"
+        v-show="disabled !== 2 && disabled !== 3 && !isTouch"
+        variant="text"
+        icon
+        color="secondary"
       >
         <svg width="24" height="24" viewBox="0 0 24 24">
           <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
         </svg>
-      </button>
+      </VBtn>
     </div>
   </div>
 </template>
@@ -189,26 +199,27 @@ onActivated(() => {
 
 .view-all-button {
   .arrow-svg {
-    fill: currentColor;
+    fill: currentcolor;
+    margin-inline-start: 2px;
     transition: transform 0.3s ease;
-    margin-left: 2px;
   }
 
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   border-radius: 8px;
-  padding: 5px 12px;
   background-color: transparent;
   color: rgb(var(--v-theme-primary));
   font-size: 0.85rem;
   font-weight: 500;
+  padding-block: 5px;
+  padding-inline: 12px;
   text-decoration: none;
   transition: all 0.25s ease;
 
   &:hover {
-    background-color: rgba(var(--v-theme-primary), 0.08);
     border-color: rgba(var(--v-theme-primary), 0.5);
+    background-color: rgba(var(--v-theme-primary), 0.08);
     transform: translateY(-1px);
 
     .arrow-svg {
@@ -234,40 +245,37 @@ onActivated(() => {
 
 .nav-button {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: rgba(var(--v-theme-background), 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  border-radius: 50%;
+  backdrop-filter: blur(8px);
+  background-color: rgba(var(--v-theme-background), 0.3);
+  block-size: 36px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 8%);
   cursor: pointer;
-  z-index: 20;
-  color: rgb(var(--v-theme-on-surface));
+  inline-size: 36px;
+  inset-block-start: 50%;
   opacity: 0;
   pointer-events: none;
+  transform: translateY(-50%);
   transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease,
     box-shadow 0.3s ease, border-color 0.3s ease;
 
   svg {
-    fill: currentColor;
+    block-size: 22px;
+    fill: currentcolor;
+    filter: none;
+    inline-size: 22px;
     opacity: 0.7;
     transition: all 0.3s ease;
-    width: 22px;
-    height: 22px;
-    filter: none;
   }
 
   &:hover {
-    background-color: rgba(var(--v-theme-background), 0.95);
-    transform: translateY(-50%) scale(1.05);
     color: rgb(var(--v-theme-primary));
+    transform: translateY(-50%) scale(1.05);
 
     svg {
       opacity: 1;
@@ -276,11 +284,11 @@ onActivated(() => {
 }
 
 .nav-button-left {
-  left: 8px;
+  inset-inline-start: 8px;
 }
 
 .nav-button-right {
-  right: 8px;
+  inset-inline-end: 8px;
 }
 
 .slider-content {

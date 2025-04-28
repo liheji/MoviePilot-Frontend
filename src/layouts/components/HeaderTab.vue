@@ -37,15 +37,13 @@ const showRightButton = ref(false)
 const scrollTabs = (direction: 'left' | 'right') => {
   const el = tabsContainerRef.value
   if (!el) return
-  
+
   const scrollAmount = 200 // 可以根据需要调整滚动量
-  const scrollPosition = direction === 'left' 
-    ? el.scrollLeft - scrollAmount 
-    : el.scrollLeft + scrollAmount
-  
+  const scrollPosition = direction === 'left' ? el.scrollLeft - scrollAmount : el.scrollLeft + scrollAmount
+
   el.scrollTo({
     left: scrollPosition,
-    behavior: 'smooth'
+    behavior: 'smooth',
   })
 }
 
@@ -93,16 +91,10 @@ onUnmounted(() => {
 </script>
 <template>
   <div class="tab-header rounded-t-lg">
-    <VBtn 
-      v-if="showLeftButton" 
-      class="scroll-button left-button"
-      @click="scrollTabs('left')"
-      variant="text"
-      icon
-    >
-      <VIcon icon="tabler-chevron-left" size="small" />
+    <VBtn v-if="showLeftButton" class="scroll-button left-button" @click="scrollTabs('left')" variant="text" icon>
+      <VIcon icon="tabler-chevron-left" size="small" color="secondary" />
     </VBtn>
-    
+
     <div ref="tabsContainerRef" class="header-tabs" :class="{ 'show-indicator': showTabsScrollIndicator }">
       <div
         v-for="(item, index) in items"
@@ -115,17 +107,11 @@ onUnmounted(() => {
         <span>{{ item.title }}</span>
       </div>
     </div>
-    
-    <VBtn 
-      v-if="showRightButton" 
-      class="scroll-button right-button"
-      @click="scrollTabs('right')"
-      variant="text"
-      icon
-    >
-      <VIcon icon="tabler-chevron-right" size="small" />
+
+    <VBtn v-if="showRightButton" class="scroll-button right-button" @click="scrollTabs('right')" variant="text" icon>
+      <VIcon icon="tabler-chevron-right" size="small" color="secondary" />
     </VBtn>
-    
+
     <slot name="append" />
   </div>
 </template>
@@ -145,30 +131,24 @@ onUnmounted(() => {
 }
 
 .scroll-button {
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 28px;
-  width: 28px;
-  border-radius: 50%;
-  background-color: rgba(var(--v-theme-primary), 0.1);
-  color: rgb(var(--v-theme-primary));
-  cursor: pointer;
   border: none;
+  border-radius: 50%;
+  block-size: 28px;
+  cursor: pointer;
+  inline-size: 28px;
   outline: none;
-  z-index: 2;
   transition: background-color 0.2s ease;
-  
-  &:hover {
-    background-color: rgba(var(--v-theme-primary), 0.2);
-  }
-  
+
   &.left-button {
-    margin-right: 6px;
+    margin-inline-end: 6px;
   }
-  
+
   &.right-button {
-    margin-left: 6px;
+    margin-inline-start: 6px;
   }
 }
 

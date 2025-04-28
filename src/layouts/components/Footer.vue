@@ -6,7 +6,10 @@ import { useI18n } from 'vue-i18n'
 
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// 判断当前是否为英文环境
+const isEnglish = computed(() => locale.value === 'en-US')
 
 const route = useRoute()
 
@@ -114,8 +117,8 @@ const showDynamicButton = computed(() => {
               :value="menu.to"
             >
               <div class="btn-content">
-                <VIcon :icon="menu.icon" size="24"></VIcon>
-                <span class="text-xs">{{ menu.title }}</span>
+                <VIcon :icon="menu.icon" :size="isEnglish ? 32 : 24"></VIcon>
+                <span v-if="!isEnglish" class="text-xs">{{ menu.title }}</span>
               </div>
             </VBtn>
 
@@ -131,8 +134,8 @@ const showDynamicButton = computed(() => {
               value="/apps"
             >
               <div class="btn-content">
-                <VIcon icon="mdi-dots-horizontal" size="24"></VIcon>
-                <span class="btn-text">{{ t('nav.more') }}</span>
+                <VIcon icon="mdi-dots-horizontal" :size="isEnglish ? 32 : 24"></VIcon>
+                <span v-if="!isEnglish" class="btn-text">{{ t('nav.more') }}</span>
               </div>
             </VBtn>
           </VBtnToggle>
@@ -222,6 +225,18 @@ const showDynamicButton = computed(() => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    inline-size: 100%;
+
+    span {
+      overflow: hidden;
+      font-size: 0.75rem;
+      max-inline-size: 100%;
+      scale: var(--text-scale, 1);
+      text-overflow: ellipsis;
+      transform-origin: center;
+      transition: scale 0.2s ease;
+      white-space: nowrap;
+    }
   }
 }
 

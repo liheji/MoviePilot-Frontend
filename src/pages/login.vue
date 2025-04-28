@@ -180,12 +180,7 @@ onMounted(async () => {
   <div class="relative flex min-h-screen flex-col items-center justify-center">
     <!-- 登录表单 -->
     <div class="auth-wrapper d-flex align-center justify-center">
-      <VCard
-        class="auth-card px-7 py-3 w-full h-full"
-        :class="{ 'opacity-75': globalTheme.name.value !== 'transparent' }"
-        max-width="24rem"
-        border
-      >
+      <VCard class="auth-card px-7 py-3 w-full h-full" max-width="24rem" border>
         <VCardItem class="justify-center">
           <template #prepend>
             <div class="d-flex pe-0">
