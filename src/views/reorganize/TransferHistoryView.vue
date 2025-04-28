@@ -11,6 +11,10 @@ import router from '@/router'
 import { useDisplay } from 'vuetify'
 import { storageDict } from '@/api/constants'
 import { formatFileSize } from '@/@core/utils/formatters'
+import { useI18n } from 'vue-i18n'
+
+// i18n
+const { t } = useI18n()
 
 // APP
 const display = useDisplay()
@@ -44,32 +48,32 @@ const selected = ref<TransferHistory[]>([])
 // 表头
 const headers = [
   {
-    title: '标题',
+    title: t('transferHistory.titleColumn'),
     key: 'title',
     sortable: true,
   },
   {
-    title: '路径',
+    title: t('transferHistory.pathColumn'),
     key: 'src',
     sortable: true,
   },
   {
-    title: '转移方式',
+    title: t('transferHistory.modeColumn'),
     key: 'mode',
     sortable: true,
   },
   {
-    title: '大小',
+    title: t('transferHistory.sizeColumn'),
     key: 'size',
     sortable: true,
   },
   {
-    title: '时间',
+    title: t('transferHistory.dateColumn'),
     key: 'date',
     sortable: true,
   },
   {
-    title: '状态',
+    title: t('transferHistory.statusColumn'),
     key: 'status',
     sortable: true,
   },
@@ -83,32 +87,32 @@ const headers = [
 // 分组表头
 const groupHeaders = [
   {
-    title: '季集/类别',
+    title: t('transferHistory.seasonEpisode'),
     key: 'title',
     sortable: true,
   },
   {
-    title: '路径',
+    title: t('transferHistory.pathColumn'),
     key: 'src',
     sortable: true,
   },
   {
-    title: '转移方式',
+    title: t('transferHistory.modeColumn'),
     key: 'mode',
     sortable: true,
   },
   {
-    title: '大小',
+    title: t('transferHistory.sizeColumn'),
     key: 'size',
     sortable: true,
   },
   {
-    title: '时间',
+    title: t('transferHistory.dateColumn'),
     key: 'date',
     sortable: true,
   },
   {
-    title: '状态',
+    title: t('transferHistory.statusColumn'),
     key: 'status',
     sortable: true,
   },
@@ -163,7 +167,7 @@ const currentPage = ref<number>(ensureNumber(route.query.currentPage, 1))
 const progressDialog = ref(false)
 
 // 进度文本
-const progressText = ref('请稍候 ...')
+const progressText = ref(t('transferHistory.progress.pleaseWait'))
 
 // 进度值
 const progressValue = ref(0)
@@ -179,12 +183,12 @@ const confirmTitle = ref('')
 
 // 转移方式字典
 const TransferDict: { [key: string]: string } = {
-  copy: '复制',
-  move: '移动',
-  link: '硬链接',
-  softlink: '软链接',
-  rclone_copy: 'Rclone复制',
-  rclone_move: 'Rclone移动',
+  copy: t('transferHistory.transferMode.copy'),
+  move: t('transferHistory.transferMode.move'),
+  link: t('transferHistory.transferMode.link'),
+  softlink: t('transferHistory.transferMode.softlink'),
+  rclone_copy: t('transferHistory.transferMode.rclone_copy'),
+  rclone_move: t('transferHistory.transferMode.rclone_move'),
 }
 
 const tableStyle = computed(() => {
@@ -262,7 +266,11 @@ function getIcon(type: string) {
 // 删除历史记录
 async function removeHistory(item: TransferHistory) {
   currentHistory.value = item
-  confirmTitle.value = `确认删除 ${item.title} ${item.seasons}${item.episodes} ?`
+  confirmTitle.value = t('transferHistory.deleteConfirm', {
+    title: item.title,
+    seasons: item.seasons || '',
+    episodes: item.episodes || '',
+  })
   deleteConfirmDialog.value = true
 }
 
@@ -335,7 +343,9 @@ async function removeHistoryBatch() {
 
   // 清空当前操作记录
   currentHistory.value = undefined
-  confirmTitle.value = `确认删除 ${selected.value.length} 条记录 ?`
+  confirmTitle.value = t('transferHistory.deleteConfirmBatch', {
+    count: selected.value.length,
+  })
   // 打开确认弹窗
   deleteConfirmDialog.value = true
 }
@@ -365,7 +375,7 @@ function transferDone() {
 // 弹出菜单
 const dropdownItems = ref([
   {
-    title: '重新整理',
+    title: t('transferHistory.actions.redo'),
     value: 1,
     props: {
       prependIcon: 'mdi-redo-variant',
@@ -377,7 +387,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '删除',
+    title: t('transferHistory.actions.delete'),
     value: 2,
     props: {
       prependIcon: 'mdi-trash-can-outline',
@@ -439,7 +449,7 @@ onMounted(fetchData)
               @compositionend="isComposing = false"
               class="text-disabled"
               density="compact"
-              label="搜索整理记录"
+              :label="t('transferHistory.searchPlaceholder')"
               prepend-inner-icon="mdi-magnify"
               variant="solo-filled"
               max-width="25rem"
@@ -471,12 +481,12 @@ onMounted(fetchData)
       return-object
       fixed-header
       show-select
-      loading-text="加载中..."
+      :loading-text="t('transferHistory.loading')"
       hover
       :style="tableStyle"
     >
       <template #header.data-table-group>
-        <span>标题</span>
+        <span>{{ t('transferHistory.titleColumn') }}</span>
       </template>
       <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
         <tr>
@@ -520,14 +530,14 @@ onMounted(fetchData)
       </template>
       <template #item.mode="{ item }">
         <VChip variant="outlined" color="primary" size="small">
-          {{ TransferDict[item?.mode ?? ''] || '未知' }}
+          {{ TransferDict[item?.mode ?? ''] || t('common.unknown') }}
         </VChip>
       </template>
       <template #item.status="{ item }">
-        <VChip v-if="item?.status" color="success" size="small"> 成功 </VChip>
+        <VChip v-if="item?.status" color="success" size="small"> {{ t('transferHistory.status.success') }} </VChip>
         <VTooltip v-else :text="item?.errmsg">
           <template #activator="{ props }">
-            <VChip v-bind="props" color="error" size="small"> 失败 </VChip>
+            <VChip v-bind="props" color="error" size="small"> {{ t('transferHistory.status.failed') }} </VChip>
           </template>
         </VTooltip>
       </template>
@@ -557,7 +567,7 @@ onMounted(fetchData)
           </VMenu>
         </IconBtn>
       </template>
-      <template #no-data> 没有数据 </template>
+      <template #no-data> {{ t('transferHistory.noData') }} </template>
     </VDataTableVirtual>
     <!-- 列表模式 -->
     <VDataTableVirtual
@@ -570,7 +580,7 @@ onMounted(fetchData)
       return-object
       fixed-header
       show-select
-      loading-text="加载中..."
+      :loading-text="t('transferHistory.loading')"
       hover
       :style="tableStyle"
     >
@@ -606,14 +616,14 @@ onMounted(fetchData)
       </template>
       <template #item.mode="{ item }">
         <VChip variant="outlined" color="primary" size="small">
-          {{ TransferDict[item?.mode ?? ''] || '未知' }}
+          {{ TransferDict[item?.mode ?? ''] || t('common.unknown') }}
         </VChip>
       </template>
       <template #item.status="{ item }">
-        <VChip v-if="item?.status" color="success" size="small"> 成功 </VChip>
+        <VChip v-if="item?.status" color="success" size="small"> {{ t('transferHistory.status.success') }} </VChip>
         <VTooltip v-else :text="item?.errmsg">
           <template #activator="{ props }">
-            <VChip v-bind="props" color="error" size="small"> 失败 </VChip>
+            <VChip v-bind="props" color="error" size="small"> {{ t('transferHistory.status.failed') }} </VChip>
           </template>
         </VTooltip>
       </template>
@@ -643,14 +653,14 @@ onMounted(fetchData)
           </VMenu>
         </IconBtn>
       </template>
-      <template #no-data> 没有数据 </template>
+      <template #no-data> {{ t('transferHistory.noData') }} </template>
     </VDataTableVirtual>
     <VDivider />
     <div class="flex items-center justify-between">
       <div class="w-auto">
         <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" flat />
       </div>
-      <div class="w-auto text-sm">{{ pageTip.begin }} - {{ pageTip.end }} / {{ totalItems }}</div>
+      <div class="w-auto text-sm">{{ t('transferHistory.pageInfo', pageTip) }}</div>
       <VPagination
         v-model="currentPage"
         show-first-last-page
@@ -695,13 +705,17 @@ onMounted(fetchData)
         {{ confirmTitle }}
       </VCardTitle>
       <div class="d-flex flex-column flex-lg-row justify-center my-3">
-        <VBtn color="primary" class="mb-2 mx-2" @click="deleteConfirmHandler(false, false)"> 仅删除整理记录 </VBtn>
-        <VBtn color="warning" class="mb-2 mx-2" @click="deleteConfirmHandler(true, false)"> 删除整理记录和源文件 </VBtn>
+        <VBtn color="primary" class="mb-2 mx-2" @click="deleteConfirmHandler(false, false)">
+          {{ t('transferHistory.deleteRecordOnly') }}
+        </VBtn>
+        <VBtn color="warning" class="mb-2 mx-2" @click="deleteConfirmHandler(true, false)">
+          {{ t('transferHistory.deleteSourceOnly') }}
+        </VBtn>
         <VBtn color="info" class="mb-2 mx-2" @click="deleteConfirmHandler(false, true)">
-          删除整理记录和媒体库文件
+          {{ t('transferHistory.deleteDestOnly') }}
         </VBtn>
         <VBtn color="error" class="mb-2 mx-2" @click="deleteConfirmHandler(true, true)">
-          删除整理记录、源文件和媒体库文件
+          {{ t('transferHistory.deleteAll') }}
         </VBtn>
       </div>
     </VCard>
