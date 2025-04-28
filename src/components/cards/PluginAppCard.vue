@@ -7,6 +7,7 @@ import noImage from '@images/logos/plugin.png'
 import { getDominantColor } from '@/@core/utils/image'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
 
 // 输入参数
 const props = defineProps({
@@ -18,6 +19,9 @@ const props = defineProps({
 
 // 定义触发的自定义事件
 const emit = defineEmits(['install'])
+
+// 多语言
+const { t } = useI18n()
 
 // 背景颜色
 const backgroundColor = ref('#28A9E1')
@@ -59,7 +63,10 @@ async function installPlugin() {
   try {
     // 显示等待提示框
     progressDialog.value = true
-    progressText.value = `正在安装 ${props.plugin?.plugin_name} v${props?.plugin?.plugin_version} ...`
+    progressText.value = t('plugin.installing', {
+      name: props.plugin?.plugin_name,
+      version: props?.plugin?.plugin_version,
+    })
 
     const result: { [key: string]: any } = await api.get(`plugin/install/${props.plugin?.id}`, {
       params: {
@@ -72,12 +79,12 @@ async function installPlugin() {
     progressDialog.value = false
 
     if (result.success) {
-      $toast.success(`插件 ${props.plugin?.plugin_name} 安装成功！`)
+      $toast.success(t('plugin.installSuccess', { name: props.plugin?.plugin_name }))
       detailDialog.value = false
       // 通知父组件刷新
       emit('install')
     } else {
-      $toast.error(`插件 ${props.plugin?.plugin_name} 安装失败：${result.message}`)
+      $toast.error(t('plugin.installFailed', { name: props.plugin?.plugin_name, message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -125,7 +132,7 @@ function showUpdateHistory() {
 // 弹出菜单
 const dropdownItems = ref([
   {
-    title: '项目主页',
+    title: t('plugin.projectHome'),
     value: 1,
     show: true,
     props: {
@@ -134,7 +141,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '更新说明',
+    title: t('plugin.updateHistory'),
     value: 2,
     show: !isNullOrEmptyObject(props.plugin?.history || {}),
     props: {
@@ -225,7 +232,7 @@ const dropdownItems = ref([
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
     <!-- 更新日志 -->
     <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
-      <VCard :title="`${props.plugin?.plugin_name} 更新说明`">
+      <VCard :title="t('plugin.updateHistoryTitle', { name: props.plugin?.plugin_name })">
         <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />
         <VersionHistory :history="props.plugin?.history" />
@@ -263,13 +270,13 @@ const dropdownItems = ref([
                   <VList lines="one">
                     <VListItem class="ps-0">
                       <VListItemTitle class="text-center text-md-left">
-                        <span class="font-weight-medium">版本：</span>
+                        <span class="font-weight-medium">{{ t('common.version') }}：</span>
                         <span class="text-body-1"> v{{ props.plugin?.plugin_version }}</span>
                       </VListItemTitle>
                     </VListItem>
                     <VListItem class="ps-0">
                       <VListItemTitle class="text-center text-md-left">
-                        <span class="font-weight-medium">作者：</span>
+                        <span class="font-weight-medium">{{ t('common.author') }}：</span>
                         <span class="text-body-1 cursor-pointer" @click="visitPluginPage">
                           {{ props.plugin?.plugin_author }}
                         </span>
@@ -277,9 +284,13 @@ const dropdownItems = ref([
                     </VListItem>
                   </VList>
                   <div class="text-center text-md-left">
-                    <VBtn color="primary" @click="installPlugin" prepend-icon="mdi-download"> 安装到本地 </VBtn>
+                    <VBtn color="primary" @click="installPlugin" prepend-icon="mdi-download">{{
+                      t('plugin.installToLocal')
+                    }}</VBtn>
                     <div class="text-xs mt-2" v-if="props.count">
-                      <VIcon icon="mdi-fire" />共 {{ props.count?.toLocaleString() }} 次下载
+                      <VIcon icon="mdi-fire" />{{
+                        t('plugin.totalDownloads', { count: props.count?.toLocaleString() })
+                      }}
                     </div>
                   </div>
                 </VCardItem>

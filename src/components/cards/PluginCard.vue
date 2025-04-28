@@ -10,6 +10,7 @@ import VersionHistory from '@/components/misc/VersionHistory.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import PluginConfigDialog from '../dialog/PluginConfigDialog.vue'
 import PluginDataDialog from '../dialog/PluginDataDialog.vue'
+import { useI18n } from 'vue-i18n'
 
 // 输入参数
 const props = defineProps({
@@ -22,6 +23,9 @@ const props = defineProps({
 
 // 定义触发的自定义事件
 const emit = defineEmits(['remove', 'save', 'actionDone'])
+
+// 多语言
+const { t } = useI18n()
 
 // 背景颜色
 const backgroundColor = ref('#28A9E1')
@@ -97,8 +101,8 @@ function showUpdateHistory() {
 // 调用API卸载插件
 async function uninstallPlugin() {
   const isConfirmed = await createConfirm({
-    title: '确认',
-    content: `是否确认卸载插件 ${props.plugin?.plugin_name} ?`,
+    title: t('common.confirm'),
+    content: t('plugin.confirmUninstall', { name: props.plugin?.plugin_name }),
   })
 
   if (!isConfirmed) return
@@ -106,17 +110,17 @@ async function uninstallPlugin() {
   try {
     // 显示等待提示框
     progressDialog.value = true
-    progressText.value = `正在卸载 ${props.plugin?.plugin_name} ...`
+    progressText.value = t('plugin.uninstalling', { name: props.plugin?.plugin_name })
     const result: { [key: string]: any } = await api.delete(`plugin/${props.plugin?.id}`)
     // 隐藏等待提示框
     progressDialog.value = false
     if (result.success) {
-      $toast.success(`插件 ${props.plugin?.plugin_name} 已卸载`)
+      $toast.success(t('plugin.uninstallSuccess', { name: props.plugin?.plugin_name }))
 
       // 通知父组件刷新
       emit('remove')
     } else {
-      $toast.error(`插件 ${props.plugin?.plugin_name} 卸载失败：${result.message}}`)
+      $toast.error(t('plugin.uninstallFailed', { name: props.plugin?.plugin_name, message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -157,8 +161,8 @@ const authorPath: Ref<string> = computed(() => {
 // 重置插件
 async function resetPlugin() {
   const isConfirmed = await createConfirm({
-    title: '确认',
-    content: `此操作将恢复插件 ${props.plugin?.plugin_name} 的默认设置，并清除所有相关数据，确定要继续吗？`,
+    title: t('common.confirm'),
+    content: t('plugin.confirmReset', { name: props.plugin?.plugin_name }),
   })
 
   if (!isConfirmed) return
@@ -166,11 +170,11 @@ async function resetPlugin() {
   try {
     const result: { [key: string]: any } = await api.get(`plugin/reset/${props.plugin?.id}`)
     if (result.success) {
-      $toast.success(`插件 ${props.plugin?.plugin_name} 数据已重置`)
+      $toast.success(t('plugin.resetSuccess', { name: props.plugin?.plugin_name }))
       // 通知父组件刷新
       emit('save')
     } else {
-      $toast.error(`插件 ${props.plugin?.plugin_name} 重置失败：${result.message}}`)
+      $toast.error(t('plugin.resetFailed', { name: props.plugin?.plugin_name, message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -183,7 +187,7 @@ async function updatePlugin() {
     releaseDialog.value = false
     // 显示等待提示框
     progressDialog.value = true
-    progressText.value = `正在更新 ${props.plugin?.plugin_name} ...`
+    progressText.value = t('plugin.updating', { name: props.plugin?.plugin_name })
 
     const result: { [key: string]: any } = await api.get(`plugin/install/${props.plugin?.id}`, {
       params: {
@@ -196,12 +200,12 @@ async function updatePlugin() {
     progressDialog.value = false
 
     if (result.success) {
-      $toast.success(`插件 ${props.plugin?.plugin_name} 更新成功！`)
+      $toast.success(t('plugin.updateSuccess', { name: props.plugin?.plugin_name }))
 
       // 通知父组件刷新
       emit('save')
     } else {
-      $toast.error(`插件 ${props.plugin?.plugin_name} 更新失败：${result.message}`)
+      $toast.error(t('plugin.updateFailed', { name: props.plugin?.plugin_name, message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -236,7 +240,7 @@ function configDone() {
 // 弹出菜单
 const dropdownItems = ref([
   {
-    title: '查看数据',
+    title: t('plugin.viewData'),
     value: 1,
     show: props.plugin?.has_page,
     props: {
@@ -245,7 +249,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '设置',
+    title: t('plugin.settings'),
     value: 2,
     show: true,
     props: {
@@ -254,7 +258,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '更新',
+    title: t('plugin.update'),
     value: 3,
     show: props.plugin?.has_update,
     props: {
@@ -264,7 +268,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '重置',
+    title: t('plugin.reset'),
     value: 4,
     show: true,
     props: {
@@ -274,7 +278,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '卸载',
+    title: t('plugin.uninstall'),
     value: 5,
     show: true,
     props: {
@@ -284,7 +288,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '查看日志',
+    title: t('plugin.viewLogs'),
     value: 6,
     show: true,
     props: {
@@ -295,7 +299,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '作者主页',
+    title: t('plugin.authorHome'),
     value: 7,
     show: true,
     props: {
@@ -436,7 +440,7 @@ watch(
 
     <!-- 更新日志 -->
     <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" max-height="80vh" scrollable>
-      <VCard :title="`${props.plugin?.plugin_name} 更新说明`">
+      <VCard :title="t('plugin.updateHistoryTitle', { name: props.plugin?.plugin_name })">
         <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />
         <VersionHistory :history="props.plugin?.history" />
@@ -446,7 +450,7 @@ watch(
             <template #prepend>
               <VIcon icon="mdi-arrow-up-circle-outline" />
             </template>
-            更新到最新版本
+            {{ t('plugin.updateToLatest') }}
           </VBtn>
         </VCardItem>
       </VCard>
