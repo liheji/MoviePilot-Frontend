@@ -7,6 +7,10 @@ import plex_image from '@images/logos/plex.png'
 import trimemedia_image from '@images/logos/trimemedia.png'
 import api from '@/api'
 import { cloneDeep } from 'lodash-es'
+import { useI18n } from 'vue-i18n'
+
+// 获取i18n实例
+const { t } = useI18n()
 
 // 定义输入
 const props = defineProps({
@@ -32,17 +36,17 @@ const emit = defineEmits(['close', 'done', 'change'])
 const infoItems = ref([
   {
     avatar: 'mdi-movie-roll',
-    title: '电影',
+    title: t('mediaType.movie'),
     amount: '0',
   },
   {
     avatar: 'mdi-television-box',
-    title: '电视剧',
+    title: t('mediaType.tv'),
     amount: '0',
   },
   {
     avatar: 'mdi-account',
-    title: '用户',
+    title: t('common.user'),
     amount: '0',
   },
 ])
@@ -50,7 +54,7 @@ const infoItems = ref([
 // 同步媒体库选项
 const librariesOptions = ref<{ title: string; value: string | undefined }[]>([
   {
-    title: '全部',
+    title: t('common.all'),
     value: 'all',
   },
 ])
@@ -81,12 +85,12 @@ function openMediaServerInfoDialog() {
 function saveMediaServerInfo() {
   // 为空不保存，跳出警告框
   if (!mediaServerInfo.value.name) {
-    $toast.error('名称不能为空，请输入后再确定')
+    $toast.error(t('common.nameRequired'))
     return
   }
   // 重名判断
   if (props.mediaservers.some(item => item.name === mediaServerInfo.value.name && item !== props.mediaserver)) {
-    $toast.error(`【${mediaServerInfo.value.name}】已存在，请替换为其他名称`)
+    $toast.error(t('common.nameExists', { name: mediaServerInfo.value.name }))
     return
   }
   // 执行保存
@@ -127,17 +131,17 @@ async function loadMediaStatistic() {
       infoItems.value = [
         {
           avatar: 'mdi-movie-roll',
-          title: '电影',
+          title: t('mediaType.movie'),
           amount: res.movie_count.toLocaleString(),
         },
         {
           avatar: 'mdi-television-box',
-          title: '电视剧',
+          title: t('mediaType.tv'),
           amount: res.tv_count.toLocaleString(),
         },
         {
           avatar: 'mdi-account',
-          title: '用户',
+          title: t('common.user'),
           amount: res.user_count.toLocaleString(),
         },
       ]
@@ -160,7 +164,7 @@ async function loadLibrary(server: string) {
       librariesOptions.value = []
     }
     librariesOptions.value.unshift({
-      title: '全部',
+      title: t('common.all'),
       value: 'all',
     })
   } catch (e) {
@@ -189,23 +193,23 @@ onMounted(() => {
       </VCardText>
     </VCard>
     <VDialog v-if="mediaServerInfoDialog" v-model="mediaServerInfoDialog" scrollable max-width="40rem" persistent>
-      <VCard :title="`${props.mediaserver.name} - 配置`" class="rounded-t">
+      <VCard :title="`${props.mediaserver.name} - ${t('common.config')}`" class="rounded-t">
         <VDialogCloseBtn v-model="mediaServerInfoDialog" />
         <VDivider />
         <VCardText>
           <VForm>
             <VRow>
               <VCol cols="12" md="6">
-                <VSwitch v-model="mediaServerInfo.enabled" label="启用媒体服务器" />
+                <VSwitch v-model="mediaServerInfo.enabled" :label="t('mediaserver.enableMediaServer')" />
               </VCol>
             </VRow>
             <VRow v-if="mediaServerInfo.type == 'emby'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.name"
-                  label="名称"
-                  placeholder="必填；不可与其他名称重名"
-                  hint="媒体服务器的别名"
+                  :label="t('common.name')"
+                  :placeholder="t('mediaserver.nameRequired')"
+                  :hint="t('mediaserver.serverAlias')"
                   persistent-hint
                   active
                 />
@@ -213,9 +217,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.host"
-                  label="地址"
-                  placeholder="http(s)://ip:port"
-                  hint="服务端地址，格式：http(s)://ip:port"
+                  :label="t('mediaserver.host')"
+                  :placeholder="t('mediaserver.hostPlaceholder')"
+                  :hint="t('mediaserver.hostHint')"
                   persistent-hint
                   active
                 />
@@ -223,9 +227,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.play_host"
-                  label="外网播放地址"
-                  placeholder="http(s)://domain:port"
-                  hint="跳转播放页面使用的地址，格式：http(s)://domain:port"
+                  :label="t('mediaserver.playHost')"
+                  :placeholder="t('mediaserver.playHostPlaceholder')"
+                  :hint="t('mediaserver.playHostHint')"
                   persistent-hint
                   active
                 />
@@ -233,8 +237,8 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.apikey"
-                  label="API密钥"
-                  hint="Emby设置->高级->API密钥中生成的密钥"
+                  :label="t('mediaserver.apiKey')"
+                  :hint="t('mediaserver.embyApiKeyHint')"
                   persistent-hint
                   active
                 />
@@ -244,9 +248,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.name"
-                  label="名称"
-                  placeholder="必填；不可与其他名称重名"
-                  hint="媒体服务器的别名"
+                  :label="t('common.name')"
+                  :placeholder="t('mediaserver.nameRequired')"
+                  :hint="t('mediaserver.serverAlias')"
                   persistent-hint
                   active
                 />
@@ -254,9 +258,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.host"
-                  label="地址"
-                  placeholder="http(s)://ip:port"
-                  hint="服务端地址，格式：http(s)://ip:port"
+                  :label="t('mediaserver.host')"
+                  :placeholder="t('mediaserver.hostPlaceholder')"
+                  :hint="t('mediaserver.hostHint')"
                   persistent-hint
                   active
                 />
@@ -264,9 +268,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.play_host"
-                  label="外网播放地址"
-                  placeholder="http(s)://domain:port"
-                  hint="跳转播放页面使用的地址，格式：http(s)://domain:port"
+                  :label="t('mediaserver.playHost')"
+                  :placeholder="t('mediaserver.playHostPlaceholder')"
+                  :hint="t('mediaserver.playHostHint')"
                   persistent-hint
                   active
                 />
@@ -274,8 +278,8 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.apikey"
-                  label="API密钥"
-                  hint="Jellyfin设置->高级->API密钥中生成的密钥"
+                  :label="t('mediaserver.apiKey')"
+                  :hint="t('mediaserver.jellyfinApiKeyHint')"
                   persistent-hint
                   active
                 />
@@ -285,9 +289,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.name"
-                  label="名称"
-                  placeholder="必填；不可与其他名称重名"
-                  hint="媒体服务器的别名"
+                  :label="t('common.name')"
+                  :placeholder="t('mediaserver.nameRequired')"
+                  :hint="t('mediaserver.serverAlias')"
                   persistent-hint
                   active
                 />
@@ -295,9 +299,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.host"
-                  label="地址"
-                  placeholder="http(s)://ip:port"
-                  hint="服务端地址，格式：http(s)://ip:port"
+                  :label="t('mediaserver.host')"
+                  :placeholder="t('mediaserver.hostPlaceholder')"
+                  :hint="t('mediaserver.hostHint')"
                   persistent-hint
                   active
                 />
@@ -305,27 +309,32 @@ onMounted(() => {
               <VCol cols="12">
                 <VTextField
                   v-model="mediaServerInfo.config.play_host"
-                  label="外网播放地址"
-                  placeholder="http(s)://domain:port"
-                  hint="跳转播放页面使用的地址，格式：http(s)://domain:port"
+                  :label="t('mediaserver.playHost')"
+                  :placeholder="t('mediaserver.playHostPlaceholder')"
+                  :hint="t('mediaserver.playHostHint')"
                   persistent-hint
                   active
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField v-model="mediaServerInfo.config.username" label="用户名" active />
+                <VTextField v-model="mediaServerInfo.config.username" :label="t('mediaserver.username')" active />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField type="password" v-model="mediaServerInfo.config.password" label="密码" active />
+                <VTextField
+                  type="password"
+                  v-model="mediaServerInfo.config.password"
+                  :label="t('mediaserver.password')"
+                  active
+                />
               </VCol>
             </VRow>
             <VRow v-if="mediaServerInfo.type == 'plex'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.name"
-                  label="名称"
-                  placeholder="必填；不可与其他名称重名"
-                  hint="媒体服务器的别名"
+                  :label="t('common.name')"
+                  :placeholder="t('mediaserver.nameRequired')"
+                  :hint="t('mediaserver.serverAlias')"
                   persistent-hint
                   active
                 />
@@ -333,9 +342,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.host"
-                  label="地址"
-                  placeholder="http(s)://ip:port"
-                  hint="服务端地址，格式：http(s)://ip:port"
+                  :label="t('mediaserver.host')"
+                  :placeholder="t('mediaserver.hostPlaceholder')"
+                  :hint="t('mediaserver.hostHint')"
                   persistent-hint
                   active
                 />
@@ -343,9 +352,9 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.play_host"
-                  label="外网播放地址"
-                  placeholder="http(s)://domain:port"
-                  hint="跳转播放页面使用的地址，格式：http(s)://domain:port"
+                  :label="t('mediaserver.playHost')"
+                  :placeholder="t('mediaserver.playHostPlaceholder')"
+                  :hint="t('mediaserver.playHostHint')"
                   persistent-hint
                   active
                 />
@@ -353,8 +362,8 @@ onMounted(() => {
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="mediaServerInfo.config.token"
-                  label="X-Plex-Token"
-                  hint="浏览器F12->网络，从Plex请求URL中获取的X-Plex-Token"
+                  :label="t('mediaserver.plexToken')"
+                  :hint="t('mediaserver.plexTokenHint')"
                   persistent-hint
                   active
                 />
@@ -364,12 +373,12 @@ onMounted(() => {
               <VCol cols="12">
                 <VSelect
                   v-model="mediaServerInfo.sync_libraries"
-                  label="同步媒体库"
+                  :label="t('mediaserver.syncLibraries')"
                   :items="librariesOptions"
                   chips
                   multiple
                   clearable
-                  hint="只有选中的媒体库才会被同步"
+                  :hint="t('mediaserver.syncLibrariesHint')"
                   persistent-hint
                   active
                   append-inner-icon="mdi-refresh"
@@ -381,7 +390,7 @@ onMounted(() => {
         </VCardText>
         <VCardActions class="pt-3">
           <VBtn @click="saveMediaServerInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
-            确定
+            {{ t('common.confirm') }}
           </VBtn>
         </VCardActions>
       </VCard>

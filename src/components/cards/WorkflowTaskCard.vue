@@ -42,11 +42,6 @@ function handleFlow(item: Workflow) {
   flowDialog.value = true
 }
 
-// 计算已完成的动作数
-function resolveDoneActions(item: Workflow) {
-  return item.current_action?.split(',').length || 0
-}
-
 // 编辑完成
 function editDone() {
   editDialog.value = false
