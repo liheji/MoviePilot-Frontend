@@ -1,5 +1,5 @@
-// 将中文标签转换为当前语言的标签
-export function getMeidaTypeText(label: string | undefined) {
+// MediaType
+export function getMediaTypeText(label: string | undefined) {
   if (!label) return ''
 
   const { t } = useI18n()
@@ -20,4 +20,25 @@ export function getMeidaTypeText(label: string | undefined) {
 
   // 对于未知的类型，直接返回原始标签
   return label
+}
+
+// notificationSwitch
+export function getNotificationSwitchText(label: string | undefined) {
+  if (!label) return ''
+
+  const { t } = useI18n()
+
+  const switchMap: Record<string, string> = {
+    '资源下载': 'notificationSwitch.resourceDownload',
+    '整理入库': 'notificationSwitch.organize',
+    '订阅': 'notificationSwitch.subscribe',
+    '站点': 'notificationSwitch.site',
+    '媒体服务器': 'notificationSwitch.mediaServer',
+    '手动处理': 'notificationSwitch.manual',
+    '插件': 'notificationSwitch.plugin',
+    '其它': 'notificationSwitch.other',
+  }
+  if (label in switchMap) {
+    return t(switchMap[label])
+  }
 }

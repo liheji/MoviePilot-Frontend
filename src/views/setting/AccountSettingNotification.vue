@@ -6,6 +6,7 @@ import type { NotificationConf, NotificationSwitchConf } from '@/api/types'
 import NotificationChannelCard from '@/components/cards/NotificationChannelCard.vue'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { getNotificationSwitchText } from '@/types/i18n-type'
 
 // 国际化
 const { t } = useI18n()
@@ -22,35 +23,35 @@ const progressDialog = ref(false)
 // 消息类型开关
 const notificationSwitchs = ref<NotificationSwitchConf[]>([
   {
-    type: t('setting.notification.resourceDownload'),
+    type: '资源下载',
     action: 'all',
   },
   {
-    type: t('setting.notification.mediaImport'),
+    type: '整理入库',
     action: 'all',
   },
   {
-    type: t('setting.notification.subscription'),
+    type: '订阅',
     action: 'all',
   },
   {
-    type: t('setting.notification.site'),
+    type: '站点',
     action: 'admin',
   },
   {
-    type: t('setting.notification.mediaServer'),
+    type: '媒体服务器',
     action: 'admin',
   },
   {
-    type: t('setting.notification.manualProcess'),
+    type: '手动处理',
     action: 'admin',
   },
   {
-    type: t('setting.notification.plugin'),
+    type: '插件',
     action: 'admin',
   },
   {
-    type: t('setting.notification.other'),
+    type: '其它',
     action: 'admin',
   },
 ])
@@ -256,7 +257,7 @@ onMounted(() => {
           <tbody>
             <tr v-for="(item, index) in notificationSwitchs" :key="index">
               <td>
-                {{ item.type }}
+                {{ getNotificationSwitchText(item.type) }}
               </td>
               <td>
                 <VRadioGroup v-model="item.action" inline>
