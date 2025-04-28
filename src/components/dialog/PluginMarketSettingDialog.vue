@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import api from '@/api'
 import { useToast } from 'vue-toast-notification'
+import { useI18n } from 'vue-i18n'
 
+// 国际化
+const { t } = useI18n()
 const $toast = useToast()
 
 // 插件仓库设置字符串
@@ -27,9 +30,9 @@ async function saveHandle() {
     const result: { [key: string]: any } = await api.post('system/setting/PLUGIN_MARKET', repoString.value)
 
     if (result.success) {
-      $toast.success('插件仓库保存成功')
+      $toast.success(t('dialog.pluginMarketSetting.saveSuccess'))
       emit('save')
-    } else $toast.error(`插件仓库保存失败：${result?.message}！`)
+    } else $toast.error(t('dialog.pluginMarketSetting.saveFailed', { message: result?.message }))
   } catch (error) {
     console.log(error)
   }
@@ -46,22 +49,22 @@ onMounted(() => {
       <VCardItem>
         <VCardTitle>
           <VIcon icon="mdi-store-cog" class="me-2" />
-          插件仓库设置
+          {{ t('dialog.pluginMarketSetting.title') }}
         </VCardTitle>
         <VDialogCloseBtn @click="emit('close')" />
       </VCardItem>
       <VCardText class="pt-2">
         <VTextarea
           v-model="repoString"
-          placeholder="格式：https://github.com/jxxghp/MoviePilot-Plugins/,https://github.com/xxxx/xxxxxx/"
-          hint="多个地址使用逗号分隔，仅支持Github仓库"
+          :placeholder="t('dialog.pluginMarketSetting.repoPlaceholder')"
+          :hint="t('dialog.pluginMarketSetting.repoHint')"
           persistent-hint
         />
       </VCardText>
       <VCardActions>
         <VSpacer />
         <VBtn variant="elevated" @click="saveHandle" prepend-icon="mdi-content-save-check" class="px-5 me-3">
-          保存
+          {{ t('dialog.pluginMarketSetting.save') }}
         </VBtn>
       </VCardActions>
     </VCard>

@@ -7,6 +7,10 @@ import { numberValidator } from '@/@validators'
 import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
 import { FileItem, TransferDirectoryConf, TransferForm } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -31,7 +35,7 @@ const emit = defineEmits(['done', 'close'])
 // 生成1到100季的下拉框选项
 const seasonItems = ref(
   Array.from({ length: 101 }, (_, i) => i).map(item => ({
-    title: `第 ${item} 季`,
+    title: `${t('dialog.subscribeEdit.seasonFormat', { number: item })}`,
     value: item,
   })),
 )
@@ -49,7 +53,7 @@ const progressEventSource = ref<EventSource>()
 const progressDialog = ref(false)
 
 // 整理进度文本
-const progressText = ref('正在处理 ...')
+const progressText = ref(t('dialog.reorganize.processing'))
 
 // 整理进度
 const progressValue = ref(0)
@@ -57,12 +61,12 @@ const progressValue = ref(0)
 // 标题
 const dialogTitle = computed(() => {
   if (props.items) {
-    if (props.items.length > 1) return `整理 - 共 ${props.items.length} 项`
-    return `整理 - ${props.items[0].path}`
+    if (props.items.length > 1) return t('dialog.reorganize.multipleItemsTitle', { count: props.items.length })
+    return t('dialog.reorganize.singleItemTitle', { path: props.items[0].path })
   } else if (props.logids) {
-    return `整理 - 共 ${props.logids.length} 项`
+    return t('dialog.reorganize.multipleItemsTitle', { count: props.logids.length })
   }
-  return '手动整理'
+  return t('dialog.reorganize.manualTitle')
 })
 
 // 禁用指定集数
@@ -138,7 +142,7 @@ async function handleTransfer(item: FileItem, background: boolean = false) {
   try {
     const result: { [key: string]: any } = await api.post(`transfer/manual?background=${background}`, transferForm)
     if (!result.success) $toast.error(result.message)
-    else if (background) $toast.success(`文件 ${item.name} 已加入整理队列！`)
+    else if (background) $toast.success(t('dialog.reorganize.successMessage', { name: item.name }))
   } catch (e) {
     console.log(e)
   }
@@ -159,7 +163,7 @@ async function handleTransferLog(logid: number, background: boolean = false) {
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
-  progressText.value = '请稍候 ...'
+  progressText.value = t('dialog.reorganize.processing')
   progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`)
   progressEventSource.value.onmessage = event => {
     const progress = JSON.parse(event.data)
@@ -233,22 +237,22 @@ onUnmounted(() => {
               <VSelect
                 v-model="transferForm.target_storage"
                 :items="storageOptions"
-                label="目的存储"
-                placeholder="留空自动"
-                hint="整理目的存储"
+                :label="t('dialog.reorganize.targetStorage')"
+                :placeholder="t('dialog.reorganize.targetPathPlaceholder')"
+                :hint="t('dialog.reorganize.targetStorageHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
               <VSelect
                 v-model="transferForm.transfer_type"
-                label="整理方式"
+                :label="t('dialog.reorganize.transferType')"
                 :items="transferTypeOptions"
-                hint="文件操作整理方式"
+                :hint="t('dialog.reorganize.transferTypeHint')"
                 persistent-hint
               >
                 <template v-slot:selection="{ item }">
-                  {{ transferForm.transfer_type === '' ? '自动' : item.title }}
+                  {{ transferForm.transfer_type === '' ? t('dialog.reorganize.auto') : item.title }}
                 </template>
               </VSelect>
             </VCol>
@@ -256,9 +260,9 @@ onUnmounted(() => {
               <VCombobox
                 v-model="transferForm.target_path"
                 :items="targetDirectories"
-                label="目的路径"
-                placeholder="留空自动"
-                hint="整理目的路径，留空将自动匹配"
+                :label="t('dialog.reorganize.targetPath')"
+                :placeholder="t('dialog.reorganize.targetPathPlaceholder')"
+                :hint="t('dialog.reorganize.targetPathHint')"
                 persistent-hint
               />
             </VCol>
@@ -267,13 +271,13 @@ onUnmounted(() => {
             <VCol cols="12" md="6">
               <VSelect
                 v-model="transferForm.type_name"
-                label="类型"
+                :label="t('dialog.reorganize.mediaType')"
                 :items="[
-                  { title: '自动', value: '' },
-                  { title: '电影', value: '电影' },
-                  { title: '电视剧', value: '电视剧' },
+                  { title: t('dialog.reorganize.auto'), value: '' },
+                  { title: t('dialog.reorganize.movie'), value: '电影' },
+                  { title: t('dialog.reorganize.tv'), value: '电视剧' },
                 ]"
-                hint="文件的媒体类型"
+                :hint="t('dialog.reorganize.mediaTypeHint')"
                 persistent-hint
               />
             </VCol>
@@ -282,11 +286,11 @@ onUnmounted(() => {
                 v-if="mediaSource === 'themoviedb'"
                 v-model="transferForm.tmdbid"
                 :disabled="transferForm.type_name === ''"
-                label="TheMovieDb编号"
-                placeholder="留空自动识别"
+                :label="t('dialog.reorganize.tmdbId')"
+                :placeholder="t('dialog.reorganize.mediaIdPlaceholder')"
                 :rules="[numberValidator]"
                 append-inner-icon="mdi-magnify"
-                hint="按名称查询媒体编号，留空自动识别"
+                :hint="t('dialog.reorganize.mediaIdHint')"
                 persistent-hint
                 @click:append-inner="mediaSelectorDialog = true"
               />
@@ -294,11 +298,11 @@ onUnmounted(() => {
                 v-else
                 v-model="transferForm.doubanid"
                 :disabled="transferForm.type_name === ''"
-                label="豆瓣编号"
-                placeholder="留空自动识别"
+                :label="t('dialog.reorganize.doubanId')"
+                :placeholder="t('dialog.reorganize.mediaIdPlaceholder')"
                 :rules="[numberValidator]"
                 append-inner-icon="mdi-magnify"
-                hint="按名称查询媒体编号，留空自动识别"
+                :hint="t('dialog.reorganize.mediaIdHint')"
                 persistent-hint
                 @click:append-inner="mediaSelectorDialog = true"
               />
@@ -308,18 +312,18 @@ onUnmounted(() => {
             <VCol cols="12" md="6">
               <VTextField
                 v-model="transferForm.episode_group"
-                label="剧集组编号"
-                placeholder="手动查询剧集组"
-                hint="指定剧集组"
+                :label="t('dialog.reorganize.episodeGroup')"
+                :placeholder="t('dialog.reorganize.episodeGroupPlaceholder')"
+                :hint="t('dialog.reorganize.episodeGroupHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="3">
               <VSelect
                 v-model.number="transferForm.season"
-                label="季"
+                :label="t('dialog.reorganize.season')"
                 :items="seasonItems"
-                hint="第几季"
+                :hint="t('dialog.reorganize.seasonHint')"
                 persistent-hint
               />
             </VCol>
@@ -327,27 +331,27 @@ onUnmounted(() => {
               <VTextField
                 v-model="transferForm.episode_detail"
                 :disabled="disableEpisodeDetail"
-                label="集"
-                placeholder="起始集,终止集"
-                hint="集数或范围，如1或1,2"
+                :label="t('dialog.reorganize.episodeDetail')"
+                :placeholder="t('dialog.reorganize.episodeDetailPlaceholder')"
+                :hint="t('dialog.reorganize.episodeDetailHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
               <VTextField
                 v-model="transferForm.episode_format"
-                label="集数定位"
-                placeholder="使用{ep}定位集数"
-                hint="使用{ep}定位文件名中的集数部分以辅助识别"
+                :label="t('dialog.reorganize.episodeFormat')"
+                :placeholder="t('dialog.reorganize.episodeFormatPlaceholder')"
+                :hint="t('dialog.reorganize.episodeFormatHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
               <VTextField
                 v-model="transferForm.episode_offset"
-                label="集数偏移"
-                placeholder="如-10"
-                hint="集数偏移运算，如-10或EP*2"
+                :label="t('dialog.reorganize.episodeOffset')"
+                :placeholder="t('dialog.reorganize.episodeOffsetPlaceholder')"
+                :hint="t('dialog.reorganize.episodeOffsetHint')"
                 persistent-hint
               />
             </VCol>
@@ -356,19 +360,19 @@ onUnmounted(() => {
             <VCol cols="12" md="6">
               <VTextField
                 v-model="transferForm.episode_part"
-                label="指定Part"
-                placeholder="如part1"
-                hint="指定Part，如part1"
+                :label="t('dialog.reorganize.episodePart')"
+                :placeholder="t('dialog.reorganize.episodePartPlaceholder')"
+                :hint="t('dialog.reorganize.episodePartHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
               <VTextField
                 v-model.number="transferForm.min_filesize"
-                label="最小文件大小（MB）"
+                :label="t('dialog.reorganize.minFileSize')"
                 :rules="[numberValidator]"
                 placeholder="0"
-                hint="只整理大于最小文件大小的文件"
+                :hint="t('dialog.reorganize.minFileSizeHint')"
                 persistent-hint
               />
             </VCol>
@@ -377,32 +381,32 @@ onUnmounted(() => {
             <VCol cols="12" md="6" v-if="transferForm.target_path">
               <VSwitch
                 v-model="transferForm.library_type_folder"
-                label="按类型分类"
-                hint="整理时目的路径下按媒体类型添加子目录"
+                :label="t('dialog.reorganize.typeFolderOption')"
+                :hint="t('dialog.reorganize.typeFolderHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6" v-if="transferForm.target_path">
               <VSwitch
                 v-model="transferForm.library_category_folder"
-                label="按类别分类"
-                hint="整理时在目的路径下按媒体类别添加子目录"
+                :label="t('dialog.reorganize.categoryFolderOption')"
+                :hint="t('dialog.reorganize.categoryFolderHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6">
               <VSwitch
                 v-model="transferForm.scrape"
-                label="刮削元数据"
-                hint="整理完成后自动刮削元数据"
+                :label="t('dialog.reorganize.scrapeOption')"
+                :hint="t('dialog.reorganize.scrapeHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12" md="6" v-if="props.logids">
               <VSwitch
                 v-model="transferForm.from_history"
-                label="复用历史识别信息"
-                hint="使用历史整理记录中已识别的媒体信息"
+                :label="t('dialog.reorganize.fromHistoryOption')"
+                :hint="t('dialog.reorganize.fromHistoryHint')"
                 persistent-hint
               />
             </VCol>
@@ -412,10 +416,10 @@ onUnmounted(() => {
       <VCardActions class="pt-3">
         <VSpacer />
         <VBtn variant="elevated" color="success" @click="transfer(true)" prepend-icon="mdi-plus" class="px-5">
-          加入整理队列
+          {{ t('dialog.reorganize.addToQueue') }}
         </VBtn>
         <VBtn variant="elevated" @click="transfer(false)" prepend-icon="mdi-arrow-right-bold" class="px-5">
-          立即整理
+          {{ t('dialog.reorganize.reorganizeNow') }}
         </VBtn>
       </VCardActions>
     </VCard>
