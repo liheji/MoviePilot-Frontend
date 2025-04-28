@@ -38,7 +38,7 @@ const SystemSettings = ref<any>({
     // 媒体
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
-    TMDB_LANGUAGE: null,
+    TMDB_LOCALE: null,
     META_CACHE_EXPIRE: 0,
     SCRAP_FOLLOW_TMDB: true,
     FANART_ENABLE: false,
@@ -84,9 +84,9 @@ const activeTab = ref('system')
 
 // 元数据语言
 const tmdbLanguageItems = [
-  { title: '简体中文', value: 'zh' },
-  { title: '繁体中文', value: 'zh-TW' },
-  { title: '英文', value: 'en' },
+  { title: t('setting.system.tmdbLanguage.zhCN'), value: 'zh' },
+  { title: t('setting.system.tmdbLanguage.zhTW'), value: 'zh-TW' },
+  { title: t('setting.system.tmdbLanguage.en'), value: 'en' },
 ]
 
 // 调用API查询下载器设置
@@ -248,9 +248,10 @@ async function copyValue(value: string) {
 
 // 登录首页壁纸来源
 const wallpaperItems = [
-  { title: 'TheMovieDB电影海报', value: 'tmdb' },
-  { title: 'Bing每日壁纸', value: 'bing' },
-  { title: '媒体库海报', value: 'mediaserver' },
+  { title: t('setting.system.wallpaperItems.tmdb'), value: 'tmdb' },
+  { title: t('setting.system.wallpaperItems.bing'), value: 'bing' },
+  { title: t('setting.system.wallpaperItems.bingDaily'), value: 'bing-daily' },
+  { title: t('setting.system.wallpaperItems.none'), value: 'none' },
 ]
 
 // 预设部分Github加速站
@@ -294,11 +295,11 @@ const pipProxyDisplay = computed({
 
 // 日志等级
 const logLevelItems = [
-  { title: 'DEBUG - 调试 ', value: 'DEBUG' },
-  { title: 'INFO - 信息 ', value: 'INFO' },
-  { title: 'WARNING - 警告 ', value: 'WARNING' },
-  { title: 'ERROR - 错误 ', value: 'ERROR' },
-  { title: 'CRITICAL - 严重 ', value: 'CRITICAL' },
+  { title: t('setting.system.logLevelItems.debug'), value: 'DEBUG' },
+  { title: t('setting.system.logLevelItems.info'), value: 'INFO' },
+  { title: t('setting.system.logLevelItems.warning'), value: 'WARNING' },
+  { title: t('setting.system.logLevelItems.error'), value: 'ERROR' },
+  { title: t('setting.system.logLevelItems.critical'), value: 'CRITICAL' },
 ]
 
 // 创建随机字符串
@@ -412,10 +413,10 @@ onDeactivated(() => {
                   :hint="t('setting.system.wallpaperHint')"
                   persistent-hint
                   :items="[
-                    { title: 'TMDB', value: 'tmdb' },
-                    { title: 'Bing', value: 'bing' },
-                    { title: 'Bing每日图片', value: 'bing-daily' },
-                    { title: '无壁纸', value: 'none' },
+                    { title: t('setting.system.wallpaperItems.tmdb'), value: 'tmdb' },
+                    { title: t('setting.system.wallpaperItems.bing'), value: 'bing' },
+                    { title: t('setting.system.wallpaperItems.bingDaily'), value: 'bing-daily' },
+                    { title: t('setting.system.wallpaperItems.none'), value: 'none' },
                   ]"
                 />
               </VCol>
@@ -641,48 +642,48 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.AUXILIARY_AUTH_ENABLE"
-                    label="用户辅助认证"
-                    hint="允许外部服务进行登录认证以及自动创建用户"
+                    :label="t('setting.system.auxAuthEnable')"
+                    :hint="t('setting.system.auxAuthEnableHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.GLOBAL_IMAGE_CACHE"
-                    label="全局图片缓存"
-                    hint="将媒体图片缓存到本地，提升图片加载速度"
+                    :label="t('setting.system.globalImageCache')"
+                    :hint="t('setting.system.globalImageCacheHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.SUBSCRIBE_STATISTIC_SHARE"
-                    label="分享订阅数据"
-                    hint="分享订阅统计数据到热门订阅，供其他MPer参考"
+                    :label="t('setting.system.subscribeStatisticShare')"
+                    :hint="t('setting.system.subscribeStatisticShareHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.PLUGIN_STATISTIC_SHARE"
-                    label="上报插件安装数据"
-                    hint="上报插件安装数据给服务器，用于统计展示插件安装情况"
+                    :label="t('setting.system.pluginStatisticShare')"
+                    :hint="t('setting.system.pluginStatisticShareHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.BIG_MEMORY_MODE"
-                    label="大内存模式"
-                    hint="使用更大的内存缓存数据，提升系统性能"
+                    :label="t('setting.system.bigMemoryMode')"
+                    :hint="t('setting.system.bigMemoryModeHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.DB_WAL_ENABLE"
-                    label="WAL模式"
-                    hint="可提升读写并发性能，但可能在异常情况下增加数据丢失风险，更改后需重启生效"
+                    :label="t('setting.system.dbWalEnable')"
+                    :hint="t('setting.system.dbWalEnableHint')"
                     persistent-hint
                   />
                 </VCol>
@@ -695,31 +696,31 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VCombobox
                     v-model="SystemSettings.Advanced.TMDB_API_DOMAIN"
-                    label="TMDB API服务地址"
-                    placeholder="api.themoviedb.org"
-                    hint="自定义themoviedb API域名或代理地址"
+                    :label="t('setting.system.tmdbApiDomain')"
+                    :placeholder="t('setting.system.tmdbApiDomainPlaceholder')"
+                    :hint="t('setting.system.tmdbApiDomainHint')"
                     persistent-hint
                     :items="['api.themoviedb.org', 'api.tmdb.org']"
-                    :rules="[(v: string) => !!v || '请输入TMDB API域名']"
+                    :rules="[(v: string) => !!v || t('setting.system.tmdbApiDomainRequired')]"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VCombobox
                     v-model="SystemSettings.Advanced.TMDB_IMAGE_DOMAIN"
-                    label="TMDB 图片服务地址"
-                    placeholder="image.tmdb.org"
-                    hint="自定义themoviedb图片服务域名或代理地址"
+                    :label="t('setting.system.tmdbImageDomain')"
+                    :placeholder="t('setting.system.tmdbImageDomainPlaceholder')"
+                    :hint="t('setting.system.tmdbImageDomainHint')"
                     persistent-hint
                     :items="['image.tmdb.org', 'static-mdb.v.geilijiasu.com']"
-                    :rules="[(v: string) => !!v || '请输入图片服务域名']"
+                    :rules="[(v: string) => !!v || t('setting.system.tmdbImageDomainRequired')]"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSelect
-                    v-model="SystemSettings.Advanced.TMDB_LANGUAGE"
-                    label="TMDB 元数据语言"
-                    placeholder="zh"
-                    hint="自定义themoviedb元数据语言"
+                    v-model="SystemSettings.Advanced.TMDB_LOCALE"
+                    :label="t('setting.system.tmdbLocale')"
+                    :placeholder="t('setting.system.tmdbLocalePlaceholder')"
+                    :hint="t('setting.system.tmdbLocaleHint')"
                     persistent-hint
                     :items="tmdbLanguageItems"
                   />
@@ -727,13 +728,16 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VTextField
                     v-model="SystemSettings.Advanced.META_CACHE_EXPIRE"
-                    label="媒体元数据缓存过期时间"
-                    hint="识别元数据本地缓存时间，为 0 时使用内置默认值"
+                    :label="t('setting.system.metaCacheExpire')"
+                    :hint="t('setting.system.metaCacheExpireHint')"
                     persistent-hint
                     min="0"
                     type="number"
-                    suffix="小时"
-                    :rules="[(v: any) => v === 0 || !!v || '请输入元数据缓存时间', (v: any) => v >= 0 || '元数据缓存时间必须大于等于0']"
+                    :suffix="t('setting.system.hour')"
+                    :rules="[
+                      (v: any) => v === 0 || !!v || t('setting.system.metaCacheExpireRequired'),
+                      (v: any) => v >= 0 || t('setting.system.metaCacheExpireMin'),
+                    ]"
                   />
                 </VCol>
               </VRow>
@@ -741,16 +745,16 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.SCRAP_FOLLOW_TMDB"
-                    label="跟随TMDB识别整理"
-                    hint="关闭时以整理历史记录为准（如有），避免TMDB数据在订阅中途修改"
+                    :label="t('setting.system.scrapFollowTmdb')"
+                    :hint="t('setting.system.scrapFollowTmdbHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.FANART_ENABLE"
-                    label="Fanart图片数据源"
-                    hint="使用 fanart.tv 的图片数据"
+                    :label="t('setting.system.fanartEnable')"
+                    :hint="t('setting.system.fanartEnableHint')"
                     persistent-hint
                   />
                 </VCol>
@@ -763,9 +767,9 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VCombobox
                     v-model="githubProxyDisplay"
-                    label="Github加速代理"
-                    placeholder="留空表示不使用代理"
-                    hint="使用代理加速Github访问速度"
+                    :label="t('setting.system.githubProxy')"
+                    :placeholder="t('setting.system.githubProxyPlaceholder')"
+                    :hint="t('setting.system.githubProxyHint')"
                     persistent-hint
                     :items="githubMirrorsItems"
                     clearable
@@ -774,9 +778,9 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VCombobox
                     v-model="pipProxyDisplay"
-                    label="PIP加速代理"
-                    placeholder="留空表示不使用代理"
-                    hint="使用代理加速插件等pip库安装速度"
+                    :label="t('setting.system.pipProxy')"
+                    :placeholder="t('setting.system.pipProxyPlaceholder')"
+                    :hint="t('setting.system.pipProxyHint')"
                     persistent-hint
                     :items="pipMirrorsItems"
                     clearable
@@ -787,26 +791,26 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.DOH_ENABLE"
-                    label="DNS Over HTTPS"
-                    hint="使用DOH对特定域名进行解析，以防止DNS污染"
+                    :label="t('setting.system.dohEnable')"
+                    :hint="t('setting.system.dohEnableHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" v-show="SystemSettings.Advanced.DOH_ENABLE">
                   <VTextarea
                     v-model="SystemSettings.Advanced.DOH_RESOLVERS"
-                    label="DOH 服务器"
-                    placeholder="https://dns.google/dns-query,1.1.1.1"
-                    hint="DNS解析服务器地址，多个地址使用逗号分隔"
+                    :label="t('setting.system.dohResolvers')"
+                    :placeholder="t('setting.system.dohResolversPlaceholder')"
+                    :hint="t('setting.system.dohResolversHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" v-show="SystemSettings.Advanced.DOH_ENABLE">
                   <VTextarea
                     v-model="SystemSettings.Advanced.DOH_DOMAINS"
-                    label="DOH 域名"
-                    placeholder="example.com,example2.com"
-                    hint="使用DOH解析的域名，多个域名使用逗号分隔"
+                    :label="t('setting.system.dohDomains')"
+                    :placeholder="t('setting.system.dohDomainsPlaceholder')"
+                    :hint="t('setting.system.dohDomainsHint')"
                     persistent-hint
                   />
                 </VCol>
@@ -819,8 +823,8 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.DEBUG"
-                    label="调试模式"
-                    hint="启用调试模式后，日志将以DEBUG级别记录，以便排查问题"
+                    :label="t('setting.system.debug')"
+                    :hint="t('setting.system.debugHint')"
                     persistent-hint
                   />
                 </VCol>
@@ -828,8 +832,8 @@ onDeactivated(() => {
                   <VSelect
                     v-if="!SystemSettings.Advanced.DEBUG"
                     v-model="SystemSettings.Advanced.LOG_LEVEL"
-                    label="日志等级"
-                    hint="设置日志记录的级别，用于控制日志输出量"
+                    :label="t('setting.system.logLevel')"
+                    :hint="t('setting.system.logLevelHint')"
                     persistent-hint
                     :items="logLevelItems"
                   />
@@ -837,31 +841,31 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VTextField
                     v-model="SystemSettings.Advanced.LOG_MAX_FILE_SIZE"
-                    label="日志文件最大容量(MB)"
-                    hint="限制单个日志文件的最大容量，超出后将自动分割日志"
+                    :label="t('setting.system.logMaxFileSize')"
+                    :hint="t('setting.system.logMaxFileSizeHint')"
                     persistent-hint
                     min="1"
                     type="number"
-                    suffix="MB"
-                    :rules="[(v: any) => v === 0 || !!v || '日志文件最大大小', (v: any) => v >= 1 || '日志文件最大容量必须大于等于1']"
+                    :suffix="t('setting.system.mb')"
+                    :rules="[(v: any) => v === 0 || !!v || t('setting.system.logMaxFileSizeRequired'), (v: any) => v >= 1 || t('setting.system.logMaxFileSizeMin')]"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VTextField
                     v-model="SystemSettings.Advanced.LOG_BACKUP_COUNT"
-                    label="日志文件最大备份数量"
-                    hint="设置每个模块日志文件的最大备份数量，超过后将覆盖旧日志"
+                    :label="t('setting.system.logBackupCount')"
+                    :hint="t('setting.system.logBackupCountHint')"
                     persistent-hint
                     min="1"
                     type="number"
-                    :rules="[(v: any) => v === 0 || !!v || '请输入日志文件最大备份数量', (v: any) => v >= 1 || '日志文件最大备份数量必须大于等于1']"
+                    :rules="[(v: any) => v === 0 || !!v || t('setting.system.logBackupCountRequired'), (v: any) => v >= 1 || t('setting.system.logBackupCountMin')]"
                   />
                 </VCol>
                 <VCol cols="12">
                   <VTextField
                     v-model="SystemSettings.Advanced.LOG_FILE_FORMAT"
-                    label="日志文件格式"
-                    hint="设置日志文件的输出格式，用于自定义日志的显示内容"
+                    :label="t('setting.system.logFileFormat')"
+                    :hint="t('setting.system.logFileFormatHint')"
                     persistent-hint
                   />
                 </VCol>
@@ -874,24 +878,24 @@ onDeactivated(() => {
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.PLUGIN_AUTO_RELOAD"
-                    label="插件热加载"
-                    hint="修改插件文件后自动重新加载，开发插件时使用"
+                    :label="t('setting.system.pluginAutoReload')"
+                    :hint="t('setting.system.pluginAutoReloadHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.ENCODING_DETECTION_PERFORMANCE_MODE"
-                    label="编码探测性能模式"
-                    hint="优先提升探测效率，但可能降低编码探测的准确性"
+                    :label="t('setting.system.encodingDetectionPerformanceMode')"
+                    :hint="t('setting.system.encodingDetectionPerformanceModeHint')"
                     persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.TOKENIZED_SEARCH"
-                    label="分词搜索"
-                    hint="提升整理历史记录搜索精度，但可能增加性能开销和意外结果"
+                    :label="t('setting.system.tokenizedSearch')"
+                    :hint="t('setting.system.tokenizedSearchHint')"
                     persistent-hint
                   />
                 </VCol>
