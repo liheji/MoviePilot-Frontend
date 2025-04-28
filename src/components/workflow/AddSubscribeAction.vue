@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -22,8 +25,8 @@ defineProps({
             <VIcon icon="mdi-star-plus" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>添加订阅</VCardTitle>
-        <VCardSubtitle>根据媒体列表添加订阅</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.addSubscribe.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.addSubscribe.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <Handle id="edge_out" type="source" :position="Position.Right" />
     </VCard>

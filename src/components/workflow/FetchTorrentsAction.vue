@@ -2,6 +2,9 @@
 import api from '@/api'
 import { Site } from '@/api/types'
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -17,11 +20,11 @@ defineProps({
 // 电影/电视剧下拉框
 const typeOptions = ref([
   {
-    title: '电影',
+    title: t('mediaType.movie'),
     value: '电影',
   },
   {
-    title: '电视剧',
+    title: t('mediaType.tv'),
     value: '电视剧',
   },
 ])
@@ -29,11 +32,11 @@ const typeOptions = ref([
 // 搜索方式下拉框
 const searchOptions = ref([
   {
-    title: '名称',
+    title: t('workflow.fetchTorrents.searchOptions.name'),
     value: 'keyword',
   },
   {
-    title: '媒体列表',
+    title: t('workflow.fetchTorrents.searchOptions.mediaList'),
     value: 'media',
   },
 ])
@@ -77,38 +80,64 @@ onMounted(() => {
             <VIcon icon="mdi-search-web" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>搜索站点资源</VCardTitle>
-        <VCardSubtitle>搜索站点种子资源列表</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.fetchTorrents.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.fetchTorrents.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VSelect v-model="data.search_type" label="搜索方式" :items="searchOptions" outlined dense />
+            <VSelect
+              v-model="data.search_type"
+              :label="t('workflow.fetchTorrents.searchType')"
+              :items="searchOptions"
+              outlined
+              dense
+            />
           </VCol>
         </VRow>
         <VRow v-if="data.search_type === 'keyword'">
           <VCol cols="6">
-            <VTextField v-model="data.name" label="名称" outlined dense />
+            <VTextField v-model="data.name" :label="t('workflow.fetchTorrents.name')" outlined dense />
           </VCol>
           <VCol cols="6">
-            <VTextField v-model="data.year" label="年份" outlined dense />
+            <VTextField v-model="data.year" :label="t('workflow.fetchTorrents.year')" outlined dense />
           </VCol>
           <VCol cols="6">
-            <VSelect v-model="data.type" label="类型" :items="typeOptions" outlined dense />
+            <VSelect
+              v-model="data.type"
+              :label="t('workflow.fetchTorrents.type')"
+              :items="typeOptions"
+              outlined
+              dense
+            />
           </VCol>
           <VCol cols="6">
-            <VTextField v-model="data.season" type="number" label="季" outlined dense />
+            <VTextField
+              v-model="data.season"
+              type="number"
+              :label="t('workflow.fetchTorrents.season')"
+              outlined
+              dense
+            />
           </VCol>
         </VRow>
         <VRow>
           <VCol cols="12">
-            <VSelect v-model="data.sites" label="站点" :items="siteOptions" chips multiple outlined dense />
+            <VSelect
+              v-model="data.sites"
+              :label="t('workflow.fetchTorrents.sites')"
+              :items="siteOptions"
+              chips
+              multiple
+              outlined
+              dense
+            />
           </VCol>
         </VRow>
         <VRow v-if="data.search_type === 'keyword'">
           <VCol cols="12">
-            <VSwitch v-model="data.match_media" label="匹配媒体信息" />
+            <VSwitch v-model="data.match_media" :label="t('workflow.fetchTorrents.matchMedia')" />
           </VCol>
         </VRow>
       </VCardText>

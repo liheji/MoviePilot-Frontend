@@ -2,6 +2,9 @@
 import api from '@/api'
 import { DownloaderConf } from '@/api/types'
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -22,7 +25,7 @@ async function loadDownloaderSetting() {
   try {
     const downloaders: DownloaderConf[] = await api.get('download/clients')
     downloaderOptions.value = [
-      { title: '默认', value: '' },
+      { title: t('common.default'), value: '' },
       ...downloaders.map((item: { name: any }) => ({
         title: item.name,
         value: item.name,
@@ -47,23 +50,41 @@ onMounted(() => {
             <VIcon icon="mdi-download" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>添加下载</VCardTitle>
-        <VCardSubtitle>根据资源列表添加下载任务</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.addDownload.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.addDownload.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VSelect v-model="data.downloader" :items="downloaderOptions" label="下载器" outlined dense />
+            <VSelect
+              v-model="data.downloader"
+              :items="downloaderOptions"
+              :label="t('workflow.addDownload.downloader')"
+              outlined
+              dense
+            />
           </VCol>
           <VCol cols="12">
-            <VTextField v-model="data.labels" label="标签" placeholder="多个使用,分隔" outlined dense />
+            <VTextField
+              v-model="data.labels"
+              :label="t('workflow.addDownload.category')"
+              placeholder="多个使用,分隔"
+              outlined
+              dense
+            />
           </VCol>
           <VCol cols="12">
-            <VPathField v-model="data.save_path" storage="local" label="保存路径" clearable placeholder="留空自动" />
+            <VPathField
+              v-model="data.save_path"
+              storage="local"
+              :label="t('workflow.addDownload.savePath')"
+              clearable
+              placeholder="留空自动"
+            />
           </VCol>
           <VCol cols="12">
-            <VSwitch v-model="data.only_lack" label="仅下载缺失的资源" />
+            <VSwitch v-model="data.only_lack" :label="t('workflow.addDownload.onlyLack')" />
           </VCol>
         </VRow>
       </VCardText>

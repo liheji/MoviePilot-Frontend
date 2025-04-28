@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -22,8 +25,8 @@ defineProps({
             <VIcon icon="mdi-file-find" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>刮削文件</VCardTitle>
-        <VCardSubtitle>刮削媒体信息和图片</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.scrapeFile.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.scrapeFile.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <Handle id="edge_out" type="source" :position="Position.Right" />
     </VCard>

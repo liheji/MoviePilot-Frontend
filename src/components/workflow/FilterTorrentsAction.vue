@@ -2,6 +2,9 @@
 import api from '@/api'
 import { FilterRuleGroup } from '@/api/types'
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -17,39 +20,39 @@ defineProps({
 // 质量选择框数据
 const qualityOptions = ref([
   {
-    title: '全部',
+    title: t('workflow.filterTorrents.qualityOptions.all'),
     value: '',
   },
   {
-    title: '蓝光原盘',
+    title: t('workflow.filterTorrents.qualityOptions.blurayOriginal'),
     value: 'Blu-?Ray.+VC-?1|Blu-?Ray.+AVC|UHD.+blu-?ray.+HEVC|MiniBD',
   },
   {
-    title: 'Remux',
+    title: t('workflow.filterTorrents.qualityOptions.remux'),
     value: 'Remux',
   },
   {
-    title: 'BluRay',
+    title: t('workflow.filterTorrents.qualityOptions.bluray'),
     value: 'Blu-?Ray',
   },
   {
-    title: 'UHD',
+    title: t('workflow.filterTorrents.qualityOptions.uhd'),
     value: 'UHD|UltraHD',
   },
   {
-    title: 'WEB-DL',
+    title: t('workflow.filterTorrents.qualityOptions.webdl'),
     value: 'WEB-?DL|WEB-?RIP',
   },
   {
-    title: 'HDTV',
+    title: t('workflow.filterTorrents.qualityOptions.hdtv'),
     value: 'HDTV',
   },
   {
-    title: 'H265',
+    title: t('workflow.filterTorrents.qualityOptions.h265'),
     value: '[Hx].?265|HEVC',
   },
   {
-    title: 'H264',
+    title: t('workflow.filterTorrents.qualityOptions.h264'),
     value: '[Hx].?264|AVC',
   },
 ])
@@ -57,19 +60,19 @@ const qualityOptions = ref([
 // 分辨率选择框数据
 const resolutionOptions = ref([
   {
-    title: '全部',
+    title: t('workflow.filterTorrents.resolutionOptions.all'),
     value: '',
   },
   {
-    title: '4k',
+    title: t('workflow.filterTorrents.resolutionOptions.4k'),
     value: '4K|2160p|x2160',
   },
   {
-    title: '1080p',
+    title: t('workflow.filterTorrents.resolutionOptions.1080p'),
     value: '1080[pi]|x1080',
   },
   {
-    title: '720p',
+    title: t('workflow.filterTorrents.resolutionOptions.720p'),
     value: '720[pi]|x720',
   },
 ])
@@ -77,23 +80,23 @@ const resolutionOptions = ref([
 // 特效选择框数据
 const effectOptions = ref([
   {
-    title: '全部',
+    title: t('workflow.filterTorrents.effectOptions.all'),
     value: '',
   },
   {
-    title: '杜比视界',
+    title: t('workflow.filterTorrents.effectOptions.dolbyVision'),
     value: 'Dolby[\\s.]+Vision|DOVI|[\\s.]+DV[\\s.]+',
   },
   {
-    title: '杜比全景声',
+    title: t('workflow.filterTorrents.effectOptions.dolbyAtmos'),
     value: 'Dolby[\\s.]*\\+?Atmos|Atmos',
   },
   {
-    title: 'HDR',
+    title: t('workflow.filterTorrents.effectOptions.hdr'),
     value: '[\\s.]+HDR[\\s.]+|HDR10|HDR10\\+',
   },
   {
-    title: 'SDR',
+    title: t('workflow.filterTorrents.effectOptions.sdr'),
     value: '[\\s.]+SDR[\\s.]+',
   },
 ])
@@ -133,36 +136,60 @@ onMounted(() => {
             <VIcon icon="mdi-filter-multiple" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>过滤资源</VCardTitle>
-        <VCardSubtitle>对资源列表数据进行过滤</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.filterTorrents.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.filterTorrents.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="6">
-            <VSelect v-model="data.quality" label="质量" :items="qualityOptions" outlined dense />
+            <VSelect
+              v-model="data.quality"
+              :label="t('workflow.filterTorrents.quality')"
+              :items="qualityOptions"
+              outlined
+              dense
+            />
           </VCol>
           <VCol cols="6">
-            <VSelect v-model="data.resolution" label="分辨率" :items="resolutionOptions" outlined dense />
+            <VSelect
+              v-model="data.resolution"
+              :label="t('workflow.filterTorrents.resolution')"
+              :items="resolutionOptions"
+              outlined
+              dense
+            />
           </VCol>
           <VCol cols="6">
-            <VSelect v-model="data.effect" label="特效" :items="effectOptions" outlined dense />
+            <VSelect
+              v-model="data.effect"
+              :label="t('workflow.filterTorrents.effect')"
+              :items="effectOptions"
+              outlined
+              dense
+            />
           </VCol>
           <VCol cols="6">
-            <VTextField v-model="data.size" label="大小范围" placeholder="MB" outlined dense />
+            <VTextField
+              v-model="data.size"
+              :label="t('workflow.filterTorrents.size')"
+              placeholder="MB"
+              outlined
+              dense
+            />
           </VCol>
           <VCol cols="12">
-            <VTextField v-model="data.include" label="包含（关键字、正则式）" outlined dense />
+            <VTextField v-model="data.include" :label="t('workflow.filterTorrents.include')" outlined dense />
           </VCol>
           <VCol cols="12">
-            <VTextField v-model="data.exclude" label="排除（关键字、正则式）" outlined dense />
+            <VTextField v-model="data.exclude" :label="t('workflow.filterTorrents.exclude')" outlined dense />
           </VCol>
           <VCol cols="12">
             <VSelect
               v-model="data.rule_groups"
               chips
               multiple
-              label="过滤规则组"
+              :label="t('workflow.filterTorrents.ruleGroups')"
               :items="ruleGroupsOptions"
               outlined
               dense

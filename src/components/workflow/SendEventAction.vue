@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -22,8 +25,8 @@ defineProps({
             <VIcon icon="mdi-send-check" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>发送事件</VCardTitle>
-        <VCardSubtitle>发送任务执行事件</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.sendEvent.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.sendEvent.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <Handle id="edge_out" type="source" :position="Position.Right" />
     </VCard>

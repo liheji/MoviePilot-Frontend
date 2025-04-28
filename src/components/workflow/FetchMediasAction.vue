@@ -2,6 +2,9 @@
 import { Handle, Position } from '@vue-flow/core'
 import api from '@/api'
 import { RecommendSource } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -18,55 +21,55 @@ defineProps({
 const innerList = [
   {
     'api_path': 'recommend/tmdb_trending',
-    'name': '流行趋势',
+    'name': t('workflow.fetchMedias.tmdbTrending'),
   },
   {
     'api_path': 'recommend/douban_showing',
-    'name': '正在热映',
+    'name': t('workflow.fetchMedias.doubanShowing'),
   },
   {
     'api_path': 'recommend/bangumi_calendar',
-    'name': 'Bangumi每日放送',
+    'name': t('workflow.fetchMedias.bangumiCalendar'),
   },
   {
     'api_path': 'recommend/tmdb_movies',
-    'name': 'TMDB热门电影',
+    'name': t('workflow.fetchMedias.tmdbMovies'),
   },
   {
     'api_path': 'recommend/tmdb_tvs?with_original_language=zh|en|ja|ko',
-    'name': 'TMDB热门电视剧',
+    'name': t('workflow.fetchMedias.tmdbTvs'),
   },
   {
     'api_path': 'recommend/douban_movie_hot',
-    'name': '豆瓣热门电影',
+    'name': t('workflow.fetchMedias.doubanMovieHot'),
   },
   {
     'api_path': 'recommend/douban_tv_hot',
-    'name': '豆瓣热门电视剧',
+    'name': t('workflow.fetchMedias.doubanTvHot'),
   },
   {
     'api_path': 'recommend/douban_tv_animation',
-    'name': '豆瓣热门动漫',
+    'name': t('workflow.fetchMedias.doubanTvAnimation'),
   },
   {
     'api_path': 'recommend/douban_movies',
-    'name': '豆瓣最新电影',
+    'name': t('workflow.fetchMedias.doubanMovies'),
   },
   {
     'api_path': 'recommend/douban_tvs',
-    'name': '豆瓣最新电视剧',
+    'name': t('workflow.fetchMedias.doubanTvs'),
   },
   {
     'api_path': 'recommend/douban_movie_top250',
-    'name': '豆瓣电影TOP250',
+    'name': t('workflow.fetchMedias.doubanMovieTop250'),
   },
   {
     'api_path': 'recommend/douban_tv_weekly_chinese',
-    'name': '豆瓣国产剧集榜',
+    'name': t('workflow.fetchMedias.doubanTvWeeklyChinese'),
   },
   {
     'api_path': 'recommend/douban_tv_weekly_global',
-    'name': '豆瓣全球剧集榜',
+    'name': t('workflow.fetchMedias.doubanTvWeeklyGlobal'),
   },
 ]
 
@@ -92,8 +95,8 @@ async function loadExtraRecommendSources() {
 
 // 来源类型下拉框
 const sourceTypeOptions = [
-  { value: 'ranking', title: '推荐榜单' },
-  { value: 'api', title: 'API' },
+  { value: 'ranking', title: t('workflow.fetchMedias.ranking') },
+  { value: 'api', title: t('workflow.fetchMedias.api') },
 ]
 
 // 计算下拉框
@@ -113,14 +116,20 @@ onMounted(() => {
             <VIcon icon="mdi-movie-search" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>获取媒体数据</VCardTitle>
-        <VCardSubtitle>获取榜单等媒体数据列表</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.fetchMedias.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.fetchMedias.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VSelect v-model="data.source_type" :items="sourceTypeOptions" label="来源" outlined dense />
+            <VSelect
+              v-model="data.source_type"
+              :items="sourceTypeOptions"
+              :label="t('workflow.fetchMedias.source')"
+              outlined
+              dense
+            />
           </VCol>
         </VRow>
         <VRow v-if="data.source_type === 'ranking'">
@@ -128,7 +137,7 @@ onMounted(() => {
             <VSelect
               v-model="data.sources"
               :items="sourceOptions"
-              label="选择榜单"
+              :label="t('workflow.fetchMedias.selectRanking')"
               chips
               multiple
               outlined
@@ -141,7 +150,7 @@ onMounted(() => {
           <VCol cols="12">
             <VTextField
               v-model="data.api_path"
-              label="API地址"
+              :label="t('workflow.fetchMedias.apiPath')"
               placeholder="/api/v1/plugin/xxx/xxxx"
               outlined
               dense

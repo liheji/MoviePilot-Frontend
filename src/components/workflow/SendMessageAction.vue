@@ -2,6 +2,9 @@
 import api from '@/api'
 import { NotificationConf } from '@/api/types'
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -51,8 +54,8 @@ onMounted(() => {
             <VIcon icon="mdi-message-arrow-right" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>发送消息</VCardTitle>
-        <VCardSubtitle>发送任务执行消息</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.sendMessage.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.sendMessage.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
@@ -61,7 +64,7 @@ onMounted(() => {
             <VSelect
               v-model="data.client"
               :items="sourceOptions"
-              label="消息渠道"
+              :label="t('workflow.sendMessage.channel')"
               chips
               multiple
               outlined
@@ -70,7 +73,15 @@ onMounted(() => {
             />
           </VCol>
           <VCol cols="12">
-            <VTextField v-model="data.userid" label="用户ID" chips multiple outlined dense clearable />
+            <VTextField
+              v-model="data.userid"
+              :label="t('workflow.sendMessage.userId')"
+              chips
+              multiple
+              outlined
+              dense
+              clearable
+            />
           </VCol>
         </VRow>
       </VCardText>

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import api from '@/api'
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   id: {
@@ -16,11 +19,11 @@ const props = defineProps({
 // 电影/电视剧下拉框
 const typeOptions = ref([
   {
-    title: '电影',
+    title: t('mediaType.movie'),
     value: '电影',
   },
   {
-    title: '电视剧',
+    title: t('mediaType.tv'),
     value: '电视剧',
   },
 ])
@@ -39,7 +42,7 @@ async function loadMediaCategories() {
 
 // 根据选中的媒体类型，获取对应的媒体类别
 const getCategories = computed(() => {
-  const default_value = [{ title: '全部', value: '' }]
+  const default_value = [{ title: t('common.all'), value: '' }]
   if (!mediaCategories.value || !mediaCategories.value[props.data.type ?? '']) return default_value
   return default_value.concat(mediaCategories.value[props.data.type ?? ''])
 })
@@ -58,20 +61,20 @@ onMounted(() => {
             <VIcon icon="mdi-filter-check" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>过滤媒体数据</VCardTitle>
-        <VCardSubtitle>对媒体数据列表进行过滤</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.filterMedias.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.filterMedias.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VSelect v-model="data.type" label="类型" :items="typeOptions" outlined dense />
+            <VSelect v-model="data.type" :label="t('workflow.filterMedias.type')" :items="typeOptions" outlined dense />
           </VCol>
           <VCol cols="6">
-            <VTextField v-model="data.year" label="年份" outlined dense />
+            <VTextField v-model="data.year" :label="t('workflow.filterMedias.year')" outlined dense />
           </VCol>
           <VCol cols="6">
-            <VTextField v-model="data.vote" type="number" label="评分" outlined dense />
+            <VTextField v-model="data.vote" type="number" :label="t('workflow.filterMedias.vote')" outlined dense />
           </VCol>
         </VRow>
       </VCardText>

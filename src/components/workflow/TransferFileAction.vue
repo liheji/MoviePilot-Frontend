@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -15,11 +18,11 @@ defineProps({
 // 来源下拉框
 const sourceOptions = ref([
   {
-    title: '文件列表',
+    title: t('workflow.transferFile.sourceOptions.fileList'),
     value: 'files',
   },
   {
-    title: '下载任务',
+    title: t('workflow.transferFile.sourceOptions.downloads'),
     value: 'downloads',
   },
 ])
@@ -34,14 +37,20 @@ const sourceOptions = ref([
             <VIcon icon="mdi-file-move" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>整理文件</VCardTitle>
-        <VCardSubtitle>整理重命名队列中的文件</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.transferFile.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.transferFile.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VSelect v-model="data.source" label="来源" :items="sourceOptions" outlined dense />
+            <VSelect
+              v-model="data.source"
+              :label="t('workflow.transferFile.source')"
+              :items="sourceOptions"
+              outlined
+              dense
+            />
           </VCol>
         </VRow>
       </VCardText>

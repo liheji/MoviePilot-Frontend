@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Handle, Position } from '@vue-flow/core'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   id: {
@@ -22,21 +25,21 @@ defineProps({
             <VIcon icon="mdi-progress-download" size="x-large"></VIcon>
           </VAvatar>
         </template>
-        <VCardTitle>获取下载任务</VCardTitle>
-        <VCardSubtitle>获取下载队列中的任务状态</VCardSubtitle>
+        <VCardTitle>{{ t('workflow.fetchDownloads.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('workflow.fetchDownloads.subtitle') }}</VCardSubtitle>
       </VCardItem>
       <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VSwitch v-model="data.loop" label="循环执行" />
+            <VSwitch v-model="data.loop" :label="t('workflow.fetchDownloads.loop')" />
           </VCol>
           <VCol cols="12">
             <VTextField
               v-model="data.loop_interval"
               :disabled="!data.loop"
               type="number"
-              label="循环间隔 (秒)"
+              :label="t('workflow.fetchDownloads.loopInterval')"
               outlined
               dense
               clearable
