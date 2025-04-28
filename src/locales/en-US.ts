@@ -592,6 +592,17 @@ export default {
     errors: {
       loadDownloader: 'Failed to load downloader settings',
     },
+    testConnectivity: 'Test Connectivity',
+    testing: 'Testing ...',
+    testSuccess: '{name} connectivity test successful, ready to use!',
+    testFailed: '{name} connectivity test failed: {message}',
+    deleteConfirm: 'Are you sure you want to delete this site?',
+    deleteSuccess: '{name} deleted successfully!',
+    deleteFailed: '{name} deletion failed: {message}',
+    browseResources: 'Browse Resources',
+    deleteSite: 'Delete Site',
+    updateCookie: 'Update Cookie',
+    viewUserData: 'View User Data',
   },
   message: {
     loadMore: 'Load More',

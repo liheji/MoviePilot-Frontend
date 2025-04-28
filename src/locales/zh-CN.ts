@@ -590,6 +590,17 @@ export default {
     errors: {
       loadDownloader: '加载下载器设置失败',
     },
+    testConnectivity: '测试连通性',
+    testing: '测试中 ...',
+    testSuccess: '{name} 连通性测试成功，可正常使用！',
+    testFailed: '{name} 连通性测试失败：{message}',
+    deleteConfirm: '是否确认删除站点？',
+    deleteSuccess: '{name} 删除成功！',
+    deleteFailed: '{name} 删除失败：{message}',
+    browseResources: '浏览资源',
+    deleteSite: '删除站点',
+    updateCookie: '更新Cookie',
+    viewUserData: '查看用户数据',
   },
   message: {
     loadMore: '加载更多',

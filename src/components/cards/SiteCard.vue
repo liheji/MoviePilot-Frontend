@@ -2,6 +2,7 @@
 import type { PropType } from 'vue'
 import noImage from '@images/logos/site.webp'
 import { useToast } from 'vue-toast-notification'
+import { useI18n } from 'vue-i18n'
 import SiteAddEditDialog from '../dialog/SiteAddEditDialog.vue'
 import SiteUserDataDialog from '../dialog/SiteUserDataDialog.vue'
 import SiteResourceDialog from '../dialog/SiteResourceDialog.vue'
@@ -11,6 +12,9 @@ import type { Site, SiteStatistic, SiteUserData } from '@/api/types'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { formatFileSize } from '@/@core/utils/formatters'
 import { useConfirm } from 'vuetify-use-dialog'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const cardProps = defineProps({
@@ -31,7 +35,7 @@ const siteIcon = ref<string>('')
 const $toast = useToast()
 
 // 测试按钮文字
-const testButtonText = ref('测试连通性')
+const testButtonText = ref(t('site.testConnectivity'))
 
 // 测试按钮可用性
 const testButtonDisable = ref(false)
@@ -66,14 +70,14 @@ async function getSiteIcon() {
 // 测试站点连通性
 async function testSite() {
   try {
-    testButtonText.value = '测试中 ...'
+    testButtonText.value = t('site.testing')
     testButtonDisable.value = true
 
     const result: { [key: string]: any } = await api.get(`site/test/${cardProps.site?.id}`)
-    if (result.success) $toast.success(`${cardProps.site?.name} 连通性测试成功，可正常使用！`)
-    else $toast.error(`${cardProps.site?.name} 连通性测试失败：${result.message}`)
+    if (result.success) $toast.success(t('site.testSuccess', { name: cardProps.site?.name }))
+    else $toast.error(t('site.testFailed', { name: cardProps.site?.name, message: result.message }))
 
-    testButtonText.value = '测试连通性'
+    testButtonText.value = t('site.testConnectivity')
     testButtonDisable.value = false
 
     getSiteStats()
@@ -114,8 +118,8 @@ function openSitePage() {
 // 调用API删除站点信息
 async function deleteSiteInfo() {
   const isConfirmed = await createConfirm({
-    title: '确认',
-    content: `是否确认删除站点？`,
+    title: t('common.confirm'),
+    content: t('site.deleteConfirm'),
   })
 
   if (!isConfirmed) return
@@ -123,9 +127,9 @@ async function deleteSiteInfo() {
   try {
     const result: { [key: string]: any } = await api.delete(`site/${cardProps.site?.id}`)
     if (result.success) emit('remove')
-    else $toast.error(`${cardProps.site?.name} 删除失败：${result.message}`)
+    else $toast.error(t('site.deleteFailed', { name: cardProps.site?.name, message: result.message }))
   } catch (error) {
-    $toast.error(`${cardProps.site?.name} 删除失败！`)
+    $toast.error(t('site.deleteFailed', { name: cardProps.site?.name, message: error }))
     console.error(error)
   }
 }
@@ -336,13 +340,13 @@ onMounted(() => {
                 <template #prepend>
                   <VIcon icon="mdi-web" size="small" />
                 </template>
-                <VListItemTitle>浏览资源</VListItemTitle>
+                <VListItemTitle>{{ t('site.browseResources') }}</VListItemTitle>
               </VListItem>
               <VListItem @click="deleteSiteInfo">
                 <template #prepend>
                   <VIcon icon="mdi-delete-outline" size="small" color="error" />
                 </template>
-                <VListItemTitle class="text-error">删除站点</VListItemTitle>
+                <VListItemTitle class="text-error">{{ t('site.deleteSite') }}</VListItemTitle>
               </VListItem>
             </VList>
           </VMenu>

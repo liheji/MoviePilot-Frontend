@@ -587,6 +587,17 @@ export default {
     errors: {
       loadDownloader: '加載下載器設置失敗',
     },
+    testConnectivity: '測試連通性',
+    testing: '測試中 ...',
+    testSuccess: '{name} 連通性測試成功，可正常使用！',
+    testFailed: '{name} 連通性測試失敗：{message}',
+    deleteConfirm: '是否確認刪除站點？',
+    deleteSuccess: '{name} 刪除成功！',
+    deleteFailed: '{name} 刪除失敗：{message}',
+    browseResources: '瀏覽資源',
+    deleteSite: '刪除站點',
+    updateCookie: '更新Cookie',
+    viewUserData: '查看用戶數據',
   },
   message: {
     loadMore: '加載更多',
