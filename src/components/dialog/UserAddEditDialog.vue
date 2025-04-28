@@ -6,6 +6,10 @@ import api from '@/api'
 import { useDisplay } from 'vuetify'
 import avatar1 from '@images/avatars/avatar-1.png'
 import { useUserStore } from '@/stores'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -52,8 +56,8 @@ const $toast = useToast()
 
 // 状态下拉项
 const statusItems = [
-  { title: '激活', value: 1 },
-  { title: '已停用', value: 0 },
+  { title: t('dialog.userAddEdit.active'), value: 1 },
+  { title: t('dialog.userAddEdit.inactive'), value: 0 },
 ]
 
 // 扩展User类型以包含note字段
@@ -92,19 +96,19 @@ function changeAvatar(file: Event) {
     const maxSize = 800 * 1024
     // 检查文件是否为图片
     if (!allowedTypes.includes(selectedFile.type)) {
-      $toast.error('上传的文件不符合要求，请重新选择头像')
+      $toast.error(t('dialog.userAddEdit.invalidFile'))
       return
     }
     // 检查文件大小
     if (selectedFile.size > maxSize) {
-      $toast.error('文件大小不得大于800KB')
+      $toast.error(t('dialog.userAddEdit.fileSizeLimit'))
       return
     }
     fileReader.readAsDataURL(selectedFile)
     fileReader.onload = () => {
       if (typeof fileReader.result === 'string') {
         currentAvatar.value = fileReader.result
-        $toast.success('新头像上传成功，待保存后生效!')
+        $toast.success(t('dialog.userAddEdit.avatarUploadSuccess'))
       }
     }
   }
@@ -113,13 +117,13 @@ function changeAvatar(file: Event) {
 // 重置默认头像
 function resetDefaultAvatar() {
   currentAvatar.value = avatar1
-  $toast.success('已重置为默认头像，待保存后生效！')
+  $toast.success(t('dialog.userAddEdit.resetAvatarSuccess'))
 }
 
 // 还原当前头像
 function restoreCurrentAvatar() {
   currentAvatar.value = userForm.value.avatar
-  $toast.success('已还原当前使用头像！')
+  $toast.success(t('dialog.userAddEdit.restoreAvatarSuccess'))
 }
 
 // 查询用户信息
@@ -140,22 +144,22 @@ async function fetchUserInfo() {
 // 调用API 新增用户
 async function addUser() {
   if (isAdding.value) {
-    $toast.error(`正在创建【${userForm.value.name}】用户，请稍后`)
+    $toast.error(t('dialog.userAddEdit.creatingUser', { name: userForm.value.name }))
     return
   }
   if (!currentUserName.value) {
-    $toast.error('用户名不能为空')
+    $toast.error(t('dialog.userAddEdit.usernameRequired'))
     return
   } else userForm.value.name = currentUserName.value
   // 重名检查
   if (props.usernames && props.usernames.includes(userForm.value.name)) {
-    $toast.error('用户名已存在')
+    $toast.error(t('dialog.userAddEdit.usernameExists'))
     return
   }
   if (!userForm.value?.name || !newPassword.value) return
   if (newPassword.value || confirmPassword.value) {
     if (newPassword.value !== confirmPassword.value) {
-      $toast.error('两次输入的密码不一致')
+      $toast.error(t('dialog.userAddEdit.passwordMismatch'))
       return
     }
     userForm.value.password = newPassword.value
@@ -165,10 +169,10 @@ async function addUser() {
   try {
     const result: { [key: string]: string } = await api.post('user/', userForm.value)
     if (result.success) {
-      $toast.success(`用户【${userForm.value.name}】创建成功`)
+      $toast.success(t('dialog.userAddEdit.userCreated', { name: userForm.value.name }))
       emit('save')
     } else {
-      $toast.error(`创建用户失败：${result.message}`)
+      $toast.error(t('dialog.userAddEdit.userCreateFailed', { message: result.message }))
       // 清除用户名
       userForm.value.name = ''
     }
@@ -182,16 +186,16 @@ async function addUser() {
 // 调用API更新用户信息
 async function updateUser() {
   if (isUpdating.value) {
-    $toast.error(`正在更新【${userForm.value.name}】用户，请稍后`)
+    $toast.error(t('dialog.userAddEdit.updatingUser', { name: userForm.value.name }))
     return
   }
   if (!currentUserName.value) {
-    $toast.error('用户名不能为空')
+    $toast.error(t('dialog.userAddEdit.usernameRequired'))
     return
   }
   if (newPassword.value || confirmPassword.value) {
     if (newPassword.value !== confirmPassword.value) {
-      $toast.error('两次输入的密码不一致')
+      $toast.error(t('dialog.userAddEdit.passwordMismatch'))
       return
     }
     userForm.value.password = newPassword.value
@@ -219,13 +223,13 @@ async function updateUser() {
 
     if (result.success) {
       if (oldUserName !== currentUserName.value) {
-        $toast.success(`【${oldUserName}】更名【${currentUserName.value}】， 更新成功！`)
+        $toast.success(t('dialog.userAddEdit.userUpdateSuccess', { name: `${oldUserName} → ${currentUserName.value}` }))
         // 如果是当前登录用户，更新当前用户名称显示
         if (isCurrentUser.value) {
           userStore.setUserName(currentUserName.value)
         }
       } else {
-        $toast.success(`【${userForm.value?.name}】更新成功！`)
+        $toast.success(t('dialog.userAddEdit.userUpdateSuccess', { name: userForm.value?.name }))
       }
       // 更新本地头像显示
       if (oldAvatar !== currentAvatar.value && isCurrentUser.value) {
@@ -234,10 +238,10 @@ async function updateUser() {
       emit('save')
     } else {
       if (oldUserName !== currentUserName.value) {
-        $toast.error(`【${oldUserName}】更名【${currentUserName.value}】， 更新失败：${result.message}`)
+        $toast.error(t('dialog.userAddEdit.userUpdateFailed', { message: result.message }))
         currentUserName.value = oldUserName
       } else {
-        $toast.error(`【${userForm.value?.name}】更新失败：${result.message}`)
+        $toast.error(t('dialog.userAddEdit.userUpdateFailed', { message: result.message }))
       }
     }
     //失败缓存值还原
@@ -247,7 +251,7 @@ async function updateUser() {
     userForm.value.avatar = oldAvatar
     userForm.value.password = ''
   } catch (error) {
-    $toast.error(`【${userForm.value?.name}】更新失败！`)
+    $toast.error(t('dialog.userAddEdit.userUpdateFailed', { message: '' }))
     console.error('更新失败:', error)
   }
   doneNProgress()
@@ -288,7 +292,9 @@ onMounted(() => {
 <template>
   <VDialog scrollable :close-on-back="false" eager max-width="40rem" :fullscreen="!display.mdAndUp.value">
     <VCard
-      :title="`${props.oper === 'add' ? '新增' : '编辑'}用户${props.oper !== 'add' ? ` - ${userName}` : ''}`"
+      :title="`${props.oper === 'add' ? t('dialog.userAddEdit.add') : t('dialog.userAddEdit.edit')}${
+        props.oper !== 'add' ? ` - ${userName}` : ''
+      }`"
       class="rounded-t"
     >
       <VDialogCloseBtn @click="emit('close')" />
@@ -302,7 +308,7 @@ onMounted(() => {
             <div class="flex flex-wrap gap-2">
               <VBtn color="primary" @click="refInputEl?.click()">
                 <VIcon icon="mdi-cloud-upload-outline" />
-                <span v-if="display.mdAndUp.value" class="ms-2">上传新头像</span>
+                <span v-if="display.mdAndUp.value" class="ms-2">{{ t('dialog.userAddEdit.uploadAvatar') }}</span>
               </VBtn>
 
               <input
@@ -316,7 +322,7 @@ onMounted(() => {
 
               <VBtn type="reset" color="info" variant="tonal" @click="restoreCurrentAvatar" v-if="props.oper !== 'add'">
                 <VIcon icon="mdi-refresh" />
-                <span v-if="display.mdAndUp.value" class="ms-2">重置</span>
+                <span v-if="display.mdAndUp.value" class="ms-2">{{ t('common.cancel') }}</span>
               </VBtn>
 
               <VBtn
@@ -326,17 +332,17 @@ onMounted(() => {
                 @click="resetDefaultAvatar"
               >
                 <VIcon icon="mdi-image-sync-outline" />
-                <span v-if="display.mdAndUp.value" class="ms-2">默认</span>
+                <span v-if="display.mdAndUp.value" class="ms-2">{{ t('dialog.userAddEdit.resetDefaultAvatar') }}</span>
               </VBtn>
             </div>
-            <p class="text-body-1 mb-0">允许 JPG、PNG、GIF、WEBP 格式， 最大尺寸 800KB。</p>
+            <p class="text-body-1 mb-0">{{ t('dialog.userAddEdit.fileSizeLimit') }}</p>
           </div>
         </div>
       </VCardItem>
       <VCardText>
         <VForm @submit.prevent="() => {}">
           <VDivider class="my-10">
-            <span>用户基础设置</span>
+            <span>{{ t('dialog.userAddEdit.saveUserInfo') }}</span>
           </VDivider>
           <VRow>
             <VCol md="6" cols="12">
@@ -344,11 +350,17 @@ onMounted(() => {
                 v-model="currentUserName"
                 density="comfortable"
                 :readonly="props.oper !== 'add'"
-                label="用户名"
+                :label="t('dialog.userAddEdit.username')"
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField v-model="userForm.email" density="comfortable" clearable label="邮箱" type="email" />
+              <VTextField
+                v-model="userForm.email"
+                density="comfortable"
+                clearable
+                :label="t('dialog.userAddEdit.email')"
+                type="email"
+              />
             </VCol>
             <VCol cols="12" md="6">
               <VTextField
@@ -357,7 +369,7 @@ onMounted(() => {
                 :type="isNewPasswordVisible ? 'text' : 'password'"
                 :append-inner-icon="isNewPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                 clearable
-                label="密码"
+                :label="t('dialog.userAddEdit.password')"
                 autocomplete=""
                 @click:append-inner="isNewPasswordVisible = !isNewPasswordVisible"
               />
@@ -370,7 +382,7 @@ onMounted(() => {
                 :type="isConfirmPasswordVisible ? 'text' : 'password'"
                 :append-inner-icon="isConfirmPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                 clearable
-                label="确认密码"
+                :label="t('dialog.userAddEdit.confirmPassword')"
                 @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
               />
             </VCol>
@@ -379,7 +391,7 @@ onMounted(() => {
                 v-model="userForm.nickname"
                 density="comfortable"
                 clearable
-                label="昵称"
+                :label="t('dialog.userAddEdit.nickname')"
                 placeholder="显示昵称，优先于用户名显示"
               />
             </VCol>
@@ -389,35 +401,45 @@ onMounted(() => {
                 :items="statusItems"
                 item-text="title"
                 item-value="value"
-                label="状态"
+                :label="t('dialog.userAddEdit.status')"
                 dense
               />
             </VCol>
           </VRow>
           <VDivider class="my-10">
-            <span>账号绑定</span>
+            <span>{{ t('dialog.userAddEdit.notifications') }}</span>
           </VDivider>
           <VRow>
             <VCol cols="12" md="6">
-              <VTextField v-model="userForm.settings.wechat_userid" density="comfortable" clearable label="微信用户" />
+              <VTextField
+                v-model="userForm.settings.wechat_userid"
+                density="comfortable"
+                clearable
+                :label="t('dialog.userAddEdit.wechat')"
+              />
             </VCol>
             <VCol cols="12" md="6">
               <VTextField
                 v-model="userForm.settings.telegram_userid"
                 density="comfortable"
                 clearable
-                label="Telegram用户"
+                :label="t('dialog.userAddEdit.telegram')"
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField v-model="userForm.settings.slack_userid" density="comfortable" clearable label="Slack用户" />
+              <VTextField
+                v-model="userForm.settings.slack_userid"
+                density="comfortable"
+                clearable
+                :label="t('dialog.userAddEdit.slack')"
+              />
             </VCol>
             <VCol cols="12" md="6">
               <VTextField
                 v-model="userForm.settings.vocechat_userid"
                 density="comfortable"
                 clearable
-                label="VoceChat用户"
+                :label="t('dialog.userAddEdit.vocechat')"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -425,7 +447,7 @@ onMounted(() => {
                 v-model="userForm.settings.synologychat_userid"
                 density="comfortable"
                 clearable
-                label="SynologyChat用户"
+                :label="t('dialog.userAddEdit.synologyChat')"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -445,8 +467,8 @@ onMounted(() => {
           prepend-icon="mdi-plus"
           class="px-5"
         >
-          <span v-if="isAdding">创建中...</span>
-          <span v-else>创建</span>
+          <span v-if="isAdding">{{ t('common.loading') }}</span>
+          <span v-else>{{ t('common.add') }}</span>
         </VBtn>
         <VBtn
           v-else
@@ -457,8 +479,8 @@ onMounted(() => {
           prepend-icon="mdi-content-save"
           class="px-5"
         >
-          <span v-if="isUpdating">更新中...</span>
-          <span v-else>更新</span>
+          <span v-if="isUpdating">{{ t('common.loading') }}</span>
+          <span v-else>{{ t('common.save') }}</span>
         </VBtn>
       </VCardActions>
     </VCard>

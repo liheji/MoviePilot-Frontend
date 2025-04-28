@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import type { Site } from '@/api/types'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 const props = defineProps({
   sites: {
@@ -29,7 +33,9 @@ watch(
 
 // 全选/全不选按钮文字
 const checkAllText = computed(() => {
-  return selectedSites.value.length < props.sites?.length ? '选择全部' : '取消全选'
+  return selectedSites.value.length < props.sites?.length
+    ? t('dialog.searchSite.selectAll')
+    : t('dialog.searchSite.deselectAll')
 })
 
 // 全选/全不选
@@ -49,15 +55,15 @@ const filteredSites = computed(() => {
 })
 </script>
 <template>
-  <!-- 手动整理进度框 -->
+  <!-- Site Selection Dialog -->
   <VDialog max-width="40rem" fullscreen-mobile>
     <VCard class="site-dialog">
       <VCardTitle class="d-flex align-center pa-4">
-        <span class="text-h6 font-weight-medium">选择搜索站点</span>
+        <span class="text-h6 font-weight-medium">{{ t('dialog.searchSite.selectSites') }}</span>
         <VSpacer />
         <VTextField
           v-model="siteFilter"
-          placeholder="过滤站点..."
+          :placeholder="t('dialog.searchSite.siteSearch')"
           density="compact"
           variant="outlined"
           hide-details
@@ -91,7 +97,7 @@ const filteredSites = computed(() => {
               class="text-body-2 font-weight-medium"
               :class="selectedSites.length > 0 ? 'text-primary' : 'text-medium-emphasis'"
             >
-              已选择 {{ selectedSites.length }}/{{ sites.length }} 个站点
+              {{ t('dialog.searchSite.searchAllSites', { selected: selectedSites.length, total: sites.length }) }}
             </div>
           </div>
 
@@ -137,9 +143,9 @@ const filteredSites = computed(() => {
           <div class="search-icon-wrapper mb-4 mx-auto warning">
             <VIcon icon="mdi-alert-circle-outline" size="large" color="warning" />
           </div>
-          <div class="text-h6 font-weight-medium mb-2">没有找到匹配的站点</div>
+          <div class="text-h6 font-weight-medium mb-2">{{ t('torrent.noMatchingResults') }}</div>
           <div class="text-subtitle-1 text-medium-emphasis mb-4">
-            {{ siteFilter ? '请尝试修改过滤条件' : '站点数据加载失败，请刷新页面重试' }}
+            {{ siteFilter ? t('site.noFilterData') : t('site.sitesWillBeShownHere') }}
           </div>
           <VBtn
             v-if="siteFilter"
@@ -149,10 +155,10 @@ const filteredSites = computed(() => {
             prepend-icon="mdi-refresh"
             @click="siteFilter = ''"
           >
-            重置
+            {{ t('torrent.clearFilters') }}
           </VBtn>
           <VBtn v-else color="primary" variant="flat" class="mt-3" prepend-icon="mdi-refresh" @click="emit('reload')">
-            重新加载站点
+            {{ t('common.loading') }}
           </VBtn>
         </div>
       </VCardText>
@@ -167,7 +173,7 @@ const filteredSites = computed(() => {
           @click="emit('close')"
           class="mr-2 d-flex align-center justify-center"
         >
-          取消
+          {{ t('dialog.searchSite.cancel') }}
         </VBtn>
         <VBtn
           color="primary"
@@ -177,7 +183,7 @@ const filteredSites = computed(() => {
           prepend-icon="mdi-magnify"
           class="d-flex align-center justify-center px-5"
         >
-          搜索
+          {{ t('dialog.searchSite.confirm') }}
         </VBtn>
       </VCardActions>
     </VCard>

@@ -5,6 +5,10 @@ import api from '@/api'
 import type { Subscribe, SubscribeShare } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import { formatSeason } from '@/@core/utils/formatters'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
@@ -35,11 +39,11 @@ async function doShare() {
     shareDoing.value = false
     // 提示
     if (result.success) {
-      $toast.success(`${props.sub?.name} 分享成功！`)
+      $toast.success(t('dialog.subscribeShare.shareSuccess', { name: props.sub?.name }))
       // 通知父组件刷新
       emit('close')
     } else {
-      $toast.error(`${props.sub?.name} 分享失败：${result.message}！`)
+      $toast.error(t('dialog.subscribeShare.shareFailed', { name: props.sub?.name, message: result.message }))
     }
   } catch (e) {
     console.log(e)
@@ -53,7 +57,9 @@ const $toast = useToast()
 <template>
   <VDialog scrollable max-width="30rem" :fullscreen="!display.mdAndUp.value">
     <VCard
-      :title="`分享订阅 - ${props.sub?.name} ${props.sub?.season ? `第 ${props.sub?.season} 季` : ''}`"
+      :title="`${t('dialog.subscribeShare.shareSubscription')} - ${props.sub?.name} ${
+        props.sub?.season ? t('dialog.subscribeShare.season', { number: props.sub?.season }) : ''
+      }`"
       class="rounded-t"
     >
       <VCardText>
@@ -64,7 +70,7 @@ const $toast = useToast()
               <VTextField
                 v-model="shareForm.share_title"
                 readonly
-                label="标题"
+                :label="t('dialog.subscribeShare.title')"
                 :rules="[requiredValidator]"
                 persistent-hint
               />
@@ -72,18 +78,18 @@ const $toast = useToast()
             <VCol cols="12">
               <VTextarea
                 v-model="shareForm.share_comment"
-                label="说明"
+                :label="t('dialog.subscribeShare.description')"
                 :rules="[requiredValidator]"
-                hint="填写关于该订阅的说明，订阅中的搜索词、识别词等将会默认包含在分享中"
+                :hint="t('dialog.subscribeShare.descriptionHint')"
                 persistent-hint
               />
             </VCol>
             <VCol cols="12">
               <VTextField
                 v-model="shareForm.share_user"
-                label="分享用户"
+                :label="t('dialog.subscribeShare.shareUser')"
                 :rules="[requiredValidator]"
-                hint="分享人的昵称"
+                :hint="t('dialog.subscribeShare.shareUserHint')"
                 persistent-hint
               />
             </VCol>
@@ -100,7 +106,7 @@ const $toast = useToast()
           class="px-5"
           :loading="shareDoing"
         >
-          确认分享
+          {{ t('dialog.subscribeShare.confirmShare') }}
         </VBtn>
       </VCardActions>
     </VCard>

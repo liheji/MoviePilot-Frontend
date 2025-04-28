@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
+
 // 输入参数
 const props = defineProps({
   title: String,
@@ -27,7 +32,9 @@ function handleImport() {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn variant="elevated" @click="handleImport" prepend-icon="mdi-import" class="px-5 me-3"> 导入 </VBtn>
+        <VBtn variant="elevated" @click="handleImport" prepend-icon="mdi-import" class="px-5 me-3">
+          {{ t('dialog.importCode.import') }}
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>

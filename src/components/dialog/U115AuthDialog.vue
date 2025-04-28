@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import api from '@/api'
 import QrcodeVue from 'qrcode.vue'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 定义输入
 const props = defineProps({
@@ -17,7 +21,7 @@ const emit = defineEmits(['done', 'close'])
 const qrCodeContent = ref('')
 
 // 下方的提示信息
-const text = ref('请使用微信或115客户端扫码')
+const text = ref(t('dialog.u115Auth.scanQrCode'))
 
 // 提醒类型
 const alertType = ref<'success' | 'info' | 'error' | 'warning' | undefined>('info')
@@ -61,7 +65,7 @@ async function checkQrcode() {
       } else if (status == 1) {
         // 已扫码
         alertType.value = 'info'
-        text.value = '已扫码，请确认登录'
+        text.value = t('dialog.u115Auth.scanned')
         clearTimeout(timeoutTimer)
         timeoutTimer = setTimeout(checkQrcode, 3000)
       } else if (status == 2) {
@@ -92,7 +96,7 @@ onUnmounted(() => {
 
 <template>
   <VDialog width="40rem" scrollable max-height="85vh">
-    <VCard title="115网盘登录" class="rounded-t">
+    <VCard :title="t('dialog.u115Auth.loginTitle')" class="rounded-t">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText class="pt-2 flex flex-col items-center">
         <div class="my-6 rounded text-center p-3 border">
@@ -104,7 +108,9 @@ onUnmounted(() => {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3"> 完成 </VBtn>
+        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
+          {{ t('dialog.u115Auth.complete') }}
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>

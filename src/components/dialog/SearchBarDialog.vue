@@ -5,6 +5,10 @@ import { getNavMenus, getSettingTabs } from '@/router/i18n-menu'
 import { NavMenu } from '@/@layouts/types'
 import { useUserStore } from '@/stores'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 定义props，接收modelValue
 const props = defineProps<{
@@ -89,7 +93,7 @@ function getMenus(): NavMenu[] {
     item =>
       item &&
       menus.push({
-        title: '设定 -> ' + item.title,
+        title: t('setting') + ' -> ' + item.title,
         icon: item.icon,
         to: `/setting?tab=${item.tab}`,
         header: '',
@@ -311,7 +315,7 @@ onMounted(() => {
           density="comfortable"
           variant="outlined"
           class="search-input"
-          placeholder="输入关键词搜索..."
+          :placeholder="t('dialog.searchBar.searchPlaceholder')"
           @keydown.enter="searchMedia('media')"
           hide-details
           clearable
@@ -330,7 +334,9 @@ onMounted(() => {
         <!-- 有搜索词时显示结果 -->
         <VList lines="two" v-if="searchWord" class="search-list py-2">
           <!-- 搜索结果分组标题 -->
-          <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 媒体 </VListSubheader>
+          <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6">
+            {{ t('media.movie') }}
+          </VListSubheader>
 
           <!-- 媒体搜索选项 -->
           <VHover>
@@ -352,9 +358,12 @@ onMounted(() => {
                     />
                   </div>
                 </template>
-                <VListItemTitle class="font-weight-medium"> 电影、电视剧 </VListItemTitle>
+                <VListItemTitle class="font-weight-medium"
+                  >{{ t('recommend.categoryMovie') }}、{{ t('recommend.categoryTV') }}</VListItemTitle
+                >
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
-                  搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的影视作品
+                  {{ t('common.search') }} <span class="primary-text font-weight-medium">{{ searchWord }}</span>
+                  {{ t('resource.title') }}
                 </VListItemSubtitle>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
@@ -382,9 +391,10 @@ onMounted(() => {
                     />
                   </div>
                 </template>
-                <VListItemTitle class="font-weight-medium"> 系列合集 </VListItemTitle>
+                <VListItemTitle class="font-weight-medium">{{ t('dialog.searchBar.collections') }}</VListItemTitle>
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
-                  搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的系列作品
+                  {{ t('common.search') }} <span class="primary-text font-weight-medium">{{ searchWord }}</span>
+                  {{ t('dialog.searchBar.collectionSearch') }}
                 </VListItemSubtitle>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
@@ -412,9 +422,10 @@ onMounted(() => {
                     />
                   </div>
                 </template>
-                <VListItemTitle class="font-weight-medium"> 演职人员 </VListItemTitle>
+                <VListItemTitle class="font-weight-medium">{{ t('browse.actor') }}</VListItemTitle>
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
-                  搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的演员、导演等
+                  {{ t('common.search') }} <span class="primary-text font-weight-medium">{{ searchWord }}</span>
+                  {{ t('dialog.searchBar.actorSearch') }}
                 </VListItemSubtitle>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
@@ -438,9 +449,10 @@ onMounted(() => {
                     <VIcon icon="mdi-history" :color="hover.isHovering ? 'primary' : 'medium-emphasis'" size="small" />
                   </div>
                 </template>
-                <VListItemTitle class="font-weight-medium"> 整理记录 </VListItemTitle>
+                <VListItemTitle class="font-weight-medium">{{ t('navItems.history') }}</VListItemTitle>
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
-                  搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关的历史记录
+                  {{ t('common.search') }} <span class="primary-text font-weight-medium">{{ searchWord }}</span>
+                  {{ t('dialog.searchBar.historySearch') }}
                 </VListItemSubtitle>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
@@ -452,7 +464,9 @@ onMounted(() => {
           <!-- 其他搜索结果 -->
           <template v-if="matchedSubscribeItems.length > 0">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
-            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 订阅 </VListSubheader>
+            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6">{{
+              t('dialog.searchBar.subscriptions')
+            }}</VListSubheader>
 
             <VHover v-for="subscribe in matchedSubscribeItems" :key="subscribe.id">
               <template #default="hover">
@@ -475,7 +489,9 @@ onMounted(() => {
                   </template>
                   <VListItemTitle class="font-weight-medium">
                     {{ subscribe.name
-                    }}<span v-if="subscribe.season" class="text-body-2"> 第 {{ subscribe.season }} 季</span>
+                    }}<span v-if="subscribe.season" class="text-body-2">
+                      {{ t('resource.season') }} {{ subscribe.season }}</span
+                    >
                   </VListItemTitle>
                   <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
                     {{ subscribe.type }}
@@ -490,7 +506,9 @@ onMounted(() => {
 
           <template v-if="matchedMenuItems.length > 0">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
-            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 功能 </VListSubheader>
+            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6">{{
+              t('dialog.searchBar.functions')
+            }}</VListSubheader>
 
             <VHover v-for="menu in matchedMenuItems" :key="menu.title">
               <template #default="hover">
@@ -527,7 +545,9 @@ onMounted(() => {
 
           <template v-if="matchedPluginItems.length > 0">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
-            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 插件 </VListSubheader>
+            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6">{{
+              t('dialog.searchBar.plugins')
+            }}</VListSubheader>
 
             <VHover v-for="plugin in matchedPluginItems" :key="plugin.id">
               <template #default="hover">
@@ -561,7 +581,9 @@ onMounted(() => {
           <!-- 将站点资源搜索移到最底部 -->
           <template v-if="searchWord">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
-            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6"> 站点资源 </VListSubheader>
+            <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6">{{
+              t('dialog.searchBar.siteResources')
+            }}</VListSubheader>
 
             <VCard class="mx-3 mx-sm-6 mb-4 mt-2 site-search-card">
               <VCardText class="pa-3 pa-sm-4">
@@ -571,9 +593,10 @@ onMounted(() => {
                       <VIcon icon="mdi-file-search" color="primary" size="small" />
                     </div>
                     <div class="flex-grow-1">
-                      <div class="font-weight-medium text-body-1">在站点中搜索种子资源</div>
+                      <div class="font-weight-medium text-body-1">{{ t('dialog.searchBar.searchInSites') }}</div>
                       <div class="text-caption text-medium-emphasis mt-1">
-                        搜索 <span class="primary-text font-weight-medium">{{ searchWord }}</span> 相关资源
+                        {{ t('common.search') }} <span class="primary-text font-weight-medium">{{ searchWord }}</span>
+                        {{ t('dialog.searchBar.relatedResources') }}
                       </div>
                     </div>
                     <VBtn
@@ -584,7 +607,7 @@ onMounted(() => {
                       variant="flat"
                       class="search-btn"
                     >
-                      搜索
+                      {{ t('common.search') }}
                     </VBtn>
                   </div>
 
@@ -628,7 +651,7 @@ onMounted(() => {
                       class="ml-auto site-select-btn"
                       rounded="pill"
                     >
-                      选择站点
+                      {{ t('dialog.searchBar.selectSites') }}
                       <VIcon size="small" class="ml-1">mdi-cog-outline</VIcon>
                     </VBtn>
                   </div>
@@ -641,7 +664,7 @@ onMounted(() => {
         <!-- 无搜索词时显示最近搜索和提示 -->
         <div v-else class="recent-searches py-6 px-4 px-sm-6">
           <div v-if="recentSearches.length > 0" class="mb-6">
-            <div class="text-h6 font-weight-medium mb-3">最近搜索</div>
+            <div class="text-h6 font-weight-medium mb-3">{{ t('dialog.searchBar.recentSearches') }}</div>
             <div class="d-flex flex-wrap">
               <VChip
                 v-for="(word, index) in recentSearches"
@@ -658,12 +681,12 @@ onMounted(() => {
             </div>
           </div>
 
-          <div class="text-center mt-6 py-6 empty-search-state">
+          <div v-else class="text-center mt-6 py-6 empty-search-state">
             <div class="search-icon-wrapper mx-auto mb-4">
               <VIcon icon="mdi-magnify" size="large" color="primary" />
             </div>
-            <div class="text-h6 font-weight-medium mb-2">输入关键词开始搜索</div>
-            <div class="text-body-2 text-medium-emphasis">可搜索电影、电视剧、演员、资源等</div>
+            <div class="text-h6 font-weight-medium mb-2">{{ t('dialog.searchBar.searchPlaceholder') }}</div>
+            <div class="text-body-2 text-medium-emphasis">{{ t('dialog.searchBar.searchTip') }}</div>
           </div>
         </div>
       </VCardText>
@@ -790,10 +813,10 @@ onMounted(() => {
 
 .empty-search-state,
 .empty-site-state {
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fade-in 0.3s ease-in-out;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(10px);

@@ -5,6 +5,10 @@ import { doneNProgress, startNProgress } from '@/api/nprogress'
 import type { DownloaderConf, MediaInfo, TorrentInfo, TransferDirectoryConf } from '@/api/types'
 import { formatFileSize } from '@/@core/utils/formatters'
 import { VCardTitle, VChip } from 'vuetify/lib/components/index.mjs'
+import { useI18n } from 'vue-i18n'
+
+// 多语言支持
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -38,7 +42,9 @@ const loading = ref(false)
 const icon = computed(() => (loading.value ? 'mdi-progress-download' : 'mdi-download'))
 
 // 计算按钮文字
-const buttonText = computed(() => (loading.value ? '下载中...' : '开始下载'))
+const buttonText = computed(() =>
+  loading.value ? t('dialog.addDownload.downloading') : t('dialog.addDownload.startDownload'),
+)
 
 // 加载目录设置
 async function loadDirectories() {
@@ -96,12 +102,20 @@ async function addDownload() {
 
     if (result && result.success) {
       // 添加下载成功
-      $toast.success(`${props.torrent?.site_name} ${props.torrent?.title} 下载成功！`)
+      $toast.success(
+        t('dialog.addDownload.downloadSuccess', { site: props.torrent?.site_name, title: props.torrent?.title }),
+      )
       // 下载成功，返回链接
       emit('done', props.torrent?.enclosure)
     } else {
       // 添加下载失败
-      $toast.error(`${props.torrent?.site_name} ${props.torrent?.title} 下载失败：${result?.message}！`)
+      $toast.error(
+        t('dialog.addDownload.downloadFailed', {
+          site: props.torrent?.site_name,
+          title: props.torrent?.title,
+          message: result?.message,
+        }),
+      )
       // 下载失败，返回错误原因
       emit('error', result?.message)
     }
@@ -123,7 +137,7 @@ onMounted(() => {
       <VCardTitle class="py-4 me-12">
         <VIcon icon="mdi-download" class="me-2" />
         <span v-if="title">{{ torrent?.site_name }} - {{ title }}</span>
-        <span v-else>确认下载</span>
+        <span v-else>{{ t('dialog.addDownload.confirmDownload') }}</span>
       </VCardTitle>
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
@@ -165,9 +179,9 @@ onMounted(() => {
             v-model="selectedDownloader"
             :items="downloaderOptions"
             size="small"
-            label="下载器（默认）"
+            :label="t('dialog.addDownload.downloader')"
             variant="underlined"
-            placeholder="留空默认"
+            :placeholder="t('dialog.addDownload.defaultPlaceholder')"
             density="compact"
           />
         </VCol>
@@ -175,9 +189,9 @@ onMounted(() => {
           <VCombobox
             v-model="selectedDirectory"
             :items="targetDirectories"
-            label="保存目录（自动）"
+            :label="t('dialog.addDownload.saveDirectory')"
             size="small"
-            placeholder="留空自动匹配"
+            :placeholder="t('dialog.addDownload.autoPlaceholder')"
             variant="underlined"
             density="compact"
           />
