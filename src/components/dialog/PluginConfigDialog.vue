@@ -6,6 +6,10 @@ import api from '@/api'
 import { useToast } from 'vue-toast-notification'
 import FormRender from '../render/FormRender.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
@@ -67,17 +71,17 @@ async function loadPluginConf() {
 async function savePluginConf() {
   // 显示等待提示框
   progressDialog.value = true
-  progressText.value = `正在保存 ${props.plugin?.plugin_name} 配置...`
+  progressText.value = t('dialog.pluginConfig.saving', { name: props.plugin?.plugin_name })
   try {
     const result: { [key: string]: any } = await api.put(`plugin/${props.plugin?.id}`, pluginConfigForm.value)
     if (result.success) {
       progressDialog.value = false
-      $toast.success(`插件 ${props.plugin?.plugin_name} 配置已保存`)
+      $toast.success(t('dialog.pluginConfig.saveSuccess', { name: props.plugin?.plugin_name }))
       // 通知父组件刷新
       emit('save')
     } else {
       progressDialog.value = false
-      $toast.error(`插件 ${props.plugin?.plugin_name} 配置保存失败：${result.message}}`)
+      $toast.error(t('dialog.pluginConfig.saveFailed', { name: props.plugin?.plugin_name, message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -91,16 +95,20 @@ onBeforeMount(async () => {
 </script>
 <template>
   <VDialog scrollable max-width="60rem" :fullscreen="!display.mdAndUp.value">
-    <VCard :title="`${props.plugin?.plugin_name} - 配置`" class="rounded-t">
+    <VCard :title="`${props.plugin?.plugin_name} - ${t('dialog.pluginConfig.title')}`" class="rounded-t">
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText v-if="isRefreshed">
         <FormRender v-for="(item, index) in pluginFormItems" :key="index" :config="item" :model="pluginConfigForm" />
       </VCardText>
       <VCardActions class="pt-3">
-        <VBtn v-if="props.plugin?.has_page" @click="emit('switch')" variant="outlined" color="info"> 查看数据 </VBtn>
+        <VBtn v-if="props.plugin?.has_page" @click="emit('switch')" variant="outlined" color="info">
+          {{ t('dialog.pluginConfig.viewData') }}
+        </VBtn>
         <VSpacer />
-        <VBtn @click="savePluginConf" variant="elevated" prepend-icon="mdi-content-save" class="px-5"> 保存 </VBtn>
+        <VBtn @click="savePluginConf" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
+          {{ t('dialog.pluginConfig.save') }}
+        </VBtn>
       </VCardActions>
     </VCard>
     <!-- 进度框 -->

@@ -1310,6 +1310,10 @@ export default {
       title: '插件配置',
       save: '儲存',
       close: '關閉',
+      viewData: '查看數據',
+      saving: '正在儲存 {name} 配置...',
+      saveSuccess: '插件 {name} 配置已儲存',
+      saveFailed: '插件 {name} 配置儲存失敗：{message}',
     },
     pluginData: {
       title: '插件數據',

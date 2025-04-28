@@ -1313,6 +1313,10 @@ export default {
       title: '插件配置',
       save: '保存',
       close: '关闭',
+      viewData: '查看数据',
+      saving: '正在保存 {name} 配置...',
+      saveSuccess: '插件 {name} 配置已保存',
+      saveFailed: '插件 {name} 配置保存失败：{message}',
     },
     pluginData: {
       title: '插件数据',

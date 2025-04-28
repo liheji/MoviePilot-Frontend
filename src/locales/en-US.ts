@@ -1336,6 +1336,10 @@ export default {
       title: 'Plugin Configuration',
       save: 'Save',
       close: 'Close',
+      viewData: 'View Data',
+      saving: 'Saving {name} configuration...',
+      saveSuccess: 'Plugin {name} configuration saved',
+      saveFailed: 'Failed to save plugin {name} configuration: {message}',
     },
     pluginData: {
       title: 'Plugin Data',
