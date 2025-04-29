@@ -250,8 +250,8 @@ async function copyValue(value: string) {
 const wallpaperItems = [
   { title: t('setting.system.wallpaperItems.tmdb'), value: 'tmdb' },
   { title: t('setting.system.wallpaperItems.bing'), value: 'bing' },
-  { title: t('setting.system.wallpaperItems.bingDaily'), value: 'bing-daily' },
-  { title: t('setting.system.wallpaperItems.none'), value: 'none' },
+  { title: t('setting.system.wallpaperItems.mediaserver'), value: 'mediaserver' },
+  { title: t('setting.system.wallpaperItems.none'), value: '' },
 ]
 
 // 预设部分Github加速站
@@ -412,12 +412,7 @@ onDeactivated(() => {
                   :label="t('setting.system.wallpaper')"
                   :hint="t('setting.system.wallpaperHint')"
                   persistent-hint
-                  :items="[
-                    { title: t('setting.system.wallpaperItems.tmdb'), value: 'tmdb' },
-                    { title: t('setting.system.wallpaperItems.bing'), value: 'bing' },
-                    { title: t('setting.system.wallpaperItems.bingDaily'), value: 'bing-daily' },
-                    { title: t('setting.system.wallpaperItems.none'), value: 'none' },
-                  ]"
+                  :items="wallpaperItems"
                 />
               </VCol>
               <VCol cols="12" md="6">

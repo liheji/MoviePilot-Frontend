@@ -1043,7 +1043,7 @@ export default {
       wallpaperItems: {
         tmdb: 'TMDB电影海报',
         bing: 'Bing每日壁纸',
-        bingDaily: 'Bing每日图片',
+        mediaserver: '媒体服务器',
         none: '无壁纸',
       },
       mb: 'MB',

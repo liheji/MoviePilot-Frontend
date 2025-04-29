@@ -1052,7 +1052,7 @@ export default {
       wallpaperItems: {
         tmdb: 'TMDB Movie Posters',
         bing: 'Bing Daily Wallpaper',
-        bingDaily: 'Bing Daily Image',
+        mediaserver: 'Media Server',
         none: 'No Wallpaper',
       },
       mb: 'MB',
