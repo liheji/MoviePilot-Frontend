@@ -3,6 +3,7 @@ import api from '@/api'
 import { FilterRuleGroup } from '@/api/types'
 import { Handle, Position } from '@vue-flow/core'
 import { useI18n } from 'vue-i18n'
+import { qualityOptions, resolutionOptions, effectOptions } from '@/api/constants'
 
 const { t } = useI18n()
 
@@ -16,90 +17,6 @@ defineProps({
     required: true,
   },
 })
-
-// 质量选择框数据
-const qualityOptions = ref([
-  {
-    title: t('workflow.filterTorrents.qualityOptions.all'),
-    value: '',
-  },
-  {
-    title: t('workflow.filterTorrents.qualityOptions.blurayOriginal'),
-    value: 'Blu-?Ray.+VC-?1|Blu-?Ray.+AVC|UHD.+blu-?ray.+HEVC|MiniBD',
-  },
-  {
-    title: t('workflow.filterTorrents.qualityOptions.remux'),
-    value: 'Remux',
-  },
-  {
-    title: t('workflow.filterTorrents.qualityOptions.bluray'),
-    value: 'Blu-?Ray',
-  },
-  {
-    title: t('workflow.filterTorrents.qualityOptions.uhd'),
-    value: 'UHD|UltraHD',
-  },
-  {
-    title: t('workflow.filterTorrents.qualityOptions.webdl'),
-    value: 'WEB-?DL|WEB-?RIP',
-  },
-  {
-    title: t('workflow.filterTorrents.qualityOptions.hdtv'),
-    value: 'HDTV',
-  },
-  {
-    title: t('workflow.filterTorrents.qualityOptions.h265'),
-    value: '[Hx].?265|HEVC',
-  },
-  {
-    title: t('workflow.filterTorrents.qualityOptions.h264'),
-    value: '[Hx].?264|AVC',
-  },
-])
-
-// 分辨率选择框数据
-const resolutionOptions = ref([
-  {
-    title: t('workflow.filterTorrents.resolutionOptions.all'),
-    value: '',
-  },
-  {
-    title: t('workflow.filterTorrents.resolutionOptions.4k'),
-    value: '4K|2160p|x2160',
-  },
-  {
-    title: t('workflow.filterTorrents.resolutionOptions.1080p'),
-    value: '1080[pi]|x1080',
-  },
-  {
-    title: t('workflow.filterTorrents.resolutionOptions.720p'),
-    value: '720[pi]|x720',
-  },
-])
-
-// 特效选择框数据
-const effectOptions = ref([
-  {
-    title: t('workflow.filterTorrents.effectOptions.all'),
-    value: '',
-  },
-  {
-    title: t('workflow.filterTorrents.effectOptions.dolbyVision'),
-    value: 'Dolby[\\s.]+Vision|DOVI|[\\s.]+DV[\\s.]+',
-  },
-  {
-    title: t('workflow.filterTorrents.effectOptions.dolbyAtmos'),
-    value: 'Dolby[\\s.]*\\+?Atmos|Atmos',
-  },
-  {
-    title: t('workflow.filterTorrents.effectOptions.hdr'),
-    value: '[\\s.]+HDR[\\s.]+|HDR10|HDR10\\+',
-  },
-  {
-    title: t('workflow.filterTorrents.effectOptions.sdr'),
-    value: '[\\s.]+SDR[\\s.]+',
-  },
-])
 
 // 所有规则组列表
 const filterRuleGroups = ref<FilterRuleGroup[]>([])

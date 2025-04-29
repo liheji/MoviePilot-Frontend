@@ -219,7 +219,7 @@ function onClose() {
         <VImg :src="filter_group_svg" cover class="mt-10" max-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog v-if="groupInfoDialog" v-model="groupInfoDialog" scrollable max-width="80rem" persistent>
+    <VDialog v-if="groupInfoDialog" v-model="groupInfoDialog" scrollable max-width="80rem">
       <VCard :title="`${props.group.name} - ${t('filterRule.title')}`" class="rounded-t">
         <VDialogCloseBtn v-model="groupInfoDialog" />
         <VDivider />
@@ -228,9 +228,9 @@ function onClose() {
             <VCol cols="12" md="6">
               <VTextField
                 v-model="groupInfo.name"
-                :label="t('filterRule.name')"
+                :label="t('filterRule.groupName')"
                 :placeholder="t('filterRule.nameRequired')"
-                :hint="t('filterRule.name')"
+                :hint="t('filterRule.groupName')"
                 persistent-hint
                 active
               />

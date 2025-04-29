@@ -14,6 +14,7 @@ import AlistConfigDialog from '../dialog/AlistConfigDialog.vue'
 import { useToast } from 'vue-toast-notification'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { useI18n } from 'vue-i18n'
+import { storageOptions } from '@/api/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -127,6 +128,11 @@ function handleDone() {
   emit('done')
 }
 
+// 根据存储类型获取文本
+function getStorageTypeText(type: string) {
+  return storageOptions.find((option) => option.value === type)?.title
+}
+
 onMounted(() => {
   queryStorage()
 })
@@ -136,7 +142,7 @@ onMounted(() => {
     <VCard variant="tonal" @click="openStorageDialog">
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
-          <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
+          <h5 class="text-h6 mb-1">{{ getStorageTypeText(storage.type) }}</h5>
           <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
           <div v-else-if="isNullOrEmptyObject(storage.config)">{{ t('storage.notConfigured') }}</div>
         </div>

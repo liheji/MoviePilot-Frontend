@@ -24,7 +24,7 @@ function handleImport() {
 </script>
 
 <template>
-  <VDialog width="40rem" scrollable max-height="85vh" persistent>
+  <VDialog width="40rem" scrollable max-height="85vh">
     <VCard :title="props.title" class="rounded-t">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText class="pt-2">

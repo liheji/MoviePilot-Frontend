@@ -147,6 +147,8 @@ function addFilterRuleGroup() {
   }
   filterRuleGroups.value.push({
     name: name,
+    media_type: '',
+    category: '',
   })
 }
 

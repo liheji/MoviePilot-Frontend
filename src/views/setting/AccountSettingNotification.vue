@@ -6,7 +6,7 @@ import type { NotificationConf, NotificationSwitchConf } from '@/api/types'
 import NotificationChannelCard from '@/components/cards/NotificationChannelCard.vue'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { getNotificationSwitchText } from '@/types/i18n-type'
+import { notificationSwitchDict } from '@/api/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -169,6 +169,12 @@ async function saveNotificationSwitchs() {
   } catch (error) {
     console.log(error)
   }
+}
+
+// 获取通知开关文本
+function getNotificationSwitchText(type: string | undefined) {
+  if (!type) return ''
+  return notificationSwitchDict[type]
 }
 
 // 加载数据

@@ -6,7 +6,7 @@ import type { DownloaderConf, FilterRuleGroup, Site, Subscribe, TransferDirector
 import { useDisplay } from 'vuetify'
 import { useConfirm } from 'vuetify-use-dialog'
 import { useI18n } from 'vue-i18n'
-
+import { qualityOptions, resolutionOptions, effectOptions } from '@/api/constants'
 // i18n
 const { t } = useI18n()
 
@@ -268,90 +268,6 @@ const targetDirectories = computed(() => {
   // 去重后的下载目录
   return downloadDirectories.value.map(item => item.download_path)
 })
-
-// 质量选择框数据
-const qualityOptions = ref([
-  {
-    title: t('common.all'),
-    value: '',
-  },
-  {
-    title: '蓝光原盘',
-    value: 'Blu-?Ray.+VC-?1|Blu-?Ray.+AVC|UHD.+blu-?ray.+HEVC|MiniBD',
-  },
-  {
-    title: 'Remux',
-    value: 'Remux',
-  },
-  {
-    title: 'BluRay',
-    value: 'Blu-?Ray',
-  },
-  {
-    title: 'UHD',
-    value: 'UHD|UltraHD',
-  },
-  {
-    title: 'WEB-DL',
-    value: 'WEB-?DL|WEB-?RIP',
-  },
-  {
-    title: 'HDTV',
-    value: 'HDTV',
-  },
-  {
-    title: 'H265',
-    value: '[Hx].?265|HEVC',
-  },
-  {
-    title: 'H264',
-    value: '[Hx].?264|AVC',
-  },
-])
-
-// 分辨率选择框数据
-const resolutionOptions = ref([
-  {
-    title: t('common.all'),
-    value: '',
-  },
-  {
-    title: '4k',
-    value: '4K|2160p|x2160',
-  },
-  {
-    title: '1080p',
-    value: '1080[pi]|x1080',
-  },
-  {
-    title: '720p',
-    value: '720[pi]|x720',
-  },
-])
-
-// 特效选择框数据
-const effectOptions = ref([
-  {
-    title: t('common.all'),
-    value: '',
-  },
-  {
-    title: '杜比视界',
-    value: 'Dolby[\\s.]+Vision|DOVI|[\\s.]+DV[\\s.]+',
-  },
-  {
-    title: '杜比全景声',
-    value: 'Dolby[\\s.]*\\+?Atmos|Atmos',
-  },
-  {
-    title: 'HDR',
-    value: '[\\s.]+HDR[\\s.]+|HDR10|HDR10\\+',
-  },
-  {
-    title: 'SDR',
-    value: '[\\s.]+SDR[\\s.]+',
-  },
-])
 
 onMounted(() => {
   queryFilterRuleGroups()

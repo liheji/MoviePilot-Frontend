@@ -134,7 +134,7 @@ function onClose() {
         <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog v-if="notificationInfoDialog" v-model="notificationInfoDialog" scrollable max-width="40rem" persistent>
+    <VDialog v-if="notificationInfoDialog" v-model="notificationInfoDialog" scrollable max-width="40rem">
       <VCard :title="`${props.notification.name} - ${t('notification.config')}`" class="rounded-t">
         <VDialogCloseBtn v-model="notificationInfoDialog" />
         <VDivider />

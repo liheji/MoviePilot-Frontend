@@ -3,7 +3,7 @@ import api from '@/api'
 import useDragAndDrop from '@core/utils/workflow'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
-import { getActionStepText } from '@/types/i18n-type'
+import { actionStepDict } from '@/api/constants'
 
 interface ActionItem {
   name: string
@@ -94,6 +94,12 @@ watch(
     }
   },
 )
+
+// 获取动作步骤文本
+function getActionStepText(type: string | undefined) {
+  if (!type) return ''
+  return actionStepDict[type]
+}
 
 onMounted(() => {
   load_actions()

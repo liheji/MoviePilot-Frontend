@@ -5,7 +5,7 @@ import { formatDateDifference } from '@core/utils/formatters'
 import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { getMediaTypeText } from '@/types/i18n-type'
+import { mediaTypeDict } from '@/api/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -137,6 +137,12 @@ const dropdownItems = ref([
     },
   },
 ])
+
+// 获取媒体类型文本
+function getMediaTypeText(type: string | undefined) {
+  if (!type) return ''
+  return mediaTypeDict[type]
+}
 </script>
 
 <template>

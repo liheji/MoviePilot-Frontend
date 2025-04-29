@@ -335,7 +335,7 @@ onMounted(() => {
         <VList lines="two" v-if="searchWord" class="search-list py-2">
           <!-- 搜索结果分组标题 -->
           <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6">
-            {{ t('media.movie') }}
+            {{ t('common.media') }}
           </VListSubheader>
 
           <!-- 媒体搜索选项 -->

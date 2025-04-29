@@ -14,7 +14,7 @@ import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import SubscribeSeasonDialog from '../dialog/SubscribeSeasonDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { getMediaTypeText } from '@/types/i18n-type'
+import { mediaTypeDict } from '@/api/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -402,15 +402,6 @@ function setupIntersectionObserver() {
   }
 }
 
-onMounted(() => {
-  setupIntersectionObserver()
-})
-
-onBeforeUnmount(() => {
-  observer.value?.disconnect()
-  observer.value = null
-})
-
 // 计算图片地址
 const getImgUrl: Ref<string> = computed(() => {
   if (imageLoadError.value) return noImage
@@ -428,6 +419,21 @@ const getImgUrl: Ref<string> = computed(() => {
 function onRemoveSubscribe() {
   subscribeEditDialog.value = false
 }
+
+// 获取媒体类型文本
+function getMediaTypeText(type: string | undefined) {
+  if (!type) return ''
+  return mediaTypeDict[type]
+}
+
+onMounted(() => {
+  setupIntersectionObserver()
+})
+
+onBeforeUnmount(() => {
+  observer.value?.disconnect()
+  observer.value = null
+})
 </script>
 
 <template>

@@ -610,7 +610,7 @@ onDeactivated(() => {
     </VCol>
   </VRow>
   <!-- 高级系统设置 -->
-  <VDialog v-if="advancedDialog" v-model="advancedDialog" scrollable max-width="60rem" persistent>
+  <VDialog v-if="advancedDialog" v-model="advancedDialog" scrollable max-width="60rem">
     <VCard>
       <VCardItem>
         <VDialogCloseBtn @click="advancedDialog = false" />
