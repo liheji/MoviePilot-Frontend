@@ -660,7 +660,7 @@ onMounted(fetchData)
       <div class="w-auto">
         <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" flat />
       </div>
-      <div class="w-auto text-sm">{{ t('transferHistory.pageInfo', pageTip) }}</div>
+      <div class="w-auto text-sm">{{ t('transferHistory.pageInfo', pageTip) }} {{ totalItems }}</div>
       <VPagination
         v-model="currentPage"
         show-first-last-page

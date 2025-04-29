@@ -40,13 +40,6 @@ async function loadMediaCategories() {
   }
 }
 
-// 根据选中的媒体类型，获取对应的媒体类别
-const getCategories = computed(() => {
-  const default_value = [{ title: t('common.all'), value: '' }]
-  if (!mediaCategories.value || !mediaCategories.value[props.data.type ?? '']) return default_value
-  return default_value.concat(mediaCategories.value[props.data.type ?? ''])
-})
-
 onMounted(() => {
   loadMediaCategories()
 })

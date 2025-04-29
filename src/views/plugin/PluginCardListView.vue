@@ -589,7 +589,7 @@ useDynamicButton({
                       v-model="activeSort"
                       :items="sortOptions"
                       density="comfortable"
-                      :label="t('plugin.sort')"
+                      :label="t('plugin.sortTitle')"
                     />
                   </VCol>
                 </VRow>
