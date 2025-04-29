@@ -286,7 +286,14 @@ onMounted(() => {
     </VCard>
   </VDialog>
   <!-- 消息中心弹窗 -->
-  <VDialog v-if="messageDialog" v-model="messageDialog" max-width="35rem" scrollable>
+  <VDialog
+    v-if="messageDialog"
+    v-model="messageDialog"
+    max-width="40rem"
+    scrollable
+    :fullscreen="!display.mdAndUp.value"
+    ref="messageDialogRef"
+  >
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -296,8 +303,8 @@ onMounted(() => {
         <VDialogCloseBtn @click="messageDialog = false" />
       </VCardItem>
       <VDivider />
-      <VCardText>
-        <MessageView ref="chatContainer" />
+      <VCardText ref="messageContentRef">
+        <MessageView ref="messageViewRef" @scroll="scrollMessageToEnd" />
       </VCardText>
       <VDivider />
       <VCardActions class="pa-4">
@@ -311,15 +318,14 @@ onMounted(() => {
             @keyup.enter="sendMessage"
           />
           <VBtn
+            variant="elevated"
             :disabled="sendButtonDisabled"
             @click="sendMessage"
             :loading="sendButtonDisabled"
             color="primary"
-            min-width="auto"
-            width="46"
-            height="38"
-            >{{ t('common.send') }}</VBtn
-          >
+            prepend-icon="mdi-send"
+            >{{ t('common.send') }}
+          </VBtn>
         </div>
       </VCardActions>
     </VCard>

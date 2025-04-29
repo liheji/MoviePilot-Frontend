@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
       <div
         v-for="(msg, index) in messages"
         :key="index"
-        class="chat-group d-flex mb-8"
+        class="chat-group d-flex mt-5 mb-8"
         :class="msg.action == 1 ? 'flex-row align-start' : 'flex-row-reverse align-end'"
       >
         <div class="d-inline-flex flex-column" :class="msg.action == 1 ? 'align-start' : 'align-end'">

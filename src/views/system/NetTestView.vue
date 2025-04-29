@@ -199,7 +199,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VList lines="two" border rounded>
+  <VList lines="two" rounded>
     <template v-for="(target, index) of targets" :key="target.name">
       <VListItem>
         <template #prepend>
@@ -219,7 +219,7 @@ onMounted(async () => {
           <VBtn size="small" icon="mdi-connection" :disabled="target.btndisable" @click="netTest(index)" />
         </template>
       </VListItem>
-      <VDivider v-if="index !== targets.length - 1" />
+      <VDivider inset v-if="index !== targets.length - 1" />
     </template>
   </VList>
 </template>
