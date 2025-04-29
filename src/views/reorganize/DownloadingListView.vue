@@ -5,6 +5,10 @@ import type { DownloadingInfo } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import DownloadingCard from '@/components/cards/DownloadingCard.vue'
 import { useUserStore } from '@/stores'
+import { useI18n } from 'vue-i18n'
+
+// 国际化
+const { t } = useI18n()
 
 // 定义输入参数
 const props = defineProps<{
@@ -80,8 +84,8 @@ onUnmounted(() => {
     <NoDataFound
       v-if="filteredDataList.length === 0 && isRefreshed"
       error-code="404"
-      error-title="没有任务"
-      error-description="正在下载的任务将会显示在这里。"
+      :error-title="t('downloading.noTasks')"
+      :error-description="t('downloading.tasksWillShowHere')"
     />
   </VPullToRefresh>
 </template>

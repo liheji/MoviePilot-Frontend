@@ -149,28 +149,28 @@ onActivated(async () => {
     </VHeaderTab>
 
     <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
-      <VWindowItem value="TheMovieDb">
+      <VWindowItem value="themoviedb">
         <transition name="fade-slide" appear>
           <div>
             <TheMovieDbView />
           </div>
         </transition>
       </VWindowItem>
-      <VWindowItem value="豆瓣">
+      <VWindowItem value="douban">
         <transition name="fade-slide" appear>
           <div>
             <DoubanView />
           </div>
         </transition>
       </VWindowItem>
-      <VWindowItem value="Bangumi">
+      <VWindowItem value="bangumi">
         <transition name="fade-slide" appear>
           <div>
             <BangumiView />
           </div>
         </transition>
       </VWindowItem>
-      <VWindowItem v-for="item in extraDiscoverSources" :key="item.mediaid_prefix" :value="item.name">
+      <VWindowItem v-for="item in extraDiscoverSources" :key="item.mediaid_prefix" :value="item.mediaid_prefix">
         <transition name="fade-slide" appear>
           <div>
             <ExtraSourceView :source="item" />

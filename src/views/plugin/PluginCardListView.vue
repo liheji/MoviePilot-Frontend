@@ -497,7 +497,7 @@ useDynamicButton({
             <VCardItem>
               <VCardTitle>
                 <VIcon icon="mdi-filter-multiple-outline" class="mr-2" />
-                筛选插件
+                {{ t('plugin.filterPlugins') }}
               </VCardTitle>
               <VDialogCloseBtn @click="filterInstalledPluginDialog = false" />
             </VCardItem>
@@ -507,13 +507,13 @@ useDynamicButton({
                   <VCombobox
                     v-model="installedFilter"
                     :items="installedPluginNames"
-                    label="名称"
+                    :label="t('plugin.name')"
                     density="comfortable"
                     clearable
                   />
                 </VCol>
                 <VCol cols="12">
-                  <VSwitch v-model="hasUpdateFilter" label="有新版本" />
+                  <VSwitch v-model="hasUpdateFilter" :label="t('plugin.hasNewVersion')" />
                 </VCol>
               </VRow>
             </VCardText>
@@ -540,7 +540,7 @@ useDynamicButton({
             <VCardItem>
               <VCardTitle>
                 <VIcon icon="mdi-filter-multiple-outline" class="mr-2" />
-                筛选插件
+                {{ t('plugin.filterPlugins') }}
               </VCardTitle>
               <VDialogCloseBtn @click="filterMarketPluginDialog = false" />
             </VCardItem>
@@ -549,7 +549,7 @@ useDynamicButton({
               <div v-if="isAppMarketLoaded">
                 <VRow>
                   <VCol cols="12" md="6">
-                    <VTextField v-model="filterForm.name" density="comfortable" label="名称" clearable />
+                    <VTextField v-model="filterForm.name" density="comfortable" :label="t('plugin.name')" clearable />
                   </VCol>
                   <VCol v-if="authorFilterOptions.length > 0" cols="12" md="6">
                     <VSelect
@@ -557,7 +557,7 @@ useDynamicButton({
                       :items="authorFilterOptions"
                       density="comfortable"
                       chips
-                      label="作者"
+                      :label="t('plugin.author')"
                       multiple
                       clearable
                     />
@@ -568,7 +568,7 @@ useDynamicButton({
                       :items="labelFilterOptions"
                       density="comfortable"
                       chips
-                      label="标签"
+                      :label="t('plugin.label')"
                       multiple
                       clearable
                     />
@@ -579,13 +579,18 @@ useDynamicButton({
                       :items="repoFilterOptions"
                       density="comfortable"
                       chips
-                      label="插件库"
+                      :label="t('plugin.repository')"
                       multiple
                       clearable
                     />
                   </VCol>
                   <VCol v-if="sortOptions.length > 0" cols="12" md="6">
-                    <VSelect v-model="activeSort" :items="sortOptions" density="comfortable" label="排序" />
+                    <VSelect
+                      v-model="activeSort"
+                      :items="sortOptions"
+                      density="comfortable"
+                      :label="t('plugin.sort')"
+                    />
                   </VCol>
                 </VRow>
               </div>
@@ -609,7 +614,7 @@ useDynamicButton({
       <VWindowItem value="installed">
         <transition name="fade-slide" appear>
           <div>
-            <VPageContentTitle v-if="installedFilter" :title="`筛选：${installedFilter}`" />
+            <VPageContentTitle v-if="installedFilter" :title="t('plugin.filter', { name: installedFilter })" />
             <LoadingBanner v-if="!isRefreshed" class="mt-12" />
             <draggable
               v-if="filteredDataList.length > 0"
@@ -634,11 +639,9 @@ useDynamicButton({
             <NoDataFound
               v-if="filteredDataList.length === 0 && isRefreshed"
               error-code="404"
-              error-title="没有数据"
+              :error-title="t('common.noData')"
               :error-description="
-                installedFilter || hasUpdateFilter
-                  ? '没有匹配到相关内容，请更换筛选条件。'
-                  : '请先前往插件市场安装插件。'
+                installedFilter || hasUpdateFilter ? t('plugin.noMatchingContent') : t('plugin.pleaseInstallFromMarket')
               "
             />
           </div>
@@ -672,8 +675,8 @@ useDynamicButton({
             <NoDataFound
               v-if="displayUninstalledList.length === 0 && isAppMarketLoaded"
               error-code="404"
-              error-title="没有数据"
-              error-description="所有可用插件均已安装，如有筛选请调整筛选条件。"
+              :error-title="t('common.noData')"
+              :error-description="t('plugin.allPluginsInstalled')"
             />
           </div>
         </transition>
@@ -717,9 +720,9 @@ useDynamicButton({
       <VToolbar flat class="p-0">
         <VTextField
           v-model="keyword"
-          label="搜索插件"
+          :label="t('plugin.searchPlugins')"
           single-line
-          placeholder="插件名称或描述"
+          :placeholder="t('plugin.searchPlaceholder')"
           variant="solo"
           prepend-inner-icon="mdi-magnify"
           flat
