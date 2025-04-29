@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import MediaCardListView from '@/views/discover/MediaCardListView.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 电影或者电视剧 movies/tvs
 const type = ref('movies')
@@ -18,82 +21,82 @@ const filterParams = reactive({
 
 // TMDB 电影排序字典
 const tmdbSortDict: Record<string, string> = {
-  'popularity.desc': '热度降序',
-  'popularity.asc': '热度升序',
-  'release_date.desc': '上映日期降序',
-  'release_date.asc': '上映日期升序',
-  'vote_average.desc': '评分降序',
-  'vote_average.asc': '评分升序',
+  'popularity.desc': t('tmdb.sortType.popularityDesc'),
+  'popularity.asc': t('tmdb.sortType.popularityAsc'),
+  'release_date.desc': t('tmdb.sortType.releaseDateDesc'),
+  'release_date.asc': t('tmdb.sortType.releaseDateAsc'),
+  'vote_average.desc': t('tmdb.sortType.voteAverageDesc'),
+  'vote_average.asc': t('tmdb.sortType.voteAverageAsc'),
 }
 
 // TMDB 电视剧排序字典
 const tmdbTvSortDict: Record<string, string> = {
-  'popularity.desc': '热度降序',
-  'popularity.asc': '热度升序',
-  'first_air_date.desc': '首播日期降序',
-  'first_air_date.asc': '首播日期升序',
-  'vote_average.desc': '评分降序',
-  'vote_average.asc': '评分升序',
+  'popularity.desc': t('tmdb.sortType.popularityDesc'),
+  'popularity.asc': t('tmdb.sortType.popularityAsc'),
+  'first_air_date.desc': t('tmdb.sortType.firstAirDateDesc'),
+  'first_air_date.asc': t('tmdb.sortType.firstAirDateAsc'),
+  'vote_average.desc': t('tmdb.sortType.voteAverageDesc'),
+  'vote_average.asc': t('tmdb.sortType.voteAverageAsc'),
 }
 
 // TMDB电影风格字典
 const tmdbMovieGenreDict: Record<string, string> = {
-  '28': '动作',
-  '12': '冒险',
-  '16': '动画',
-  '35': '喜剧',
-  '80': '犯罪',
-  '99': '纪录片',
-  '18': '剧情',
-  '10751': '家庭',
-  '14': '奇幻',
-  '36': '历史',
-  '27': '恐怖',
-  '10402': '音乐',
-  '9648': '悬疑',
-  '10749': '爱情',
-  '878': '科幻',
-  '10770': '电视电影',
-  '53': '惊悚',
-  '10752': '战争',
-  '37': '西部',
+  '28': t('tmdb.genreType.action'),
+  '12': t('tmdb.genreType.adventure'),
+  '16': t('tmdb.genreType.animation'),
+  '35': t('tmdb.genreType.comedy'),
+  '80': t('tmdb.genreType.crime'),
+  '99': t('tmdb.genreType.documentary'),
+  '18': t('tmdb.genreType.drama'),
+  '10751': t('tmdb.genreType.family'),
+  '14': t('tmdb.genreType.fantasy'),
+  '36': t('tmdb.genreType.history'),
+  '27': t('tmdb.genreType.horror'),
+  '10402': t('tmdb.genreType.music'),
+  '9648': t('tmdb.genreType.mystery'),
+  '10749': t('tmdb.genreType.romance'),
+  '878': t('tmdb.genreType.scienceFiction'),
+  '10770': t('tmdb.genreType.tvMovie'),
+  '53': t('tmdb.genreType.thriller'),
+  '10752': t('tmdb.genreType.war'),
+  '37': t('tmdb.genreType.western'),
 }
 
 // TMDB电视剧风格字典
 const tmdbTvGenreDict: Record<string, string> = {
-  '10759': '动作冒险',
-  '16': '动画',
-  '35': '喜剧',
-  '80': '犯罪',
-  '99': '纪录片',
-  '18': '剧情',
-  '10751': '家庭',
-  '10762': '儿童',
-  '9648': '悬疑',
-  '10763': '新闻',
-  '10764': '真人秀',
-  '10765': '科幻奇幻',
-  '10766': '肥皂剧',
-  '10767': '戏剧',
-  '10768': '战争政治',
-  '37': '西部',
+  '10759': t('tmdb.genreType.actionAdventure'),
+  '16': t('tmdb.genreType.animation'),
+  '35': t('tmdb.genreType.comedy'),
+  '80': t('tmdb.genreType.crime'),
+  '99': t('tmdb.genreType.documentary'),
+  '18': t('tmdb.genreType.drama'),
+  '10751': t('tmdb.genreType.family'),
+  '10762': t('tmdb.genreType.kids'),
+  '9648': t('tmdb.genreType.mystery'),
+  '10763': t('tmdb.genreType.news'),
+  '10764': t('tmdb.genreType.reality'),
+  '10765': t('tmdb.genreType.sciFiFantasy'),
+  '10766': t('tmdb.genreType.soap'),
+  '10767': t('tmdb.genreType.talk'),
+  '10768': t('tmdb.genreType.warPolitics'),
+  '37': t('tmdb.genreType.western'),
 }
 
 // TMDB原始语言字典（主要语言）
 const tmdbLanguageDict = {
-  'zh': '中文',
-  'en': '英语',
-  'ja': '日语',
-  'ko': '韩语',
-  'fr': '法语',
-  'de': '德语',
-  'es': '西班牙语',
-  'it': '意大利语',
-  'ru': '俄语',
-  'pt': '葡萄牙语',
-  'ar': '阿拉伯语',
-  'hi': '印地语',
-  'th': '泰语',
+  'zh': t('tmdb.languageType.zh'),
+  'en': t('tmdb.languageType.en'),
+  'ja': t('tmdb.languageType.ja'),
+  'ko': t('tmdb.languageType.ko'),
+  'fr': t('tmdb.languageType.fr'),
+  'de': t('tmdb.languageType.de'),
+  'es': t('tmdb.languageType.es'),
+  'it': t('tmdb.languageType.it'),
+  'ru': t('tmdb.languageType.ru'),
+  'pt': t('tmdb.languageType.pt'),
+  'ar': t('tmdb.languageType.ar'),
+  'hi': t('tmdb.languageType.hi'),
+  'th': t('tmdb.languageType.th'),
 }
 
 // 当前Key
@@ -136,16 +139,16 @@ watch(filterParams, () => {
   <div class="px-3">
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>类型</VLabel>
+        <VLabel>{{ t('tmdb.type') }}</VLabel>
       </div>
       <VChipGroup v-model="type">
-        <VChip :color="type == 'movies' ? 'primary' : ''" filter tile value="movies">电影</VChip>
-        <VChip :color="type == 'tvs' ? 'primary' : ''" filter tile value="tvs">电视剧</VChip>
+        <VChip :color="type == 'movies' ? 'primary' : ''" filter tile value="movies">{{ t('mediaType.movie') }}</VChip>
+        <VChip :color="type == 'tvs' ? 'primary' : ''" filter tile value="tvs">{{ t('mediaType.tv') }}</VChip>
       </VChipGroup>
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>排序</VLabel>
+        <VLabel>{{ t('tmdb.sort') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.sort_by">
         <VChip
@@ -162,7 +165,7 @@ watch(filterParams, () => {
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>风格</VLabel>
+        <VLabel>{{ t('tmdb.genre') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.with_genres">
         <VChip
@@ -179,7 +182,7 @@ watch(filterParams, () => {
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>语言</VLabel>
+        <VLabel>{{ t('tmdb.language') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.with_original_language">
         <VChip
@@ -196,7 +199,7 @@ watch(filterParams, () => {
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>评分</VLabel>
+        <VLabel>{{ t('tmdb.rating') }}</VLabel>
       </div>
       <VSlider
         v-model="filterParams.vote_average"

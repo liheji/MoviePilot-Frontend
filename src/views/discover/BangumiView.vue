@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import MediaCardListView from '@/views/discover/MediaCardListView.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 过滤参数
 const filterParams = reactive({
@@ -18,17 +21,17 @@ const filterParams = reactive({
 5 为 WEB
  */
 const bangumiCatDict = {
-  '0': '其他',
-  '1': 'TV',
-  '2': 'OVA',
-  '3': 'Movie',
-  '5': 'WEB',
+  '0': t('bangumi.cat.other'),
+  '1': t('bangumi.cat.tv'),
+  '2': t('bangumi.cat.ova'),
+  '3': t('bangumi.cat.movie'),
+  '5': t('bangumi.cat.web'),
 }
 
 // Bangumi排序字典
 const bangumiSortDict = {
-  'rank': '排名',
-  'date': '日期',
+  'rank': t('bangumi.sortType.rank'),
+  'date': t('bangumi.sortType.date'),
 }
 
 // 年份字典，自动生成最近10年
@@ -51,7 +54,7 @@ watch([filterParams], () => {
   <div class="px-3">
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>类别</VLabel>
+        <VLabel>{{ t('bangumi.category') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.cat">
         <VChip
@@ -68,7 +71,7 @@ watch([filterParams], () => {
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>排序</VLabel>
+        <VLabel>{{ t('bangumi.sort') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.sort">
         <VChip
@@ -85,7 +88,7 @@ watch([filterParams], () => {
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>年份</VLabel>
+        <VLabel>{{ t('bangumi.year') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.year">
         <VChip
