@@ -44,7 +44,6 @@ export default {
   VDialog: {
     elevation: 0,
     rounded: 'lg',
-    maxHeight: '85vh',
   },
   VExpansionPanels: {
     elevation: 0,

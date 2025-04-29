@@ -439,7 +439,7 @@ watch(
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
 
     <!-- 更新日志 -->
-    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" max-height="80vh" scrollable>
+    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" max-height="85vh" scrollable>
       <VCard :title="t('plugin.updateHistoryTitle', { name: props.plugin?.plugin_name })">
         <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />

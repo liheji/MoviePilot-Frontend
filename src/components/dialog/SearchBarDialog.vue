@@ -302,7 +302,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VDialog v-model="dialog" max-width="42rem" scrollable>
+  <VDialog v-model="dialog" max-width="42rem" scrollable maxHeight="85vh">
     <VCard class="search-dialog">
       <!-- 搜索输入框 -->
       <VCardItem class="pa-4 pa-sm-5 search-box-container">
