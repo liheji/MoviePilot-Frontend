@@ -8,7 +8,9 @@ import NoDataFound from '@/components/NoDataFound.vue'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 
+// 国际化
 const { t } = useI18n()
+
 // APP
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
@@ -56,7 +58,7 @@ useDynamicButton({
 </script>
 <template>
   <div>
-    <VPageContentTitle :title="t('navItems.workflow')" />
+    <VPageContentTitle :title="t('workflow.title')" />
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <VRow v-if="workflowList.length > 0" class="match-height">
       <VCol cols="12" md="6" lg="4" v-for="item in workflowList" :key="item.id">
@@ -67,7 +69,7 @@ useDynamicButton({
       v-if="workflowList.length === 0 && isRefreshed"
       error-code="404"
       :error-title="t('workflow.noWorkflow')"
-      :error-description="t('workflow.clickToAdd')"
+      :error-description="t('workflow.noWorkflowDescription')"
     />
   </div>
 

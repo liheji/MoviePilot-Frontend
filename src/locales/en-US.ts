@@ -516,6 +516,9 @@ export default {
         downloads: 'Downloads',
       },
     },
+    title: 'Workflow',
+    noWorkflow: 'No Workflow',
+    noWorkflowDescription: 'Click the add button to create a workflow task.',
   },
   dashboard: {
     storage: 'Storage',
@@ -660,6 +663,9 @@ export default {
   downloading: {
     noDownloader: 'No Downloader',
     configureDownloader: 'Please configure and enable a downloader in settings first.',
+    title: 'Downloading',
+    noTask: 'No Task',
+    noTaskDescription: 'Downloading tasks will be displayed here.',
   },
   resource: {
     searchResults: 'Resource Search Results',

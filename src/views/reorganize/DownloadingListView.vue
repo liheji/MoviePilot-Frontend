@@ -84,8 +84,8 @@ onUnmounted(() => {
     <NoDataFound
       v-if="filteredDataList.length === 0 && isRefreshed"
       error-code="404"
-      :error-title="t('downloading.noTasks')"
-      :error-description="t('downloading.tasksWillShowHere')"
+      :error-title="t('downloading.noTask')"
+      :error-description="t('downloading.noTaskDescription')"
     />
   </VPullToRefresh>
 </template>

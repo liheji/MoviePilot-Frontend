@@ -515,6 +515,9 @@ export default {
         downloads: '下載任務',
       },
     },
+    title: '工作流',
+    noWorkflow: '沒有工作流',
+    noWorkflowDescription: '點擊添加按鈕創建工作流任務。',
   },
   dashboard: {
     storage: '存儲空間',
@@ -658,6 +661,9 @@ export default {
   downloading: {
     noDownloader: '沒有下載器',
     configureDownloader: '請先在設置中正確配置並啟用下載器。',
+    title: '下載',
+    noTask: '沒有任務',
+    noTaskDescription: '正在下載的任務將會顯示在這裡。',
   },
   resource: {
     searchResults: '資源搜索結果',

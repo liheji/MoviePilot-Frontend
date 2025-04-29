@@ -498,6 +498,9 @@ export default {
       exclude: '排除（关键字、正则式）',
       ruleGroups: '过滤规则组',
     },
+    title: '工作流',
+    noWorkflow: '没有工作流',
+    noWorkflowDescription: '点击添加按钮创建工作流任务。',
   },
   dashboard: {
     storage: '存储空间',
@@ -641,6 +644,9 @@ export default {
   downloading: {
     noDownloader: '没有下载器',
     configureDownloader: '请先在设置中正确配置并启用下载器。',
+    title: '下载',
+    noTask: '没有任务',
+    noTaskDescription: '正在下载的任务将会显示在这里。',
   },
   resource: {
     searchResults: '资源搜索结果',
