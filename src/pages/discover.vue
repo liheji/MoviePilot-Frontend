@@ -123,7 +123,7 @@ onBeforeMount(async () => {
   sortSubscribeOrder()
   // 选中第一个标签页
   if (discoverTabs.value.length > 0) {
-    activeTab.value = discoverTabs.value[0].name
+    activeTab.value = discoverTabs.value[0].mediaid_prefix
   }
 })
 
