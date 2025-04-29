@@ -46,8 +46,11 @@ const user_message = ref('')
 // 发送按钮是否可用
 const sendButtonDisabled = ref(false)
 
-// 聊天容器
-const chatContainer = ref<HTMLElement>()
+// 消息对话框引用
+const messageDialogRef = ref<any>(null)
+
+// 滚动容器引用
+const messageContentRef = ref<any>()
 
 // 定义捷径列表
 const shortcuts = [
@@ -102,11 +105,17 @@ function openDialog(dialogRef: any) {
 
 // 滚动到底部
 function scrollMessageToEnd() {
-  nextTick(() => {
-    if (chatContainer.value) {
-      chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+  // 使用更长的延迟确保DOM已更新
+  setTimeout(() => {
+    try {
+      const cardText = document.querySelector('.v-dialog .v-card-text')
+      if (cardText) {
+        cardText.scrollTop = cardText.scrollHeight
+      }
+    } catch (error) {
+      console.error(error)
     }
-  })
+  }, 500) // 增加延迟时间
 }
 
 // 拼接全部日志url

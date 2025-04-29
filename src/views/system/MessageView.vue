@@ -39,7 +39,9 @@ function startSSEMessager() {
       const object = JSON.parse(message)
       if (compareTime(object.date, lastTime.value) <= 0) return
       messages.value.push(object)
-      emit('scroll')
+      nextTick(() => {
+        emit('scroll')
+      })
     }
   })
 }
@@ -95,6 +97,13 @@ function compareTime(time1: string, time2: string) {
   return new Date(time1.replaceAll(/-/g, '/')).getTime() - new Date(time2.replaceAll(/-/g, '/')).getTime()
 }
 
+onMounted(() => {
+  // 组件挂载后触发一次滚动事件
+  nextTick(() => {
+    emit('scroll')
+  })
+})
+
 onBeforeUnmount(() => {
   if (eventSource) eventSource.close()
 })
@@ -105,7 +114,7 @@ onBeforeUnmount(() => {
     :mode="!isLoaded ? 'intersect' : 'manual'"
     side="start"
     :items="messages"
-    class="overflow-visible"
+    class="overflow-visible message-scroll h-full"
     @load="loadMessages"
     :load-more-text="t('message.loadMore') + ' ...'"
   >
@@ -127,3 +136,9 @@ onBeforeUnmount(() => {
     </div>
   </VInfiniteScroll>
 </template>
+
+<style scoped>
+.message-scroll {
+  overflow-y: auto !important;
+}
+</style>
