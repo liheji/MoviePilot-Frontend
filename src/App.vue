@@ -130,11 +130,8 @@ function preloadImage(url: string): Promise<boolean> {
 // 计算图片地址
 function getImgUrl(url: string) {
   // 使用图片缓存
-  if (globalSettings.GLOBAL_IMAGE_CACHE)
+  if (globalSettings.GLOBAL_IMAGE_CACHE && isLogin.value)
     return `${import.meta.env.VITE_API_BASE_URL}system/cache/image?url=${encodeURIComponent(url)}`
-  // 如果地址中包含douban则使用中转代理
-  if (url.includes('doubanio.com'))
-    return `${import.meta.env.VITE_API_BASE_URL}system/img/0?imgurl=${encodeURIComponent(url)}`
   return url
 }
 
