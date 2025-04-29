@@ -4,6 +4,9 @@ import type { MediaInfo } from '@/api/types'
 import MediaCard from '@/components/cards/MediaCard.vue'
 import SlideView from '@/components/slide/SlideView.vue'
 import { registerAbortController } from '@/router'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({

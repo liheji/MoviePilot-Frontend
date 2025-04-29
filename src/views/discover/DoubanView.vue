@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import MediaCardListView from '@/views/discover/MediaCardListView.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 电影或者电视剧 movies/tvs
 const type = ref('movies')
@@ -21,65 +24,65 @@ const doubanYear = ref('')
 
 // 豆瓣风格字典
 const categoryDict = {
-  '喜剧': '喜剧',
-  '爱情': '爱情',
-  '动作': '动作',
-  '科幻': '科幻',
-  '动画': '动画',
-  '悬疑': '悬疑',
-  '犯罪': '犯罪',
-  '惊悚': '惊悚',
-  '冒险': '冒险',
-  '音乐': '音乐',
-  '历史': '历史',
-  '奇幻': '奇幻',
-  '恐怖': '恐怖',
-  '战争': '战争',
-  '传记': '传记',
-  '歌舞': '歌舞',
-  '武侠': '武侠',
-  '情色': '情色',
-  '灾难': '灾难',
-  '西部': '西部',
-  '纪录片': '纪录片',
-  '短片': '短片',
+  '喜剧': t('douban.genreType.comedy'),
+  '爱情': t('douban.genreType.romance'),
+  '动作': t('douban.genreType.action'),
+  '科幻': t('douban.genreType.scienceFiction'),
+  '动画': t('douban.genreType.animation'),
+  '悬疑': t('douban.genreType.mystery'),
+  '犯罪': t('douban.genreType.crime'),
+  '惊悚': t('douban.genreType.thriller'),
+  '冒险': t('douban.genreType.adventure'),
+  '音乐': t('douban.genreType.music'),
+  '历史': t('douban.genreType.history'),
+  '奇幻': t('douban.genreType.fantasy'),
+  '恐怖': t('douban.genreType.horror'),
+  '战争': t('douban.genreType.war'),
+  '传记': t('douban.genreType.biography'),
+  '歌舞': t('douban.genreType.musical'),
+  '武侠': t('douban.genreType.martialArts'),
+  '情色': t('douban.genreType.erotic'),
+  '灾难': t('douban.genreType.disaster'),
+  '西部': t('douban.genreType.western'),
+  '纪录片': t('douban.genreType.documentary'),
+  '短片': t('douban.genreType.shortFilm'),
 }
 
 // 地区字典
 const zoneDict = {
-  '华语': '华语',
-  '欧美': '欧美',
-  '韩国': '韩国',
-  '日本': '日本',
-  '中国大陆': '中国大陆',
-  '美国': '美国',
-  '中国香港': '中国香港',
-  '中国台湾': '中国台湾',
-  '英国': '英国',
-  '法国': '法国',
-  '德国': '德国',
-  '意大利': '意大利',
-  '西班牙': '西班牙',
-  '印度': '印度',
-  '泰国': '泰国',
-  '俄罗斯': '俄罗斯',
-  '加拿大': '加拿大',
-  '澳大利亚': '澳大利亚',
-  '爱尔兰': '爱尔兰',
-  '瑞典': '瑞典',
-  '巴西': '巴西',
-  '丹麦': '丹麦',
+  '华语': t('douban.zoneType.chinese'),
+  '欧美': t('douban.zoneType.europeanAmerican'),
+  '韩国': t('douban.zoneType.korean'),
+  '日本': t('douban.zoneType.japanese'),
+  '中国大陆': t('douban.zoneType.mainlandChina'),
+  '美国': t('douban.zoneType.usa'),
+  '中国香港': t('douban.zoneType.hongKong'),
+  '中国台湾': t('douban.zoneType.taiwan'),
+  '英国': t('douban.zoneType.uk'),
+  '法国': t('douban.zoneType.france'),
+  '德国': t('douban.zoneType.germany'),
+  '意大利': t('douban.zoneType.italy'),
+  '西班牙': t('douban.zoneType.spain'),
+  '印度': t('douban.zoneType.india'),
+  '泰国': t('douban.zoneType.thailand'),
+  '俄罗斯': t('douban.zoneType.russia'),
+  '加拿大': t('douban.zoneType.canada'),
+  '澳大利亚': t('douban.zoneType.australia'),
+  '爱尔兰': t('douban.zoneType.ireland'),
+  '瑞典': t('douban.zoneType.sweden'),
+  '巴西': t('douban.zoneType.brazil'),
+  '丹麦': t('douban.zoneType.denmark'),
 }
 
 // 年代字典
 const yearDict: Record<string, string> = {
-  '2020年代': '2020年代',
-  '2010年代': '2010年代',
-  '2000年代': '2000年代',
-  '90年代': '90年代',
-  '80年代': '80年代',
-  '70年代': '70年代',
-  '60年代': '60年代',
+  '2020年代': t('douban.yearType.2020s'),
+  '2010年代': t('douban.yearType.2010s'),
+  '2000年代': t('douban.yearType.2000s'),
+  '90年代': t('douban.yearType.1990s'),
+  '80年代': t('douban.yearType.1980s'),
+  '70年代': t('douban.yearType.1970s'),
+  '60年代': t('douban.yearType.1960s'),
 }
 
 // 往年代字典中追加当前年份及往前5年的字典
@@ -90,10 +93,10 @@ for (let i = 0; i < 6; i++) {
 
 // 豆瓣过滤参数
 const doubanSortDict = {
-  'U': '综合排序',
-  'R': '首播时间',
-  'T': '近期热度',
-  'S': '高分优先',
+  'U': t('douban.sortType.comprehensive'),
+  'R': t('douban.sortType.releaseDate'),
+  'T': t('douban.sortType.recentHot'),
+  'S': t('douban.sortType.highScore'),
 }
 
 // 风格、年代、地区变化时，以,分隔拼接到tags参数
@@ -120,16 +123,16 @@ watch([type, filterParams], () => {
   <div class="px-3">
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>类型</VLabel>
+        <VLabel>{{ t('douban.type') }}</VLabel>
       </div>
       <VChipGroup v-model="type">
-        <VChip :color="type == 'movies' ? 'primary' : ''" filter tile value="movies">电影</VChip>
-        <VChip :color="type == 'tvs' ? 'primary' : ''" filter tile value="tvs">电视剧</VChip>
+        <VChip :color="type == 'movies' ? 'primary' : ''" filter tile value="movies">{{ t('mediaType.movie') }}</VChip>
+        <VChip :color="type == 'tvs' ? 'primary' : ''" filter tile value="tvs">{{ t('mediaType.tv') }}</VChip>
       </VChipGroup>
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>排序</VLabel>
+        <VLabel>{{ t('douban.sort') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.sort">
         <VChip
@@ -146,7 +149,7 @@ watch([type, filterParams], () => {
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>风格</VLabel>
+        <VLabel>{{ t('douban.genre') }}</VLabel>
       </div>
       <VChipGroup v-model="doubanCategory">
         <VChip
@@ -163,7 +166,7 @@ watch([type, filterParams], () => {
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>地区</VLabel>
+        <VLabel>{{ t('douban.zone') }}</VLabel>
       </div>
       <VChipGroup v-model="doubanZone">
         <VChip
@@ -180,7 +183,7 @@ watch([type, filterParams], () => {
     </div>
     <div class="flex justify-start align-center">
       <div class="mr-5">
-        <VLabel>年代</VLabel>
+        <VLabel>{{ t('douban.year') }}</VLabel>
       </div>
       <VChipGroup v-model="doubanYear">
         <VChip
