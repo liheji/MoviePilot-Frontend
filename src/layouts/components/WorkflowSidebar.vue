@@ -3,6 +3,7 @@ import api from '@/api'
 import useDragAndDrop from '@core/utils/workflow'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
+import { getActionStepText } from '@/types/i18n-type'
 
 interface ActionItem {
   name: string
@@ -145,7 +146,7 @@ onMounted(() => {
               <VIcon :icon="getActionIcon(action.type)" size="18" />
             </VAvatar>
             <div v-if="!isSidebarCollapsed || display.smAndDown.value" class="component-info">
-              <div class="component-name">{{ action.name }}</div>
+              <div class="component-name">{{ getActionStepText(action.name) }}</div>
               <div class="component-desc">
                 {{ display.smAndDown.value ? t('workflow.clickToAdd') : t('workflow.dragToCanvas') }}
               </div>

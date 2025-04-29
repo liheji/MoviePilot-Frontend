@@ -42,3 +42,29 @@ export function getNotificationSwitchText(label: string | undefined) {
     return t(switchMap[label])
   }
 }
+
+// actionStep
+export function getActionStepText(label: string | undefined) {
+  if (!label) return ''
+
+  const { t } = useI18n()
+
+  const stepMap: Record<string, string> = {
+    '添加下载': 'actionStep.addDownload',
+    '添加订阅': 'actionStep.addSubscribe',
+    '获取下载任务': 'actionStep.fetchDownloads',
+    '获取媒体数据': 'actionStep.fetchMedias',
+    '获取RSS资源': 'actionStep.fetchRss',
+    '搜索站点资源': 'actionStep.fetchTorrents',
+    '过滤媒体数据': 'actionStep.filterMedias',
+    '过滤资源': 'actionStep.filterTorrents',
+    '扫描目录': 'actionStep.scanFile',
+    '刮削文件': 'actionStep.scrapeFile',
+    '发送事件': 'actionStep.sendEvent',
+    '发送消息': 'actionStep.sendMessage',
+    '整理文件': 'actionStep.transferFile',
+  }
+  if (label in stepMap) {
+    return t(stepMap[label])
+  }
+}
