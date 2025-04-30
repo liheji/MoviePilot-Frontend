@@ -2296,4 +2296,8 @@ export default {
     byFileSize: '按文件大小',
     keepLatestOnly: '仅保留最新',
   },
+  validators: {
+    required: '此项为必填项',
+    number: '请输入数字',
+  },
 }

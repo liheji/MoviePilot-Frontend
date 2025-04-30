@@ -2320,4 +2320,8 @@ export default {
     byFileSize: 'By File Size',
     keepLatestOnly: 'Keep Latest Only',
   },
+  validators: {
+    required: 'This field is required',
+    number: 'Please enter a number',
+  },
 }

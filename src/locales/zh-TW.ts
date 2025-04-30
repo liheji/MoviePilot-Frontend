@@ -2298,4 +2298,8 @@ export default {
     byFileSize: '按文件大小',
     keepLatestOnly: '僅保留最新',
   },
+  validators: {
+    required: '此項為必填項',
+    number: '請輸入數字',
+  },
 }
