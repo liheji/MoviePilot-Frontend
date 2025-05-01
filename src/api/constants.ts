@@ -31,6 +31,12 @@ export const storageOptions = [
     icon: 'mdi-server-network-outline',
     remote: true,
   },
+  {
+    title: i18n.global.t('storage.custom'),
+    value: 'custom',
+    icon: 'mdi-cog-outline',
+    remote: true,
+  },
 ]
 
 export const storageDict = storageOptions.reduce((dict, item) => {

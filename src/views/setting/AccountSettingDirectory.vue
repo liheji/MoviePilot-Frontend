@@ -174,6 +174,23 @@ async function loadMediaCategories() {
   }
 }
 
+// 添加存储
+function addStorage() {
+  storages.value.push({
+    name: '自定义存储',
+    type: 'custom',
+    config: {},
+  })
+}
+
+// 移除存储
+function removeStorage(storage: StorageConf) {
+  const index = storages.value.indexOf(storage)
+  if (index > -1) {
+    storages.value.splice(index, 1)
+  }
+}
+
 // 保存设置
 async function saveSystemSettings(value: any) {
   try {
@@ -212,7 +229,7 @@ onMounted(() => {
             :component-data="{ 'class': 'grid gap-3 grid-app-card' }"
           >
             <template #item="{ element }">
-              <StorageCard :storage="element" @done="updatedStorage" />
+              <StorageCard :storage="element" @done="updatedStorage" @close="removeStorage(element)" />
             </template>
           </draggable>
         </VCardText>
@@ -220,6 +237,9 @@ onMounted(() => {
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
               <VBtn type="submit" class="me-2" @click="saveStorages"> {{ t('common.save') }} </VBtn>
+              <VBtn color="success" variant="tonal" @click="addStorage">
+                <VIcon icon="mdi-plus" />
+              </VBtn>
             </div>
           </VForm>
         </VCardText>

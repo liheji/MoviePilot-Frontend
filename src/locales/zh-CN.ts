@@ -732,6 +732,7 @@ export default {
     u115: '115网盘',
     rclone: 'RClone',
     alist: 'AList',
+    custom: '自定义',
   },
   filterRules: {
     specSub: '特效字幕',

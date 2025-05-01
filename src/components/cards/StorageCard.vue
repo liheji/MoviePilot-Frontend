@@ -28,7 +28,7 @@ const props = defineProps({
 })
 
 // 定义事件
-const emit = defineEmits(['done'])
+const emit = defineEmits(['done', 'close'])
 
 // 提示信息
 const $toast = useToast()
@@ -130,21 +130,32 @@ function handleDone() {
 
 // 根据存储类型获取文本
 function getStorageTypeText(type: string) {
-  return storageOptions.find((option) => option.value === type)?.title
+  return storageOptions.find(option => option.value === type)?.title
 }
 
 onMounted(() => {
   queryStorage()
 })
+
+// 关闭
+function onClose() {
+  emit('close')
+}
 </script>
 <template>
   <div>
     <VCard variant="tonal" @click="openStorageDialog">
+      <VDialogCloseBtn v-if="storage.type == 'custom'" @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
           <h5 class="text-h6 mb-1">{{ getStorageTypeText(storage.type) }}</h5>
-          <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
-          <div v-else-if="isNullOrEmptyObject(storage.config)">{{ t('storage.notConfigured') }}</div>
+          <template v-if="storage.type != 'custom'">
+            <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
+            <div v-else-if="isNullOrEmptyObject(storage.config)">{{ t('storage.notConfigured') }}</div>
+          </template>
+          <template v-else>
+            <div class="mb-3 text-sm">{{ t('storage.custom') }}</div>
+          </template>
         </div>
         <VImg :src="getIcon" cover class="mt-5" max-width="3rem" min-width="3rem" />
       </VCardText>

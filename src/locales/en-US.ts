@@ -735,6 +735,7 @@ export default {
     u115: '115 Cloud',
     rclone: 'RClone',
     alist: 'AList',
+    custom: 'Custom',
   },
   filterRules: {
     specSub: 'Special Subtitle',

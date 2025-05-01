@@ -733,6 +733,7 @@ export default {
     u115: '115網盤',
     rclone: 'RClone',
     alist: 'AList',
+    custom: '自定義',
   },
 
   filterRules: {
