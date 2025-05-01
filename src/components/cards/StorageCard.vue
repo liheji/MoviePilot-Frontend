@@ -6,6 +6,7 @@ import alipan_png from '@images/misc/alipan.webp'
 import u115_png from '@images/misc/u115.png'
 import rclone_png from '@images/misc/rclone.png'
 import alist_png from '@images/misc/alist.svg'
+import custom_png from '@images/misc/database.png'
 import api from '@/api'
 import AliyunAuthDialog from '../dialog/AliyunAuthDialog.vue'
 import U115AuthDialog from '../dialog/U115AuthDialog.vue'
@@ -14,7 +15,6 @@ import AlistConfigDialog from '../dialog/AlistConfigDialog.vue'
 import { useToast } from 'vue-toast-notification'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { useI18n } from 'vue-i18n'
-import { storageOptions } from '@/api/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -44,6 +44,12 @@ const used = computed(() => {
   return total.value - available.value
 })
 
+// 存储
+const storage_ref = ref(props.storage)
+
+// 自定义存储名称
+const customName = ref(props.storage.name)
+
 // 阿里云盘认证对话框
 const aliyunAuthDialog = ref(false)
 // 115网盘认证对话框
@@ -52,6 +58,8 @@ const u115AuthDialog = ref(false)
 const rcloneConfigDialog = ref(false)
 // AList配置对话框
 const aListConfigDialog = ref(false)
+// 自定义存储配置对话框
+const customConfigDialog = ref(false)
 
 // 打开存储对话框
 function openStorageDialog() {
@@ -67,6 +75,9 @@ function openStorageDialog() {
       break
     case 'alist':
       aListConfigDialog.value = true
+      break
+    case 'custom':
+      customConfigDialog.value = true
       break
     default:
       $toast.info(t('storage.noConfigNeeded'))
@@ -87,6 +98,8 @@ const getIcon = computed(() => {
       return rclone_png
     case 'alist':
       return alist_png
+    case 'custom':
+      return custom_png
     default:
       return storage_png
   }
@@ -125,12 +138,9 @@ function handleDone() {
   u115AuthDialog.value = false
   rcloneConfigDialog.value = false
   aListConfigDialog.value = false
-  emit('done')
-}
-
-// 根据存储类型获取文本
-function getStorageTypeText(type: string) {
-  return storageOptions.find(option => option.value === type)?.title
+  customConfigDialog.value = false
+  storage_ref.value.name = customName.value
+  emit('done', storage_ref.value)
 }
 
 onMounted(() => {
@@ -148,7 +158,7 @@ function onClose() {
       <VDialogCloseBtn v-if="storage.type == 'custom'" @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
-          <h5 class="text-h6 mb-1">{{ getStorageTypeText(storage.type) }}</h5>
+          <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
           <template v-if="storage.type != 'custom'">
             <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
             <div v-else-if="isNullOrEmptyObject(storage.config)">{{ t('storage.notConfigured') }}</div>
@@ -157,7 +167,7 @@ function onClose() {
             <div class="mb-3 text-sm">{{ t('storage.custom') }}</div>
           </template>
         </div>
-        <VImg :src="getIcon" cover class="mt-5" max-width="3rem" min-width="3rem" />
+        <VImg :src="getIcon" cover class="mt-7" max-width="3rem" min-width="3rem" />
       </VCardText>
       <div class="w-full absolute bottom-0">
         <VProgressLinear v-if="usage > 0" :model-value="usage" :bg-color="progressColor" :color="progressColor" />
@@ -191,5 +201,26 @@ function onClose() {
       @close="aListConfigDialog = false"
       @done="handleDone"
     />
+    <VDialog v-if="customConfigDialog" v-model="customConfigDialog" scrollable max-width="30rem">
+      <VCard>
+        <VCardItem>
+          <VCardTitle>{{ t('storage.custom') }}</VCardTitle>
+          <VDialogCloseBtn v-model="customConfigDialog" />
+        </VCardItem>
+        <VDivider />
+        <VCardText>
+          <VRow>
+            <VCol cols="12" md="6">
+              <VTextField v-model="customName" :label="t('storage.name')" persistent-hint active />
+            </VCol>
+          </VRow>
+        </VCardText>
+        <VCardActions class="pt-3">
+          <VBtn @click="handleDone" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
+            {{ t('common.save') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </div>
 </template>

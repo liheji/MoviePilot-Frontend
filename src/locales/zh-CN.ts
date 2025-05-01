@@ -724,6 +724,7 @@ export default {
     episode: '第{number}集',
   },
   storage: {
+    name: '名称',
     usedPercent: '已使用 {percent}%',
     noConfigNeeded: '此存储类型无需配置参数，请直接配置目录！',
     notConfigured: '未配置',

@@ -102,11 +102,6 @@ async function saveStorages() {
   }
 }
 
-// 修改后生效
-async function updatedStorage() {
-  await loadStorages()
-}
-
 // 查询目录
 async function loadDirectories() {
   try {
@@ -177,7 +172,7 @@ async function loadMediaCategories() {
 // 添加存储
 function addStorage() {
   storages.value.push({
-    name: '自定义存储',
+    name: `${t('storage.custom')} ${storages.value.length + 1}`,
     type: 'custom',
     config: {},
   })
@@ -188,6 +183,14 @@ function removeStorage(storage: StorageConf) {
   const index = storages.value.indexOf(storage)
   if (index > -1) {
     storages.value.splice(index, 1)
+  }
+}
+
+// 更新存储
+async function updatedStorage(storage: StorageConf) {
+  const index = storages.value.indexOf(storage)
+  if (index > -1) {
+    storages.value[index] = storage
   }
 }
 
@@ -229,7 +232,7 @@ onMounted(() => {
             :component-data="{ 'class': 'grid gap-3 grid-app-card' }"
           >
             <template #item="{ element }">
-              <StorageCard :storage="element" @done="updatedStorage" @close="removeStorage(element)" />
+              <StorageCard :storage="element" @close="removeStorage(element)" @done="updatedStorage" />
             </template>
           </draggable>
         </VCardText>

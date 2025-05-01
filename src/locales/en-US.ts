@@ -727,6 +727,7 @@ export default {
     episode: 'Episode {number}',
   },
   storage: {
+    name: 'Name',
     usedPercent: '{percent}% Used',
     noConfigNeeded: 'This storage type does not require configuration, please configure the directory directly!',
     notConfigured: 'Not Configured',

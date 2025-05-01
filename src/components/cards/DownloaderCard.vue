@@ -187,8 +187,8 @@ onUnmounted(() => {
         </VCardText>
       </VCard>
     </VHover>
-    <VDialog v-if="downloaderInfoDialog" v-model="downloaderInfoDialog" scrollable max-width="40rem" persistent>
-      <VCard :title="`${props.downloader.name} - ${t('downloader.title')}`" class="rounded-t">
+    <VDialog v-if="downloaderInfoDialog" v-model="downloaderInfoDialog" scrollable max-width="40rem">
+      <VCard :title="`${props.downloader.name} - ${t('downloader.title')}`">
         <VDialogCloseBtn v-model="downloaderInfoDialog" />
         <VDivider />
         <VCardText>
@@ -329,7 +329,6 @@ onUnmounted(() => {
                   v-model="downloaderInfo.name"
                   :label="t('downloader.name')"
                   :placeholder="t('downloader.nameRequired')"
-                  :hint="t('downloader.name')"
                   persistent-hint
                   active
                 />

@@ -725,6 +725,7 @@ export default {
     episode: '第{number}集',
   },
   storage: {
+    name: '名稱',
     usedPercent: '已使用 {percent}%',
     noConfigNeeded: '此存儲類型無需配置參數，請直接配置目錄！',
     notConfigured: '未配置',
