@@ -1829,6 +1829,7 @@ export default {
   },
   file: {
     newFolder: 'New Folder',
+    autoRecognizeName: 'Auto Recognize Name',
     createFolder: 'Create Folder',
     fileName: 'File Name',
     fileSize: 'File Size',

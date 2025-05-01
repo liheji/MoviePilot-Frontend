@@ -700,27 +700,21 @@ onMounted(() => {
       <VDialogCloseBtn @click="renamePopper = false" />
       <VDivider />
       <VCardText>
-        <div class="mb-3">
-          <span>{{ t('file.currentName') }}: {{ currentItem?.name }}</span>
-        </div>
-        <VTextField v-model="newName" :label="t('file.newName')" />
-        <VCheckbox
-          v-if="false && currentItem?.type == 'dir'"
-          v-model="renameAll"
-          :label="t('file.includeSubfolders')"
-        ></VCheckbox>
+        <VRow>
+          <VCol cols="12">
+            <VTextField v-model="newName" :label="t('file.newName')" :loading="renameLoading" />
+          </VCol>
+          <VCol cols="12" v-if="currentItem && currentItem.type == 'dir'">
+            <VSwitch v-model="renameAll" :label="t('file.includeSubfolders')" />
+          </VCol>
+        </VRow>
       </VCardText>
       <VCardActions>
-        <div class="flex-grow-1" />
-        <VBtn
-          :disabled="!newName"
-          variant="elevated"
-          :loading="renameLoading"
-          @click="rename"
-          prepend-icon="mdi-check"
-          class="px-5 me-3"
-        >
-          {{ t('common.save') }}
+        <VBtn color="success" variant="elevated" @click="get_recommend_name" prepend-icon="mdi-magic" class="px-5 me-3">
+          {{ t('file.autoRecognizeName') }}
+        </VBtn>
+        <VBtn :disabled="!newName" variant="elevated" @click="rename" prepend-icon="mdi-check" class="px-5 me-3">
+          {{ t('common.confirm') }}
         </VBtn>
       </VCardActions>
     </VCard>

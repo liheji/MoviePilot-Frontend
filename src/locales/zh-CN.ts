@@ -1807,6 +1807,7 @@ export default {
   },
   file: {
     newFolder: '新建文件夹',
+    autoRecognizeName: '自动识别名称',
     createFolder: '创建文件夹',
     fileName: '文件名',
     fileSize: '文件大小',
