@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import type { TransferDirectoryConf } from '@/api/types'
+import type { StorageConf, TransferDirectoryConf } from '@/api/types'
 import api from '@/api'
 import { nextTick } from 'vue'
-import { storageOptions } from '@/api/constants'
 import { useI18n } from 'vue-i18n'
+import { storageRemoteDict } from '@/api/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -17,6 +17,10 @@ const props = defineProps({
   },
   categories: {
     type: Object as PropType<{ [key: string]: any }>,
+    required: true,
+  },
+  storages: {
+    type: Array as PropType<StorageConf[]>,
     required: true,
   },
   width: String,
@@ -35,7 +39,20 @@ const typeItems = computed(() => [
 
 // 计算资源存储字典（整理方式为下载器时不能为远程存储）
 const resourceStorageOptions = computed(() => {
-  return storageOptions.filter(item => !item.remote || props.directory.monitor_type !== 'downloader')
+  return props.storages
+    .filter(item => !storageRemoteDict[item.type] || props.directory.monitor_type !== 'downloader')
+    .map(item => ({
+      title: item.name,
+      value: item.type,
+    }))
+})
+
+// 存储字典
+const libraryStorageOptions = computed(() => {
+  return props.storages.map(item => ({
+    title: item.name,
+    value: item.type,
+  }))
 })
 
 // 自动整理方式下拉字典
@@ -263,7 +280,7 @@ watch(
             <VSelect
               v-model="props.directory.library_storage"
               variant="underlined"
-              :items="storageOptions"
+              :items="libraryStorageOptions"
               :label="t('directory.libraryStorage')"
             />
           </VCol>

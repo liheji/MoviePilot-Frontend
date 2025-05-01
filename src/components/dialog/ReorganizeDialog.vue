@@ -2,11 +2,11 @@
 import { useToast } from 'vue-toast-notification'
 import MediaIdSelector from '../misc/MediaIdSelector.vue'
 import api from '@/api'
-import { storageOptions, transferTypeOptions } from '@/api/constants'
+import { transferTypeOptions } from '@/api/constants'
 import { numberValidator } from '@/@validators'
 import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
-import { FileItem, TransferDirectoryConf, TransferForm } from '@/api/types'
+import { FileItem, StorageConf, TransferDirectoryConf, TransferForm } from '@/api/types'
 import { useI18n } from 'vue-i18n'
 
 // 国际化
@@ -57,6 +57,28 @@ const progressText = ref(t('dialog.reorganize.processing'))
 
 // 整理进度
 const progressValue = ref(0)
+
+// 所有存储
+const storages = ref<StorageConf[]>([])
+
+// 查询存储
+async function loadStorages() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/Storages')
+
+    storages.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 存储字典
+const storageOptions = computed(() => {
+  return storages.value.map(item => ({
+    title: item.name,
+    value: item.type,
+  }))
+})
 
 // 标题
 const dialogTitle = computed(() => {
@@ -218,6 +240,7 @@ async function transfer(background: boolean = false) {
 
 onMounted(() => {
   loadDirectories()
+  loadStorages()
 })
 
 onUnmounted(() => {

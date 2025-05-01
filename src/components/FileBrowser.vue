@@ -3,12 +3,8 @@ import FileList from './filebrowser/FileList.vue'
 import FileToolbar from './filebrowser/FileToolbar.vue'
 import FileNavigator from './filebrowser/FileNavigator.vue'
 import type { EndPoints, FileItem, StorageConf } from '@/api/types'
-import { storageOptions } from '@/api/constants'
 import { useDisplay } from 'vuetify'
-import { useI18n } from 'vue-i18n'
-
-// 国际化
-const { t } = useI18n()
+import { storageIconDict } from '@/api/constants'
 
 // 输入参数
 const props = defineProps({
@@ -142,8 +138,11 @@ const showDirTree = ref(false)
 
 // 计算属性
 const storagesArray = computed(() => {
-  const storageCodes = props.storages?.map(item => item.type)
-  return storageOptions.filter(item => storageCodes?.includes(item.value))
+  return props.storages?.map(item => ({
+    title: item.name,
+    value: item.type,
+    icon: storageIconDict[item.type],
+  }))
 })
 
 // 方法

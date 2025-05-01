@@ -1,48 +1,47 @@
 import i18n from '@/plugins/i18n'
 
-export const storageOptions = [
+export const storageAttributes = [
   {
-    title: i18n.global.t('storage.local'),
-    value: 'local',
+    type: 'local',
     icon: 'mdi-folder-multiple-outline',
     remote: false,
   },
   {
-    title: i18n.global.t('storage.alipan'),
-    value: 'alipan',
+    type: 'alipan',
     icon: 'mdi-cloud-outline',
     remote: true,
   },
   {
-    title: i18n.global.t('storage.u115'),
-    value: 'u115',
+    type: 'u115',
     icon: 'mdi-cloud-outline',
     remote: true,
   },
   {
-    title: i18n.global.t('storage.rclone'),
-    value: 'rclone',
+    type: 'rclone',
     icon: 'mdi-server-network-outline',
     remote: true,
   },
   {
-    title: i18n.global.t('storage.alist'),
-    value: 'alist',
+    type: 'alist',
     icon: 'mdi-server-network-outline',
     remote: true,
   },
   {
-    title: i18n.global.t('storage.custom'),
-    value: 'custom',
-    icon: 'mdi-cog-outline',
+    type: 'custom',
+    icon: 'mdi-database',
     remote: true,
   },
 ]
 
-export const storageDict = storageOptions.reduce((dict, item) => {
-  dict[item.value] = item.title
+export const storageIconDict = storageAttributes.reduce((dict, item) => {
+  dict[item.type] = item.icon
   return dict
 }, {} as Record<string, string>)
+
+export const storageRemoteDict = storageAttributes.reduce((dict, item) => {
+  dict[item.type] = item.remote
+  return dict
+}, {} as Record<string, boolean>)
 
 export const innerFilterRules = [
   { title: i18n.global.t('filterRules.specSub'), value: ' SPECSUB ' },

@@ -2,16 +2,16 @@
 import { debounce } from 'lodash-es'
 import { useToast } from 'vue-toast-notification'
 import api from '@/api'
-import type { TransferHistory } from '@/api/types'
+import type { StorageConf, TransferHistory } from '@/api/types'
 import ReorganizeDialog from '@/components/dialog/ReorganizeDialog.vue'
 import TransferQueueDialog from '@/components/dialog/TransferQueueDialog.vue'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
 import { useDisplay } from 'vuetify'
-import { storageDict } from '@/api/constants'
 import { formatFileSize } from '@/@core/utils/formatters'
 import { useI18n } from 'vue-i18n'
+import { storageAttributes } from '@/api/constants'
 
 // i18n
 const { t } = useI18n()
@@ -180,6 +180,28 @@ const deleteConfirmDialog = ref(false)
 
 // 确认框标题
 const confirmTitle = ref('')
+
+// 所有存储
+const storages = ref<StorageConf[]>([])
+
+// 查询存储
+async function loadStorages() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/Storages')
+
+    storages.value = result.data?.value ?? []
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 存储字典
+const storageDict = computed(() => {
+  return storages.value.reduce((dict, item) => {
+    dict[item.type] = item.name
+    return dict
+  }, {} as Record<string, string>)
+})
 
 // 转移方式字典
 const TransferDict: { [key: string]: string } = {
@@ -432,7 +454,10 @@ function ensureNumber(value: any, defaultValue: number = 0) {
 }
 
 // 初始加载数据
-onMounted(fetchData)
+onMounted(() => {
+  loadStorages()
+  fetchData()
+})
 </script>
 
 <template>

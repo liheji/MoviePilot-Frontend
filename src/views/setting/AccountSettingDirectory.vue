@@ -269,6 +269,7 @@ onMounted(() => {
               <DirectoryCard
                 :directory="element"
                 :categories="mediaCategories"
+                :storages="storages"
                 @update:modelValue="(value: any) => {element.download_path = value?.download; element.library_path = value?.library}"
                 @close="removeDirectory(element)"
               />
