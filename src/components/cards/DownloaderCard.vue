@@ -6,6 +6,7 @@ import { useToast } from 'vue-toast-notification'
 import type { DownloaderInfo } from '@/api/types'
 import qbittorrent_image from '@images/logos/qbittorrent.png'
 import transmission_image from '@images/logos/transmission.png'
+import custom_image from '@images/logos/downloader.png'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 
@@ -126,7 +127,7 @@ const getIcon = computed(() => {
     case 'transmission':
       return transmission_image
     default:
-      return qbittorrent_image
+      return custom_image
   }
 })
 
@@ -172,9 +173,12 @@ onUnmounted(() => {
               />
               <span class="text-h6">{{ downloader.name }}</span>
             </div>
-            <div class="mt-1 flex flex-wrap text-sm" v-if="props.downloader.enabled">
+            <div v-if="downloader.type != 'custom' && props.downloader.enabled" class="mt-1 flex flex-wrap text-sm">
               <span class="me-2">{{ `↑ ${formatFileSize(upload_rate, 1)}/s ` }}</span>
               <span>{{ `↓ ${formatFileSize(download_rate, 1)}/s` }}</span>
+            </div>
+            <div v-else-if="downloader.type == 'custom'" class="mt-1 flex flex-wrap text-sm">
+              <span class="me-2">自定义下载器</span>
             </div>
           </div>
           <div class="h-20">
@@ -278,7 +282,7 @@ onUnmounted(() => {
                 />
               </VCol>
             </VRow>
-            <VRow v-if="downloaderInfo.type == 'transmission'">
+            <VRow v-else-if="downloaderInfo.type == 'transmission'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="downloaderInfo.name"
@@ -314,6 +318,18 @@ onUnmounted(() => {
                   type="password"
                   :label="t('downloader.password')"
                   :hint="t('downloader.password')"
+                  persistent-hint
+                  active
+                />
+              </VCol>
+            </VRow>
+            <VRow v-else>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="downloaderInfo.name"
+                  :label="t('downloader.name')"
+                  :placeholder="t('downloader.nameRequired')"
+                  :hint="t('downloader.name')"
                   persistent-hint
                   active
                 />

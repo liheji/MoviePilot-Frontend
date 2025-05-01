@@ -541,6 +541,9 @@ onDeactivated(() => {
                     <VListItem @click="addDownloader('transmission')">
                       <VListItemTitle>{{ t('setting.system.transmission') }}</VListItemTitle>
                     </VListItem>
+                    <VListItem @click="addDownloader('custom')">
+                      <VListItemTitle>{{ t('setting.system.custom') }}</VListItemTitle>
+                    </VListItem>
                   </VList>
                 </VMenu>
               </VBtn>
@@ -594,6 +597,9 @@ onDeactivated(() => {
                     </VListItem>
                     <VListItem @click="addMediaServer('trimemedia')">
                       <VListItemTitle>{{ t('setting.system.trimeMedia') }}</VListItemTitle>
+                    </VListItem>
+                    <VListItem @click="addMediaServer('custom')">
+                      <VListItemTitle>{{ t('setting.system.custom') }}</VListItemTitle>
                     </VListItem>
                   </VList>
                 </VMenu>

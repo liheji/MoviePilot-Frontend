@@ -911,6 +911,7 @@ export default {
       dataDirectory: '/moviepilot',
     },
     system: {
+      custom: 'Custom',
       basicSettings: 'Basic Settings',
       basicSettingsDesc: 'Configure server global functions.',
       appDomain: 'Access Domain',

@@ -908,6 +908,7 @@ export default {
       dataDirectory: '/moviepilot',
     },
     system: {
+      custom: '自定义',
       basicSettings: '基础设置',
       basicSettingsDesc: '设置服务器的全局功能。',
       appDomain: '访问域名',
