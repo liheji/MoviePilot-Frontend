@@ -121,12 +121,12 @@ onMounted(() => {
       </div>
 
       <template v-slot:prepend>
-        <div class="d-flex align-center">
-          <img v-if="siteIcon" :src="siteIcon" :alt="torrent?.site_name" class="rounded mr-2" width="32" height="32" />
-          <VAvatar v-else size="24" class="mr-2 text-caption bg-primary-lighten-4 text-primary font-weight-bold">
+        <div class="d-flex flex-column align-center pr-3">
+          <VImg v-if="siteIcon" :src="siteIcon" :alt="torrent?.site_name" class="rounded mb-1" width="32" height="32" />
+          <VAvatar v-else size="24" class="mb-1 text-caption bg-primary-lighten-4 text-primary font-weight-bold">
             {{ torrent?.site_name?.substring(0, 1) }}
           </VAvatar>
-          <div class="font-weight-bold text-body-2 d-none d-sm-block">{{ torrent?.site_name }}</div>
+          <div class="font-weight-bold text-body-2 text-center d-none d-sm-block">{{ torrent?.site_name }}</div>
         </div>
       </template>
 
