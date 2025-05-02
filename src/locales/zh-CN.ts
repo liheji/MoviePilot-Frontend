@@ -505,8 +505,8 @@ export default {
     sendMessage: {
       title: '发送消息',
       subtitle: '发送系统消息',
-      type: '类型',
-      content: '内容',
+      channel: '渠道',
+      userId: '用户ID',
     },
     transferFile: {
       title: '传输文件',

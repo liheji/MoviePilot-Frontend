@@ -506,8 +506,8 @@ export default {
     sendMessage: {
       title: '發送消息',
       subtitle: '發送任務執行消息',
-      type: '類型',
-      content: '內容',
+      channel: '渠道',
+      userId: '用戶ID',
     },
     transferFile: {
       title: '整理文件',
