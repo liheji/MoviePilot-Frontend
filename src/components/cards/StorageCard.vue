@@ -159,7 +159,7 @@ function onClose() {
 <template>
   <div>
     <VCard variant="tonal" @click="openStorageDialog">
-      <VDialogCloseBtn v-if="storageIconDict[storage.type]" @click="onClose" />
+      <VDialogCloseBtn v-if="!storageIconDict[storage.type]" @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
           <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
