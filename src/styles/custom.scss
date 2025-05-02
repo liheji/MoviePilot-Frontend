@@ -42,6 +42,12 @@ html.v-overlay-scroll-blocked {
       transform: rotate(0deg) translate(0, 0);
 }
 
+.match-height.v-row {
+  .v-card {
+    block-size: 100%;
+  }
+}
+
 .v-toast--bottom {
   z-index: 2500;
   margin-block-end: env(safe-area-inset-bottom);
