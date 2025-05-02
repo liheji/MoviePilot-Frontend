@@ -346,7 +346,7 @@ onUnmounted(() => {
 }
 
 .search-title {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
@@ -526,7 +526,7 @@ onUnmounted(() => {
   }
 
   .search-title {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     white-space: nowrap;
   }
 
