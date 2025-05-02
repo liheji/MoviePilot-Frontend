@@ -86,32 +86,46 @@ onBeforeUnmount(() => {
         </template>
       </VCardItem>
       <VDivider />
-      <div v-if="notificationList.length > 0">
-        <VListItem v-for="(item, i) in notificationList" :key="i" lines="two" class="mb-1">
-          <template #prepend>
-            <VAvatar rounded>
-              <VIcon v-if="item.type === 'user'" icon="mdi-account-alert" size="large"></VIcon>
-              <VIcon v-else-if="item.type === 'plugin'" icon="mdi-robot" size="large"></VIcon>
-              <VIcon v-else icon="mdi-laptop" size="large"></VIcon>
-            </VAvatar>
-          </template>
-          <div>
-            <div class="text-body-1 text-high-emphasis break-words whitespace-break-spaces">
-              {{ item.title }}
+      <div class="notification-list-container">
+        <div v-if="notificationList.length > 0" class="notification-list">
+          <VListItem v-for="(item, i) in notificationList" :key="i" lines="two" class="mb-1">
+            <template #prepend>
+              <VAvatar rounded>
+                <VIcon v-if="item.type === 'user'" icon="mdi-account-alert" size="large"></VIcon>
+                <VIcon v-else-if="item.type === 'plugin'" icon="mdi-robot" size="large"></VIcon>
+                <VIcon v-else icon="mdi-laptop" size="large"></VIcon>
+              </VAvatar>
+            </template>
+            <div>
+              <div class="text-body-1 text-high-emphasis break-words whitespace-break-spaces">
+                {{ item.title }}
+              </div>
+              <div class="text-caption mt-1.5">
+                {{ item.text }}
+              </div>
+              <div class="text-sm text-primary mt-1.5">
+                {{ formatDateDifference(item.date) }}
+              </div>
             </div>
-            <div class="text-caption mt-1.5">
-              {{ item.text }}
-            </div>
-            <div class="text-sm text-primary mt-1.5">
-              {{ formatDateDifference(item.date) }}
-            </div>
-          </div>
-        </VListItem>
-      </div>
-      <div v-else class="py-8 text-center">
-        <VIcon icon="mdi-bell-sleep-outline" size="40" class="mb-3" />
-        <div>{{ t('notification.empty') }}</div>
+          </VListItem>
+        </div>
+        <div v-else class="py-8 text-center">
+          <VIcon icon="mdi-bell-sleep-outline" size="40" class="mb-3" />
+          <div>{{ t('notification.empty') }}</div>
+        </div>
       </div>
     </VCard>
   </VMenu>
 </template>
+
+<style scoped>
+.notification-list-container {
+  max-height: 50vh;
+  overflow: hidden;
+}
+
+.notification-list {
+  max-height: 100%;
+  overflow-y: auto;
+}
+</style>
