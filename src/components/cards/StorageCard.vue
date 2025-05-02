@@ -163,13 +163,8 @@ function onClose() {
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
           <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
-          <template v-if="storageIconDict[storage.type]">
-            <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
-            <div v-else-if="isNullOrEmptyObject(storage.config)">{{ t('storage.notConfigured') }}</div>
-          </template>
-          <template v-else>
-            <div class="mb-3 text-sm">{{ t('storage.custom') }}</div>
-          </template>
+          <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
+          <div v-else-if="isNullOrEmptyObject(storage.config)">{{ t('storage.notConfigured') }}</div>
         </div>
         <VImg :src="getIcon" cover class="mt-7" max-width="3rem" min-width="3rem" />
       </VCardText>
