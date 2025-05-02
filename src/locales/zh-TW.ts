@@ -726,6 +726,8 @@ export default {
   },
   storage: {
     name: '名稱',
+    type: '類型',
+    customTypeHint: '自定義存儲類型，用於插件等場景',
     usedPercent: '已使用 {percent}%',
     noConfigNeeded: '此存儲類型無需配置參數，請直接配置目錄！',
     notConfigured: '未配置',
@@ -2062,6 +2064,7 @@ export default {
     title: '下載器',
     name: '名稱',
     type: '類型',
+    customTypeHint: '自定義下載器類型，用於插件等場景',
     enabled: '啟用',
     default: '預設',
     host: '地址',
@@ -2103,6 +2106,8 @@ export default {
     },
   },
   mediaserver: {
+    type: '類型',
+    customTypeHint: '自定義媒體伺服器類型，用於插件等場景',
     enableMediaServer: '啟用媒體伺服器',
     nameRequired: '必填；不可與其他名稱重名',
     serverAlias: '媒體伺服器的別名',

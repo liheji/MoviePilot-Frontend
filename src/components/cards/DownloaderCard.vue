@@ -9,6 +9,7 @@ import transmission_image from '@images/logos/transmission.png'
 import custom_image from '@images/logos/downloader.png'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
+import { downloaderDict } from '@/api/constants'
 
 // 获取i18n实例
 const { t } = useI18n()
@@ -173,11 +174,11 @@ onUnmounted(() => {
               />
               <span class="text-h6">{{ downloader.name }}</span>
             </div>
-            <div v-if="downloader.type != 'custom' && props.downloader.enabled" class="mt-1 flex flex-wrap text-sm">
+            <div v-if="downloaderDict[downloader.type] && props.downloader.enabled" class="mt-1 flex flex-wrap text-sm">
               <span class="me-2">{{ `↑ ${formatFileSize(upload_rate, 1)}/s ` }}</span>
               <span>{{ `↓ ${formatFileSize(download_rate, 1)}/s` }}</span>
             </div>
-            <div v-else-if="downloader.type == 'custom'" class="mt-1 flex flex-wrap text-sm">
+            <div v-else-if="!downloaderDict[downloader.type]" class="mt-1 flex flex-wrap text-sm">
               <span class="me-2">自定义下载器</span>
             </div>
           </div>
@@ -326,9 +327,18 @@ onUnmounted(() => {
             <VRow v-else>
               <VCol cols="12" md="6">
                 <VTextField
+                  v-model="downloaderInfo.type"
+                  :label="t('downloader.type')"
+                  :hint="t('downloader.customTypeHint')"
+                  persistent-hint
+                  active
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
                   v-model="downloaderInfo.name"
                   :label="t('downloader.name')"
-                  :placeholder="t('downloader.nameRequired')"
+                  :hint="t('downloader.nameRequired')"
                   persistent-hint
                   active
                 />

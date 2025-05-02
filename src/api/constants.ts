@@ -26,11 +26,6 @@ export const storageAttributes = [
     icon: 'mdi-server-network-outline',
     remote: true,
   },
-  {
-    type: 'custom',
-    icon: 'mdi-database',
-    remote: true,
-  },
 ]
 
 export const storageIconDict = storageAttributes.reduce((dict, item) => {
@@ -42,6 +37,46 @@ export const storageRemoteDict = storageAttributes.reduce((dict, item) => {
   dict[item.type] = item.remote
   return dict
 }, {} as Record<string, boolean>)
+
+export const downloaderOptions = [
+  {
+    value: 'qbittorrent',
+    title: i18n.global.t('setting.system.qbittorrent'),
+  },
+  {
+    value: 'transmission',
+    title: i18n.global.t('setting.system.transmission'),
+  },
+]
+
+export const downloaderDict = downloaderOptions.reduce((dict, item) => {
+  dict[item.value] = item.title
+  return dict
+}, {} as Record<string, string>)
+
+export const mediaServerOptions = [
+  {
+    value: 'emby',
+    title: i18n.global.t('setting.system.emby'),
+  },
+  {
+    value: 'jellyfin',
+    title: i18n.global.t('setting.system.jellyfin'),
+  },
+  {
+    value: 'plex',
+    title: i18n.global.t('setting.system.plex'),
+  },
+  {
+    value: 'trimemedia',
+    title: i18n.global.t('setting.system.trimeMedia'),
+  },
+]
+
+export const mediaServerDict = mediaServerOptions.reduce((dict, item) => {
+  dict[item.value] = item.title
+  return dict
+}, {} as Record<string, string>)
 
 export const innerFilterRules = [
   { title: i18n.global.t('filterRules.specSub'), value: ' SPECSUB ' },

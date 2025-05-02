@@ -728,6 +728,8 @@ export default {
   },
   storage: {
     name: 'Name',
+    type: 'Type',
+    customTypeHint: 'Custom storage type, used for plugins and other scenarios',
     usedPercent: '{percent}% Used',
     noConfigNeeded: 'This storage type does not require configuration, please configure the directory directly!',
     notConfigured: 'Not Configured',
@@ -2085,6 +2087,7 @@ export default {
     name: 'Name',
     type: 'Type',
     enabled: 'Enabled',
+    customTypeHint: 'Custom downloader type, for plugin scenarios',
     default: 'Default',
     host: 'Host',
     username: 'Username',
@@ -2125,6 +2128,8 @@ export default {
     },
   },
   mediaserver: {
+    type: 'Type',
+    customTypeHint: 'Custom media server type, for plugin scenarios',
     enableMediaServer: 'Enable Media Server',
     nameRequired: 'Required; cannot be duplicated',
     serverAlias: 'Media server alias',

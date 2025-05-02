@@ -33,8 +33,8 @@ const isCollapsed = ref(true)
 // 类型下拉字典
 const typeItems = computed(() => [
   { title: t('common.all'), value: '' },
-  { title: t('media.movie'), value: '电影' },
-  { title: t('media.tv'), value: '电视剧' },
+  { title: t('mediaType.movie'), value: '电影' },
+  { title: t('mediaType.tv'), value: '电视剧' },
 ])
 
 // 计算资源存储字典（整理方式为下载器时不能为远程存储）

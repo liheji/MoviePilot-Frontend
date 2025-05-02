@@ -9,6 +9,7 @@ import custom_image from '@images/logos/mediaserver.png'
 import api from '@/api'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
+import { mediaServerDict } from '@/api/constants'
 
 // 获取i18n实例
 const { t } = useI18n()
@@ -186,12 +187,12 @@ onMounted(() => {
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
           <div class="text-h6 mb-1">{{ mediaserver.name }}</div>
-          <div v-if="mediaserver.type != 'custom' && mediaserver.enabled" class="text-sm mt-5 flex flex-wrap">
+          <div v-if="mediaServerDict[mediaserver.type] && mediaserver.enabled" class="text-sm mt-5 flex flex-wrap">
             <span v-for="item in infoItems" :key="item.title" class="me-2 mb-1">
               <VIcon rounded :icon="item.avatar" class="me-1" />{{ item.amount }}
             </span>
           </div>
-          <div v-else-if="mediaserver.type == 'custom'" class="text-sm mt-5 flex flex-wrap">
+          <div v-else-if="!mediaServerDict[mediaserver.type]" class="text-sm mt-5 flex flex-wrap">
             <span class="me-2 mb-1">自定义媒体服务器</span>
           </div>
         </div>
@@ -453,10 +454,14 @@ onMounted(() => {
             <VRow v-else>
               <VCol cols="12" md="6">
                 <VTextField
-                  v-model="mediaServerInfo.name"
-                  :label="t('common.name')"
-                  :placeholder="t('mediaserver.nameRequired')"
+                  v-model="mediaServerInfo.type"
+                  :label="t('mediaserver.type')"
+                  :hint="t('mediaserver.customTypeHint')"
+                  persistent-hint
                 />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField :label="t('common.name')" :hint="t('mediaserver.nameRequired')" persistent-hint />
               </VCol>
             </VRow>
           </VForm>

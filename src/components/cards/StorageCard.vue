@@ -15,6 +15,7 @@ import AlistConfigDialog from '../dialog/AlistConfigDialog.vue'
 import { useToast } from 'vue-toast-notification'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { useI18n } from 'vue-i18n'
+import { storageIconDict } from '@/api/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -50,6 +51,9 @@ const storage_ref = ref(props.storage)
 // 自定义存储名称
 const customName = ref(props.storage.name)
 
+// 自定义存储类型
+const storageType = ref(props.storage.type)
+
 // 阿里云盘认证对话框
 const aliyunAuthDialog = ref(false)
 // 115网盘认证对话框
@@ -76,11 +80,11 @@ function openStorageDialog() {
     case 'alist':
       aListConfigDialog.value = true
       break
-    case 'custom':
-      customConfigDialog.value = true
+    case 'local':
+      $toast.info(t('storage.noConfigNeeded'))
       break
     default:
-      $toast.info(t('storage.noConfigNeeded'))
+      customConfigDialog.value = true
       break
   }
 }
@@ -98,10 +102,8 @@ const getIcon = computed(() => {
       return rclone_png
     case 'alist':
       return alist_png
-    case 'custom':
-      return custom_png
     default:
-      return storage_png
+      return custom_png
   }
 })
 
@@ -139,7 +141,9 @@ function handleDone() {
   rcloneConfigDialog.value = false
   aListConfigDialog.value = false
   customConfigDialog.value = false
+  // 更新存储
   storage_ref.value.name = customName.value
+  storage_ref.value.type = storageType.value
   emit('done', storage_ref.value)
 }
 
@@ -155,11 +159,11 @@ function onClose() {
 <template>
   <div>
     <VCard variant="tonal" @click="openStorageDialog">
-      <VDialogCloseBtn v-if="storage.type == 'custom'" @click="onClose" />
+      <VDialogCloseBtn v-if="storageIconDict[storage.type]" @click="onClose" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
           <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
-          <template v-if="storage.type != 'custom'">
+          <template v-if="storageIconDict[storage.type]">
             <div class="mb-3 text-sm" v-if="total">{{ formatBytes(used, 1) }} / {{ formatBytes(total, 1) }}</div>
             <div v-else-if="isNullOrEmptyObject(storage.config)">{{ t('storage.notConfigured') }}</div>
           </template>
@@ -210,6 +214,15 @@ function onClose() {
         <VDivider />
         <VCardText>
           <VRow>
+            <VCol cols="12" md="6">
+              <VTextField
+                v-model="storageType"
+                :label="t('storage.type')"
+                :hint="t('storage.customTypeHint')"
+                persistent-hint
+                active
+              />
+            </VCol>
             <VCol cols="12" md="6">
               <VTextField v-model="customName" :label="t('storage.name')" persistent-hint active />
             </VCol>

@@ -10,6 +10,7 @@ import MediaServerCard from '@/components/cards/MediaServerCard.vue'
 import { copyToClipboard } from '@/@core/utils/navigator'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { downloaderOptions, mediaServerOptions } from '@/api/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -535,11 +536,8 @@ onDeactivated(() => {
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
-                    <VListItem @click="addDownloader('qbittorrent')">
-                      <VListItemTitle>{{ t('setting.system.qbittorrent') }}</VListItemTitle>
-                    </VListItem>
-                    <VListItem @click="addDownloader('transmission')">
-                      <VListItemTitle>{{ t('setting.system.transmission') }}</VListItemTitle>
+                    <VListItem v-for="item in downloaderOptions" @click="addDownloader(item.value)">
+                      <VListItemTitle>{{ item.title }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addDownloader('custom')">
                       <VListItemTitle>{{ t('setting.system.custom') }}</VListItemTitle>
@@ -586,17 +584,8 @@ onDeactivated(() => {
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
-                    <VListItem @click="addMediaServer('emby')">
-                      <VListItemTitle>{{ t('setting.system.emby') }}</VListItemTitle>
-                    </VListItem>
-                    <VListItem @click="addMediaServer('jellyfin')">
-                      <VListItemTitle>{{ t('setting.system.jellyfin') }}</VListItemTitle>
-                    </VListItem>
-                    <VListItem @click="addMediaServer('plex')">
-                      <VListItemTitle>{{ t('setting.system.plex') }}</VListItemTitle>
-                    </VListItem>
-                    <VListItem @click="addMediaServer('trimemedia')">
-                      <VListItemTitle>{{ t('setting.system.trimeMedia') }}</VListItemTitle>
+                    <VListItem v-for="item in mediaServerOptions" @click="addMediaServer(item.value)">
+                      <VListItemTitle>{{ item.title }}</VListItemTitle>
                     </VListItem>
                     <VListItem @click="addMediaServer('custom')">
                       <VListItemTitle>{{ t('setting.system.custom') }}</VListItemTitle>
