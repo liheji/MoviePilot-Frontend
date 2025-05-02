@@ -141,7 +141,7 @@ const storagesArray = computed(() => {
   return props.storages?.map(item => ({
     title: item.name,
     value: item.type,
-    icon: storageIconDict[item.type],
+    icon: storageIconDict[item.type] ?? 'mdi-server-network-outline',
   }))
 })
 
