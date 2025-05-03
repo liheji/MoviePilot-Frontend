@@ -61,7 +61,7 @@ const dynamicComponent = computed(() => {
             const blobUrl = URL.createObjectURL(blob)
             return import(/* @vite-ignore */ blobUrl)
           } else {
-            return { render: () => h('div', '组件加载失败: 无默认导出') }
+            return { render: () => h('div', '组件加载失败: 未读取到文件数据') }
           }
         })
         .then(module => {
