@@ -42,29 +42,81 @@ const $toast = useToast()
 // 是否刷新
 const isRefreshed = ref(false)
 
-// 调用API读取表单页面
-async function loadPluginForm() {
-  try {
-    const result: { [key: string]: any } = await api.get(`plugin/form/${props.plugin?.id}`)
-    if (result) {
-      pluginFormItems = result.conf
-      if (result.model) pluginConfigForm.value = result.model
-    }
-  } catch (error) {
-    console.error(error)
+// 渲染模式: 'vuetify' 或 'vue'
+const renderMode = ref('vuetify')
+
+//Vue 模式：组件 URL
+const vueComponentUrl = ref<string | null>(null)
+
+//Vue 模式：动态加载的组件
+const dynamicComponent = computed(() => {
+  if (renderMode.value === 'vue' && vueComponentUrl.value) {
+    const url = vueComponentUrl.value
+    return defineAsyncComponent(() =>
+      import(/* @vite-ignore */ url)
+        .then(module => {
+          // 假设 JS 文件默认导出组件
+          if (module.default) {
+            return module.default
+          } else {
+            $toast.error(`无法从 ${url} 加载默认导出的 Vue 组件`)
+            return { render: () => h('div', '组件加载失败: 无默认导出') }
+          }
+        })
+        .catch(err => {
+          $toast.error(`无法加载插件组件: ${url}`, err)
+          return { render: () => h('div', '组件加载失败') }
+        }),
+    )
   }
-  isRefreshed.value = true
+  return null
+})
+
+//调用API读取UI和配置数据
+async function loadPluginUIData() {
+  // 重置
+  isRefreshed.value = false
+  pluginFormItems = []
+  pluginConfigForm.value = {}
+  renderMode.value = 'vuetify'
+  vueComponentUrl.value = null
+
+  try {
+    // 获取UI定义
+    const result: { [key: string]: any } = await api.get(`plugin/form/${props.plugin?.id}`)
+    if (!result) {
+      console.error(`插件 ${props.plugin?.plugin_name} UI数据加载失败：无效的响应`)
+      return
+    }
+    renderMode.value = result.render_mode
+    if (renderMode.value === 'vue') {
+      // 使用 component_url
+      vueComponentUrl.value = result.component_url
+      // Vue模式下，初始配置在同一个API返回
+      if (!isNullOrEmptyObject(result.model)) {
+        pluginConfigForm.value = result.model
+      }
+      if (!vueComponentUrl.value) {
+        console.error(`插件 ${props.plugin?.plugin_name} 配置错误：未提供Vue组件URL`)
+      }
+    } else {
+      // Vuetify模式
+      pluginFormItems = result.conf || []
+      if (result.model) {
+        pluginConfigForm.value = result.model
+      }
+    }
+  } catch (error: any) {
+    console.error(error)
+  } finally {
+    isRefreshed.value = true
+  }
 }
 
-// 调用API读取配置数据
-async function loadPluginConf() {
-  try {
-    const result: { [key: string]: any } = await api.get(`plugin/${props.plugin?.id}`)
-    if (!isNullOrEmptyObject(result)) pluginConfigForm.value = result
-  } catch (error) {
-    console.error(error)
-  }
-  isRefreshed.value = true
+// 处理 Vue 组件触发的保存事件
+function handleVueComponentSave(newConfig: Record<string, any>) {
+  pluginConfigForm.value = newConfig
+  savePluginConf()
 }
 
 // 调用API保存配置数据
@@ -75,22 +127,20 @@ async function savePluginConf() {
   try {
     const result: { [key: string]: any } = await api.put(`plugin/${props.plugin?.id}`, pluginConfigForm.value)
     if (result.success) {
-      progressDialog.value = false
       $toast.success(t('dialog.pluginConfig.saveSuccess', { name: props.plugin?.plugin_name }))
       // 通知父组件刷新
       emit('save')
     } else {
-      progressDialog.value = false
       $toast.error(t('dialog.pluginConfig.saveFailed', { name: props.plugin?.plugin_name, message: result.message }))
     }
   } catch (error) {
     console.error(error)
   }
+  progressDialog.value = false
 }
 
 onBeforeMount(async () => {
-  await loadPluginForm()
-  await loadPluginConf()
+  await loadPluginUIData()
 })
 </script>
 <template>
@@ -99,15 +149,32 @@ onBeforeMount(async () => {
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText v-if="isRefreshed">
-        <FormRender v-for="(item, index) in pluginFormItems" :key="index" :config="item" :model="pluginConfigForm" />
+        <!-- Vuetify 渲染模式 -->
+        <div v-if="renderMode === 'vuetify'">
+          <FormRender v-for="(item, index) in pluginFormItems" :key="index" :config="item" :model="pluginConfigForm" />
+          <div v-if="!pluginFormItems || pluginFormItems.length === 0">此插件没有可配置项</div>
+        </div>
+        <!-- Vue 渲染模式 -->
+        <div v-else-if="renderMode === 'vue' && dynamicComponent">
+          <component :is="dynamicComponent" :initial-config="pluginConfigForm" @save="handleVueComponentSave" />
+        </div>
+        <!-- 加载中或错误 -->
+        <div v-else><VProgressCircular indeterminate /> 加载中...</div>
       </VCardText>
       <VCardActions class="pt-3">
         <VBtn v-if="props.plugin?.has_page" @click="emit('switch')" variant="outlined" color="info">
           {{ t('dialog.pluginConfig.viewData') }}
         </VBtn>
         <VSpacer />
-        <VBtn @click="savePluginConf" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
-          {{ t('dialog.pluginConfig.save') }}
+        <!-- 只有Vuetify模式显示默认保存按钮，Vue模式由组件内部控制 -->
+        <VBtn
+          v-if="renderMode === 'vuetify'"
+          @click="savePluginConf"
+          variant="elevated"
+          prepend-icon="mdi-content-save"
+          class="px-5"
+        >
+          保存
         </VBtn>
       </VCardActions>
     </VCard>

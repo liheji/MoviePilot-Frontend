@@ -7,6 +7,16 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 })
 
+// 声明全局变量类型
+declare global {
+  interface Window {
+    MoviePilotAPI: typeof api
+  }
+}
+
+// 将 API 实例暴露到全局，供插件使用
+window.MoviePilotAPI = api
+
 // 添加请求拦截器
 api.interceptors.request.use(config => {
   // 认证 Store
