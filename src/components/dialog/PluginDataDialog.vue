@@ -55,13 +55,13 @@ const dynamicComponent = computed(() => {
           if (module.default) {
             return module.default
           } else {
-            $toast.error(`无法从 ${url} 加载默认导出的 Vue 组件`)
+            console.error(`无法从 ${url} 加载默认导出的 Vue 组件`)
             return { render: () => h('div', '组件加载失败: 无默认导出') }
           }
         })
         .catch(err => {
-          $toast.error(`无法加载插件组件: ${url}`, err)
-          return { render: () => h('div', '组件加载失败') }
+          console.error(`无法加载插件组件: ${url}`, err)
+          return { render: () => h('div', `组件加载失败：${err}`) }
         }),
     )
   }
