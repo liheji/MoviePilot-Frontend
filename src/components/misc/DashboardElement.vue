@@ -12,6 +12,7 @@ import MediaServerLibrary from '@/views/dashboard/MediaServerLibrary.vue'
 import MediaServerPlaying from '@/views/dashboard/MediaServerPlaying.vue'
 import DashboardRender from '@/components/render/DashboardRender.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
+import api from '@/api'
 
 // 输入参数
 const props = defineProps({
@@ -35,19 +36,27 @@ const pluginRenderMode = computed(() => props.config?.render_mode || 'vuetify')
 const dynamicPluginComponent = computed(() => {
   // 确保 config 存在并且 component_url 也存在
   if (pluginRenderMode.value === 'vue' && props.config?.component_url) {
-    const url = props.config.component_url
+    const url = props.config?.component_url
     return defineAsyncComponent(() =>
-      import(/* @vite-ignore */ url)
+      api
+        .get(url)
+        .then((response: any) => {
+          if (response) {
+            const blob = new Blob([response.data], { type: 'text/javascript' })
+            const blobUrl = URL.createObjectURL(blob)
+            return import(/* @vite-ignore */ blobUrl)
+          } else {
+            return { render: () => h('div', '组件加载失败: 无默认导出') }
+          }
+        })
         .then(module => {
           if (module.default) {
             return module.default
           } else {
-            console.error(`无法从 ${url} 加载默认导出的 Vue 组件`)
             return { render: () => h('div', '组件加载失败: 无默认导出') }
           }
         })
         .catch(err => {
-          console.error(`无法加载插件仪表盘组件: ${url}`, err)
           return { render: () => h('div', '组件加载失败') }
         }),
     )

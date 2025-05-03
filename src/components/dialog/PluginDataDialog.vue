@@ -40,7 +40,17 @@ const dynamicComponent = computed(() => {
   if (renderMode.value === 'vue' && vueComponentUrl.value) {
     const url = vueComponentUrl.value
     return defineAsyncComponent(() =>
-      import(/* @vite-ignore */ url)
+      api
+        .get(url)
+        .then((response: any) => {
+          if (response) {
+            const blob = new Blob([response.data], { type: 'text/javascript' })
+            const blobUrl = URL.createObjectURL(blob)
+            return import(/* @vite-ignore */ blobUrl)
+          } else {
+            return { render: () => h('div', '组件加载失败: 无默认导出') }
+          }
+        })
         .then(module => {
           if (module.default) {
             return module.default

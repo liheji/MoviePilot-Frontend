@@ -48,14 +48,23 @@ const renderMode = ref('vuetify')
 //Vue 模式：组件 URL
 const vueComponentUrl = ref<string | null>(null)
 
-//Vue 模式：动态加载的组件
+//  Vue 模式：动态加载的组件
 const dynamicComponent = computed(() => {
   if (renderMode.value === 'vue' && vueComponentUrl.value) {
     const url = vueComponentUrl.value
     return defineAsyncComponent(() =>
-      import(/* @vite-ignore */ url)
+      api
+        .get(url)
+        .then((response: any) => {
+          if (response) {
+            const blob = new Blob([response.data], { type: 'text/javascript' })
+            const blobUrl = URL.createObjectURL(blob)
+            return import(/* @vite-ignore */ blobUrl)
+          } else {
+            return { render: () => h('div', '组件加载失败: 无默认导出') }
+          }
+        })
         .then(module => {
-          // 假设 JS 文件默认导出组件
           if (module.default) {
             return module.default
           } else {
