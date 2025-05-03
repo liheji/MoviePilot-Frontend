@@ -295,6 +295,7 @@ export default {
       encodingAesKeyHint: '微信企業自建應用->API接收消息配置中的EncodingAESKey',
       admins: '管理員白名單',
       adminsHint: '可使用管理菜單及命令的用戶ID列表，多個ID使用,分隔',
+      adminsPlaceholder: '用戶ID列表，多個ID使用,分隔',
     },
     telegram: {
       name: 'Telegram',
@@ -306,6 +307,8 @@ export default {
       usersHint: '可使用Telegram機器人的用戶ID清單，多個用戶用,分隔，不填寫則所有用戶都能使用',
       admins: '管理員白名單',
       adminsHint: '可使用管理菜單及命令的用戶ID列表，多個ID使用,分隔',
+      adminsPlaceholder: '用戶ID列表，多個ID使用,分隔',
+      usersPlaceholder: '用戶ID列表，多個ID使用,分隔',
     },
     slack: {
       name: 'Slack',

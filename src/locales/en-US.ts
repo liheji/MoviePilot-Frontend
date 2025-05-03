@@ -296,6 +296,7 @@ export default {
       encodingAesKeyHint: 'EncodingAESKey in WeChat Work self-built app -> API message receiving configuration',
       admins: 'Admin Whitelist',
       adminsHint: 'User IDs that can use admin menu and commands, separated by commas',
+      adminsPlaceholder: 'User IDs list, separated by commas',
     },
     telegram: {
       name: 'Telegram',
@@ -307,6 +308,8 @@ export default {
       usersHint: 'User IDs that can use Telegram bot, separated by commas. Leave empty to allow all users',
       admins: 'Admin Whitelist',
       adminsHint: 'User IDs that can use admin menu and commands, separated by commas',
+      adminsPlaceholder: 'User IDs list, separated by commas',
+      usersPlaceholder: 'User IDs list, separated by commas',
     },
     slack: {
       name: 'Slack',
