@@ -38,6 +38,7 @@ export default {
     share: '分享',
     unsubscribe: '取消订阅',
     media: '媒体',
+    unknown: '未知',
   },
   mediaType: {
     movie: '电影',
