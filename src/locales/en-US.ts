@@ -38,6 +38,7 @@ export default {
     share: 'Share',
     unsubscribe: 'Unsubscribe',
     media: 'Media',
+    unknown: 'Unknown',
   },
   mediaType: {
     movie: 'Movie',
