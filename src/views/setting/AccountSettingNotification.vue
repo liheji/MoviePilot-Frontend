@@ -11,6 +11,34 @@ import { notificationSwitchDict } from '@/api/constants'
 // 国际化
 const { t } = useI18n()
 
+// 初始化模板配置字典
+const templateConfigs = ref<Record<string, string>>({
+  organizeSuccess: '{}',
+  downloadAdded: '{}',
+  subscribeAdded: '{}',
+  subscribeComplete: '{}'
+})
+
+// 模板类型配置
+const templateTypes = ref([
+  { 
+    type: 'organizeSuccess',
+    label: t('setting.notification.organizeSuccess')
+  },
+  {
+    type: 'downloadAdded',
+    label: t('setting.notification.downloadAdded')
+  },
+  { 
+    type: 'subscribeAdded',
+    label: t('setting.notification.subscribeAdded')
+  },
+  { 
+    type: 'subscribeComplete',
+    label: t('setting.notification.subscribeComplete')
+  }
+])
+
 // 所有消息渠道
 const notifications = ref<NotificationConf[]>([])
 
@@ -19,6 +47,9 @@ const $toast = useToast()
 
 // 进度框
 const progressDialog = ref(false)
+const editorVisible = ref(false)
+const currentTemplate = ref('')
+const editorContent = ref('')
 
 // 消息类型开关
 const notificationSwitchs = ref<NotificationSwitchConf[]>([
@@ -105,6 +136,43 @@ async function loadNotificationSetting() {
   }
 }
 
+async function openEditor(type: string) {
+  try {
+    currentTemplate.value = type
+    const result: { [key: string]: any } = await api.get('system/setting/NotificationTemplates')
+    templateConfigs.value = result.data?.value || {}
+    editorContent.value = templateConfigs.value[type] || '{}'
+    editorVisible.value = true
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('setting.notification.templateLoadFailed'))
+  }
+}
+
+async function saveTemplate() {
+  try {
+    await api.post('system/setting/NotificationTemplates', {
+      ...templateConfigs.value,
+      [currentTemplate.value]: editorContent.value
+    })
+    $toast.success(t('setting.notification.templateSaveSuccess'))
+    editorVisible.value = false
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('setting.notification.templateSaveFailed'))
+  }
+}
+
+async function loadTemplateConfigs() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/NotificationTemplates')
+    templateConfigs.value = result.data?.value || {}
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('setting.notification.templateLoadFailed'))
+  }
+}
+
 // 调用API查询通知发送时间设置
 async function loadNotificationTime() {
   try {
@@ -182,6 +250,7 @@ onMounted(() => {
   loadNotificationSetting()
   loadNotificationSwitchs()
   loadNotificationTime()
+  loadTemplateConfigs()
 })
 </script>
 
@@ -246,6 +315,33 @@ onMounted(() => {
       </VCard>
     </VCol>
   </VRow>
+  <VCard>
+    <VCardItem>
+      <VCardTitle>{{ t('setting.notification.templateConfig') }}</VCardTitle>
+    </VCardItem>
+    <VCardText>
+      <VRow>
+        <VCol
+          v-for="item in templateTypes"
+          :key="item.type"
+          cols="12"
+          sm="6"
+          lg="3"
+        >
+          <VCard
+            variant="tonal"
+            @click="openEditor(item.type)"
+          >
+            <VCardText>
+              <div class="text-h6 align-center">
+                {{ item.label }}
+              </div>
+            </VCardText>
+          </VCard>
+        </VCol>
+      </VRow>
+    </VCardText>
+  </VCard>
   <VRow>
     <VCol cols="12">
       <VCard>
@@ -321,4 +417,37 @@ onMounted(() => {
     :text="t('setting.system.reloading')"
     :indeterminate="true"
   />
+  <!-- 模板编辑器对话框 -->
+<VDialog v-model="editorVisible" max-width="800">
+  <VCard>
+    <VCardTitle>{{ templateTypes.find(t => t.type === currentTemplate)?.label }}</VCardTitle>
+    <VCardText>
+      <VAceEditor
+        v-model:value="editorContent"
+        lang="json"
+        theme="monokai"
+        style="block-size: 30rem"
+        class="rounded"
+      />
+    </VCardText>
+    <VCardActions>
+      <VSpacer />
+      <VBtn color="primary" @click="saveTemplate">
+        {{ t('common.save') }}
+      </VBtn>
+      <VBtn @click="editorVisible = false">
+        {{ t('common.cancel') }}
+      </VBtn>
+    </VCardActions>
+  </VCard>
+</VDialog>
 </template>
+<style scoped>
+/* Monaco编辑器容器样式 */
+.monaco-editor-container {
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+</style>
