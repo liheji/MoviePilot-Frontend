@@ -20,15 +20,17 @@ MoviePilot now supports Module Federation, allowing plugin developers to create 
 - [Module Federation Troubleshooting Guide](docs/federation-troubleshooting.md) - Common issues and solutions
 - [Plugin Remote Component Example](examples/plugin-component/) - Complete example project for developing plugin components
 
-## Recommended IDE Setup
+## Development
+
+### Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (disable Vetur).
 
-## Configure Vite 
+### Configure Vite 
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-## Install Dependencies
+### Install Dependencies
 
 ```sh
 yarn

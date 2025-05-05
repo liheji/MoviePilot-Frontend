@@ -20,15 +20,18 @@ MoviePilot 现已支持模块联邦（Module Federation）功能，允许插件�
 - [模块联邦问题排查指南](docs/federation-troubleshooting.md) - 常见问题和解决方案
 - [插件远程组件示例](examples/plugin-component/) - 开发插件组件的完整示例项目 
 
-## 推荐的IDE设置
+
+## 开发部署
+
+### 推荐的IDE设置
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (并禁用 Vetur).
 
-## 配置Vite
+### 配置Vite
 
 请参阅 [Vite 配置参考](https://vitejs.dev/config/).
 
-## 依赖安装
+### 依赖安装
 
 ```sh
 yarn
