@@ -441,7 +441,10 @@ onMounted(() => {
   <VDialog v-model="editorVisible" v-if="editorVisible" max-width="50rem">
     <VCard>
       <VCardItem>
-        <VCardTitle>{{ templateTypes.find(t => t.type === currentTemplate)?.label }}消息模板</VCardTitle>
+        <VCardTitle>
+          {{ templateTypes.find(t => t.type === currentTemplate)?.label }}
+          {{ t('setting.notification.templateConfigTitle') }}
+        </VCardTitle>
         <VDialogCloseBtn @click="editorVisible = false" />
       </VCardItem>
       <VCardText class="py-0">
