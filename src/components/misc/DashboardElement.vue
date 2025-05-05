@@ -13,6 +13,7 @@ import MediaServerPlaying from '@/views/dashboard/MediaServerPlaying.vue'
 import DashboardRender from '@/components/render/DashboardRender.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import api from '@/api'
+import { loadRemoteComponent, clearRemoteComponentCache } from '@/utils/remoteFederationLoader'
 
 // 输入参数
 const props = defineProps({
@@ -36,30 +37,11 @@ const pluginRenderMode = computed(() => props.config?.render_mode || 'vuetify')
 const dynamicPluginComponent = computed(() => {
   // 确保 config 存在并且 component_url 也存在
   if (pluginRenderMode.value === 'vue' && props.config?.component_url) {
-    const url = props.config?.component_url
-    return defineAsyncComponent(() =>
-      api
-        .get(url)
-        .then((response: any) => {
-          if (response) {
-            const blob = new Blob([response.data], { type: 'text/javascript' })
-            const blobUrl = URL.createObjectURL(blob)
-            return import(/* @vite-ignore */ blobUrl)
-          } else {
-            return { render: () => h('div', '组件加载失败: 未读取到文件数据') }
-          }
-        })
-        .then(module => {
-          if (module.default) {
-            return module.default
-          } else {
-            return { render: () => h('div', '组件加载失败: 无默认导出') }
-          }
-        })
-        .catch(err => {
-          return { render: () => h('div', '组件加载失败') }
-        }),
-    )
+    return loadRemoteComponent(props.config.component_url, {
+      onError: error => {
+        console.error(`加载插件组件失败: ${props.config?.component_url}`, error)
+      },
+    })
   }
   return null
 })
@@ -67,6 +49,11 @@ const dynamicPluginComponent = computed(() => {
 onUnmounted(() => {
   // 组件卸载时禁用刷新状态
   emit('update:refreshStatus', false)
+
+  // 清理远程组件缓存
+  if (pluginRenderMode.value === 'vue' && props.config?.component_url) {
+    clearRemoteComponentCache(props.config.component_url)
+  }
 })
 </script>
 <template>

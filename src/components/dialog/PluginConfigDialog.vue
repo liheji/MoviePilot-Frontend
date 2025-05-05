@@ -7,6 +7,7 @@ import { useToast } from 'vue-toast-notification'
 import FormRender from '../render/FormRender.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { loadRemoteComponent, clearRemoteComponentCache } from '@/utils/remoteFederationLoader'
 
 // 国际化
 const { t } = useI18n()
@@ -51,32 +52,12 @@ const vueComponentUrl = ref<string | null>(null)
 //  Vue 模式：动态加载的组件
 const dynamicComponent = computed(() => {
   if (renderMode.value === 'vue' && vueComponentUrl.value) {
-    const url = vueComponentUrl.value
-    return defineAsyncComponent(() =>
-      api
-        .get(url)
-        .then((response: any) => {
-          if (response) {
-            const blob = new Blob([response.data], { type: 'text/javascript' })
-            const blobUrl = URL.createObjectURL(blob)
-            return import(/* @vite-ignore */ blobUrl)
-          } else {
-            return { render: () => h('div', '组件加载失败: 未读取到文件数据') }
-          }
-        })
-        .then(module => {
-          if (module.default) {
-            return module.default
-          } else {
-            console.error(`无法从 ${url} 加载默认导出的 Vue 组件`)
-            return { render: () => h('div', '组件加载失败: 无默认导出') }
-          }
-        })
-        .catch(err => {
-          console.error(`无法加载插件组件: ${url}`, err)
-          return { render: () => h('div', `组件加载失败：${err}`) }
-        }),
-    )
+    return loadRemoteComponent(vueComponentUrl.value, {
+      onError: error => {
+        console.error(`加载插件组件失败: ${vueComponentUrl.value}`, error)
+        $toast.error(`加载插件组件失败: ${error.message || '未知错误'}`)
+      },
+    })
   }
   return null
 })
@@ -88,6 +69,11 @@ async function loadPluginUIData() {
   pluginFormItems = []
   pluginConfigForm.value = {}
   renderMode.value = 'vuetify'
+
+  // 如果存在旧的组件URL，清除其缓存
+  if (vueComponentUrl.value) {
+    clearRemoteComponentCache(vueComponentUrl.value)
+  }
   vueComponentUrl.value = null
 
   try {
@@ -150,6 +136,13 @@ async function savePluginConf() {
 
 onBeforeMount(async () => {
   await loadPluginUIData()
+})
+
+// 组件卸载时清理资源
+onUnmounted(() => {
+  if (vueComponentUrl.value) {
+    clearRemoteComponentCache(vueComponentUrl.value)
+  }
 })
 </script>
 <template>

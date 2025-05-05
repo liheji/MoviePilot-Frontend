@@ -8,6 +8,7 @@ import vuetify from 'vite-plugin-vuetify'
 import { VitePWA } from 'vite-plugin-pwa'
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
 import { resolve } from 'node:path'
+import federation from '@originjs/vite-plugin-federation'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -30,6 +31,13 @@ export default defineConfig({
     }),
     VueI18n({
       include: [resolve(__dirname, 'src/locales/*.ts')],
+    }),
+    federation({
+      name: 'host',
+      remotes: {
+        // 这里我们会动态添加远程组件，所以不预设remotes
+      },
+      shared: ['vue', 'vuetify'],
     }),
     VitePWA({
       injectRegister: 'script',
@@ -116,8 +124,8 @@ export default defineConfig({
             ],
           },
           {
-            'name': '电影订阅',
-            'url': './subscribe/movie',
+            'name': '探索',
+            'url': './discover',
             'icons': [
               {
                 'src': './clock-icon-192x192.png',
@@ -127,19 +135,8 @@ export default defineConfig({
             ],
           },
           {
-            'name': '电视剧订阅',
-            'url': './subscribe/tv',
-            'icons': [
-              {
-                'src': './clock-icon-192x192.png',
-                'sizes': '192x192',
-                'type': 'image/png',
-              },
-            ],
-          },
-          {
-            'name': '设置',
-            'url': './setting',
+            'name': '更多',
+            'url': './apps',
             'icons': [
               {
                 'src': './cog-icon-192x192.png',
