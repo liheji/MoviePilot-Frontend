@@ -723,6 +723,7 @@ export default {
     filterEdition: '质量',
     filterResolution: '分辨率',
     filterReleaseGroup: '制作组',
+    noMatchingResults: '没有数据',
   },
   calendar: {
     episode: '第{number}集',
@@ -790,6 +791,7 @@ export default {
   site: {
     noSites: '没有站点',
     sitesWillBeShownHere: '已添加并支持的站点将会在这里显示。',
+    noFilterData: '没有符合条件的站点',
     title: '站点',
     status: {
       enabled: '启用',
@@ -1106,9 +1108,10 @@ export default {
       channelsDesc: '设置消息发送渠道参数。',
       organizeSuccess: '资源入库',
       downloadAdded: '资源下载',
-      subscribeAdded: '订阅添加',
+      subscribeAdded: '添加订阅',
       subscribeComplete: '订阅完成',
-      templateConfig: '模板格式配置',
+      templateConfigTitle: '通知模板',
+      templateConfigDesc: '设置通知模板，支持Jinja2语法。',
       templateSaveFailed: '模板保存失败！',
       templateSaveSuccess: '模板保存成功',
       templateLoadFailed: '模板加载失败！',
@@ -1869,7 +1872,7 @@ export default {
     renamingAll: '正在重命名 {path} 及目录内所有文件...',
     close: '关闭',
     loadingDirectoryStructure: '加载目录结构...',
-    reorganize: '重新整理',
+    reorganize: '整理',
   },
   person: {
     alias: '别名：',

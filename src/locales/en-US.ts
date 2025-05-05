@@ -726,6 +726,7 @@ export default {
     filterEdition: 'Edition',
     filterResolution: 'Resolution',
     filterReleaseGroup: 'Release Group',
+    noMatchingResults: 'No matching data',
   },
   calendar: {
     episode: 'Episode {number}',
@@ -792,6 +793,7 @@ export default {
   },
   site: {
     noSites: 'No Sites',
+    noFilterData: 'No matching sites found',
     sitesWillBeShownHere: 'Added and supported sites will be displayed here.',
     title: 'Site',
     status: {
@@ -1120,7 +1122,8 @@ export default {
       downloadAdded: 'Download Added',
       subscribeAdded: 'Subscribe Added', 
       subscribeComplete: 'Subscribe Complete',
-      templateConfig: 'Template Configuration',
+      templateConfigTitle: 'Message Template',
+      templateConfigDesc: 'Set message template, support Jinja2 syntax.',
       templateSaveFailed: 'Failed to save template!',
       templateSaveSuccess: 'Template saved successfully',
       templateLoadFailed: 'Failed to load template!',

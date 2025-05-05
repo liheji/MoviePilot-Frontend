@@ -7,6 +7,7 @@ import NotificationChannelCard from '@/components/cards/NotificationChannelCard.
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { notificationSwitchDict } from '@/api/constants'
+import { useTheme } from 'vuetify'
 
 // 国际化
 const { t } = useI18n()
@@ -16,28 +17,34 @@ const templateConfigs = ref<Record<string, string>>({
   organizeSuccess: '{}',
   downloadAdded: '{}',
   subscribeAdded: '{}',
-  subscribeComplete: '{}'
+  subscribeComplete: '{}',
 })
 
 // 模板类型配置
 const templateTypes = ref([
-  { 
+  {
     type: 'organizeSuccess',
-    label: t('setting.notification.organizeSuccess')
+    label: t('setting.notification.organizeSuccess'),
   },
   {
     type: 'downloadAdded',
-    label: t('setting.notification.downloadAdded')
+    label: t('setting.notification.downloadAdded'),
   },
-  { 
+  {
     type: 'subscribeAdded',
-    label: t('setting.notification.subscribeAdded')
+    label: t('setting.notification.subscribeAdded'),
   },
-  { 
+  {
     type: 'subscribeComplete',
-    label: t('setting.notification.subscribeComplete')
-  }
+    label: t('setting.notification.subscribeComplete'),
+  },
 ])
+
+// 编辑器主题
+const { name: themeName, global: globalTheme } = useTheme()
+const savedTheme = ref(localStorage.getItem('theme') ?? themeName)
+const currentThemeName = ref(savedTheme.value)
+const editorTheme = computed(() => (currentThemeName.value === 'light' ? 'github' : 'monokai'))
 
 // 所有消息渠道
 const notifications = ref<NotificationConf[]>([])
@@ -153,7 +160,7 @@ async function saveTemplate() {
   try {
     await api.post('system/setting/NotificationTemplates', {
       ...templateConfigs.value,
-      [currentTemplate.value]: editorContent.value
+      [currentTemplate.value]: editorContent.value,
     })
     $toast.success(t('setting.notification.templateSaveSuccess'))
     editorVisible.value = false
@@ -286,7 +293,7 @@ onMounted(() => {
               <VBtn mtype="submit" @click="saveNotificationSetting"> {{ t('common.save') }} </VBtn>
               <VBtn color="success" variant="tonal">
                 <VIcon icon="mdi-plus" />
-                <VMenu activator="parent" close-on-content-click>
+                <VMenu :activator="'parent'" :close-on-content-click="true">
                   <VList>
                     <VListItem @click="addNotification('wechat')">
                       <VListItemTitle>{{ t('setting.notification.wechat') }}</VListItemTitle>
@@ -315,33 +322,46 @@ onMounted(() => {
       </VCard>
     </VCol>
   </VRow>
-  <VCard>
-    <VCardItem>
-      <VCardTitle>{{ t('setting.notification.templateConfig') }}</VCardTitle>
-    </VCardItem>
-    <VCardText>
-      <VRow>
-        <VCol
-          v-for="item in templateTypes"
-          :key="item.type"
-          cols="12"
-          sm="6"
-          lg="3"
-        >
-          <VCard
-            variant="tonal"
-            @click="openEditor(item.type)"
-          >
-            <VCardText>
-              <div class="text-h6 align-center">
-                {{ item.label }}
-              </div>
-            </VCardText>
-          </VCard>
-        </VCol>
-      </VRow>
-    </VCardText>
-  </VCard>
+  <VRow>
+    <VCol cols="12">
+      <VCard>
+        <VCardItem>
+          <VCardTitle>{{ t('setting.notification.templateConfigTitle') }}</VCardTitle>
+          <VCardSubtitle>{{ t('setting.notification.templateConfigDesc') }}</VCardSubtitle>
+        </VCardItem>
+        <VCardText>
+          <VRow>
+            <VCol v-for="item in templateTypes" :key="item.type" cols="12" sm="6" md="3">
+              <VCard variant="tonal" class="template-card" :class="{ 'on-hover': true }" @click="openEditor(item.type)">
+                <VCardItem>
+                  <template #prepend>
+                    <VAvatar color="primary" variant="tonal" rounded size="42" class="me-3">
+                      <VIcon
+                        size="24"
+                        :icon="
+                          item.type === 'organizeSuccess'
+                            ? 'mdi-folder-check'
+                            : item.type === 'downloadAdded'
+                            ? 'mdi-download'
+                            : item.type === 'subscribeAdded'
+                            ? 'mdi-rss'
+                            : 'mdi-check-circle'
+                        "
+                      />
+                    </VAvatar>
+                  </template>
+                  <VCardTitle>{{ item.label }}</VCardTitle>
+                  <template #append>
+                    <VIcon icon="mdi-chevron-right" />
+                  </template>
+                </VCardItem>
+              </VCard>
+            </VCol>
+          </VRow>
+        </VCardText>
+      </VCard>
+    </VCol>
+  </VRow>
   <VRow>
     <VCol cols="12">
       <VCard>
@@ -418,29 +438,27 @@ onMounted(() => {
     :indeterminate="true"
   />
   <!-- 模板编辑器对话框 -->
-<VDialog v-model="editorVisible" max-width="800">
-  <VCard>
-    <VCardTitle>{{ templateTypes.find(t => t.type === currentTemplate)?.label }}</VCardTitle>
-    <VCardText>
-      <VAceEditor
-        v-model:value="editorContent"
-        lang="json"
-        theme="monokai"
-        style="block-size: 30rem"
-        class="rounded"
-      />
-    </VCardText>
-    <VCardActions>
-      <VSpacer />
-      <VBtn color="primary" @click="saveTemplate">
-        {{ t('common.save') }}
-      </VBtn>
-      <VBtn @click="editorVisible = false">
-        {{ t('common.cancel') }}
-      </VBtn>
-    </VCardActions>
-  </VCard>
-</VDialog>
+  <VDialog v-model="editorVisible" v-if="editorVisible" max-width="50rem">
+    <VCard>
+      <VCardItem>
+        <VCardTitle>{{ templateTypes.find(t => t.type === currentTemplate)?.label }}消息模板</VCardTitle>
+        <VDialogCloseBtn @click="editorVisible = false" />
+      </VCardItem>
+      <VCardText class="py-0">
+        <VAceEditor
+          v-model:value="editorContent"
+          lang="json"
+          :theme="editorTheme"
+          class="w-full min-h-[30rem] rounded"
+        />
+      </VCardText>
+      <VCardActions class="mx-auto pt-3">
+        <VBtn variant="elevated" color="primary" @click="saveTemplate" prepend-icon="mdi-content-save" class="px-5">
+          {{ t('common.save') }}
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 <style scoped>
 /* Monaco编辑器容器样式 */
@@ -449,5 +467,14 @@ onMounted(() => {
   border-radius: 8px;
   overflow: hidden;
   margin-top: 1rem;
+}
+
+.template-card {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.template-card.on-hover:hover {
+  transform: translateY(-4px);
 }
 </style>

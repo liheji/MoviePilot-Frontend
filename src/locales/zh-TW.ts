@@ -724,6 +724,7 @@ export default {
     filterEdition: '质量',
     filterResolution: '分辨率',
     filterReleaseGroup: '製作組',
+    noMatchingResults: '沒有數據',
   },
   calendar: {
     episode: '第{number}集',
@@ -791,6 +792,7 @@ export default {
   },
   site: {
     noSites: '沒有站點',
+    noFilterData: '沒有符合條件的站點',
     sitesWillBeShownHere: '已添加並支持的站點將會在這裡顯示。',
     title: '站點',
     status: {
@@ -1108,9 +1110,10 @@ export default {
       channelsDesc: '設置消息發送渠道參數。',
       organizeSuccess: '資源入庫',
       downloadAdded: '資源下載',
-      subscribeAdded: '訂閱添加',
+      subscribeAdded: '添加訂閱',
       subscribeComplete: '訂閱完成',
-      templateConfig: '消息模板配置',
+      templateConfigTitle: '通知模板',
+      templateConfigDesc: '設置通知模板，支持Jinja2語法。',
       templateSaveFailed: '模板保存失敗！',
       templateSaveSuccess: '模板保存成功',
       templateLoadFailed: '模板載入失敗！',
