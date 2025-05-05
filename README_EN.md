@@ -2,39 +2,55 @@
 
 *[中文](README.md) | English*
 
-Frontend project for [MoviePilot](https://github.com/jxxghp/MoviePilot), NodeJS version: >= `v20.12.1`.
+Frontend project for [MoviePilot](https://github.com/jxxghp/MoviePilot), NodeJS version required: >= `v20.12.1`.
+
+## Features
+
+- Modern interface built with Vue 3 and Vuetify 3
+- Fast development experience with Vite build tool
+- Multi-language support (Chinese/English)
+- Complete plugin system with dynamic remote component loading
+
+## Module Federation
+
+MoviePilot now supports Module Federation, allowing plugin developers to create dynamically loadable remote components for richer plugin user interfaces.
+
+### Documentation
+
+- [Module Federation Troubleshooting Guide](docs/federation-troubleshooting.md) - Common issues and solutions
+- [Plugin Remote Component Example](examples/plugin-component/) - Complete example project for developing plugin components
 
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (disable Vetur).
 
-## Vite Configuration
+## Configure Vite 
 
-Please refer to [Vite Configuration Reference](https://vitejs.dev/config/).
+See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-## Installation
+## Install Dependencies
 
 ```sh
 yarn
 ```
 
-### Development
+### Development Server
 
 ```sh
 yarn dev
 ```
 
-### Build
+### Build for Production
 
 ```sh
 yarn build
 ```
 
-### Production Deployment
+### Static Deployment
 
-1. Use `nginx` or other web servers to host the `dist` static files. See `public/nginx.conf` for nginx configuration reference.
+1. Host the `dist` static files using a web server like `nginx`. Refer to `public/nginx.conf` for nginx configuration.
 
-2. Use `node` command to run `service.js` directly. It listens on port `3000` by default. Set the environment variable `NGINX_PORT` to adjust the port.
+2. Alternatively, run the `service.js` directly with the `node` command. It listens on port `3000` by default. Set the `NGINX_PORT` environment variable to adjust the port.
 
 ```shell
 node dist/service.js

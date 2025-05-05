@@ -34,9 +34,8 @@ export default defineConfig({
     }),
     federation({
       name: 'host',
-      remotes: {
-        // 这里我们会动态添加远程组件，所以不预设remotes
-      },
+      remotes: {},
+      exposes: {},
       shared: ['vue', 'vuetify'],
     }),
     VitePWA({
@@ -162,6 +161,7 @@ export default defineConfig({
     },
   },
   build: {
+    target: 'esnext',
     minify: 'terser',
     terserOptions: {
       compress: {
