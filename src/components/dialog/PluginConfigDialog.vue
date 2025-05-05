@@ -7,7 +7,12 @@ import { useToast } from 'vue-toast-notification'
 import FormRender from '../render/FormRender.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { loadRemoteComponent, clearRemoteComponentCache } from '@/utils/remoteFederationLoader'
+import {
+  loadRemoteComponent,
+  clearRemoteComponentCache,
+  registerRemoteComponent,
+  getRemoteComponent,
+} from '@/utils/remoteFederationLoader'
 
 // 国际化
 const { t } = useI18n()
@@ -52,6 +57,14 @@ const vueComponentUrl = ref<string | null>(null)
 //  Vue 模式：动态加载的组件
 const dynamicComponent = computed(() => {
   if (renderMode.value === 'vue' && vueComponentUrl.value) {
+    // 检查是否已经注册，如果没有则进行注册
+    const remoteInfo = props.plugin?.id ? getRemoteComponent(props.plugin.id) : null
+    if (!remoteInfo && props.plugin?.id) {
+      // 动态注册远程组件
+      registerRemoteComponent(props.plugin.id, vueComponentUrl.value)
+    }
+
+    // 加载远程组件
     return loadRemoteComponent(vueComponentUrl.value, {
       onError: error => {
         console.error(`加载插件组件失败: ${vueComponentUrl.value}`, error)

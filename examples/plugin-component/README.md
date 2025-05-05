@@ -116,6 +116,33 @@ yarn build
 
 构建后的 `dist/remoteEntry.js` 是远程组件的入口文件，需要配置到后端让 MoviePilot 能够访问。
 
+## 插件后端配置
+
+在插件的后端代码中，需要实现以下方法来提供组件信息：
+
+```python
+def get_render_mode() -> str:
+    """
+    获取插件渲染模式
+    :return: 渲染模式，支持：vue/vuetify，默认vuetify
+    """
+    return "vue"
+
+def get_form_file() -> Tuple[str, Dict[str, Any]]:
+    """
+    获取插件配置页面JS代码源文件（与get_from二选一使用）
+    :return: 1、编译后的JS代码插件目录下相对路径；2、默认数据结构
+    """
+    return "/dist/page.js", {}
+
+def get_page_file() -> Optional[str]:
+    """
+    获取插件数据页面JS代码源文件（与get_page二选一使用）
+    :return: 编译后的JS代码插件目录下相对路径
+    """
+    return "/dist/config.js", {}
+```
+
 ## 排查常见问题
 
 ### 顶层 await 报错

@@ -4,6 +4,16 @@
 
 关联阅读后端插件开发文档：[第三方插件开发说明](https://github.com/jxxghp/MoviePilot-Plugins/blob/main/README.md)
 
+## 远程组件注册机制
+
+MoviePilot 使用自动注册机制来加载远程组件：
+
+1. 对于使用 Vue 渲染模式的插件，自动注册其远程组件
+2. 每个远程组件根据插件 ID 唯一标识，确保不会冲突
+3. 在需要加载组件时，会优先检查已注册的组件信息
+
+这种设计使得插件开发者只需专注于组件开发，而不需要担心加载机制的复杂性。
+
 ## 常见错误
 
 ### 1. "Module name 'vue' does not resolve to a valid URL"

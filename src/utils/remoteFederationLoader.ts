@@ -16,6 +16,51 @@ interface RemoteModuleState {
 // 已加载组件的缓存
 const loadedRemotes: Record<string, RemoteModuleState> = {}
 
+// 动态注册的远程组件映射
+interface RemotePluginInfo {
+  url: string
+  pluginId: string
+  moduleName: string
+}
+
+// 已注册的远程模块
+const registeredRemotes: Record<string, RemotePluginInfo> = {}
+
+/**
+ * 动态注册远程组件
+ * @param pluginId 插件ID
+ * @param remoteUrl 远程组件URL
+ * @returns 注册成功返回true，否则返回false
+ */
+export async function registerRemoteComponent(pluginId: string, remoteUrl: string): Promise<boolean> {
+  try {
+    // 生成远程模块名称（使用插件ID作为标识）
+    const moduleName = `plugin_${pluginId.replace(/[^a-zA-Z0-9_]/g, '_')}`
+
+    // 注册到映射表中
+    registeredRemotes[pluginId] = {
+      url: remoteUrl,
+      pluginId,
+      moduleName,
+    }
+
+    console.log(`已注册远程组件: ${pluginId} -> ${moduleName} (${remoteUrl})`)
+    return true
+  } catch (error) {
+    console.error(`注册远程组件失败: ${pluginId}`, error)
+    return false
+  }
+}
+
+/**
+ * 获取远程组件信息
+ * @param pluginId 插件ID
+ * @returns 远程组件信息
+ */
+export function getRemoteComponent(pluginId: string): RemotePluginInfo | null {
+  return registeredRemotes[pluginId] || null
+}
+
 /**
  * 获取和初始化远程组件
  * @param remoteUrl 远程组件URL
@@ -126,4 +171,14 @@ export function clearRemoteComponentCache(remoteUrl?: string) {
       delete loadedRemotes[key]
     })
   }
+}
+
+// 取消注册远程组件
+export function unregisterRemoteComponent(pluginId: string) {
+  if (registeredRemotes[pluginId]) {
+    delete registeredRemotes[pluginId]
+    console.log(`已取消注册远程组件: ${pluginId}`)
+    return true
+  }
+  return false
 }

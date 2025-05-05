@@ -12,8 +12,12 @@ import MediaServerLibrary from '@/views/dashboard/MediaServerLibrary.vue'
 import MediaServerPlaying from '@/views/dashboard/MediaServerPlaying.vue'
 import DashboardRender from '@/components/render/DashboardRender.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
-import api from '@/api'
-import { loadRemoteComponent, clearRemoteComponentCache } from '@/utils/remoteFederationLoader'
+import {
+  loadRemoteComponent,
+  clearRemoteComponentCache,
+  registerRemoteComponent,
+  getRemoteComponent,
+} from '@/utils/remoteFederationLoader'
 
 // 输入参数
 const props = defineProps({
@@ -37,6 +41,16 @@ const pluginRenderMode = computed(() => props.config?.render_mode || 'vuetify')
 const dynamicPluginComponent = computed(() => {
   // 确保 config 存在并且 component_url 也存在
   if (pluginRenderMode.value === 'vue' && props.config?.component_url) {
+    // 如果有插件ID，尝试注册远程组件
+    if (props.config.id) {
+      const remoteInfo = getRemoteComponent(props.config.id)
+      if (!remoteInfo) {
+        // 动态注册远程组件
+        registerRemoteComponent(props.config.id, props.config.component_url)
+      }
+    }
+
+    // 加载远程组件
     return loadRemoteComponent(props.config.component_url, {
       onError: error => {
         console.error(`加载插件组件失败: ${props.config?.component_url}`, error)
