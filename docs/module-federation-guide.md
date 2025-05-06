@@ -203,7 +203,7 @@ npm run build
 
 ### 7.1 注册远程组件API
 
-后端需要实现以下API用于注册远程组件（已公共实现，插件按第三方插件开发要求实现`get_form_file`、`get_page_file`和`get_dashboard_file`即可）：
+后端需要实现以下API用于注册远程组件（已公共实现，插件后端按第三方插件开发要求实现即可）：
 
 ```
 GET /api/plugins/remotes
