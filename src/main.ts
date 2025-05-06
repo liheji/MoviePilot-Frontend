@@ -20,6 +20,7 @@ import { CronVuetify } from '@vue-js-cron/vuetify'
 // 4. 工具函数和其他辅助模块
 import { fetchGlobalSettings } from './api'
 import { isPWA } from './@core/utils/navigator'
+import { loadRemoteComponents } from './utils/federationLoader'
 
 // 5. 其他插件和功能模块
 import ToastPlugin from 'vue-toast-notification'
@@ -60,6 +61,9 @@ async function initializeApp() {
     // 全局设置
     const globalSettings = await fetchGlobalSettings()
     app.provide('globalSettings', globalSettings)
+
+    // 加载并注册远程联邦组件
+    await loadRemoteComponents()
   } catch (error) {
     console.error('Failed to initialize app', error)
   }

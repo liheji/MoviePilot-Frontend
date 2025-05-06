@@ -7,12 +7,14 @@ import { useToast } from 'vue-toast-notification'
 import FormRender from '../render/FormRender.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { defineAsyncComponent } from 'vue'
 import {
   loadRemoteComponent,
   clearRemoteComponentCache,
-  registerRemoteComponent,
-  getRemoteComponent,
-} from '@/utils/remoteFederationLoader'
+  registerRemotePlugin,
+  isRemoteComponentLoaded,
+  ComponentType,
+} from '@/utils/federationLoader'
 
 // 国际化
 const { t } = useI18n()
@@ -51,28 +53,54 @@ const isRefreshed = ref(false)
 // 渲染模式: 'vuetify' 或 'vue'
 const renderMode = ref('vuetify')
 
-//Vue 模式：组件 URL
-const vueComponentUrl = ref<string | null>(null)
+// 挂载状态
+const componentMounted = ref(false)
 
-//  Vue 模式：动态加载的组件
-const dynamicComponent = computed(() => {
-  if (renderMode.value === 'vue' && vueComponentUrl.value) {
-    // 检查是否已经注册，如果没有则进行注册
-    const remoteInfo = props.plugin?.id ? getRemoteComponent(props.plugin.id) : null
-    if (!remoteInfo && props.plugin?.id) {
-      // 动态注册远程组件
-      registerRemoteComponent(props.plugin.id, vueComponentUrl.value)
+// Vue 模式：动态加载的组件
+const dynamicComponent = defineAsyncComponent({
+  loader: async () => {
+    if (renderMode.value !== 'vue' || !props.plugin?.id) {
+      return { render: () => null }
     }
 
-    // 加载远程组件
-    return loadRemoteComponent(vueComponentUrl.value, {
-      onError: error => {
-        console.error(`加载插件组件失败: ${vueComponentUrl.value}`, error)
-        $toast.error(`加载插件组件失败: ${error.message || '未知错误'}`)
-      },
-    })
-  }
-  return null
+    try {
+      componentMounted.value = false
+
+      // 确保插件已注册
+      if (!isRemoteComponentLoaded(props.plugin.id, ComponentType.CONFIG)) {
+        await registerRemotePlugin(props.plugin.id)
+      }
+
+      // 加载配置组件
+      const component = await loadRemoteComponent(props.plugin.id, ComponentType.CONFIG)
+      componentMounted.value = true
+
+      if (!component) {
+        throw new Error('组件加载失败')
+      }
+
+      return component
+    } catch (error: any) {
+      console.error(`加载插件配置组件失败: ${props.plugin.id}`, error)
+      $toast.error(`加载插件组件失败: ${error.message || '未知错误'}`)
+      return {
+        render: () => h('div', { class: 'text-error pa-4' }, `加载失败: ${error.message || '未知错误'}`),
+      }
+    }
+  },
+  loadingComponent: {
+    render: () =>
+      h('div', { class: 'text-center pa-4' }, [
+        h('v-progress-circular', { indeterminate: true, class: 'mr-2' }),
+        '加载组件中...',
+      ]),
+  },
+  errorComponent: {
+    render: () => h('div', { class: 'text-error pa-4 text-center' }, '组件加载失败'),
+  },
+  onError: error => {
+    console.error('加载插件组件出错', error)
+  },
 })
 
 //调用API读取UI和配置数据
@@ -82,12 +110,12 @@ async function loadPluginUIData() {
   pluginFormItems = []
   pluginConfigForm.value = {}
   renderMode.value = 'vuetify'
+  componentMounted.value = false
 
-  // 如果存在旧的组件URL，清除其缓存
-  if (vueComponentUrl.value) {
-    clearRemoteComponentCache(vueComponentUrl.value)
+  // 清除组件缓存
+  if (props.plugin?.id) {
+    clearRemoteComponentCache(props.plugin.id)
   }
-  vueComponentUrl.value = null
 
   try {
     // 获取UI定义
@@ -98,14 +126,14 @@ async function loadPluginUIData() {
     }
     renderMode.value = result.render_mode
     if (renderMode.value === 'vue') {
-      // 使用 component_url
-      vueComponentUrl.value = result.component_url
+      // 注册远程插件 (如果提供了组件URL，则使用它)
+      if (props.plugin?.id) {
+        registerRemotePlugin(props.plugin.id, result.component_url)
+      }
+
       // Vue模式下，初始配置在同一个API返回
       if (!isNullOrEmptyObject(result.model)) {
         pluginConfigForm.value = result.model
-      }
-      if (!vueComponentUrl.value) {
-        console.error(`插件 ${props.plugin?.plugin_name} 配置错误：未提供Vue组件URL`)
       }
     } else {
       // Vuetify模式
@@ -153,8 +181,8 @@ onBeforeMount(async () => {
 
 // 组件卸载时清理资源
 onUnmounted(() => {
-  if (vueComponentUrl.value) {
-    clearRemoteComponentCache(vueComponentUrl.value)
+  if (props.plugin?.id) {
+    clearRemoteComponentCache(props.plugin.id, ComponentType.CONFIG)
   }
 })
 </script>
@@ -170,7 +198,7 @@ onUnmounted(() => {
           <div v-if="!pluginFormItems || pluginFormItems.length === 0">此插件没有可配置项</div>
         </div>
         <!-- Vue 渲染模式 -->
-        <div v-else-if="renderMode === 'vue' && dynamicComponent">
+        <div v-else-if="renderMode === 'vue'">
           <component :is="dynamicComponent" :initial-config="pluginConfigForm" @save="handleVueComponentSave" />
         </div>
         <!-- 加载中或错误 -->

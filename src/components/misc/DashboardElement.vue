@@ -12,12 +12,14 @@ import MediaServerLibrary from '@/views/dashboard/MediaServerLibrary.vue'
 import MediaServerPlaying from '@/views/dashboard/MediaServerPlaying.vue'
 import DashboardRender from '@/components/render/DashboardRender.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
+import { defineAsyncComponent } from 'vue'
 import {
   loadRemoteComponent,
   clearRemoteComponentCache,
-  registerRemoteComponent,
-  getRemoteComponent,
-} from '@/utils/remoteFederationLoader'
+  registerRemotePlugin,
+  isRemoteComponentLoaded,
+  ComponentType,
+} from '@/utils/federationLoader'
 
 // 输入参数
 const props = defineProps({
@@ -37,27 +39,53 @@ const emit = defineEmits(['update:refreshStatus'])
 // 插件UI渲染模式 ('vuetify' 或 'vue')
 const pluginRenderMode = computed(() => props.config?.render_mode || 'vuetify')
 
+// 挂载状态
+const componentMounted = ref(false)
+
 // Vue 模式：动态加载的组件
-const dynamicPluginComponent = computed(() => {
-  // 确保 config 存在并且 component_url 也存在
-  if (pluginRenderMode.value === 'vue' && props.config?.component_url) {
-    // 如果有插件ID，尝试注册远程组件
-    if (props.config.id) {
-      const remoteInfo = getRemoteComponent(props.config.id)
-      if (!remoteInfo) {
-        // 动态注册远程组件
-        registerRemoteComponent(props.config.id, props.config.component_url)
-      }
+const dynamicPluginComponent = defineAsyncComponent({
+  loader: async () => {
+    if (pluginRenderMode.value !== 'vue' || !props.config?.id) {
+      return { render: () => null }
     }
 
-    // 加载远程组件
-    return loadRemoteComponent(props.config.component_url, {
-      onError: error => {
-        console.error(`加载插件组件失败: ${props.config?.component_url}`, error)
-      },
-    })
-  }
-  return null
+    try {
+      componentMounted.value = false
+
+      // 确保插件已注册
+      if (!isRemoteComponentLoaded(props.config.id, ComponentType.DASHBOARD)) {
+        await registerRemotePlugin(props.config.id, props.config.component_url)
+      }
+
+      // 加载仪表板组件
+      const component = await loadRemoteComponent(props.config.id, ComponentType.DASHBOARD)
+      componentMounted.value = true
+
+      if (!component) {
+        throw new Error('组件加载失败')
+      }
+
+      return component
+    } catch (error: any) {
+      console.error(`加载插件仪表板组件失败: ${props.config.id}`, error)
+      return {
+        render: () => h('div', { class: 'text-error pa-4' }, `加载失败: ${error.message || '未知错误'}`),
+      }
+    }
+  },
+  loadingComponent: {
+    render: () =>
+      h('div', { class: 'text-center pa-4' }, [
+        h('v-progress-circular', { indeterminate: true, class: 'mr-2' }),
+        '加载组件中...',
+      ]),
+  },
+  errorComponent: {
+    render: () => h('div', { class: 'text-error pa-4 text-center' }, '组件加载失败'),
+  },
+  onError: error => {
+    console.error('加载插件组件出错', error)
+  },
 })
 
 onUnmounted(() => {
@@ -65,8 +93,8 @@ onUnmounted(() => {
   emit('update:refreshStatus', false)
 
   // 清理远程组件缓存
-  if (pluginRenderMode.value === 'vue' && props.config?.component_url) {
-    clearRemoteComponentCache(props.config.component_url)
+  if (props.config?.id) {
+    clearRemoteComponentCache(props.config.id, ComponentType.DASHBOARD)
   }
 })
 </script>
@@ -85,7 +113,7 @@ onUnmounted(() => {
   <!-- 插件仪表板 -->
   <template v-else-if="!isNullOrEmptyObject(props.config)">
     <!-- Vue 渲染模式 -->
-    <div v-if="pluginRenderMode === 'vue' && dynamicPluginComponent">
+    <div v-if="pluginRenderMode === 'vue'">
       <component :is="dynamicPluginComponent" :config="props.config" :allow-refresh="props.allowRefresh" />
       <!-- Vue 模式下也可以显示拖拽句柄 -->
       <div class="absolute right-5 top-5">

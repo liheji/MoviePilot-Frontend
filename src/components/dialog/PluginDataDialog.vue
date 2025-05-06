@@ -4,12 +4,14 @@ import type { Plugin } from '@/api/types'
 import PageRender from '@/components/render/PageRender.vue'
 import api from '@/api'
 import { useToast } from 'vue-toast-notification'
+import { defineAsyncComponent } from 'vue'
 import {
   loadRemoteComponent,
   clearRemoteComponentCache,
-  registerRemoteComponent,
-  getRemoteComponent,
-} from '@/utils/remoteFederationLoader'
+  registerRemotePlugin,
+  isRemoteComponentLoaded,
+  ComponentType,
+} from '@/utils/federationLoader'
 
 // 输入参数
 const props = defineProps({
@@ -35,31 +37,57 @@ const isRefreshed = ref(false)
 // 渲染模式: 'vuetify' 或 'vue'
 const renderMode = ref('vuetify')
 
-// Vue 模式：组件 URL
-const vueComponentUrl = ref<string | null>(null)
+// 挂载状态
+const componentMounted = ref(false)
 
 // 插件数据页面配置项
 let pluginPageItems = ref([])
 
-//  Vue 模式：动态加载的组件
-const dynamicComponent = computed(() => {
-  if (renderMode.value === 'vue' && vueComponentUrl.value) {
-    // 检查是否已经注册，如果没有则进行注册
-    const remoteInfo = props.plugin?.id ? getRemoteComponent(props.plugin.id) : null
-    if (!remoteInfo && props.plugin?.id) {
-      // 动态注册远程组件
-      registerRemoteComponent(props.plugin.id, vueComponentUrl.value)
+// Vue 模式：动态加载的组件
+const dynamicComponent = defineAsyncComponent({
+  loader: async () => {
+    if (renderMode.value !== 'vue' || !props.plugin?.id) {
+      return { render: () => null }
     }
 
-    // 加载远程组件
-    return loadRemoteComponent(vueComponentUrl.value, {
-      onError: error => {
-        console.error(`加载插件组件失败: ${vueComponentUrl.value}`, error)
-        $toast.error(`加载插件组件失败: ${error.message || '未知错误'}`)
-      },
-    })
-  }
-  return null
+    try {
+      componentMounted.value = false
+
+      // 确保插件已注册
+      if (!isRemoteComponentLoaded(props.plugin.id, ComponentType.PAGE)) {
+        await registerRemotePlugin(props.plugin.id)
+      }
+
+      // 加载页面组件
+      const component = await loadRemoteComponent(props.plugin.id, ComponentType.PAGE)
+      componentMounted.value = true
+
+      if (!component) {
+        throw new Error('组件加载失败')
+      }
+
+      return component
+    } catch (error: any) {
+      console.error(`加载插件页面组件失败: ${props.plugin.id}`, error)
+      $toast.error(`加载插件组件失败: ${error.message || '未知错误'}`)
+      return {
+        render: () => h('div', { class: 'text-error pa-4' }, `加载失败: ${error.message || '未知错误'}`),
+      }
+    }
+  },
+  loadingComponent: {
+    render: () =>
+      h('div', { class: 'text-center pa-4' }, [
+        h('v-progress-circular', { indeterminate: true, class: 'mr-2' }),
+        '加载组件中...',
+      ]),
+  },
+  errorComponent: {
+    render: () => h('div', { class: 'text-error pa-4 text-center' }, '组件加载失败'),
+  },
+  onError: error => {
+    console.error('加载插件组件出错', error)
+  },
 })
 
 // 调用API读取数据页面UI
@@ -67,12 +95,12 @@ async function loadPluginUIData() {
   isRefreshed.value = false
   pluginPageItems.value = []
   renderMode.value = 'vuetify'
+  componentMounted.value = false
 
-  // 如果存在旧的组件URL，清除其缓存
-  if (vueComponentUrl.value) {
-    clearRemoteComponentCache(vueComponentUrl.value)
+  // 清除组件缓存
+  if (props.plugin?.id) {
+    clearRemoteComponentCache(props.plugin.id)
   }
-  vueComponentUrl.value = null
 
   try {
     const result: { [key: string]: any } = await api.get(`plugin/page/${props.plugin?.id}`)
@@ -80,14 +108,15 @@ async function loadPluginUIData() {
       console.error(`插件 ${props.plugin?.plugin_name} UI数据加载失败：无效的响应`)
       return
     }
+
     renderMode.value = result.render_mode
     if (renderMode.value === 'vue') {
-      vueComponentUrl.value = result.component_url
-      if (!vueComponentUrl.value) {
-        console.error(`插件 ${props.plugin?.plugin_name} 配置错误：未提供Vue组件URL`)
-        renderMode.value = 'vuetify'
+      // 注册远程插件 (如果提供了组件URL，则使用它)
+      if (props.plugin?.id) {
+        registerRemotePlugin(props.plugin.id, result.component_url)
       }
     } else {
+      // Vuetify模式
       pluginPageItems.value = result.page || []
     }
   } catch (error: any) {
@@ -96,6 +125,7 @@ async function loadPluginUIData() {
     isRefreshed.value = true
   }
 }
+
 // 重新加载数据（可由 PageRender 或 Vue component 触发）
 function handleAction() {
   loadPluginUIData()
@@ -107,8 +137,8 @@ onMounted(() => {
 
 // 组件卸载时清理资源
 onUnmounted(() => {
-  if (vueComponentUrl.value) {
-    clearRemoteComponentCache(vueComponentUrl.value)
+  if (props.plugin?.id) {
+    clearRemoteComponentCache(props.plugin.id, ComponentType.PAGE)
   }
 })
 </script>
@@ -124,7 +154,7 @@ onUnmounted(() => {
           <div v-if="!pluginPageItems || pluginPageItems.length === 0">此插件没有详情页面</div>
         </div>
         <!-- Vue 渲染模式 -->
-        <div v-else-if="renderMode === 'vue' && dynamicComponent">
+        <div v-else-if="renderMode === 'vue'">
           <component :is="dynamicComponent" @action="handleAction" />
         </div>
       </VCardText>

@@ -34,9 +34,18 @@ export default defineConfig({
     }),
     federation({
       name: 'host',
-      remotes: {},
-      exposes: {},
-      shared: ['vue', 'vuetify'],
+      filename: 'remoteEntry.js',
+      remotes: {
+        // 动态remotes将在运行时通过__FEDERATION__注入
+      },
+      shared: {
+        vue: {
+          requiredVersion: false,
+        },
+        vuetify: {
+          requiredVersion: false,
+        },
+      },
     }),
     VitePWA({
       injectRegister: 'script',
