@@ -181,24 +181,6 @@ const props = defineProps({
 npm run build
 ```
 
-### 输出文件
-
-构建后会在`dist`目录生成以下核心文件：
-
-- `remoteEntry.js` - 模块联邦入口文件
-- `Page.js` - 详情页面组件
-- `Config.js` - 配置页面组件
-- `Dashboard.js` - 仪表板组件
-
-### 部署要求
-
-这些文件需要部署到后端，并通过以下URL可访问：
-
-- `/api/v1/plugin/file/{插件ID}/dist/remoteEntry.js`
-- `/api/v1/plugin/file/{插件ID}/dist/Page.js`
-- `/api/v1/plugin/file/{插件ID}/dist/Config.js`
-- `/api/v1/plugin/file/{插件ID}/dist/Dashboard.js`
-
 ## 7. 后端API要求
 
 ### 7.1 注册远程组件API

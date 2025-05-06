@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { DashboardItem } from '@/api/types'
 import AnalyticsMediaStatistic from '@/views/dashboard/AnalyticsMediaStatistic.vue'
 import AnalyticsScheduler from '@/views/dashboard/AnalyticsScheduler.vue'
@@ -12,8 +13,7 @@ import MediaServerLibrary from '@/views/dashboard/MediaServerLibrary.vue'
 import MediaServerPlaying from '@/views/dashboard/MediaServerPlaying.vue'
 import DashboardRender from '@/components/render/DashboardRender.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
-import { defineAsyncComponent } from 'vue'
-import { loadRemoteComponent, clearRemoteComponentCache, ComponentType } from '@/utils/federationLoader'
+import { loadRemoteComponent } from '@/utils/federationLoader'
 
 // 输入参数
 const props = defineProps({
@@ -33,57 +33,66 @@ const emit = defineEmits(['update:refreshStatus'])
 // 插件UI渲染模式 ('vuetify' 或 'vue')
 const pluginRenderMode = computed(() => props.config?.render_mode || 'vuetify')
 
-// 挂载状态
-const componentMounted = ref(false)
+// 远程组件加载错误
+const remoteComponentError = ref<Error | string | null>(null)
 
 // Vue 模式：动态加载的组件
 const dynamicPluginComponent = defineAsyncComponent({
+  // 工厂函数
   loader: async () => {
-    if (pluginRenderMode.value !== 'vue' || !props.config?.id) {
-      return { render: () => null }
-    }
-
     try {
-      // 加载仪表板组件
-      componentMounted.value = false
-      const component = await loadRemoteComponent(props.config.id, ComponentType.DASHBOARD)
-      componentMounted.value = true
-
-      if (!component) {
-        throw new Error('组件加载失败')
+      if (!props.config?.id) {
+        throw new Error('插件ID不存在')
       }
 
-      return component
-    } catch (error: any) {
-      console.error(`加载插件仪表板组件失败: ${props.config.id}`, error)
+      // 动态加载远程组件
+      const module = await loadRemoteComponent(props.config.id, 'Dashboard')
+
+      // 返回组件
+      return module.default
+    } catch (error) {
+      console.error('加载远程组件失败:', error)
+      remoteComponentError.value = error instanceof Error ? error.message : String(error)
+      // 返回一个简单的错误组件
       return {
-        render: () => h('div', { class: 'text-error pa-4' }, `加载失败: ${error.message || '未知错误'}`),
+        template: `
+          <div class="pa-4">
+            <VAlert type="error" title="组件加载失败">
+              无法加载远程组件: {{ error }}
+            </VAlert>
+          </div>
+        `,
+        props: ['error'],
+        setup() {
+          return { error: remoteComponentError.value }
+        },
       }
     }
   },
+  // 加载中显示的组件
   loadingComponent: {
-    render: () =>
-      h('div', { class: 'text-center pa-4' }, [
-        h('VProgressCircular', { indeterminate: true, class: 'mr-2' }),
-        '加载组件中...',
-      ]),
+    template: '<VSkeletonLoader type="card"></VSkeletonLoader>',
   },
-  errorComponent: {
-    render: () => h('div', { class: 'text-error pa-4 text-center' }, '组件加载失败'),
-  },
-  onError: error => {
-    console.error('加载插件组件出错', error)
+  // 如果加载组件超时
+  timeout: 10000,
+  // 在显示loadingComponent之前的延迟 | 默认值：200（毫秒）
+  delay: 200,
+  // 定义组件是否可挂起 | 默认值：true
+  suspensible: false,
+  onError(error, retry, fail, attempts) {
+    if (attempts <= 3) {
+      // 重试3次
+      retry()
+    } else {
+      // 超过重试次数后不再重试
+      fail()
+    }
   },
 })
 
 onUnmounted(() => {
   // 组件卸载时禁用刷新状态
   emit('update:refreshStatus', false)
-
-  // 清理远程组件缓存
-  if (props.config?.id) {
-    clearRemoteComponentCache(props.config.id, ComponentType.DASHBOARD)
-  }
 })
 </script>
 <template>
@@ -103,6 +112,9 @@ onUnmounted(() => {
     <!-- Vue 渲染模式 -->
     <div v-if="pluginRenderMode === 'vue'">
       <component :is="dynamicPluginComponent" :config="props.config" :allow-refresh="props.allowRefresh" />
+      <div v-if="remoteComponentError" class="mt-2">
+        <VAlert type="error" title="组件加载失败"> 无法加载远程组件: {{ remoteComponentError }} </VAlert>
+      </div>
       <!-- Vue 模式下也可以显示拖拽句柄 -->
       <div class="absolute right-5 top-5">
         <VIcon class="cursor-move">mdi-drag</VIcon>

@@ -6,14 +6,15 @@ export default defineConfig({
   plugins: [
     vue(),
     federation({
-      name: 'my_plugin',
+      name: 'LogsClean',
       filename: 'remoteEntry.js',
       exposes: {
         './Page': './src/components/Page.vue',
         './Config': './src/components/Config.vue',
         './Dashboard': './src/components/Dashboard.vue',
       },
-      shared: ['vue', 'vuetify']
+      shared: ['vue', 'vuetify'],
+      format: 'esm'
     })
   ],
   build: {
@@ -23,6 +24,11 @@ export default defineConfig({
   },
   server: {
     port: 5001,   // 使用不同于主应用的端口
+    cors: true,   // 启用CORS
+    origin: 'http://localhost:5001'
+  },
+  preview: {
+    port: 5001,   // 保持与server相同的端口
     cors: true,   // 启用CORS
     origin: 'http://localhost:5001'
   }

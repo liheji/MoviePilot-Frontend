@@ -7,8 +7,7 @@ import { useToast } from 'vue-toast-notification'
 import FormRender from '../render/FormRender.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
-import { defineAsyncComponent } from 'vue'
-import { loadRemoteComponent, clearRemoteComponentCache, ComponentType } from '@/utils/federationLoader'
+import { loadRemoteComponent } from '@/utils/federationLoader'
 
 // 国际化
 const { t } = useI18n()
@@ -47,46 +46,60 @@ const isRefreshed = ref(false)
 // 渲染模式: 'vuetify' 或 'vue'
 const renderMode = ref('vuetify')
 
-// 挂载状态
-const componentMounted = ref(false)
+// 远程组件加载错误
+const remoteComponentError = ref<Error | string | null>(null)
 
 // Vue 模式：动态加载的组件
 const dynamicComponent = defineAsyncComponent({
+  // 工厂函数
   loader: async () => {
-    if (renderMode.value !== 'vue' || !props.plugin?.id) {
-      return { render: () => null }
-    }
-
     try {
-      // 加载配置组件
-      componentMounted.value = false
-      const component = await loadRemoteComponent(props.plugin.id, ComponentType.CONFIG)
-      componentMounted.value = true
-
-      if (!component) {
-        throw new Error('组件加载失败')
+      if (!props.plugin?.id) {
+        throw new Error('插件ID不存在')
       }
 
-      return component
-    } catch (error: any) {
-      console.error(`加载插件配置组件失败: ${props.plugin.id}`, error)
+      // 动态加载远程组件
+      const module = await loadRemoteComponent(props.plugin.id, 'Config')
+
+      // 返回组件
+      return module.default
+    } catch (error) {
+      console.error('加载远程组件失败:', error)
+      remoteComponentError.value = error instanceof Error ? error.message : String(error)
+      // 返回一个简单的错误组件
       return {
-        render: () => h('div', { class: 'text-error pa-4' }, `加载失败: ${error.message || '未知错误'}`),
+        template: `
+          <div class="pa-4">
+            <VAlert type="error" title="组件加载失败">
+              无法加载远程组件: {{ error }}
+            </VAlert>
+          </div>
+        `,
+        props: ['error'],
+        setup() {
+          return { error: remoteComponentError.value }
+        },
       }
     }
   },
+  // 加载中显示的组件
   loadingComponent: {
-    render: () =>
-      h('div', { class: 'text-center pa-4' }, [
-        h('VProgressCircular', { indeterminate: true, class: 'mr-2' }),
-        '加载组件中...',
-      ]),
+    template: '<VSkeletonLoader type="card"></VSkeletonLoader>',
   },
-  errorComponent: {
-    render: () => h('div', { class: 'text-error pa-4 text-center' }, '组件加载失败'),
-  },
-  onError: error => {
-    console.error('加载插件组件出错', error)
+  // 如果加载组件超时
+  timeout: 10000,
+  // 在显示loadingComponent之前的延迟 | 默认值：200（毫秒）
+  delay: 200,
+  // 定义组件是否可挂起 | 默认值：true
+  suspensible: false,
+  onError(error, retry, fail, attempts) {
+    if (attempts <= 3) {
+      // 重试3次
+      retry()
+    } else {
+      // 超过重试次数后不再重试
+      fail()
+    }
   },
 })
 
@@ -97,11 +110,7 @@ async function loadPluginUIData() {
   pluginFormItems = []
   pluginConfigForm.value = {}
   renderMode.value = 'vuetify'
-
-  // 清除组件缓存
-  if (props.plugin?.id) {
-    clearRemoteComponentCache(props.plugin.id)
-  }
+  remoteComponentError.value = null
 
   try {
     // 获取UI定义
@@ -159,13 +168,6 @@ async function savePluginConf() {
 onBeforeMount(async () => {
   await loadPluginUIData()
 })
-
-// 组件卸载时清理资源
-onUnmounted(() => {
-  if (props.plugin?.id) {
-    clearRemoteComponentCache(props.plugin.id, ComponentType.CONFIG)
-  }
-})
 </script>
 <template>
   <VDialog scrollable max-width="60rem" :fullscreen="!display.mdAndUp.value">
@@ -182,6 +184,9 @@ onUnmounted(() => {
         <!-- Vue 渲染模式 -->
         <div v-else-if="renderMode === 'vue'">
           <component :is="dynamicComponent" :initial-config="pluginConfigForm" @save="handleVueComponentSave" />
+          <div v-if="remoteComponentError">
+            <v-alert type="error" title="组件加载失败"> 无法加载远程组件: {{ remoteComponentError }} </v-alert>
+          </div>
         </div>
       </VCardText>
       <VCardActions class="pt-3">
