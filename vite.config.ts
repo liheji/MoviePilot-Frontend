@@ -199,6 +199,12 @@ export default defineConfig({
         secure: false,
         cookieDomainRewrite: 'localhost',
       },
+      '/plugin_static': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false,
+        rewrite: path => path.replace(/^\/plugin_static/, '/api/v1/plugin/file'),
+      },
     },
   },
   css: {
