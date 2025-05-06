@@ -13,13 +13,7 @@ import MediaServerPlaying from '@/views/dashboard/MediaServerPlaying.vue'
 import DashboardRender from '@/components/render/DashboardRender.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { defineAsyncComponent } from 'vue'
-import {
-  loadRemoteComponent,
-  clearRemoteComponentCache,
-  registerRemotePlugin,
-  isRemoteComponentLoaded,
-  ComponentType,
-} from '@/utils/federationLoader'
+import { loadRemoteComponent, clearRemoteComponentCache, ComponentType } from '@/utils/federationLoader'
 
 // 输入参数
 const props = defineProps({
@@ -50,14 +44,8 @@ const dynamicPluginComponent = defineAsyncComponent({
     }
 
     try {
-      componentMounted.value = false
-
-      // 确保插件已注册
-      if (!isRemoteComponentLoaded(props.config.id, ComponentType.DASHBOARD)) {
-        await registerRemotePlugin(props.config.id, props.config.component_url)
-      }
-
       // 加载仪表板组件
+      componentMounted.value = false
       const component = await loadRemoteComponent(props.config.id, ComponentType.DASHBOARD)
       componentMounted.value = true
 
@@ -76,7 +64,7 @@ const dynamicPluginComponent = defineAsyncComponent({
   loadingComponent: {
     render: () =>
       h('div', { class: 'text-center pa-4' }, [
-        h('v-progress-circular', { indeterminate: true, class: 'mr-2' }),
+        h('VProgressCircular', { indeterminate: true, class: 'mr-2' }),
         '加载组件中...',
       ]),
   },

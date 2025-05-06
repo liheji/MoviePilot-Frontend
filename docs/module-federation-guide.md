@@ -194,10 +194,10 @@ npm run build
 
 这些文件需要部署到后端，并通过以下URL可访问：
 
-- `/api/plugin/component/{插件ID}/remoteEntry.js`
-- `/api/plugin/component/{插件ID}/Page.js`
-- `/api/plugin/component/{插件ID}/Config.js`
-- `/api/plugin/component/{插件ID}/Dashboard.js`
+- `/api/v1/plugin/file/{插件ID}/dist/remoteEntry.js`
+- `/api/v1/plugin/file/{插件ID}/dist/Page.js`
+- `/api/v1/plugin/file/{插件ID}/dist/Config.js`
+- `/api/v1/plugin/file/{插件ID}/dist/Dashboard.js`
 
 ## 7. 后端API要求
 

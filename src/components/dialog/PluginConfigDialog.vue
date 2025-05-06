@@ -8,13 +8,7 @@ import FormRender from '../render/FormRender.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { defineAsyncComponent } from 'vue'
-import {
-  loadRemoteComponent,
-  clearRemoteComponentCache,
-  registerRemotePlugin,
-  isRemoteComponentLoaded,
-  ComponentType,
-} from '@/utils/federationLoader'
+import { loadRemoteComponent, clearRemoteComponentCache, ComponentType } from '@/utils/federationLoader'
 
 // 国际化
 const { t } = useI18n()
@@ -64,14 +58,8 @@ const dynamicComponent = defineAsyncComponent({
     }
 
     try {
-      componentMounted.value = false
-
-      // 确保插件已注册
-      if (!isRemoteComponentLoaded(props.plugin.id, ComponentType.CONFIG)) {
-        await registerRemotePlugin(props.plugin.id)
-      }
-
       // 加载配置组件
+      componentMounted.value = false
       const component = await loadRemoteComponent(props.plugin.id, ComponentType.CONFIG)
       componentMounted.value = true
 
@@ -82,7 +70,6 @@ const dynamicComponent = defineAsyncComponent({
       return component
     } catch (error: any) {
       console.error(`加载插件配置组件失败: ${props.plugin.id}`, error)
-      $toast.error(`加载插件组件失败: ${error.message || '未知错误'}`)
       return {
         render: () => h('div', { class: 'text-error pa-4' }, `加载失败: ${error.message || '未知错误'}`),
       }
@@ -91,7 +78,7 @@ const dynamicComponent = defineAsyncComponent({
   loadingComponent: {
     render: () =>
       h('div', { class: 'text-center pa-4' }, [
-        h('v-progress-circular', { indeterminate: true, class: 'mr-2' }),
+        h('VProgressCircular', { indeterminate: true, class: 'mr-2' }),
         '加载组件中...',
       ]),
   },
@@ -110,7 +97,6 @@ async function loadPluginUIData() {
   pluginFormItems = []
   pluginConfigForm.value = {}
   renderMode.value = 'vuetify'
-  componentMounted.value = false
 
   // 清除组件缓存
   if (props.plugin?.id) {
@@ -126,11 +112,6 @@ async function loadPluginUIData() {
     }
     renderMode.value = result.render_mode
     if (renderMode.value === 'vue') {
-      // 注册远程插件 (如果提供了组件URL，则使用它)
-      if (props.plugin?.id) {
-        registerRemotePlugin(props.plugin.id, result.component_url)
-      }
-
       // Vue模式下，初始配置在同一个API返回
       if (!isNullOrEmptyObject(result.model)) {
         pluginConfigForm.value = result.model
@@ -191,7 +172,8 @@ onUnmounted(() => {
     <VCard :title="`${props.plugin?.plugin_name} - ${t('dialog.pluginConfig.title')}`" class="rounded-t">
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
-      <VCardText v-if="isRefreshed">
+      <LoadingBanner v-if="!isRefreshed" class="mt-5" />
+      <VCardText v-else="isRefreshed">
         <!-- Vuetify 渲染模式 -->
         <div v-if="renderMode === 'vuetify'">
           <FormRender v-for="(item, index) in pluginFormItems" :key="index" :config="item" :model="pluginConfigForm" />
@@ -201,8 +183,6 @@ onUnmounted(() => {
         <div v-else-if="renderMode === 'vue'">
           <component :is="dynamicComponent" :initial-config="pluginConfigForm" @save="handleVueComponentSave" />
         </div>
-        <!-- 加载中或错误 -->
-        <div v-else><VProgressCircular indeterminate /> 加载中...</div>
       </VCardText>
       <VCardActions class="pt-3">
         <VBtn v-if="props.plugin?.has_page" @click="emit('switch')" variant="outlined" color="info">

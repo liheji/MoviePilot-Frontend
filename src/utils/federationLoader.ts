@@ -54,13 +54,12 @@ async function loadRemoteEntry(url: string): Promise<void> {
   return new Promise((resolve, reject) => {
     // 创建script标签
     const script = document.createElement('script')
-    script.src = url
+    script.src = `${import.meta.env.VITE_API_BASE_URL}${url}`
     script.type = 'text/javascript'
     script.async = true
 
     // 加载成功
     script.onload = () => {
-      console.log(`远程模块加载成功: ${url}`)
       resolve()
     }
 
@@ -84,11 +83,11 @@ async function loadRemoteEntry(url: string): Promise<void> {
 function getRemoteEntryUrl(pluginId: string, url?: string): string {
   // 如果提供了完整URL则直接使用
   if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/'))) {
-    return url.endsWith('/remoteEntry.js') ? url : `${url}/remoteEntry.js`
+    return url
   }
 
   // 否则使用默认路径格式
-  return `/api/plugin/component/${pluginId}/remoteEntry.js`
+  return `/api/v1/plugin/file/${pluginId.toLowerCase()}/dist/remoteEntry.js`
 }
 
 /**
@@ -116,7 +115,7 @@ function getComponentModule(componentType: ComponentType): string {
 export async function loadRemoteComponents(): Promise<boolean> {
   try {
     // 调用后端API获取远程组件列表
-    const result = await api.get('plugins/remotes')
+    const result = await api.get('plugin/remotes?token=moviepilot')
 
     if (!result || !Array.isArray(result)) {
       console.error('获取远程组件列表失败：无效的响应格式')
@@ -175,16 +174,16 @@ export async function registerRemotePlugin(pluginId: string, url?: string): Prom
           // 动态导入远程模块
           return async () => {
             // 这里可能需要根据实际情况调整
+            const moduleName = module.replace('./', '')
             try {
               // 理论上这里应该使用模块联邦的import机制
               // 但由于我们是运行时加载，需要用一种变通方式
-              const moduleUrl = `${remoteEntryUrl.replace('remoteEntry.js', '')}${module.replace('./', '')}.js`
-
+              const moduleUrl = `${remoteEntryUrl.replace('remoteEntry.js', '')}${moduleName}.js`
               // 使用动态导入
               const moduleExports = await import(/* @vite-ignore */ moduleUrl)
               return { default: moduleExports.default }
             } catch (error) {
-              console.error(`加载远程模块失败: ${remoteId}/${module}`, error)
+              console.error(`加载远程模块失败: ${remoteId}/${moduleName}`, error)
               throw error
             }
           }
@@ -254,8 +253,6 @@ export async function loadRemoteComponent(pluginId: string, componentType: Compo
         error: error,
       }
     }
-
-    console.error(`加载远程组件失败: ${pluginId}/${componentType}`, error)
     return null
   }
 }
@@ -281,7 +278,6 @@ async function loadRemoteComponentModule(pluginId: string, componentType: Compon
     // 返回组件
     return Module.default
   } catch (error) {
-    console.error(`加载远程组件模块失败: ${remoteId}/${moduleName}`, error)
     throw error
   }
 }
