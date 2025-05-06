@@ -113,7 +113,7 @@ function handleConfigSave(config) {
 }
 </script>
 
-<style>
+<style scoped>
 /* 为了使测试应用更美观 */
 .app-container {
   block-size: 100vh;
