@@ -142,7 +142,7 @@ onMounted(() => {
     </VCard>
     <!-- Vue 渲染模式 -->
     <div v-else-if="renderMode === 'vue'">
-      <component :is="dynamicComponent" @action="handleAction" @switch="emit('switch')" />
+      <component :is="dynamicComponent" @action="handleAction" @switch="emit('switch')" @close="emit('close')" />
     </div>
   </VDialog>
 </template>

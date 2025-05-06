@@ -101,6 +101,11 @@ function notifyRefresh() {
 function notifySwitch() {
   emit('switch')
 }
+
+// 通知主应用关闭当前页面
+function notifyClose() {
+  emit('close')
+}
 </script>
 
 <template>
@@ -108,6 +113,7 @@ function notifySwitch() {
     <!-- 插件详情页面内容 -->
     <v-btn @click="notifyRefresh">刷新数据</v-btn>
     <v-btn @click="notifySwitch">配置插件</v-btn>
+    <v-btn @click="notifyClose">关闭页面</v-btn>
   </div>
 </template>
 ```
@@ -134,6 +140,16 @@ const emit = defineEmits(['save'])
 function saveConfig() {
   emit('save', config.value)
 }
+
+// 通知主应用切换到详情页面
+function notifySwitch() {
+  emit('switch')
+}
+
+// 通知主应用关闭当前页面
+function notifyClose() {
+  emit('close')
+}
 </script>
 
 <template>
@@ -143,6 +159,12 @@ function saveConfig() {
     
     <!-- 保存按钮 -->
     <v-btn color="primary" @click="saveConfig">保存配置</v-btn>
+
+    <!-- 关闭按钮 -->
+    <v-btn color="primary" @click="notifyClose">关闭页面</v-btn>
+
+    <!-- 切换按钮 -->
+    <v-btn color="primary" @click="notifySwitch">切换到详情页面</v-btn>
   </div>
 </template>
 ```
@@ -252,13 +274,10 @@ export default defineConfig({
 
 ## 10. 示例代码
 
-完整的示例插件代码可在以下仓库获取：
-
-[https://github.com/example/moviepilot-plugin-example](https://github.com/example/moviepilot-plugin-example) (示例链接，实际链接需替换)
+- [插件远程组件示例](../examples/plugin-component/) - 开发插件组件的完整示例项目 
 
 ## 11. 参考资料
 
-- [Module Federation官方文档](https://webpack.js.org/concepts/module-federation/)
 - [Vite Plugin Federation](https://github.com/originjs/vite-plugin-federation)
 - [Vue 3官方文档](https://vuejs.org/)
 
