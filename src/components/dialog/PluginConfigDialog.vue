@@ -149,19 +149,19 @@ onBeforeMount(async () => {
 </script>
 <template>
   <VDialog scrollable max-width="60rem" :fullscreen="!display.mdAndUp.value">
-    <VCard :title="`${props.plugin?.plugin_name} - ${t('dialog.pluginConfig.title')}`" class="rounded-t">
+    <!-- Vuetify 渲染模式 -->
+    <VCard
+      v-if="renderMode === 'vuetify'"
+      :title="`${props.plugin?.plugin_name} - ${t('dialog.pluginConfig.title')}`"
+      class="rounded-t"
+    >
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <LoadingBanner v-if="!isRefreshed" class="mt-5" />
       <VCardText v-else="isRefreshed">
-        <!-- Vuetify 渲染模式 -->
-        <div v-if="renderMode === 'vuetify'">
+        <div>
           <FormRender v-for="(item, index) in pluginFormItems" :key="index" :config="item" :model="pluginConfigForm" />
           <div v-if="!pluginFormItems || pluginFormItems.length === 0">此插件没有可配置项</div>
-        </div>
-        <!-- Vue 渲染模式 -->
-        <div v-else-if="renderMode === 'vue'">
-          <component :is="dynamicComponent" :initial-config="pluginConfigForm" @save="handleVueComponentSave" />
         </div>
       </VCardText>
       <VCardActions class="pt-3">
@@ -181,6 +181,10 @@ onBeforeMount(async () => {
         </VBtn>
       </VCardActions>
     </VCard>
+    <!-- Vue 渲染模式 -->
+    <div v-else-if="renderMode === 'vue'">
+      <component :is="dynamicComponent" :initial-config="pluginConfigForm" @save="handleVueComponentSave" />
+    </div>
     <!-- 进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
   </VDialog>

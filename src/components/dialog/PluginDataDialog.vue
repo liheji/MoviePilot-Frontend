@@ -22,6 +22,10 @@ const appMode = inject('pwaMode') && display.mdAndDown.value
 
 // 是否刷新
 const isRefreshed = ref(false)
+// 组件是否已加载成功
+const componentLoaded = ref(false)
+// 是否正在加载数据
+const isLoading = ref(false)
 
 // 渲染模式: 'vuetify' 或 'vue'
 const renderMode = ref('vuetify')
@@ -40,10 +44,11 @@ const dynamicComponent = defineAsyncComponent({
 
       // 动态加载远程组件
       const module = await loadRemoteComponent(props.plugin.id, 'Page')
-
+      componentLoaded.value = true
       return module
     } catch (error) {
       console.error('加载远程组件失败:', error)
+      componentLoaded.value = false
     }
   },
   // 加载中显示的组件
@@ -66,11 +71,21 @@ const dynamicComponent = defineAsyncComponent({
 
 // 调用API读取数据页面UI
 async function loadPluginUIData() {
+  // 如果正在加载，则不重复加载
+  if (isLoading.value) return
+
+  isLoading.value = true
   isRefreshed.value = false
   pluginPageItems.value = []
-  renderMode.value = 'vuetify'
 
   try {
+    // 如果已经是vue模式且组件已加载成功，不需要再请求模式
+    if (renderMode.value === 'vue' && componentLoaded.value) {
+      isRefreshed.value = true
+      isLoading.value = false
+      return
+    }
+
     const result: { [key: string]: any } = await api.get(`plugin/page/${props.plugin?.id}`)
     if (!result || !result.render_mode) {
       console.error(`插件 ${props.plugin?.plugin_name} UI数据加载失败：无效的响应`)
@@ -85,11 +100,16 @@ async function loadPluginUIData() {
     console.error(error)
   } finally {
     isRefreshed.value = true
+    isLoading.value = false
   }
 }
 
 // 重新加载数据（可由 PageRender 或 Vue component 触发）
-function handleAction() {
+function handleAction(event: any) {
+  // 避免在组件已加载的情况下重复调用loadPluginUIData
+  if (renderMode.value === 'vue' && componentLoaded.value) {
+    return
+  }
   loadPluginUIData()
 }
 
@@ -99,18 +119,14 @@ onMounted(() => {
 </script>
 <template>
   <VDialog scrollable max-width="80rem" :fullscreen="!display.mdAndUp.value">
-    <VCard :title="`${props.plugin?.plugin_name}`" class="rounded-t">
+    <!-- Vuetify 渲染模式 -->
+    <VCard v-if="renderMode === 'vuetify'" :title="`${props.plugin?.plugin_name}`" class="rounded-t">
       <VDialogCloseBtn @click="emit('close')" />
       <LoadingBanner v-if="!isRefreshed" class="mt-5" />
       <VCardText v-else class="min-h-40">
-        <!-- Vuetify 渲染模式 -->
-        <div v-if="renderMode === 'vuetify'">
+        <div>
           <PageRender @action="handleAction" v-for="(item, index) in pluginPageItems" :key="index" :config="item" />
           <div v-if="!pluginPageItems || pluginPageItems.length === 0">此插件没有详情页面</div>
-        </div>
-        <!-- Vue 渲染模式 -->
-        <div v-else-if="renderMode === 'vue'">
-          <component :is="dynamicComponent" @action="handleAction" />
         </div>
       </VCardText>
       <VFab
@@ -124,5 +140,9 @@ onMounted(() => {
         :class="{ 'mb-10': appMode }"
       />
     </VCard>
+    <!-- Vue 渲染模式 -->
+    <div v-else-if="renderMode === 'vue'">
+      <component :is="dynamicComponent" @action="handleAction" @switch="emit('switch')" />
+    </div>
   </VDialog>
 </template>

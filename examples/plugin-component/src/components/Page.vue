@@ -55,6 +55,10 @@
           <v-icon left>mdi-refresh</v-icon>
           刷新数据
         </v-btn>
+        <v-btn color="primary" @click="notifySwitch">
+          <v-icon left>mdi-cog</v-icon>
+          配置
+        </v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -73,7 +77,7 @@ const status = ref('running')
 const lastUpdated = ref('')
 
 // 自定义事件，用于通知主应用刷新数据
-const emit = defineEmits(['action'])
+const emit = defineEmits(['action', 'switch'])
 
 // 获取状态图标
 function getItemIcon(type) {
@@ -136,6 +140,11 @@ async function refreshData() {
     // 通知主应用组件已更新
     emit('action')
   }
+}
+
+// 通知主应用切换到配置页面
+function notifySwitch() {
+  emit('switch')
 }
 
 // 组件挂载时加载数据

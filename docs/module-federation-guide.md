@@ -17,9 +17,9 @@ MoviePilot前端采用模块联邦(Module Federation)技术实现插件的动态
 
 | 组件名称 | 文件名 | 用途 |
 |---------|-------|------|
-| Page | Page.js | 插件详情页面 |
-| Config | Config.js | 插件配置页面 |
-| Dashboard | Dashboard.js | 仪表板组件 |
+| Page | Page.vue | 插件详情页面 |
+| Config | Config.vue | 插件配置页面 |
+| Dashboard | Dashboard.vue | 仪表板组件 |
 
 ## 4. 快速开始
 
@@ -88,7 +88,7 @@ export default defineConfig({
 ```vue
 <script setup lang="ts">
 // 自定义事件，用于通知主应用刷新数据
-const emit = defineEmits(['action'])
+const emit = defineEmits(['action', 'switch'])
 
 // 页面逻辑代码...
 
@@ -96,12 +96,18 @@ const emit = defineEmits(['action'])
 function notifyRefresh() {
   emit('action')
 }
+
+// 通知主应用切换到配置页面
+function notifySwitch() {
+  emit('switch')
+}
 </script>
 
 <template>
   <div class="plugin-page">
     <!-- 插件详情页面内容 -->
     <v-btn @click="notifyRefresh">刷新数据</v-btn>
+    <v-btn @click="notifySwitch">配置插件</v-btn>
   </div>
 </template>
 ```
@@ -181,39 +187,9 @@ const props = defineProps({
 npm run build
 ```
 
-## 7. 后端API要求
+将生成的dist文件夹上传到插件后端，并配置插件后端API路径。
 
-### 7.1 注册远程组件API
-
-后端需要实现以下API用于注册远程组件（已公共实现，插件后端按第三方插件开发要求实现即可）：
-
-```
-GET /api/plugins/remotes
-```
-
-返回结构：
-```json
-[
-  {
-    "id": "my-plugin",              // 插件ID，必需
-    "url": "/custom/path/to/plugin" // 自定义组件路径，可选
-  },
-  {
-    "id": "another-plugin"          // 使用默认路径
-  }
-]
-```
-
-### 7.2 组件访问路径
-
-指定了`url`后使用：
-
-- `{url}/remoteEntry.js`
-- `{url}/Page.js`
-- `{url}/Config.js`
-- `{url}/Dashboard.js`
-
-## 8. 调试与排错
+## 7. 调试与排错
 
 ### 常见问题
 
