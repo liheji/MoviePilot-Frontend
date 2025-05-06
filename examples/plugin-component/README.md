@@ -172,34 +172,20 @@ yarn build
 
 ### 部署到插件后端
 
-将构建后的文件部署到插件后端，确保可通过以下URL访问：
-
-- `/api/plugin/component/{插件ID}/remoteEntry.js`
-- `/api/plugin/component/{插件ID}/Page.js`
-- `/api/plugin/component/{插件ID}/Config.js`
-- `/api/plugin/component/{插件ID}/Dashboard.js`
+将构建后的文件部署到插件后端插件目录下，并上传到Github仓库。
 
 ## 6. 插件后端集成
 
 在插件的后端代码中，实现以下方法来集成远程组件：
 
 ```python
-def get_render_mode() -> str:
+def get_render_mode() -> Tuple[str, str]:
     """
     获取插件渲染模式
-    :return: 渲染模式，支持：vue/vuetify，默认vuetify
+    :return: 1、渲染模式，支持：vue/vuetify，默认vuetify
+    :return: 2、组件路径，默认 dist/assets
     """
-    return "vue"
-
-def get_remote_urls() -> Dict[str, Any]:
-    """
-    获取远程组件地址
-    :return: 远程组件信息，包含id和url
-    """
-    return {
-        "id": "my_plugin",  # 插件ID
-        "url": "/path/to/component"  # 可选，自定义组件路径
-    }
+    return "vue", "dist/assets"
 ```
 
 ## 7. 常见问题排查
