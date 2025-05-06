@@ -33,7 +33,7 @@ export default defineConfig({
       include: [resolve(__dirname, 'src/locales/*.ts')],
     }),
     federation({
-      name: 'host',
+      name: 'MoviePilot',
       filename: 'remoteEntry.js',
       remotes: {
         // 动态remotes将在运行时通过__FEDERATION__注入
