@@ -7,20 +7,16 @@ import { requiredValidator } from '@/@validators'
 import api from '@/api'
 import router from '@/router'
 import logo from '@images/logo.png'
-import { useTheme } from 'vuetify'
 import { urlBase64ToUint8Array } from '@/@core/utils/navigator'
-import { useI18n } from 'vue-i18n'
 import { SUPPORTED_LOCALES, SupportedLocale } from '@/types/i18n'
 import { getCurrentLocale, setI18nLanguage } from '@/plugins/i18n'
 
-// 主题
-const { global: globalTheme } = useTheme()
+// 国际化
+const { t } = useI18n()
 // 认证 Store
 const authStore = useAuthStore()
 //用户 Store
 const userStore = useUserStore()
-// 国际化
-const { t } = useI18n()
 
 // 表单
 const form = ref({

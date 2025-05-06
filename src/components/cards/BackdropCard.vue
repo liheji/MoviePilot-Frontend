@@ -28,7 +28,7 @@ const getImgUrl = computed(() => {
 </script>
 
 <template>
-  <VHover v-bind="props">
+  <VHover>
     <template #default="hover">
       <VCard
         v-bind="hover.props"

@@ -33,9 +33,6 @@ const emit = defineEmits(['update:refreshStatus'])
 // 插件UI渲染模式 ('vuetify' 或 'vue')
 const pluginRenderMode = computed(() => props.config?.render_mode || 'vuetify')
 
-// 远程组件加载错误
-const remoteComponentError = ref<Error | string | null>(null)
-
 // Vue 模式：动态加载的组件
 const dynamicPluginComponent = defineAsyncComponent({
   // 工厂函数
@@ -48,45 +45,25 @@ const dynamicPluginComponent = defineAsyncComponent({
       // 动态加载远程组件
       const module = await loadRemoteComponent(props.config.id, 'Dashboard')
 
-      // 返回组件
-      return module.default
+      // 直接返回加载的组件，无需再获取default
+      return module
     } catch (error) {
       console.error('加载远程组件失败:', error)
-      remoteComponentError.value = error instanceof Error ? error.message : String(error)
-      // 返回一个简单的错误组件
-      return {
-        template: `
-          <div class="pa-4">
-            <VAlert type="error" title="组件加载失败">
-              无法加载远程组件: {{ error }}
-            </VAlert>
-          </div>
-        `,
-        props: ['error'],
-        setup() {
-          return { error: remoteComponentError.value }
-        },
-      }
     }
   },
   // 加载中显示的组件
   loadingComponent: {
     template: '<VSkeletonLoader type="card"></VSkeletonLoader>',
   },
-  // 如果加载组件超时
-  timeout: 10000,
-  // 在显示loadingComponent之前的延迟 | 默认值：200（毫秒）
-  delay: 200,
-  // 定义组件是否可挂起 | 默认值：true
-  suspensible: false,
-  onError(error, retry, fail, attempts) {
-    if (attempts <= 3) {
-      // 重试3次
-      retry()
-    } else {
-      // 超过重试次数后不再重试
-      fail()
-    }
+  // 添加错误处理
+  errorComponent: {
+    template: `
+      <div class="pa-4">
+        <VAlert type="error" title="组件加载错误">
+          无法加载组件，请稍后再试
+        </VAlert>
+      </div>
+    `,
   },
 })
 
@@ -112,9 +89,6 @@ onUnmounted(() => {
     <!-- Vue 渲染模式 -->
     <div v-if="pluginRenderMode === 'vue'">
       <component :is="dynamicPluginComponent" :config="props.config" :allow-refresh="props.allowRefresh" />
-      <div v-if="remoteComponentError" class="mt-2">
-        <VAlert type="error" title="组件加载失败"> 无法加载远程组件: {{ remoteComponentError }} </VAlert>
-      </div>
       <!-- Vue 模式下也可以显示拖拽句柄 -->
       <div class="absolute right-5 top-5">
         <VIcon class="cursor-move">mdi-drag</VIcon>

@@ -151,7 +151,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VHover v-bind="props" :height="props.height" :width="props.width">
+  <VHover>
     <template #default="hover">
       <VCard
         v-bind="hover.props"
