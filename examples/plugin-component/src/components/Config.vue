@@ -4,7 +4,7 @@
       <v-card-item>
         <v-card-title>插件配置</v-card-title>
         <template #append>
-          <v-btn color="primary" variant="text" @click="notifyClose">
+          <v-btn icon color="primary" variant="text" @click="notifyClose">
             <v-icon left>mdi-close</v-icon>
           </v-btn>
         </template>
@@ -16,6 +16,16 @@
           <!-- 基本设置区域 -->
           <div class="text-subtitle-1 font-weight-bold mt-4 mb-2">基本设置</div>
           <v-row>
+            <v-col cols="12">
+              <v-switch
+                v-model="config.enable"
+                label="启用插件"
+                color="primary"
+                inset
+                hint="启用插件后，插件将开始工作"
+                persistent-hint
+              ></v-switch>
+            </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="config.name"
@@ -38,16 +48,6 @@
           <!-- 功能配置区域 -->
           <div class="text-subtitle-1 font-weight-bold mt-4 mb-2">功能配置</div>
           <v-row>
-            <v-col cols="12">
-              <v-switch
-                v-model="config.enable_notifications"
-                label="启用通知"
-                color="primary"
-                inset
-                hint="接收插件状态变更通知"
-                persistent-hint
-              ></v-switch>
-            </v-col>
             <v-col cols="12">
               <v-select
                 v-model="config.update_interval"
@@ -156,7 +156,7 @@ const updateIntervalOptions = [
 const defaultConfig = {
   name: '我的插件',
   description: '',
-  enable_notifications: true,
+  enable: true,
   update_interval: 60,
   api_url: '',
   api_key: '',

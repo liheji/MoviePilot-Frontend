@@ -4,7 +4,7 @@
       <v-card-item>
         <v-card-title>{{ title }}</v-card-title>
         <template #append>
-          <v-btn color="primary" variant="text" @click="notifyClose">
+          <v-btn icon color="primary" variant="text" @click="notifyClose">
             <v-icon left>mdi-close</v-icon>
           </v-btn>
         </template>
