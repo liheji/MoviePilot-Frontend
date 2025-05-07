@@ -16,13 +16,16 @@ export default defineConfig({
       shared: {
         vue: {
           requiredVersion: false,
+          generate: false,
         },
         vuetify: {
           requiredVersion: false,
+          generate: false,
         },
         'vuetify/styles': {
           requiredVersion: false,
-        }
+          generate: false,
+        },
       },
       format: 'esm'
     })

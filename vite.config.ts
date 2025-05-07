@@ -36,19 +36,9 @@ export default defineConfig({
       name: 'MoviePilot',
       filename: 'remoteEntry.js',
       remotes: {
-        // 动态remotes将在运行时通过__FEDERATION__注入
+        // 动态remotes将在运行时注入
       },
-      shared: {
-        vue: {
-          requiredVersion: false,
-        },
-        vuetify: {
-          requiredVersion: false,
-        },
-        'vuetify/styles': {
-          requiredVersion: false,
-        },
-      },
+      shared: ['vue', 'vuetify', 'pinia', 'vue-i18n', 'vue-router', 'axios'],
     }),
     VitePWA({
       injectRegister: 'script',
