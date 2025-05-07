@@ -73,6 +73,10 @@ import { ref, onMounted } from 'vue'
 
 // 接收初始配置
 const props = defineProps({
+  model: {
+    type: Object,
+    default: () => {},
+  },
   api: {
     type: Object,
     default: () => {},
@@ -121,8 +125,6 @@ async function refreshData() {
   error.value = null
 
   try {
-    // 模拟API调用 - 实际开发中应使用 fetch 调用真实API
-    await new Promise(resolve => setTimeout(resolve, 1000))
 
     // 模拟数据
     stats.value = {
@@ -133,14 +135,8 @@ async function refreshData() {
       '综艺': Math.floor(Math.random() * 100) + 5,
     }
 
-    // 模拟最近记录
-    recentItems.value = [
-      { type: 'movie', title: '肖申克的救赎 (1994)', time: '今天 12:30' },
-      { type: 'tv', title: '绝命毒师 S01E01', time: '昨天 18:45' },
-      { type: 'download', title: '开始下载：星际穿越', time: '2天前' },
-      { type: 'success', title: '下载完成：黑客帝国', time: '3天前' },
-      { type: 'error', title: '下载失败：泰坦尼克号', time: '一周前' },
-    ]
+    // 演示使用api模块调用插件接口
+    recentItems.value = await props.api.get(`plugin/MyPlugin/history`)
 
     status.value = Math.random() > 0.2 ? 'running' : 'paused'
     lastUpdated.value = new Date().toLocaleString()
@@ -169,10 +165,3 @@ onMounted(() => {
   refreshData()
 })
 </script>
-
-<style scoped>
-.plugin-page {
-  padding: 16px;
-  inline-size: 100%;
-}
-</style>

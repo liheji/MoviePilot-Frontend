@@ -296,19 +296,3 @@ onUnmounted(() => {
   }
 })
 </script>
-
-<style scoped>
-.dashboard-widget {
-  inline-size: 100%;
-}
-
-.chart-container {
-  block-size: 200px;
-  margin-block-end: 16px;
-}
-
-.chart {
-  block-size: 100%;
-  inline-size: 100%;
-}
-</style>

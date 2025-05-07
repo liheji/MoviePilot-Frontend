@@ -209,10 +209,3 @@ function notifyClose() {
   emit('close')
 }
 </script>
-
-<style scoped>
-.plugin-config {
-  padding: 16px;
-  inline-size: 100%;
-}
-</style>
