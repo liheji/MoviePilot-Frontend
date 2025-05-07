@@ -1,7 +1,14 @@
 <template>
   <div class="plugin-page">
     <v-card>
-      <v-card-title>{{ title }}</v-card-title>
+      <v-card-item>
+        <v-card-title>{{ title }}</v-card-title>
+        <template #append>
+          <v-btn color="primary" variant="text" @click="notifyClose">
+            <v-icon left>mdi-close</v-icon>
+          </v-btn>
+        </template>
+      </v-card-item>
       <v-card-text>
         <v-alert v-if="error" type="error" class="mb-4">{{ error }}</v-alert>
         <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
@@ -50,18 +57,14 @@
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
         <v-btn color="primary" @click="refreshData" :loading="loading">
           <v-icon left>mdi-refresh</v-icon>
           刷新数据
         </v-btn>
+        <v-spacer></v-spacer>
         <v-btn color="primary" @click="notifySwitch">
           <v-icon left>mdi-cog</v-icon>
           配置
-        </v-btn>
-        <v-btn color="primary" @click="notifyClose">
-          <v-icon left>mdi-close</v-icon>
-          关闭
         </v-btn>
       </v-card-actions>
     </v-card>

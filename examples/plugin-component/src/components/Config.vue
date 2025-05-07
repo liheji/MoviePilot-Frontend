@@ -1,74 +1,88 @@
 <template>
   <div class="plugin-config">
     <v-card>
-      <v-card-title>插件配置</v-card-title>
-      <v-card-text>
+      <v-card-item>
+        <v-card-title>插件配置</v-card-title>
+        <template #append>
+          <v-btn color="primary" variant="text" @click="notifyClose">
+            <v-icon left>mdi-close</v-icon>
+          </v-btn>
+        </template>
+      </v-card-item>
+      <v-card-text class="overflow-y-auto">
         <v-alert v-if="error" type="error" class="mb-4">{{ error }}</v-alert>
 
         <v-form ref="form" v-model="isFormValid" @submit.prevent="saveConfig">
           <!-- 基本设置区域 -->
           <div class="text-subtitle-1 font-weight-bold mt-4 mb-2">基本设置</div>
-
-          <v-text-field
-            v-model="config.name"
-            label="插件名称"
-            variant="outlined"
-            :rules="[v => !!v || '名称不能为空']"
-            hint="显示在插件列表中的名称"
-          ></v-text-field>
-
-          <v-textarea
-            v-model="config.description"
-            label="插件描述"
-            variant="outlined"
-            rows="3"
-            hint="简要说明插件的功能和用途"
-          ></v-textarea>
-
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                v-model="config.name"
+                label="插件名称"
+                variant="outlined"
+                :rules="[v => !!v || '名称不能为空']"
+                hint="显示在插件列表中的名称"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-textarea
+                v-model="config.description"
+                label="插件描述"
+                variant="outlined"
+                rows="3"
+                hint="简要说明插件的功能和用途"
+              ></v-textarea>
+            </v-col>
+          </v-row>
           <!-- 功能配置区域 -->
           <div class="text-subtitle-1 font-weight-bold mt-4 mb-2">功能配置</div>
-
-          <v-switch
-            v-model="config.enable_notifications"
-            label="启用通知"
-            color="primary"
-            inset
-            hint="接收插件状态变更通知"
-            persistent-hint
-          ></v-switch>
-
-          <v-select
-            v-model="config.update_interval"
-            label="更新频率"
-            :items="updateIntervalOptions"
-            variant="outlined"
-            item-title="text"
-            item-value="value"
-          ></v-select>
-
+          <v-row>
+            <v-col cols="12">
+              <v-switch
+                v-model="config.enable_notifications"
+                label="启用通知"
+                color="primary"
+                inset
+                hint="接收插件状态变更通知"
+                persistent-hint
+              ></v-switch>
+            </v-col>
+            <v-col cols="12">
+              <v-select
+                v-model="config.update_interval"
+                label="更新频率"
+                :items="updateIntervalOptions"
+                variant="outlined"
+                item-title="text"
+                item-value="value"
+              ></v-select>
+            </v-col>
+          </v-row>
           <!-- API配置区域 -->
           <div class="text-subtitle-1 font-weight-bold mt-4 mb-2">API设置</div>
-
-          <v-text-field
-            v-model="config.api_url"
-            label="API地址"
-            variant="outlined"
-            hint="外部服务API地址"
-            :rules="[v => !v || v.startsWith('http') || '请输入有效的URL']"
-          ></v-text-field>
-
-          <v-text-field
-            v-model="config.api_key"
-            label="API密钥"
-            variant="outlined"
-            :append-inner-icon="showApiKey ? 'mdi-eye-off' : 'mdi-eye'"
-            :type="showApiKey ? 'text' : 'password'"
-            @click:append-inner="showApiKey = !showApiKey"
-          ></v-text-field>
-
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="config.api_url"
+                label="API地址"
+                variant="outlined"
+                hint="外部服务API地址"
+                :rules="[v => !v || v.startsWith('http') || '请输入有效的URL']"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="config.api_key"
+                label="API密钥"
+                variant="outlined"
+                :append-inner-icon="showApiKey ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="showApiKey ? 'text' : 'password'"
+                @click:append-inner="showApiKey = !showApiKey"
+              ></v-text-field>
+            </v-col>
+          </v-row>
           <!-- 高级选项区域 -->
-          <div class="text-subtitle-1 font-weight-bold mt-4 mb-2">高级选项</div>
-
           <v-expansion-panels variant="accordion">
             <v-expansion-panel>
               <v-expansion-panel-title>高级选项</v-expansion-panel-title>
@@ -96,10 +110,9 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
+        <v-btn color="secondary" @click="resetForm">重置</v-btn>
         <v-spacer></v-spacer>
-        <v-btn color="secondary" variant="outlined" @click="resetForm">重置</v-btn>
         <v-btn color="primary" :disabled="!isFormValid" @click="saveConfig" :loading="saving">保存配置</v-btn>
-        <v-btn color="primary" @click="notifyClose">关闭</v-btn>
       </v-card-actions>
     </v-card>
   </div>
