@@ -86,7 +86,7 @@ const emit = defineEmits(['action', 'switch', 'close'])
 // 接收API对象
 const props = defineProps({
   api: {
-    type: any,
+    type: Object,
     default: () => {}
   }
 })
@@ -130,7 +130,7 @@ const props = defineProps({
     default: () => ({})
   },
   api: {
-    type: any,
+    type: Object,
     default: () => {}
   }
 })
