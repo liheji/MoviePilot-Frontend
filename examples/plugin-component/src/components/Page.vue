@@ -125,7 +125,6 @@ async function refreshData() {
   error.value = null
 
   try {
-
     // 模拟数据
     stats.value = {
       '电影': Math.floor(Math.random() * 100) + 50,

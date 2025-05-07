@@ -13,7 +13,17 @@ export default defineConfig({
         './Config': './src/components/Config.vue',
         './Dashboard': './src/components/Dashboard.vue',
       },
-      shared: ['vue', 'vuetify'],
+      shared: {
+        vue: {
+          requiredVersion: false,
+        },
+        vuetify: {
+          requiredVersion: false,
+        },
+        'vuetify/styles': {
+          requiredVersion: false,
+        }
+      },
       format: 'esm'
     })
   ],

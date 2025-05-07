@@ -45,6 +45,9 @@ export default defineConfig({
         vuetify: {
           requiredVersion: false,
         },
+        'vuetify/styles': {
+          requiredVersion: false,
+        },
       },
     }),
     VitePWA({
