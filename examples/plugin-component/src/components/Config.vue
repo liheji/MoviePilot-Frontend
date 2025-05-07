@@ -115,7 +115,7 @@ const props = defineProps({
     default: () => ({}),
   },
   api: {
-    type: any,
+    type: Object,
     default: () => {},
   },
 })
