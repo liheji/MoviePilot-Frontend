@@ -50,14 +50,24 @@ export default defineConfig({
   plugins: [
     vue(),
     federation({
-      name: 'LogsClean',
+      name: 'MyPlugin', // 需与插件的ID保持一致
       filename: 'remoteEntry.js',
       exposes: {
         './Page': './src/components/Page.vue',
         './Config': './src/components/Config.vue',
         './Dashboard': './src/components/Dashboard.vue',
       },
-      shared: ['vue', 'vuetify'],
+      shared: {
+        vue: {
+          requiredVersion: false,
+        },
+        vuetify: {
+          requiredVersion: false,
+        },
+        'vuetify/styles': {
+          requiredVersion: false,
+        }
+      },
       format: 'esm'
     })
   ],
@@ -111,7 +121,7 @@ function notifyClose() {
 
 <template>
   <div class="plugin-page">
-    <!-- 插件详情页面操作按钮 -->
+    <!-- 插件详情页面操作按钮示例 -->
     <v-btn @click="notifyRefresh">刷新数据</v-btn>
     <v-btn @click="notifySwitch">配置插件</v-btn>
     <v-btn @click="notifyClose">关闭页面</v-btn>
@@ -159,16 +169,16 @@ function notifyClose() {
 
 <template>
   <div class="plugin-config">
-    <!-- 配置表单 -->
+    <!-- 配置表单示例 -->
     <v-text-field v-model="config.someField" label="配置项"></v-text-field>
     
-    <!-- 保存按钮 -->
+    <!-- 保存按钮示例 -->
     <v-btn color="primary" @click="saveConfig">保存配置</v-btn>
 
-    <!-- 关闭按钮 -->
+    <!-- 关闭按钮示例 -->
     <v-btn color="primary" @click="notifyClose">关闭页面</v-btn>
 
-    <!-- 切换按钮 -->
+    <!-- 切换按钮示例 -->
     <v-btn color="primary" @click="notifySwitch">切换到详情页面</v-btn>
   </div>
 </template>
@@ -214,7 +224,9 @@ const props = defineProps({
 yarn build
 ```
 
-将生成的dist文件夹上传到插件后端目录下（默认为`dist/assets`），在插件的后端代码中，实现以下方法来集成远程组件：
+将生成的dist文件夹上传到插件后端目录下（默认为`dist/assets`）
+
+- 在插件的后端python代码中，实现以下方法来集成远程组件：
 
 ```python
 def get_render_mode() -> Tuple[str, str]:
@@ -224,6 +236,28 @@ def get_render_mode() -> Tuple[str, str]:
     :return: 2、组件路径，默认 dist/assets
     """
     return "vue", "dist/assets"
+```
+
+-  需要在插件前端页面调用后端接口时，通过传入的api模块发起调用，后端api接口声明认证类型为：`bear`
+```typescript
+// 演示使用api模块调用插件接口
+recentItems.value = await props.api.get(`plugin/MyPlugin/history`)
+```
+
+```python
+def get_api(self) -> List[Dict[str, Any]]:
+    """
+    注册插件API
+    """
+    return [
+        {
+            "path": "/history",
+            "endpoint": self.get_history,
+            "methods": ["GET"],
+            "auth": "bear",  # 认证类型设为bear
+            "summary": "查询历史记录"
+        }
+    ]
 ```
 
 
