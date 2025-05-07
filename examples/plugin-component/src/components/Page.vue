@@ -74,7 +74,7 @@ import { ref, onMounted } from 'vue'
 // 接收初始配置
 const props = defineProps({
   api: {
-    type: any,
+    type: Object,
     default: () => {},
   },
 })
