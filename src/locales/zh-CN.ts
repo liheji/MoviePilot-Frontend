@@ -724,6 +724,8 @@ export default {
     filterResolution: '分辨率',
     filterReleaseGroup: '制作组',
     noMatchingResults: '没有数据',
+    allFilters: '综合筛选',
+    clearAll: '清除全部',
   },
   calendar: {
     episode: '第{number}集',

@@ -727,6 +727,8 @@ export default {
     filterResolution: 'Resolution',
     filterReleaseGroup: 'Release Group',
     noMatchingResults: 'No matching data',
+    allFilters: 'All Filters',
+    clearAll: 'Clear All',
   },
   calendar: {
     episode: 'Episode {number}',
@@ -1120,7 +1122,7 @@ export default {
       channelsDesc: 'Set message sending channel parameters.',
       organizeSuccess: 'Media Import',
       downloadAdded: 'Download Added',
-      subscribeAdded: 'Subscribe Added', 
+      subscribeAdded: 'Subscribe Added',
       subscribeComplete: 'Subscribe Complete',
       templateConfigTitle: 'Message Template',
       templateConfigDesc: 'Set message template, support Jinja2 syntax.',
