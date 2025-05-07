@@ -59,6 +59,10 @@
           <v-icon left>mdi-cog</v-icon>
           配置
         </v-btn>
+        <v-btn color="primary" @click="notifyClose">
+          <v-icon left>mdi-close</v-icon>
+          关闭
+        </v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -66,6 +70,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+
+// 接收初始配置
+const props = defineProps({
+  api: {
+    type: any,
+    default: () => {},
+  },
+})
 
 // 组件状态
 const title = ref('插件详情页面')
@@ -77,7 +89,7 @@ const status = ref('running')
 const lastUpdated = ref('')
 
 // 自定义事件，用于通知主应用刷新数据
-const emit = defineEmits(['action', 'switch'])
+const emit = defineEmits(['action', 'switch', 'close'])
 
 // 获取状态图标
 function getItemIcon(type) {
@@ -145,6 +157,11 @@ async function refreshData() {
 // 通知主应用切换到配置页面
 function notifySwitch() {
   emit('switch')
+}
+
+// 通知主应用关闭组件
+function notifyClose() {
+  emit('close')
 }
 
 // 组件挂载时加载数据

@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     vue(),
     federation({
-      name: 'LogsClean',
+      name: 'MyPlugin',
       filename: 'remoteEntry.js',
       exposes: {
         './Page': './src/components/Page.vue',
@@ -27,9 +27,4 @@ export default defineConfig({
     cors: true,   // 启用CORS
     origin: 'http://localhost:5001'
   },
-  preview: {
-    port: 5001,   // 保持与server相同的端口
-    cors: true,   // 启用CORS
-    origin: 'http://localhost:5001'
-  }
 }) 

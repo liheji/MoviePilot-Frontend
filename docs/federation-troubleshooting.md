@@ -2,8 +2,6 @@
 
 本文档提供了针对 MoviePilot 项目中使用模块联邦时可能遇到的常见问题及解决方案。
 
-关联阅读后端插件开发文档：[第三方插件开发说明](https://github.com/jxxghp/MoviePilot-Plugins/blob/main/README.md)
-
 ## 远程组件注册机制
 
 MoviePilot 使用自动注册机制来加载远程组件：
@@ -104,90 +102,9 @@ localStorage.setItem('debug', 'vite:*')
 
 创建一个独立的简单页面来测试插件组件，排除主应用的干扰因素。
 
-## 最佳实践
-
-### 插件组件项目配置
-
-```js
-// vite.config.js
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import federation from '@originjs/vite-plugin-federation'
-
-export default defineConfig({
-  plugins: [
-    vue(),
-    federation({
-      name: 'remoteApp',
-      filename: 'remoteEntry.js',
-      exposes: {
-        './PluginComponent': './src/App.vue',
-      },
-      shared: {
-        vue: {
-          singleton: true,
-          requiredVersion: false
-        }
-      }
-    })
-  ],
-  build: {
-    target: 'esnext',
-    minify: false, // 开发阶段禁用最小化，方便调试
-    cssCodeSplit: false,
-    rollupOptions: {
-      output: {
-        minifyInternalExports: false
-      }
-    }
-  }
-})
-```
-
-### 插件组件代码
-
-```vue
-<template>
-  <div class="plugin-container">
-    <!-- 组件内容 -->
-  </div>
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue'
-
-// 向主应用发送事件
-const emit = defineEmits(['action'])
-
-// 初始化逻辑...
-
-// 通知主应用
-function notifyHost() {
-  emit('action')
-}
-</script>
-```
-
-### 显式依赖声明
-
-在插件组件的 `package.json` 中准确声明所有依赖：
-
-```json
-{
-  "dependencies": {
-    "vue": "^3.3.4"
-  },
-  "devDependencies": {
-    "@originjs/vite-plugin-federation": "^1.3.5",
-    "@vitejs/plugin-vue": "^4.4.0",
-    "vite": "^5.0.0"
-  }
-}
-```
-
 ## 其他资源
 
+- [MoviePilot 插件组件示例](../examples/plugin-component/) 
 - [Vite 模块联邦插件文档](https://github.com/originjs/vite-plugin-federation)
 - [Vite 官方文档](https://vitejs.dev/guide/build.html)
 - [Origin.js 模块联邦示例](https://github.com/originjs/vite-plugin-federation/tree/main/packages/examples)
-- [MoviePilot 插件组件示例](../examples/plugin-component/) 

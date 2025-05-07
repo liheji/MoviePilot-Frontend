@@ -4,6 +4,9 @@
 
 MoviePilot前端采用模块联邦(Module Federation)技术实现插件的动态加载和集成。本文档详细说明如何开发符合要求的远程模块，以便在MoviePilot中作为插件使用。
 
+关联阅读后端插件开发文档：[第三方插件开发说明](https://github.com/jxxghp/MoviePilot-Plugins/blob/main/README.md)
+
+
 ## 2. 技术要求
 
 - Node.js 16+
@@ -33,13 +36,7 @@ npm create vite@latest my-plugin -- --template vue-ts
 cd my-plugin
 
 # 安装依赖
-npm install
-
-# 安装模块联邦插件
-npm install @originjs/vite-plugin-federation --save-dev
-
-# 安装Vuetify(可选)
-npm install vuetify
+yarn
 ```
 
 ### 配置vite.config.ts
@@ -53,31 +50,27 @@ export default defineConfig({
   plugins: [
     vue(),
     federation({
-      name: 'my_plugin',  // 插件名称，建议与插件ID保持一致
+      name: 'LogsClean',
       filename: 'remoteEntry.js',
       exposes: {
         './Page': './src/components/Page.vue',
         './Config': './src/components/Config.vue',
         './Dashboard': './src/components/Dashboard.vue',
       },
-      shared: {
-        vue: { requiredVersion: false },
-        vuetify: { requiredVersion: false }
-      }
+      shared: ['vue', 'vuetify'],
+      format: 'esm'
     })
   ],
   build: {
     target: 'esnext',   // 必须设置为esnext以支持顶层await
     minify: false,      // 开发阶段建议关闭混淆
     cssCodeSplit: false,
-    rollupOptions: {
-      output: {
-        format: 'esm',  // 必须使用ESM格式
-        entryFileNames: '[name].js',
-        chunkFileNames: '[name].js',
-      }
-    }
-  }
+  },
+  server: {
+    port: 5001,   // 使用不同于主应用的端口
+    cors: true,   // 启用CORS
+    origin: 'http://localhost:5001'
+  },
 })
 ```
 
@@ -88,7 +81,15 @@ export default defineConfig({
 ```vue
 <script setup lang="ts">
 // 自定义事件，用于通知主应用刷新数据
-const emit = defineEmits(['action', 'switch'])
+const emit = defineEmits(['action', 'switch', 'close'])
+
+// 接收API对象
+const props = defineProps({
+  api: {
+    type: any,
+    default: () => {}
+  }
+})
 
 // 页面逻辑代码...
 
@@ -110,7 +111,7 @@ function notifyClose() {
 
 <template>
   <div class="plugin-page">
-    <!-- 插件详情页面内容 -->
+    <!-- 插件详情页面操作按钮 -->
     <v-btn @click="notifyRefresh">刷新数据</v-btn>
     <v-btn @click="notifySwitch">配置插件</v-btn>
     <v-btn @click="notifyClose">关闭页面</v-btn>
@@ -122,11 +123,15 @@ function notifyClose() {
 
 ```vue
 <script setup lang="ts">
-// 接收初始配置
+// 接收初始配置和API对象
 const props = defineProps({
   initialConfig: {
     type: Object,
     default: () => ({})
+  },
+  api: {
+    type: any,
+    default: () => {}
   }
 })
 
@@ -134,7 +139,7 @@ const props = defineProps({
 const config = ref({...props.initialConfig})
 
 // 自定义事件，用于保存配置
-const emit = defineEmits(['save'])
+const emit = defineEmits(['save', 'close', 'switch'])
 
 // 保存配置
 function saveConfig() {
@@ -206,10 +211,21 @@ const props = defineProps({
 ### 构建项目
 
 ```bash
-npm run build
+yarn build
 ```
 
-将生成的dist文件夹上传到插件后端，并配置插件后端API路径。
+将生成的dist文件夹上传到插件后端目录下（默认为`dist/assets`），在插件的后端代码中，实现以下方法来集成远程组件：
+
+```python
+def get_render_mode() -> Tuple[str, str]:
+    """
+    获取插件渲染模式
+    :return: 1、渲染模式，支持：vue/vuetify，默认vuetify
+    :return: 2、组件路径，默认 dist/assets
+    """
+    return "vue", "dist/assets"
+```
+
 
 ## 7. 调试与排错
 
@@ -232,9 +248,9 @@ npm run build
 4. **"Top-level await is not available"**
    - 确保`build.target`设置为`esnext`
 
-## 9. 高级配置
+## 8. 高级配置
 
-### 9.1 CSS隔离
+### 8.1 CSS隔离
 
 为防止样式冲突，建议使用CSS Modules或scoped样式：
 
@@ -244,7 +260,7 @@ npm run build
 </style>
 ```
 
-### 9.2 共享更多依赖
+### 8.2 共享更多依赖
 
 如果您的插件需要共享更多依赖，可以扩展shared配置：
 
@@ -257,7 +273,7 @@ shared: {
 }
 ```
 
-### 9.3 开发环境测试
+### 8.3 开发环境测试
 
 开发期间可以使用以下配置在本地测试：
 
@@ -272,11 +288,12 @@ export default defineConfig({
 })
 ```
 
-## 10. 示例代码
+## 9. 示例代码
 
 - [插件远程组件示例](../examples/plugin-component/) - 开发插件组件的完整示例项目 
+- [模块联邦问题排查指南](./federation-troubleshooting.md) - 常见问题排查
 
-## 11. 参考资料
+## 10. 参考资料
 
 - [Vite Plugin Federation](https://github.com/originjs/vite-plugin-federation)
 - [Vue 3官方文档](https://vuejs.org/)

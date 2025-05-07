@@ -99,6 +99,7 @@
         <v-spacer></v-spacer>
         <v-btn color="secondary" variant="outlined" @click="resetForm">重置</v-btn>
         <v-btn color="primary" :disabled="!isFormValid" @click="saveConfig" :loading="saving">保存配置</v-btn>
+        <v-btn color="primary" @click="notifyClose">关闭</v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -112,6 +113,10 @@ const props = defineProps({
   initialConfig: {
     type: Object,
     default: () => ({}),
+  },
+  api: {
+    type: any,
+    default: () => {},
   },
 })
 
@@ -162,7 +167,7 @@ onMounted(() => {
 })
 
 // 自定义事件，用于保存配置
-const emit = defineEmits(['save'])
+const emit = defineEmits(['save', 'close', 'switch'])
 
 // 保存配置
 async function saveConfig() {
@@ -197,6 +202,11 @@ function resetForm() {
   if (form.value) {
     form.value.resetValidation()
   }
+}
+
+// 通知主应用关闭组件
+function notifyClose() {
+  emit('close')
 }
 </script>
 

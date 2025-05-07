@@ -186,6 +186,7 @@ onBeforeMount(async () => {
       <component
         :is="dynamicComponent"
         :initial-config="pluginConfigForm"
+        :api="api"
         @save="handleVueComponentSave"
         @switch="emit('switch')"
         @close="emit('close')"
