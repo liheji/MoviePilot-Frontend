@@ -633,8 +633,6 @@ export interface DashboardItem {
   elements: RenderProps[]
   // 渲染方式
   render_mode: string
-  // 组件地址
-  component_url: string
 }
 
 // 种子信息
