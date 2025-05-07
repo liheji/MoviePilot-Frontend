@@ -79,6 +79,11 @@ const groupedDataList = ref<Map<string, Context[]>>()
 const filterMenuOpen = ref(false)
 const currentFilter = ref('site')
 
+const currentFilterTitle = computed(() => filterTitles[currentFilter.value])
+const currentFilterOptions = computed(() => {
+  return filterOptions[currentFilter.value]
+})
+
 // 添加全部筛选菜单相关
 const allFilterMenuOpen = ref(false)
 
@@ -522,7 +527,23 @@ function loadMore({ done }: { done: any }) {
         </div>
 
         <!-- 筛选图标按钮区域 -->
-        <div class="filter-buttons-grid w-100">
+        <div class="filter-buttons-grid w-100 mt-2">
+          <!-- 全部筛选按钮 -->
+          <VBtn variant="text" color="primary" class="filter-btn-mobile" @click="toggleAllFilterMenu">
+            <VIcon icon="mdi-filter-variant" class="filter-icon me-1"></VIcon>
+            <span class="filter-label">
+              {{ t('torrent.allFilters') }}
+            </span>
+            <VBadge
+              v-if="getFilterCount > 0"
+              :content="getFilterCount"
+              color="primary"
+              location="top end"
+              offset-x="-10"
+              offset-y="-10"
+            ></VBadge>
+          </VBtn>
+
           <VBtn
             v-for="(title, key) in filterTitles"
             v-show="filterOptions[key].length > 0"
@@ -550,7 +571,7 @@ function loadMore({ done }: { done: any }) {
   </VCard>
 
   <!-- 全部筛选弹窗 -->
-  <VDialog v-model="allFilterMenuOpen" max-width="50rem" location="center" scrollable>
+  <VDialog v-model="allFilterMenuOpen" max-width="50rem" max-height="90%" location="center" scrollable>
     <VCard>
       <VDialogCloseBtn @click="allFilterMenuOpen = false" />
       <VCardTitle class="py-3 d-flex align-center">
@@ -616,6 +637,51 @@ function loadMore({ done }: { done: any }) {
           </VCard>
         </div>
       </VCardText>
+    </VCard>
+  </VDialog>
+
+  <!-- 筛选弹窗 -->
+  <VDialog v-model="filterMenuOpen" max-width="25rem" max-height="80%" location="center">
+    <VCard>
+      <VCardTitle class="py-3 d-flex align-center">
+        <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
+        <span>{{ currentFilterTitle }}</span>
+        <VSpacer />
+        <VBtn
+          v-if="filterForm[currentFilter].length > 0"
+          variant="text"
+          size="small"
+          color="error"
+          @click="clearFilter(currentFilter)"
+        >
+          {{ t('torrent.clear') }}
+        </VBtn>
+        <VBtn variant="text" size="small" color="primary" @click="selectAll(currentFilter)">
+          {{ t('torrent.selectAll') }}
+        </VBtn>
+      </VCardTitle>
+      <VDivider />
+      <VCardText>
+        <VChipGroup v-model="filterForm[currentFilter]" column multiple class="filter-options">
+          <VChip
+            v-for="option in currentFilterOptions"
+            :key="option"
+            :value="option"
+            filter
+            variant="elevated"
+            class="ma-1 filter-chip"
+            size="small"
+          >
+            {{ option }}
+          </VChip>
+        </VChipGroup>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false">
+          {{ t('torrent.confirm') }}
+        </VBtn>
+      </VCardActions>
     </VCard>
   </VDialog>
 
