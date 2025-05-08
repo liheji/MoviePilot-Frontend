@@ -1485,12 +1485,14 @@ export default {
       scanQrCode: 'Please scan with WeChat or 115 client',
       scanned: 'Scanned, please confirm login',
       complete: 'Complete',
+      reset: 'Reset',
     },
     aliyunAuth: {
       loginTitle: 'Aliyun Drive Login',
       scanQrCode: 'Please scan with Aliyun Drive App',
       scanned: 'Scanned',
       complete: 'Complete',
+      reset: 'Reset',
     },
     rcloneConfig: {
       title: 'RClone Configuration',
@@ -1499,6 +1501,7 @@ export default {
       defaultContent:
         '# Please fill in your rclone config file content here \n# Please refer to https://rclone.org/docs/ \n# Storage node name must be: MP',
       complete: 'Complete',
+      reset: 'Reset',
     },
     alistConfig: {
       title: 'Alist Configuration',
@@ -1513,6 +1516,7 @@ export default {
         token: 'Token',
       },
       complete: 'Complete',
+      reset: 'Reset',
     },
     workflowAddEdit: {
       addTitle: 'Add Workflow',

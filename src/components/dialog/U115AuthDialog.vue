@@ -35,7 +35,23 @@ async function handleDone() {
   emit('done')
 }
 
-// 调用/aliyun/qrcode api生成二维码
+// 重置配置
+async function handleReset() {
+  try {
+    const result: { [key: string]: any } = await api.get('/storage/reset/u115')
+    if (result.success) {
+      // 重置成功
+      alertType.value = 'success'
+      handleDone()
+    } else {
+      alertType.value = 'error'
+      text.value = result.message
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+// 调用/u115/qrcode api生成二维码
 async function getQrcode() {
   try {
     const result: { [key: string]: any } = await api.get('/storage/qrcode/u115')
@@ -108,6 +124,9 @@ onUnmounted(() => {
       </VCardText>
       <VCardActions>
         <VSpacer />
+        <VBtn variant="elevated" @click="handleReset" prepend-icon="mdi-restore" class="px-5 me-3">
+          {{ t('dialog.u115Auth.reset') }}
+        </VBtn>
         <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
           {{ t('dialog.u115Auth.complete') }}
         </VBtn>

@@ -22,7 +22,24 @@ async function handleDone() {
   emit('done')
 }
 
-// 保存rclone设置
+// 重置配置
+async function handleReset() {
+  try {
+    const result: { [key: string]: any } = await api.get('/storage/reset/alist')
+    if (result.success) {
+      // 重置成功
+      alertType.value = 'success'
+      handleDone()
+    } else {
+      alertType.value = 'error'
+      text.value = result.message
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+// 保存alist设置
 async function savaAlistConfig() {
   try {
     await api.post(`storage/save/alist`, props.conf)
@@ -67,6 +84,9 @@ async function savaAlistConfig() {
       </VCardText>
       <VCardActions>
         <VSpacer />
+        <VBtn variant="elevated" @click="handleReset" prepend-icon="mdi-restore" class="px-5 me-3">
+          {{ t('dialog.alistConfig.reset') }}
+        </VBtn>
         <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
           {{ t('dialog.alistConfig.complete') }}
         </VBtn>
