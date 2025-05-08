@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent } from 'vue'
+import api from '@/api'
 import { DashboardItem } from '@/api/types'
 import AnalyticsMediaStatistic from '@/views/dashboard/AnalyticsMediaStatistic.vue'
 import AnalyticsScheduler from '@/views/dashboard/AnalyticsScheduler.vue'
@@ -88,7 +88,7 @@ onUnmounted(() => {
   <template v-else-if="!isNullOrEmptyObject(props.config)">
     <!-- Vue 渲染模式 -->
     <div v-if="pluginRenderMode === 'vue'">
-      <component :is="dynamicPluginComponent" :config="props.config" :allow-refresh="props.allowRefresh" />
+      <component :is="dynamicPluginComponent" :config="props.config" :allow-refresh="props.allowRefresh" :api="api" />
       <!-- Vue 模式下也可以显示拖拽句柄 -->
       <div class="absolute right-5 top-5">
         <VIcon class="cursor-move">mdi-drag</VIcon>

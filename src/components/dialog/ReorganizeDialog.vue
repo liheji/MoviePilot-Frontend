@@ -250,7 +250,7 @@ onUnmounted(() => {
 
 <template>
   <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
-    <VCard :title="dialogTitle" class="rounded-t">
+    <VCard :title="dialogTitle">
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>

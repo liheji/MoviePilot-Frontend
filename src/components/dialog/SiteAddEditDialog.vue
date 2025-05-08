@@ -152,7 +152,6 @@ onMounted(async () => {
       :title="`${props.oper === 'add' ? t('site.actions.add') : t('site.actions.edit')}${t('site.title')}${
         props.oper !== 'add' ? ` - ${siteForm.name}` : ''
       }`"
-      class="rounded-t"
     >
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />

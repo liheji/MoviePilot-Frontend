@@ -60,7 +60,6 @@ const $toast = useToast()
       :title="`${t('dialog.subscribeShare.shareSubscription')} - ${props.sub?.name} ${
         props.sub?.season ? t('dialog.subscribeShare.season', { number: props.sub?.season }) : ''
       }`"
-      class="rounded-t"
     >
       <VCardText>
         <VDialogCloseBtn @click="emit('close')" />

@@ -34,10 +34,6 @@ const props = defineProps({
 // 是否刷新过
 let isRefreshed = ref(false)
 
-// 顺序存储键值
-const localOrderKey = props.type === t('media.movie') ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'
-const orderRequestKey = props.type === t('media.movie') ? 'SubscribeMovieOrder' : 'SubscribeTvOrder'
-
 // 刷新状态
 const loading = ref(false)
 
@@ -52,6 +48,10 @@ const orderConfig = ref<{ id: number }[]>([])
 
 // 显示的订阅列表
 const displayList = ref<Subscribe[]>([])
+
+// 顺序存储键值（计算属性）
+const localOrderKey = computed(() => (props.type === '电影' ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'))
+const orderRequestKey = computed(() => (props.type === '电影' ? 'SubscribeMovieOrder' : 'SubscribeTvOrder'))
 
 // 监听dataList变化，同步更新displayList
 watch([dataList, () => props.keyword], () => {
@@ -74,26 +74,27 @@ watch([dataList, () => props.keyword], () => {
 // 加载顺序
 async function loadSubscribeOrderConfig() {
   // 顺序配置
-  const local_order = localStorage.getItem(localOrderKey)
+  const local_order = localStorage.getItem(localOrderKey.value)
   if (local_order) {
     orderConfig.value = JSON.parse(local_order)
   } else {
     const response = await api.get(`/user/config/${orderRequestKey}`)
     if (response && response.data && response.data.value) {
       orderConfig.value = response.data.value
-      localStorage.setItem(localOrderKey, JSON.stringify(orderConfig.value))
+      localStorage.setItem(localOrderKey.value, JSON.stringify(orderConfig.value))
     }
   }
 }
 
 // 按order的顺序排序
-function sortSubscribeOrder() {
+async function sortSubscribeOrder() {
   if (!orderConfig.value) {
     return
   }
   if (displayList.value.length === 0) {
     return
   }
+  await loadSubscribeOrderConfig()
   displayList.value.sort((a, b) => {
     const aIndex = orderConfig.value.findIndex((item: { id: number }) => item.id === a.id)
     const bIndex = orderConfig.value.findIndex((item: { id: number }) => item.id === b.id)
@@ -107,7 +108,7 @@ async function saveSubscribeOrder() {
   const orderObj = displayList.value.map(item => ({ id: item.id }))
   orderConfig.value = orderObj
   const orderString = JSON.stringify(orderObj)
-  localStorage.setItem(localOrderKey, orderString)
+  localStorage.setItem(localOrderKey.value, orderString)
 
   // 保存到服务端
   try {
@@ -136,7 +137,6 @@ function historyDone() {
 }
 
 onMounted(async () => {
-  await loadSubscribeOrderConfig()
   await fetchData()
   if (props.subid) {
     // 找到这个订阅

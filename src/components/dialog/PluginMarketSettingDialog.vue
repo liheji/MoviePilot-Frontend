@@ -45,7 +45,7 @@ onMounted(() => {
 
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
-    <VCard class="rounded-t">
+    <VCard>
       <VCardItem>
         <VCardTitle>
           <VIcon icon="mdi-store-cog" class="me-2" />

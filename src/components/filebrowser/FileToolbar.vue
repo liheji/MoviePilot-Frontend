@@ -162,7 +162,7 @@ const sortIcon = computed(() => {
     <IconBtn @click="changeSort">
       <VIcon :icon="sortIcon" />
     </IconBtn>
-    <IconBtn @click="goUp">
+    <IconBtn v-if="pathSegments.length > 0" @click="goUp">
       <VIcon icon="mdi-arrow-up-bold-outline" />
     </IconBtn>
     <VDialog v-model="newFolderPopper" max-width="35rem">

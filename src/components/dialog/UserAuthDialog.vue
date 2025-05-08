@@ -134,7 +134,7 @@ onMounted(async () => {
 
 <template>
   <VDialog width="40rem" max-height="85vh">
-    <VCard :title="t('dialog.userAuth.title')" class="rounded-t">
+    <VCard :title="t('dialog.userAuth.title')">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VRow>

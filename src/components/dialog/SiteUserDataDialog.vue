@@ -283,7 +283,7 @@ onBeforeMount(async () => {
 
 <template>
   <VDialog scrollable eager max-width="80rem" :fullscreen="!display.mdAndUp.value">
-    <VCard class="rounded-t">
+    <VCard>
       <VCardItem>
         <VCardTitle
           >{{ t('dialog.siteUserData.title') }} - {{ props.site?.name }}

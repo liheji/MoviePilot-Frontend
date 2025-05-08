@@ -549,7 +549,7 @@ onMounted(() => {
     </VCard>
 
     <!-- 全部筛选弹窗 -->
-    <VDialog v-model="allFilterMenuOpen" max-width="50rem" location="center" scrollable>
+    <VDialog v-model="allFilterMenuOpen" max-width="50rem" max-height="90%" location="center" scrollable>
       <VCard>
         <VDialogCloseBtn @click="allFilterMenuOpen = false" />
         <VCardTitle class="py-3 d-flex align-center">

@@ -135,7 +135,7 @@ function onClose() {
       </VCardText>
     </VCard>
     <VDialog v-if="notificationInfoDialog" v-model="notificationInfoDialog" scrollable max-width="40rem">
-      <VCard :title="`${props.notification.name} - ${t('notification.config')}`" class="rounded-t">
+      <VCard :title="`${props.notification.name} - ${t('notification.config')}`">
         <VDialogCloseBtn v-model="notificationInfoDialog" />
         <VDivider />
         <VCardText>

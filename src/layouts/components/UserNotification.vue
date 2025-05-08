@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
       </VCardItem>
       <VDivider />
       <div class="notification-list-container">
-        <div v-if="notificationList.length > 0" class="notification-list">
+        <div v-if="notificationList.length > 0" class="h-full overflow-y-auto">
           <VListItem v-for="(item, i) in notificationList" :key="i" lines="two" class="mb-1">
             <template #prepend>
               <VAvatar rounded>
@@ -120,12 +120,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .notification-list-container {
-  max-height: 50vh;
   overflow: hidden;
-}
-
-.notification-list {
-  max-height: 100%;
-  overflow-y: auto;
+  max-block-size: 50vh;
 }
 </style>

@@ -120,7 +120,7 @@ onMounted(() => {
 <template>
   <VDialog scrollable max-width="80rem" :fullscreen="!display.mdAndUp.value">
     <!-- Vuetify 渲染模式 -->
-    <VCard v-if="renderMode === 'vuetify'" :title="`${props.plugin?.plugin_name}`" class="rounded-t">
+    <VCard v-if="renderMode === 'vuetify'" :title="`${props.plugin?.plugin_name}`">
       <VDialogCloseBtn @click="emit('close')" />
       <LoadingBanner v-if="!isRefreshed" class="mt-5" />
       <VCardText v-else class="min-h-40">
@@ -141,8 +141,16 @@ onMounted(() => {
       />
     </VCard>
     <!-- Vue 渲染模式 -->
-    <div v-else-if="renderMode === 'vue'">
-      <component :is="dynamicComponent" :api="api" @action="handleAction" @switch="emit('switch')" @close="emit('close')" />
-    </div>
+    <VCard v-else-if="renderMode === 'vue'">
+      <VCardText class="pa-0">
+        <component
+          :is="dynamicComponent"
+          :api="api"
+          @action="handleAction"
+          @switch="emit('switch')"
+          @close="emit('close')"
+        />
+      </VCardText>
+    </VCard>
   </VDialog>
 </template>

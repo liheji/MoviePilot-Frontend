@@ -107,7 +107,7 @@ function onClose() {
       </VCardText>
     </VCard>
     <VDialog v-if="ruleInfoDialog" v-model="ruleInfoDialog" scrollable max-width="40rem">
-      <VCard :title="t('customRule.title', { id: props.rule.id })" class="rounded-t">
+      <VCard :title="t('customRule.title', { id: props.rule.id })">
         <VDialogCloseBtn v-model="ruleInfoDialog" />
         <VDivider />
         <VCardText>
