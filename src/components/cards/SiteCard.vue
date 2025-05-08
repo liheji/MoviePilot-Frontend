@@ -293,19 +293,19 @@ onMounted(() => {
       </div>
 
       <!-- 右侧操作按钮区 -->
-      <VSheet class="site-card-actions absolute inset-y-0 right-0 z-20 flex flex-col py-2 px-1 transform duration-300">
+      <VSheet class="site-card-actions absolute inset-y-0 right-0 z-20 flex flex-col py-2 px-1">
         <!-- 测试按钮 -->
         <VBtn
           icon
           variant="text"
           density="comfortable"
-          class="mb-1 relative w-10 h-10 min-w-10 flex items-center justify-center rounded-full"
+          class="mb-1 relative flex items-center justify-center rounded-full mx-auto"
           :disabled="testButtonDisable"
           @click.stop="testSite"
         >
           <div class="relative flex items-center justify-center w-full h-full">
             <div
-              class="w-[22px] h-[22px] rounded-full shadow-[inset_0_0_0_2px_rgba(var(--v-theme-on-surface),0.1)] pulse-dot"
+              class="w-[20px] h-[20px] rounded-full shadow-[inset_0_0_0_2px_rgba(var(--v-theme-on-surface),0.1)] pulse-dot"
               :class="statColor"
             ></div>
           </div>
@@ -321,28 +321,28 @@ onMounted(() => {
 
         <!-- 用户数据按钮 -->
         <VBtn icon variant="text" @click.stop="handleSiteUserData">
-          <VIcon icon="mdi-chart-bell-curve" size="small" />
+          <VIcon icon="mdi-chart-bell-curve" size="20" />
         </VBtn>
 
         <!-- 更新按钮 -->
         <VBtn icon variant="text" @click.stop="handleSiteUpdate">
-          <VIcon icon="mdi-refresh" size="small" />
+          <VIcon icon="mdi-refresh" size="20" />
         </VBtn>
 
         <!-- 更多选项按钮 -->
         <VBtn icon variant="text" class="mt-auto">
-          <VIcon icon="mdi-dots-vertical" size="small" />
+          <VIcon icon="mdi-dots-vertical" size="20" />
           <VMenu :activator="'parent'" :close-on-content-click="true" :location="'left'">
             <VList>
               <VListItem @click="handleResourceBrowse" base-color="info">
                 <template #prepend>
-                  <VIcon icon="mdi-web" size="small" />
+                  <VIcon icon="mdi-web" size="20" />
                 </template>
                 <VListItemTitle>{{ t('site.browseResources') }}</VListItemTitle>
               </VListItem>
               <VListItem @click="deleteSiteInfo">
                 <template #prepend>
-                  <VIcon icon="mdi-delete-outline" size="small" color="error" />
+                  <VIcon icon="mdi-delete-outline" size="20" color="error" />
                 </template>
                 <VListItemTitle class="text-error">{{ t('site.deleteSite') }}</VListItemTitle>
               </VListItem>
