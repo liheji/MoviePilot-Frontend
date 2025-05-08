@@ -37,8 +37,12 @@ export default defineConfig({
       filename: 'remoteEntry.js',
       remotes: {
         // 动态remotes将在运行时注入
+        dummy: {
+          external: '',
+          format: 'var',
+        },
       },
-      shared: ['vue', 'vuetify', 'vuetify/styles'],
+      shared: ['vue', 'vuetify'],
     }),
     VitePWA({
       injectRegister: 'script',
