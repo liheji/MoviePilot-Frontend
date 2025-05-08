@@ -200,5 +200,8 @@ export default defineConfig({
         quietDeps: true,
       },
     },
+    postcss: {
+      plugins: [require('tailwindcss'), require('autoprefixer')],
+    },
   },
 })

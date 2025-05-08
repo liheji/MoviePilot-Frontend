@@ -220,7 +220,7 @@ function onClose() {
       </VCardText>
     </VCard>
     <VDialog v-if="groupInfoDialog" v-model="groupInfoDialog" scrollable max-width="80rem">
-      <VCard :title="`${props.group.name} - ${t('filterRule.title')}`" class="rounded-t">
+      <VCard :title="`${props.group.name} - ${t('filterRule.title')}`">
         <VDialogCloseBtn v-model="groupInfoDialog" />
         <VDivider />
         <VCardItem class="pt-1">

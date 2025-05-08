@@ -295,7 +295,6 @@ onMounted(() => {
       :title="`${props.oper === 'add' ? t('dialog.userAddEdit.add') : t('dialog.userAddEdit.edit')}${
         props.oper !== 'add' ? ` - ${userName}` : ''
       }`"
-      class="rounded-t"
     >
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />

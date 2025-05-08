@@ -42,7 +42,7 @@ async function savaRcloneConfig() {
 
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
-    <VCard :title="t('dialog.rcloneConfig.title')" class="rounded-t">
+    <VCard :title="t('dialog.rcloneConfig.title')">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VRow>

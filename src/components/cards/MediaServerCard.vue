@@ -200,7 +200,7 @@ onMounted(() => {
       </VCardText>
     </VCard>
     <VDialog v-if="mediaServerInfoDialog" v-model="mediaServerInfoDialog" scrollable max-width="40rem">
-      <VCard :title="`${props.mediaserver.name} - ${t('common.config')}`" class="rounded-t">
+      <VCard :title="`${props.mediaserver.name} - ${t('common.config')}`">
         <VDialogCloseBtn v-model="mediaServerInfoDialog" />
         <VDivider />
         <VCardText>

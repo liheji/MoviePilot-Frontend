@@ -86,7 +86,7 @@ async function editWorkflow() {
 
 <template>
   <VDialog scrollable :close-on-back="false" eager max-width="30rem" :fullscreen="!display.mdAndUp.value">
-    <VCard :title="title" class="rounded-t">
+    <VCard :title="title">
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>

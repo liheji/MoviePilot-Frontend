@@ -96,7 +96,7 @@ onUnmounted(() => {
 
 <template>
   <VDialog width="40rem" scrollable max-height="85vh">
-    <VCard :title="t('dialog.u115Auth.loginTitle')" class="rounded-t">
+    <VCard :title="t('dialog.u115Auth.loginTitle')">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText class="pt-2 flex flex-col items-center">
         <div class="my-6 rounded text-center p-3 border">

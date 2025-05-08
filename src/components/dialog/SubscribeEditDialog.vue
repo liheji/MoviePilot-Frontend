@@ -292,7 +292,6 @@ onMounted(() => {
                 : '',
             })
       "
-      class="rounded-t"
     >
       <VCardText>
         <VDialogCloseBtn @click="emit('close')" />

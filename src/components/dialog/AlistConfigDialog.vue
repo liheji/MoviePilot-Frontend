@@ -34,7 +34,7 @@ async function savaAlistConfig() {
 
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
-    <VCard :title="t('dialog.alistConfig.title')" class="rounded-t">
+    <VCard :title="t('dialog.alistConfig.title')">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VRow>

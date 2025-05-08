@@ -293,9 +293,7 @@ onMounted(() => {
       </div>
 
       <!-- 右侧操作按钮区 -->
-      <VSheet
-        class="site-card-actions absolute inset-y-0 right-0 z-20 flex flex-col py-2 px-1 transform translate-x-full transition-transform duration-200"
-      >
+      <VSheet class="site-card-actions absolute inset-y-0 right-0 z-20 flex flex-col py-2 px-1 transform duration-300">
         <!-- 测试按钮 -->
         <VBtn
           icon
@@ -386,12 +384,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.site-card:hover {
-  .site-card-actions {
-    transform: translateX(0);
-  }
-}
-
 .site-status-indicator {
   position: absolute;
   z-index: 1;
@@ -430,15 +422,15 @@ onMounted(() => {
 
 /* 上传下载条样式 */
 .upload-bar {
+  animation: pulse-width 2s infinite;
   background: linear-gradient(90deg, #4d79ff, #07f);
   box-shadow: 0 0 4px rgba(0, 119, 255, 50%);
-  animation: pulse-width 2s infinite;
 }
 
 .download-bar {
+  animation: pulse-width 2s infinite;
   background: linear-gradient(90deg, #42d392, #00b77e);
   box-shadow: 0 0 4px rgba(0, 183, 126, 50%);
-  animation: pulse-width 2s infinite;
 }
 
 /* 测试状态点样式 */
@@ -446,22 +438,22 @@ onMounted(() => {
   position: absolute;
   z-index: 1;
   border-radius: 50%;
+  block-size: 70%;
   content: '';
-  height: 70%;
-  width: 70%;
-  top: 15%;
-  left: 15%;
+  inline-size: 70%;
+  inset-block-start: 15%;
+  inset-inline-start: 15%;
 }
 
 .pulse-dot::after {
   position: absolute;
   z-index: 2;
   border-radius: 50%;
+  block-size: 100%;
   content: '';
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
 }
 
 .pulse-dot.error::before {
@@ -508,11 +500,11 @@ onMounted(() => {
 .spinner-circle {
   position: absolute;
   border: 1px solid rgba(var(--v-theme-primary), 0.2);
-  border-top-color: rgba(var(--v-theme-primary), 1);
   border-radius: 50%;
-  width: 100%;
-  height: 100%;
   animation: spin 0.8s linear infinite;
+  block-size: 100%;
+  border-block-start-color: rgba(var(--v-theme-primary), 1);
+  inline-size: 100%;
 }
 
 /* 动画关键帧 */
@@ -522,6 +514,7 @@ onMounted(() => {
     opacity: 0.85;
     transform: scaleX(0.95);
   }
+
   50% {
     opacity: 1;
     transform: scaleX(1.05);
@@ -532,9 +525,11 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.6);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-error), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
   }
@@ -544,9 +539,11 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0.6);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-warning), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-warning), 0);
   }
@@ -556,9 +553,11 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-success), 0.6);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-success), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-success), 0);
   }
@@ -568,9 +567,11 @@ onMounted(() => {
   0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-secondary), 0.6);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(var(--v-theme-secondary), 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-secondary), 0);
   }
@@ -580,6 +581,7 @@ onMounted(() => {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -589,8 +591,22 @@ onMounted(() => {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
+}
+
+.site-card-actions {
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  visibility: hidden;
+}
+
+.site-card:hover .site-card-actions {
+  opacity: 1;
+  transform: translateX(0);
+  visibility: visible;
 }
 </style>
