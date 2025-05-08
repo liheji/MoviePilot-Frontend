@@ -38,7 +38,7 @@ export default defineConfig({
       remotes: {
         // 动态remotes将在运行时注入
       },
-      shared: ['vue', 'vuetify', 'pinia', 'vue-i18n', 'vue-router', 'axios'],
+      shared: ['vue', 'vuetify', 'vuetify/styles'],
     }),
     VitePWA({
       injectRegister: 'script',
