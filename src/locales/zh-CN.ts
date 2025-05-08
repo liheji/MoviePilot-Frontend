@@ -1491,7 +1491,7 @@ export default {
       loginTypeOptions: {
         guest: '访客',
         username: '用户名密码',
-        token: 'Token',
+        token: '令牌',
       },
       complete: '完成',
       reset: '重置',
