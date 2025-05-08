@@ -38,6 +38,23 @@ async function savaRcloneConfig() {
     console.error(e)
   }
 }
+
+// 重置配置
+async function handleReset() {
+  try {
+    const result: { [key: string]: any } = await api.get('/storage/reset/rclone')
+    if (result.success) {
+      // 重置成功
+      alertType.value = 'success'
+      handleDone()
+    } else {
+      alertType.value = 'error'
+      text.value = result.message
+    }
+  } catch (e) {
+    console.error(e)
+  }
+}
 </script>
 
 <template>
@@ -63,6 +80,9 @@ async function savaRcloneConfig() {
       </VCardText>
       <VCardActions>
         <VSpacer />
+        <VBtn variant="elevated" @click="handleReset" prepend-icon="mdi-restore" class="px-5 me-3">
+          {{ t('dialog.rcloneConfig.reset') }}
+        </VBtn>
         <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
           {{ t('dialog.rcloneConfig.complete') }}
         </VBtn>

@@ -1464,12 +1464,14 @@ export default {
       scanQrCode: '请使用微信或115客户端扫码',
       scanned: '已扫码，请确认登录',
       complete: '完成',
+      reset: '重置',
     },
     aliyunAuth: {
       loginTitle: '阿里云盘登录',
       scanQrCode: '请用阿里云盘 App 扫码',
       scanned: '已扫码',
       complete: '完成',
+      reset: '重置',
     },
     rcloneConfig: {
       title: 'RClone配置',
@@ -1477,6 +1479,7 @@ export default {
       fileContent: 'rclone配置文件内容',
       defaultContent: '# 请在此处填写rclone配置文件内容 \n# 请参考 https://rclone.org/docs/ \n# 存储节点名必须为：MP',
       complete: '完成',
+      reset: '重置',
     },
     alistConfig: {
       title: 'Alist配置',
@@ -1491,6 +1494,7 @@ export default {
         token: 'Token',
       },
       complete: '完成',
+      reset: '重置',
     },
     workflowAddEdit: {
       addTitle: '添加工作流',
