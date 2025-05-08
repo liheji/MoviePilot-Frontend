@@ -45,8 +45,18 @@ async function fetchRemoteModules(): Promise<RemoteModule[]> {
  * @param modules 远程模块列表
  */
 function injectRemoteModule(module: RemoteModule): void {
+  // 从浏览器地址栏获取当前地址前缀
+  const baseUrl = new URL(window.location.href)
+  // 环境变量
+  let apiBase = import.meta.env.VITE_API_BASE_URL
+  if (apiBase.startsWith('/')) {
+    apiBase = apiBase.slice(1)
+  }
+  if (apiBase.endsWith('/')) {
+    apiBase = apiBase.slice(0, -1)
+  }
   __federation_method_setRemote(module.id, {
-    url: () => Promise.resolve(`${import.meta.env.VITE_API_BASE_URL}/${module.url}`),
+    url: () => Promise.resolve(`${baseUrl.origin}/${apiBase}${module.url}`),
     format: 'esm',
     from: 'vite',
   })
