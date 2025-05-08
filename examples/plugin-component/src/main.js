@@ -3,15 +3,16 @@ import App from './App.vue'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import defaults from './vuetify/defaults'
+import theme from './vuetify/theme'
 import 'vuetify/styles'
 
 // 创建Vuetify实例
 const vuetify = createVuetify({
   components,
   directives,
-  theme: {
-    defaultTheme: 'dark'
-  }
+  theme,
+  defaults
 })
 
 // 创建应用
