@@ -302,6 +302,7 @@ onMounted(() => {
           class="mb-1 relative flex items-center justify-center rounded-full mx-auto"
           :disabled="testButtonDisable"
           @click.stop="testSite"
+          size="36"
         >
           <div class="relative flex items-center justify-center w-full h-full">
             <div
@@ -320,17 +321,17 @@ onMounted(() => {
         </VBtn>
 
         <!-- 用户数据按钮 -->
-        <VBtn icon variant="text" @click.stop="handleSiteUserData">
+        <VBtn icon variant="text" @click.stop="handleSiteUserData" size="36">
           <VIcon icon="mdi-chart-bell-curve" size="20" />
         </VBtn>
 
         <!-- 更新按钮 -->
-        <VBtn icon variant="text" @click.stop="handleSiteUpdate">
+        <VBtn icon variant="text" @click.stop="handleSiteUpdate" size="36">
           <VIcon icon="mdi-refresh" size="20" />
         </VBtn>
 
         <!-- 更多选项按钮 -->
-        <VBtn icon variant="text" class="mt-auto">
+        <VBtn icon variant="text" class="mt-auto" size="36">
           <VIcon icon="mdi-dots-vertical" size="20" />
           <VMenu :activator="'parent'" :close-on-content-click="true" :location="'left'">
             <VList>
