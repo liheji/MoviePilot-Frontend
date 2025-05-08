@@ -182,16 +182,19 @@ onBeforeMount(async () => {
       </VCardActions>
     </VCard>
     <!-- Vue 渲染模式 -->
-    <div v-else-if="renderMode === 'vue'">
-      <component
-        :is="dynamicComponent"
-        :initial-config="pluginConfigForm"
-        :api="api"
-        @save="handleVueComponentSave"
-        @switch="emit('switch')"
-        @close="emit('close')"
-      />
-    </div>
+    <VCard v-else-if="renderMode === 'vue'">
+      <VCardText class="pa-0">
+        <component
+          :is="dynamicComponent"
+          :initial-config="pluginConfigForm"
+          :api="api"
+          @save="handleVueComponentSave"
+          @switch="emit('switch')"
+          @close="emit('close')"
+        />
+      </VCardText>
+    </VCard>
+
     <!-- 进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
   </VDialog>
