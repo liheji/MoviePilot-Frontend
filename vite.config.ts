@@ -35,10 +35,15 @@ export default defineConfig({
     federation({
       name: 'MoviePilot',
       filename: 'remoteEntry.js',
+      // @ts-ignore
       remotes: {
         // 动态remotes将在运行时注入
+        dummy: {
+          external: '',
+          format: 'var',
+        },
       },
-      shared: ['vue', 'vuetify', 'pinia', 'vue-i18n', 'vue-router', 'axios'],
+      shared: ['vue', 'vuetify'],
     }),
     VitePWA({
       injectRegister: 'script',
@@ -167,8 +172,8 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: false,
-        drop_debugger: false,
+        drop_console: true,
+        drop_debugger: true,
       },
     },
     chunkSizeWarningLimit: 5000,
