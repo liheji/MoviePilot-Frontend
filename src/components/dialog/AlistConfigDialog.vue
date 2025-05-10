@@ -36,14 +36,14 @@ async function handleReset() {
 }
 
 // 登录类型
-const loginType = computed(() => {
-  if (props.conf.token) {
-    return 'token'
-  } else if (props.conf.username) {
-    return 'username'
-  }
-  return 'username'
-})
+let loginType = ref('username')
+if (props.conf.token) {
+  loginType = ref('token')
+} else if (props.conf.username) {
+  loginType = ref('username')
+} else {
+  loginType = ref('guest')
+}
 
 // 数据源
 const sourceItems = [
