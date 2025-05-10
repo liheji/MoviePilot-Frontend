@@ -345,7 +345,7 @@ watch(
         >
           <div
             class="relative flex flex-row items-start pa-3 justify-between grow"
-            :style="`background: linear-gradient(${backgroundColor}66 0%, ${backgroundColor}99 100%)`"
+            :style="`background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(${backgroundColor} 0%, ${backgroundColor} 100%)`"
           >
             <div class="relative flex-1 min-w-0">
               <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
