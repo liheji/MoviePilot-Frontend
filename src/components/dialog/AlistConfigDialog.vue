@@ -38,6 +38,24 @@ async function handleReset() {
     console.error(e)
   }
 }
+let loginType = ref('username')
+if (props.conf.token) {
+  loginType = ref('token')
+} else if (props.conf.username) {
+  loginType = ref('username')
+} else {
+  loginType = ref('guest')
+}
+
+// 数据源
+const sourceItems = [
+  {
+    'title': t('dialog.alistConfig.loginTypeOptions.username'),
+    'value': 'username',
+  },
+  { 'title': t('dialog.alistConfig.loginTypeOptions.token'), 'value': 'token' },
+  { 'title': t('dialog.alistConfig.loginTypeOptions.guest'), 'value': 'guest' },
+]
 
 // 保存alist设置
 async function savaAlistConfig() {
@@ -63,7 +81,16 @@ async function savaAlistConfig() {
               persistent-hint
             />
           </VCol>
-          <VCol cols="12" md="6">
+          <VCol cols="12" md="3">
+            <VSelect
+              v-model="loginType"
+              :items="sourceItems"
+              :label="t('dialog.alistConfig.loginType')"
+              :hint="t('dialog.alistConfig.loginType')"
+              persistent-hint
+            />
+          </VCol>
+          <VCol cols="12" md="4" v-if="loginType == 'username'">
             <VTextField
               v-model="props.conf.username"
               :hint="t('dialog.alistConfig.username')"
@@ -71,12 +98,20 @@ async function savaAlistConfig() {
               persistent-hint
             />
           </VCol>
-          <VCol cols="12" md="6">
+          <VCol cols="12" md="5" v-if="loginType == 'username'">
             <VTextField
               type="password"
               v-model="props.conf.password"
               :hint="t('dialog.alistConfig.password')"
               :label="t('dialog.alistConfig.password')"
+              persistent-hint
+            />
+          </VCol>
+          <VCol cols="9" v-if="loginType == 'token'">
+            <VTextField
+              v-model="props.conf.token"
+              :hint="t('dialog.alistConfig.loginTypeOptions.token')"
+              :label="t('dialog.alistConfig.loginTypeOptions.token')"
               persistent-hint
             />
           </VCol>
