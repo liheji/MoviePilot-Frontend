@@ -743,7 +743,7 @@ onDeactivated(() => {
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
-                    v-model="SystemSettings.Advanced.SCRAP_ORIGINAL_IMAGE"
+                    v-model="SystemSettings.Advanced.TMDB_SCRAP_ORIGINAL_IMAGE"
                     :label="t('setting.system.scrapOriginalImage')"
                     :hint="t('setting.system.scrapOriginalImageHint')"
                     persistent-hint
