@@ -203,7 +203,7 @@ onMounted(() => {
     </VCard>
   </VMenu>
   <!-- 名称测试弹窗 -->
-  <VDialog v-if="nameTestDialog" v-model="nameTestDialog" max-width="35rem" scrollable>
+  <VDialog v-if="nameTestDialog" v-model="nameTestDialog" max-width="45rem" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -298,7 +298,7 @@ onMounted(() => {
   <VDialog
     v-if="messageDialog"
     v-model="messageDialog"
-    max-width="40rem"
+    max-width="50rem"
     scrollable
     :fullscreen="!display.mdAndUp.value"
     ref="messageDialogRef"
