@@ -13,6 +13,20 @@ interface RemoteModule {
 }
 
 /**
+ * 获取单个远程模块信息
+ * @param id 远程模块ID
+ */
+async function fetchSingleRemoteModule(id: string): Promise<RemoteModule | null> {
+  try {
+    const modules = await fetchRemoteModules()
+    return modules.find(module => module.id === id) || null
+  } catch (error) {
+    console.error(`获取远程模块信息失败: ${id}`, error)
+    return null
+  }
+}
+
+/**
  * 加载远程组件
  * @param id 远程模块ID
  * @param componentName 组件名称 (如 'Page')
@@ -22,8 +36,24 @@ export async function loadRemoteComponent(id: string, componentName: string = 'P
     const module = await __federation_method_getRemote(id, `./${componentName}`)
     return __federation_method_unwrapDefault(module)
   } catch (error) {
-    console.error(`加载远程组件失败: ${id}/${componentName}`, error)
-    throw error
+    // 组件未注册，尝试重新注册
+    try {
+      const moduleInfo = await fetchSingleRemoteModule(id)
+      if (moduleInfo) {
+        console.log(`组件未注册，正在重新注册: ${id}`)
+        injectRemoteModule(moduleInfo)
+
+        // 重新尝试加载组件
+        const module = await __federation_method_getRemote(id, `./${componentName}`)
+        return __federation_method_unwrapDefault(module)
+      } else {
+        console.error(`无法找到远程模块信息: ${id}`)
+        throw new Error(`无法找到远程模块信息: ${id}`)
+      }
+    } catch (retryError) {
+      console.error(`重新注册并加载组件失败: ${id}/${componentName}`, retryError)
+      throw retryError
+    }
   }
 }
 
