@@ -28,24 +28,22 @@ async function handleReset() {
     const result: { [key: string]: any } = await api.get('/storage/reset/alist')
     if (result.success) {
       // 重置成功
-      alertType.value = 'success'
       handleDone()
-    } else {
-      alertType.value = 'error'
-      text.value = result.message
     }
   } catch (e) {
     console.error(e)
   }
 }
-let loginType = ref('username')
-if (props.conf.token) {
-  loginType = ref('token')
-} else if (props.conf.username) {
-  loginType = ref('username')
-} else {
-  loginType = ref('guest')
-}
+
+// 登录类型
+const loginType = computed(() => {
+  if (props.conf.token) {
+    return 'token'
+  } else if (props.conf.username) {
+    return 'username'
+  }
+  return 'username'
+})
 
 // 数据源
 const sourceItems = [

@@ -1004,9 +1004,6 @@ export default {
       tmdbLocale: 'TMDB Metadata Language',
       tmdbLocalePlaceholder: 'en',
       tmdbLocaleHint: 'Customize themoviedb metadata language',
-      tmdbScrapImageLocale: 'TMDB Scrap Image Locale',
-      tmdbScrapImageLocalePlaceholder: 'en',
-      tmdbScrapImageLocaleHint: 'Customize themoviedb scrap image locale',
       metaCacheExpire: 'Media Metadata Cache Expiration Time',
       metaCacheExpireHint: 'Recognition metadata local cache time, use built-in default value when set to 0',
       metaCacheExpireRequired: 'Please enter metadata cache time',
@@ -1014,6 +1011,8 @@ export default {
       scrapFollowTmdb: 'Follow TMDB Recognition',
       scrapFollowTmdbHint:
         'When turned off, organization history will be used (if available) to avoid TMDB data changes during subscription',
+      scrapOriginalImage: 'Scrap TheMovieDb Original Language Image',
+      scrapOriginalImageHint: 'Scrap original language image from themoviedb, otherwise scrap metadata language image',
       fanartEnable: 'Fanart Image Data Source',
       fanartEnableHint: 'Use image data from fanart.tv',
       githubProxy: 'Github Acceleration Proxy',

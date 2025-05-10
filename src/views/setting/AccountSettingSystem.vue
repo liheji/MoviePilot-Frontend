@@ -40,10 +40,10 @@ const SystemSettings = ref<any>({
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
     TMDB_LOCALE: null,
-    TMDB_SCRAP_IMAGE_LOCALE: null,
     META_CACHE_EXPIRE: 0,
     SCRAP_FOLLOW_TMDB: true,
     FANART_ENABLE: false,
+    TMDB_SCRAP_ORIGINAL_IMAGE: null,
     // 网络
     PROXY_HOST: null,
     GITHUB_PROXY: null,
@@ -717,16 +717,6 @@ onDeactivated(() => {
                   />
                 </VCol>
                 <VCol cols="12" md="6">
-                  <VSelect
-                    v-model="SystemSettings.Advanced.TMDB_SCRAP_IMAGE_LOCALE"
-                    :label="t('setting.system.tmdbScrapImageLocale')"
-                    :placeholder="t('setting.system.tmdbScrapImageLocalePlaceholder')"
-                    :hint="t('setting.system.tmdbScrapImageLocaleHint')"
-                    persistent-hint
-                    :items="tmdbLanguageItems"
-                  />
-                </VCol>
-                <VCol cols="12" md="6">
                   <VTextField
                     v-model="SystemSettings.Advanced.META_CACHE_EXPIRE"
                     :label="t('setting.system.metaCacheExpire')"
@@ -748,6 +738,14 @@ onDeactivated(() => {
                     v-model="SystemSettings.Advanced.SCRAP_FOLLOW_TMDB"
                     :label="t('setting.system.scrapFollowTmdb')"
                     :hint="t('setting.system.scrapFollowTmdbHint')"
+                    persistent-hint
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.SCRAP_ORIGINAL_IMAGE"
+                    :label="t('setting.system.scrapOriginalImage')"
+                    :hint="t('setting.system.scrapOriginalImageHint')"
                     persistent-hint
                   />
                 </VCol>
