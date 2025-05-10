@@ -40,6 +40,7 @@ const SystemSettings = ref<any>({
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
     TMDB_LOCALE: null,
+    TMDB_SCRAP_IMAGE_LOCALE: null,
     META_CACHE_EXPIRE: 0,
     SCRAP_FOLLOW_TMDB: true,
     FANART_ENABLE: false,
@@ -711,6 +712,16 @@ onDeactivated(() => {
                     :label="t('setting.system.tmdbLocale')"
                     :placeholder="t('setting.system.tmdbLocalePlaceholder')"
                     :hint="t('setting.system.tmdbLocaleHint')"
+                    persistent-hint
+                    :items="tmdbLanguageItems"
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSelect
+                    v-model="SystemSettings.Advanced.TMDB_SCRAP_IMAGE_LOCALE"
+                    :label="t('setting.system.tmdbScrapImageLocale')"
+                    :placeholder="t('setting.system.tmdbScrapImageLocalePlaceholder')"
+                    :hint="t('setting.system.tmdbScrapImageLocaleHint')"
                     persistent-hint
                     :items="tmdbLanguageItems"
                   />
