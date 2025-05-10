@@ -168,12 +168,8 @@ const dropdownItems = ref([
         >
           <div
             class="relative flex flex-row items-start pa-3 justify-between grow"
-            :style="{ background: `${backgroundColor}` }"
+            :style="`background: linear-gradient(${backgroundColor}40 0%, ${backgroundColor}60 100%)`"
           >
-            <div
-              class="absolute inset-0 bg-cover bg-center"
-              :style="{ background: `${backgroundColor}`, filter: 'brightness(0.5)' }"
-            ></div>
             <div class="relative flex-1 min-w-0">
               <VCardTitle
                 class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis ..."
