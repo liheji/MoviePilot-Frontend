@@ -4,12 +4,8 @@ import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { ensureRenderComplete, removeEl } from './@core/utils/dom'
 import api from '@/api'
 import { useAuthStore } from '@/stores/auth'
-import { useI18n } from 'vue-i18n'
 import { getBrowserLocale, setI18nLanguage } from './plugins/i18n'
 import { SupportedLocale } from '@/types/i18n'
-
-// 国际化
-const { t } = useI18n()
 
 // 生效主题
 const { global: globalTheme } = useTheme()

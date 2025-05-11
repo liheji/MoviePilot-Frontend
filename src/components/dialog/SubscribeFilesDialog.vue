@@ -23,6 +23,9 @@ const emit = defineEmits(['close'])
 // 订阅文件信息
 const subScribeInfo = ref<SubscrbieInfo>()
 
+// 是否加载中
+const loading = ref(false)
+
 // 下载文件表头
 const downloadHeaders = [
   { title: t('dialog.subscribeFiles.episodeColumn'), key: 'episode_number', sortable: true },
@@ -39,9 +42,12 @@ const libraryHeaders = [
 // 调用API查询订阅文件信息
 async function loadSubscribeFilesInfo() {
   try {
+    loading.value = true
     subScribeInfo.value = await api.get(`subscribe/files/${props.subid}`)
   } catch (e) {
     console.log(e)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -84,7 +90,8 @@ onBeforeMount(() => {
       <VCardItem class="my-2">
         <VDialogCloseBtn @click="emit('close')" />
       </VCardItem>
-      <VCardText>
+      <LoadingBanner v-if="loading" />
+      <VCardText v-else>
         <div class="media-page">
           <div class="media-header">
             <div class="media-poster">
