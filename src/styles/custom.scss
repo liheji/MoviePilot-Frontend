@@ -115,12 +115,14 @@ html.v-overlay-scroll-blocked {
 
 // 美化滚动条
 ::-webkit-scrollbar {
-  block-size: 8px;
-  inline-size: 8px;
+  block-size: 4px;
+  inline-size: 4px;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 3px;
+  border-radius: 2px;
   background: rgb(var(--v-theme-perfect-scrollbar-thumb));
   box-shadow: inset 0 0 10px rgba(0,0,0,20%);
 
@@ -129,6 +131,16 @@ html.v-overlay-scroll-blocked {
       background: #a1a1a1;
     }
   }
+}
+
+// 当鼠标悬停在可滚动元素上时显示滚动条
+*:hover::-webkit-scrollbar {
+  opacity: 1;
+}
+
+// 当元素正在滚动时显示滚动条
+*:active::-webkit-scrollbar {
+  opacity: 1;
 }
 
 .v-alert--variant-elevated, .v-alert--variant-flat {
