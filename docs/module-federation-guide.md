@@ -9,7 +9,7 @@ MoviePilot前端采用模块联邦(Module Federation)技术实现插件的动态
 
 ## 2. 技术要求
 
-- Node.js 16+
+- Node.js 20+
 - Vue 3
 - Vite 4+
 - TypeScript 5+
