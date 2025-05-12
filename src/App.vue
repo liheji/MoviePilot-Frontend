@@ -82,6 +82,7 @@ function updateHtmlThemeAttribute(themeName: string) {
 async function fetchBackgroundImages() {
   try {
     backgroundImages.value = await api.get(`/login/wallpapers`)
+    activeImageIndex.value = 0
   } catch (e) {
     console.error(e)
   }
