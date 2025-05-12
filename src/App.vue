@@ -27,6 +27,14 @@ const show = ref(false)
 const authStore = useAuthStore()
 const isLogin = computed(() => authStore.token)
 
+// 监听登录状态变化
+watch(isLogin, newValue => {
+  if (newValue) {
+    // 登录后重新加载背景图片
+    fetchBackgroundImages().then(() => startBackgroundRotation())
+  }
+})
+
 // 背景图片
 const backgroundImages = ref<string[]>([])
 const activeImageIndex = ref(0)
@@ -134,14 +142,14 @@ function getImgUrl(url: string) {
 // 处理页面可见性变化
 function handleVisibilityChange() {
   if (document.visibilityState === 'visible') {
-    // 如果已有背景图片数据，直接重启轮换
-    if (backgroundImages.value.length > 0) {
+    // 强制重新获取背景图片
+    fetchBackgroundImages().then(() => {
+      // 确保在获取到新图片后重新开始轮换
+      if (backgroundRotationTimer) {
+        clearInterval(backgroundRotationTimer)
+      }
       startBackgroundRotation()
-    }
-    // 如果没有背景图片数据，重新获取
-    else {
-      fetchBackgroundImages().then(() => startBackgroundRotation())
-    }
+    })
   }
 }
 
