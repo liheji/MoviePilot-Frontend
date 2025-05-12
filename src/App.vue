@@ -90,6 +90,7 @@ async function fetchBackgroundImages() {
 
 // 开始背景图片轮换
 function startBackgroundRotation() {
+  // 清除轮换定时器
   if (backgroundRotationTimer) clearInterval(backgroundRotationTimer)
 
   if (backgroundImages.value.length > 1) {
@@ -140,20 +141,6 @@ function getImgUrl(url: string) {
   return url
 }
 
-// 处理页面可见性变化
-function handleVisibilityChange() {
-  if (document.visibilityState === 'visible') {
-    // 强制重新获取背景图片
-    fetchBackgroundImages().then(() => {
-      // 确保在获取到新图片后重新开始轮换
-      if (backgroundRotationTimer) {
-        clearInterval(backgroundRotationTimer)
-      }
-      startBackgroundRotation()
-    })
-  }
-}
-
 // 添加logo动画效果并延迟移除加载界面
 function animateAndRemoveLoader() {
   const loadingBg = document.querySelector('#loading-bg') as HTMLElement
@@ -172,29 +159,58 @@ function animateAndRemoveLoader() {
   }
 }
 
+// 加载背景图片
+function loadBackgroundImages() {
+  fetchBackgroundImages()
+    .then(() => {
+      startBackgroundRotation()
+    })
+    .catch(() => {
+      console.error('加载背景图片失败')
+    })
+}
+
 onMounted(() => {
   // 初始化data-theme属性
   updateHtmlThemeAttribute(globalTheme.name.value)
 
-  // 加载背景图片并开始轮换
-  fetchBackgroundImages().then(() => startBackgroundRotation())
+  // 默认隐藏页面
+  show.value = false
 
-  // 添加页面可见性变化监听
-  document.addEventListener('visibilitychange', handleVisibilityChange)
+  // 加载背景图片
+  loadBackgroundImages()
 
+  // 移除加载动画
   ensureRenderComplete(() => {
     nextTick(() => {
       setTimeout(() => {
-        // 移除加载动画
+        // 移除加载动画，显示页面
         animateAndRemoveLoader()
       }, 1500)
     })
+  })
+
+  // 添加页面可见性变化监听
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      loadBackgroundImages()
+    }
+  })
+
+  // 添加PWA的页面恢复事件监听
+  window.addEventListener('pageshow', event => {
+    // persisted属性为true表示页面是从bfcache中恢复的
+    if (event.persisted) {
+      loadBackgroundImages()
+    }
   })
 })
 
 onUnmounted(() => {
   // 移除页面可见性监听
-  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  document.removeEventListener('visibilitychange', () => {})
+  // 移除PWA的页面恢复事件监听
+  window.removeEventListener('pageshow', () => {})
 
   // 清除轮换定时器
   if (backgroundRotationTimer) {
@@ -217,7 +233,7 @@ onUnmounted(() => {
           :style="{ backgroundImage: `url(${getImgUrl(imageUrl)})` }"
         ></div>
         <!-- 全局磨砂层 -->
-        <div v-if="isLogin" class="global-blur-layer"></div>
+        <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
       </div>
     </template>
 
