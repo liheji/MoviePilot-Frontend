@@ -27,10 +27,15 @@ const show = ref(false)
 const authStore = useAuthStore()
 const isLogin = computed(() => authStore.token)
 
+// 生成背景图片key
+const loginStateKey = computed(() => (isLogin.value ? 'logged-in' : 'logged-out'))
+
 // 监听登录状态变化
 watch(isLogin, newValue => {
   if (newValue) {
-    // 登录后重新加载背景图片
+    // 登录后先清空背景图片数组，强制视图更新
+    backgroundImages.value = []
+    // 然后重新加载背景图片
     fetchBackgroundImages().then(() => startBackgroundRotation())
   }
 })
@@ -136,8 +141,10 @@ function preloadImage(url: string): Promise<boolean> {
 // 计算图片地址
 function getImgUrl(url: string) {
   // 使用图片缓存
-  if (globalSettings.GLOBAL_IMAGE_CACHE && isLogin.value)
-    return `${import.meta.env.VITE_API_BASE_URL}system/cache/image?url=${encodeURIComponent(url)}`
+  if (globalSettings.GLOBAL_IMAGE_CACHE && isLogin.value) {
+    const cacheUrl = `${import.meta.env.VITE_API_BASE_URL}system/cache/image?url=${encodeURIComponent(url)}`
+    return cacheUrl
+  }
   return url
 }
 
@@ -230,7 +237,7 @@ onUnmounted(() => {
       <div class="background-container">
         <div
           v-for="(imageUrl, index) in backgroundImages"
-          :key="index"
+          :key="`bg-${index}-${loginStateKey}`"
           class="background-image"
           :class="{ 'active': index === activeImageIndex }"
           :style="{ backgroundImage: `url(${getImgUrl(imageUrl)})` }"
