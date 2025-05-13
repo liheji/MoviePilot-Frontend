@@ -48,6 +48,9 @@ const currentLocale = ref(getCurrentLocale())
 // 可用的语言列表
 const locales = Object.values(SUPPORTED_LOCALES)
 
+// 登录按钮 loading
+const loading = ref(false)
+
 // 切换语言
 async function switchLanguage(locale: SupportedLocale) {
   await setI18nLanguage(locale)
@@ -103,6 +106,8 @@ async function afterLogin(superuser: boolean) {
   router.push(authStore.originalPath ?? '/')
   // 订阅推送通知
   if (superuser) await subscribeForPushNotifications()
+  // 登录按钮 loading
+  loading.value = false
 }
 
 // 登录获取token事件
@@ -113,6 +118,10 @@ function login() {
   if (!form.value.username || !form.value.password || (isOTP.value && !form.value.otp_password)) {
     return
   }
+
+  // 登录按钮 loading
+  loading.value = true
+
   // 用户名密码
   const formData = new FormData()
 
@@ -155,6 +164,8 @@ function login() {
       else if (error.response.status === 403) errorMessage.value = t('login.permissionDenied')
       else if (error.response.status === 500) errorMessage.value = t('login.serverError')
       else errorMessage.value = `${t('login.loginFailed')} ${error.response.status}，${t('login.checkCredentials')}`
+      // 登录按钮 loading
+      loading.value = false
     })
 }
 
@@ -252,7 +263,9 @@ onMounted(async () => {
               </VCol>
               <VCol cols="12">
                 <!-- login button -->
-                <VBtn block type="submit" @click="login" prepend-icon="mdi-login"> {{ t('login.login') }} </VBtn>
+                <VBtn block type="submit" @click="login" prepend-icon="mdi-login" :loading="loading">
+                  {{ t('login.login') }}
+                </VBtn>
                 <VAlert v-if="errorMessage" type="error" variant="tonal" class="mt-3">
                   {{ errorMessage }}
                 </VAlert>

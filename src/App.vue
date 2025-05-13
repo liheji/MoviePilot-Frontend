@@ -17,9 +17,6 @@ globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
 const localeValue = getBrowserLocale()
 setI18nLanguage(localeValue as SupportedLocale)
 
-// 从 provide 中获取全局设置
-const globalSettings: any = inject('globalSettings')
-
 // 显示状态
 const show = ref(false)
 
@@ -29,16 +26,6 @@ const isLogin = computed(() => authStore.token)
 
 // 生成背景图片key
 const loginStateKey = computed(() => (isLogin.value ? 'logged-in' : 'logged-out'))
-
-// 监听登录状态变化
-watch(isLogin, newValue => {
-  if (newValue) {
-    // 登录后先清空背景图片数组，强制视图更新
-    backgroundImages.value = []
-    // 然后重新加载背景图片
-    fetchBackgroundImages().then(() => startBackgroundRotation())
-  }
-})
 
 // 背景图片
 const backgroundImages = ref<string[]>([])
@@ -117,7 +104,6 @@ function startBackgroundRotation() {
 function preloadImage(url: string): Promise<boolean> {
   return new Promise(resolve => {
     const img = new Image()
-    const imageUrl = getImgUrl(url)
 
     img.onload = () => resolve(true)
     img.onerror = () => resolve(false)
@@ -128,7 +114,7 @@ function preloadImage(url: string): Promise<boolean> {
       resolve(false)
     }, 5000) // 5秒超时
 
-    img.src = imageUrl
+    img.src = url
 
     // 如果图片已经缓存，onload可能不会触发
     if (img.complete) {
@@ -136,15 +122,6 @@ function preloadImage(url: string): Promise<boolean> {
       resolve(true)
     }
   })
-}
-
-// 计算图片地址
-function getImgUrl(url: string) {
-  // 使用图片缓存
-  if (globalSettings.GLOBAL_IMAGE_CACHE && isLogin.value) {
-    return `${import.meta.env.VITE_API_BASE_URL}system/cache/image?url=${encodeURIComponent(url)}`
-  }
-  return url
 }
 
 // 添加logo动画效果并延迟移除加载界面
@@ -238,7 +215,7 @@ onUnmounted(() => {
         :key="`bg-${index}-${loginStateKey}`"
         class="background-image"
         :class="{ 'active': index === activeImageIndex }"
-        :style="{ backgroundImage: `url(${getImgUrl(imageUrl)})` }"
+        :style="{ 'backgroundImage': `url(${imageUrl})` }"
       ></div>
       <!-- 全局磨砂层 -->
       <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
