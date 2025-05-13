@@ -142,8 +142,7 @@ function preloadImage(url: string): Promise<boolean> {
 function getImgUrl(url: string) {
   // 使用图片缓存
   if (globalSettings.GLOBAL_IMAGE_CACHE && isLogin.value) {
-    const cacheUrl = `${import.meta.env.VITE_API_BASE_URL}system/cache/image?url=${encodeURIComponent(url)}`
-    return cacheUrl
+    return `${import.meta.env.VITE_API_BASE_URL}system/cache/image?url=${encodeURIComponent(url)}`
   }
   return url
 }
@@ -167,8 +166,8 @@ function animateAndRemoveLoader() {
 }
 
 // 加载背景图片
-function loadBackgroundImages() {
-  fetchBackgroundImages()
+async function loadBackgroundImages() {
+  await fetchBackgroundImages()
     .then(() => {
       startBackgroundRotation()
     })
@@ -180,7 +179,7 @@ function loadBackgroundImages() {
     })
 }
 
-onMounted(() => {
+onMounted(async () => {
   // 初始化data-theme属性
   updateHtmlThemeAttribute(globalTheme.name.value)
 
@@ -188,7 +187,7 @@ onMounted(() => {
   show.value = false
 
   // 加载背景图片
-  loadBackgroundImages()
+  await loadBackgroundImages()
 
   // 移除加载动画
   ensureRenderComplete(() => {
@@ -233,20 +232,18 @@ onUnmounted(() => {
 <template>
   <div class="app-wrapper">
     <!-- 透明主题背景 -->
-    <template v-if="backgroundImages.length > 0 && (isTransparentTheme || !isLogin)">
-      <div class="background-container">
-        <div
-          v-for="(imageUrl, index) in backgroundImages"
-          :key="`bg-${index}-${loginStateKey}`"
-          class="background-image"
-          :class="{ 'active': index === activeImageIndex }"
-          :style="{ backgroundImage: `url(${getImgUrl(imageUrl)})` }"
-        ></div>
-        <!-- 全局磨砂层 -->
-        <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
-      </div>
-    </template>
-
+    <div v-if="backgroundImages.length > 0 && (isTransparentTheme || !isLogin)" class="background-container">
+      <div
+        v-for="(imageUrl, index) in backgroundImages"
+        :key="`bg-${index}-${loginStateKey}`"
+        class="background-image"
+        :class="{ 'active': index === activeImageIndex }"
+        :style="{ backgroundImage: `url(${getImgUrl(imageUrl)})` }"
+      ></div>
+      <!-- 全局磨砂层 -->
+      <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
+    </div>
+    <!-- 页面内容 -->
     <VApp v-show="show" :class="{ 'transparent-app': isTransparentTheme }">
       <RouterView />
     </VApp>
