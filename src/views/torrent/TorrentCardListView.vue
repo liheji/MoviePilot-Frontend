@@ -37,6 +37,9 @@ const filterForm: Record<string, string[]> = reactive({
 
 // 排序选项
 const sortField = ref('default')
+// 降序
+const sortType = ref<'asc' | 'desc'>('desc')
+
 const sortTitles: Record<string, string> = {
   default: t('torrent.sortDefault'),
   site: t('torrent.sortSite'),
@@ -212,7 +215,7 @@ onMounted(() => {
 })
 
 // 修改watch监听，同时监听排序字段的变化
-watch([filterForm, groupedDataList, sortField], filterData)
+watch([filterForm, groupedDataList, sortField, sortType], filterData)
 
 function filterData() {
   // 清空列表
@@ -258,16 +261,30 @@ function filterData() {
   // 排序数据
   if (sortField.value !== 'default') {
     filteredData.sort((a, b) => {
-      if (sortField.value === 'site') {
-        // 按站点名称排序
-        return (a.torrent_info.site_name || '').localeCompare(b.torrent_info.site_name || '')
-      } else if (sortField.value === 'size') {
-        // 按文件大小排序（降序）
-        return (Number(b.torrent_info.size) || 0) - (Number(a.torrent_info.size) || 0)
-      } else if (sortField.value === 'seeder') {
-        // 按做种数排序（降序）
-        return (Number(b.torrent_info.seeders) || 0) - (Number(a.torrent_info.seeders) || 0)
+      if (sortType.value === 'desc') {
+        if (sortField.value === 'site') {
+          // 按站点名称排序
+          return (a.torrent_info.site_name || '').localeCompare(b.torrent_info.site_name || '')
+        } else if (sortField.value === 'size') {
+          // 按文件大小排序（降序）
+          return (Number(b.torrent_info.size) || 0) - (Number(a.torrent_info.size) || 0)
+        } else if (sortField.value === 'seeder') {
+          // 按做种数排序（降序）
+          return (Number(b.torrent_info.seeders) || 0) - (Number(a.torrent_info.seeders) || 0)
+        }
+      } else {
+        if (sortField.value === 'site') {
+          // 按站点名称排序
+          return (b.torrent_info.site_name || '').localeCompare(a.torrent_info.site_name || '')
+        } else if (sortField.value === 'size') {
+          // 按文件大小排序（降序）
+          return (Number(a.torrent_info.size) || 0) - (Number(b.torrent_info.size) || 0)
+        } else if (sortField.value === 'seeder') {
+          // 按做种数排序（降序）
+          return (Number(a.torrent_info.seeders) || 0) - (Number(b.torrent_info.seeders) || 0)
+        }
       }
+
       return 0
     })
   }
@@ -364,6 +381,12 @@ function loadMore({ done }: { done: any }) {
   displayDataList.value.push(...itemsToMove)
   done('ok')
 }
+
+// 处理图标点击
+const handleSortIconClick = () => {
+  // 切换排序方向
+  sortType.value = sortType.value === 'asc' ? 'desc' : 'asc'
+}
 </script>
 
 <template>
@@ -384,9 +407,13 @@ function loadMore({ done }: { done: any }) {
             density="compact"
             hide-details
             class="sort-select"
-            prepend-icon="mdi-sort"
             variant="plain"
-          ></VSelect>
+          >
+            <template #prepend-inner>
+              <!-- 添加排序点击事件 -->
+              <v-icon @mousedown.stop.prevent="handleSortIconClick">mdi-sort</v-icon>
+            </template>
+          </VSelect>
         </div>
 
         <!-- 筛选按钮组 -->

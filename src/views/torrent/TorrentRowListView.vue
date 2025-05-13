@@ -61,6 +61,8 @@ const filterOptions: Record<string, string[]> = reactive({
 
 // 排序字段
 const sortField = ref('default')
+// 降序
+const sortType = ref<'asc' | 'desc'>('desc')
 
 // 数据列表
 const dataList = ref<Array<Context>>([])
@@ -202,7 +204,7 @@ function sortSeasonOptions() {
 }
 
 // 修改watch监听，同时监听排序字段的变化
-watch([filterForm, sortField], filterData)
+watch([filterForm, sortField, sortType], filterData)
 
 // 计算过滤后的列表
 function filterData() {
@@ -247,16 +249,30 @@ function filterData() {
     })
 
     // 排序
-    if (sortField.value === 'default') {
-      filteredData = filteredData.sort((a, b) => b.torrent_info.pri_order - a.torrent_info.pri_order)
-    } else if (sortField.value === 'site') {
-      filteredData = filteredData.sort((a, b) =>
-        (a.torrent_info.site_name || '').localeCompare(b.torrent_info.site_name || ''),
-      )
-    } else if (sortField.value === 'size') {
-      filteredData = filteredData.sort((a, b) => b.torrent_info.size - a.torrent_info.size)
-    } else if (sortField.value === 'seeder') {
-      filteredData = filteredData.sort((a, b) => b.torrent_info.seeders - a.torrent_info.seeders)
+    if (sortType.value === 'desc') {
+      if (sortField.value === 'default') {
+        filteredData = filteredData.sort((a, b) => b.torrent_info.pri_order - a.torrent_info.pri_order)
+      } else if (sortField.value === 'site') {
+        filteredData = filteredData.sort((a, b) =>
+          (a.torrent_info.site_name || '').localeCompare(b.torrent_info.site_name || ''),
+        )
+      } else if (sortField.value === 'size') {
+        filteredData = filteredData.sort((a, b) => b.torrent_info.size - a.torrent_info.size)
+      } else if (sortField.value === 'seeder') {
+        filteredData = filteredData.sort((a, b) => b.torrent_info.seeders - a.torrent_info.seeders)
+      }
+    } else {
+      if (sortField.value === 'default') {
+        filteredData = filteredData.sort((a, b) => a.torrent_info.pri_order - b.torrent_info.pri_order)
+      } else if (sortField.value === 'site') {
+        filteredData = filteredData.sort((a, b) =>
+          (b.torrent_info.site_name || '').localeCompare(a.torrent_info.site_name || ''),
+        )
+      } else if (sortField.value === 'size') {
+        filteredData = filteredData.sort((a, b) => a.torrent_info.size - b.torrent_info.size)
+      } else if (sortField.value === 'seeder') {
+        filteredData = filteredData.sort((a, b) => a.torrent_info.seeders - b.torrent_info.seeders)
+      }
     }
 
     // 显示前20个
@@ -338,6 +354,12 @@ function loadMore({ done }: { done: any }) {
   done('ok')
 }
 
+// 处理图标点击
+const handleSortIconClick = () => {
+  // 切换排序方向
+  sortType.value = sortType.value === 'asc' ? 'desc' : 'asc'
+}
+
 onMounted(() => {
   filterData()
 })
@@ -363,9 +385,12 @@ onMounted(() => {
               density="compact"
               hide-details
               class="sort-select"
-              prepend-icon="mdi-sort"
               variant="plain"
             >
+              <template #prepend-inner>
+                <!-- 添加排序点击事件 -->
+                <v-icon @mousedown.stop.prevent="handleSortIconClick">mdi-sort</v-icon>
+              </template>
             </VSelect>
             <div class="filter-divider"></div>
 
