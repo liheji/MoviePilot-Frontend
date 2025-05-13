@@ -389,7 +389,9 @@ onMounted(() => {
             >
               <template #prepend-inner>
                 <!-- 添加排序点击事件 -->
-                <v-icon @mousedown.stop.prevent="handleSortIconClick">mdi-sort</v-icon>
+                <VIcon @mousedown.stop.prevent="handleSortIconClick">
+                  {{ sortType === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending' }}
+                </VIcon>
               </template>
             </VSelect>
             <div class="filter-divider"></div>
@@ -524,9 +526,15 @@ onMounted(() => {
               density="compact"
               hide-details
               class="mobile-sort-select"
-              prepend-icon="mdi-sort"
               variant="plain"
-            ></VSelect>
+            >
+              <template #prepend-inner>
+                <!-- 添加排序点击事件 -->
+                <VIcon @mousedown.stop.prevent="handleSortIconClick">
+                  {{ sortType === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending' }}
+                </VIcon>
+              </template>
+            </VSelect>
           </div>
 
           <!-- 筛选图标按钮区域 -->
@@ -866,7 +874,7 @@ onMounted(() => {
 
 .mobile-sort-select {
   max-inline-size: 130px;
-  min-inline-size: 110px;
+  min-inline-size: 80px;
 }
 
 .all-filters-grid {
