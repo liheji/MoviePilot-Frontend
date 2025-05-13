@@ -166,7 +166,10 @@ function loadBackgroundImages() {
       startBackgroundRotation()
     })
     .catch(() => {
-      console.error('加载背景图片失败')
+      // 3秒后重试
+      setTimeout(() => {
+        loadBackgroundImages()
+      }, 3000)
     })
 }
 
