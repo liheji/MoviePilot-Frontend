@@ -1060,9 +1060,12 @@ export default {
         bing: 'Bing每日壁纸',
         mediaserver: '媒体服务器',
         none: '无壁纸',
+        customize: '自定义',
       },
       mb: 'MB',
       hour: '小时',
+      customizeWallpaperApi: '自定义壁纸API',
+      customizeWallpaperApiRequired: '必填项；请输入自定义壁纸API',
     },
     site: {
       siteSync: '站点同步',

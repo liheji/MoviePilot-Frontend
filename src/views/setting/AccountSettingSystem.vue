@@ -26,6 +26,7 @@ const SystemSettings = ref<any>({
     RECOGNIZE_SOURCE: 'themoviedb',
     GITHUB_TOKEN: null,
     OCR_HOST: null,
+    CUSTOMIZE_WALLPAPER_API_URL: null,
   },
   // 高级系统设置
   Advanced: {
@@ -253,6 +254,7 @@ const wallpaperItems = [
   { title: t('setting.system.wallpaperItems.tmdb'), value: 'tmdb' },
   { title: t('setting.system.wallpaperItems.bing'), value: 'bing' },
   { title: t('setting.system.wallpaperItems.mediaserver'), value: 'mediaserver' },
+  { title: t('setting.system.wallpaperItems.customize'), value: 'customize' },
   { title: t('setting.system.wallpaperItems.none'), value: '' },
 ]
 
@@ -408,14 +410,30 @@ onDeactivated(() => {
                   persistent-hint
                 />
               </VCol>
+
               <VCol cols="12" md="6">
-                <VSelect
-                  v-model="SystemSettings.Basic.WALLPAPER"
-                  :label="t('setting.system.wallpaper')"
-                  :hint="t('setting.system.wallpaperHint')"
-                  persistent-hint
-                  :items="wallpaperItems"
-                />
+                <VRow>
+                  <VCol cols="12" :md="SystemSettings.Basic.WALLPAPER === 'customize' ? 6 : 12">
+                    <VSelect
+                      v-model="SystemSettings.Basic.WALLPAPER"
+                      :label="t('setting.system.wallpaper')"
+                      :hint="t('setting.system.wallpaperHint')"
+                      persistent-hint
+                      :items="wallpaperItems"
+                    />
+                  </VCol>
+
+                  <VCol v-if="SystemSettings.Basic.WALLPAPER === 'customize'" cols="12" md="6">
+                    <VTextField
+                      v-model="SystemSettings.Basic.CUSTOMIZE_WALLPAPER_API_URL"
+                      :label="t('setting.system.customizeWallpaperApi')"
+                      :hint="t('setting.system.customizeWallpaperApi')"
+                      :placeholder="t('setting.system.customizeWallpaperApi')"
+                      persistent-hint
+                      :rules="[v => !!v || t('setting.system.customizeWallpaperApiRequired')]"
+                    />
+                  </VCol>
+                </VRow>
               </VCol>
               <VCol cols="12" md="6">
                 <VSelect
