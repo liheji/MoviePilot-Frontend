@@ -10,6 +10,7 @@ import logo from '@images/logo.png'
 import { urlBase64ToUint8Array } from '@/@core/utils/navigator'
 import { SUPPORTED_LOCALES, SupportedLocale } from '@/types/i18n'
 import { getCurrentLocale, setI18nLanguage } from '@/plugins/i18n'
+import { useTheme } from 'vuetify'
 
 // 国际化
 const { t } = useI18n()
@@ -42,8 +43,17 @@ const usernameInput = ref()
 
 // 语言选择菜单
 const langMenu = ref(false)
+
 // 当前语言
 const currentLocale = ref(getCurrentLocale())
+
+// 当前主题
+const vuetifyTheme = useTheme()
+
+// 判断是否为透明主题
+const isTransparentTheme = computed(() => {
+  return vuetifyTheme.name.value === 'transparent'
+})
 
 // 可用的语言列表
 const locales = Object.values(SUPPORTED_LOCALES)
@@ -187,7 +197,12 @@ onMounted(async () => {
   <div class="relative flex min-h-screen flex-col items-center justify-center">
     <!-- 登录表单 -->
     <div class="auth-wrapper d-flex align-center justify-center">
-      <VCard class="auth-card px-7 py-3 w-full h-full" max-width="24rem" border>
+      <VCard
+        class="auth-card px-7 py-3 w-full h-full"
+        :class="{ 'glass-effect': !isTransparentTheme }"
+        max-width="24rem"
+        border
+      >
         <VCardItem class="justify-center">
           <template #prepend>
             <div class="d-flex pe-0">
@@ -294,5 +309,10 @@ onMounted(async () => {
   position: absolute;
   inset-block-start: 8px;
   inset-inline-end: 8px;
+}
+
+.glass-effect {
+  backdrop-filter: blur(10px) !important;
+  background: rgba(var(--v-theme-surface), 0.7) !important;
 }
 </style>
