@@ -133,7 +133,12 @@ onMounted(() => {
       <VListItemTitle>
         <div class="d-flex flex-row flex-wrap align-center mb-2">
           <span class="text-h6 font-weight-bold me-2">{{ media?.title ?? meta?.name }}</span>
-          <VChip v-if="meta?.season_episode" class="chip-season rounded-sm font-weight-bold" variant="elevated">
+          <VChip
+            v-if="meta?.season_episode"
+            class="chip-season rounded-sm font-weight-bold"
+            variant="elevated"
+            size="small"
+          >
             {{ meta?.season_episode }}
           </VChip>
         </div>
