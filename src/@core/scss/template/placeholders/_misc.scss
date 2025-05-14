@@ -2,6 +2,14 @@
     position: relative;
     background: transparent;
     box-shadow: none;
+
+
+    .v-theme--light & {
+      border-radius: 0 0 16px 16px;
+      backdrop-filter: blur(16px);
+      background: rgba(var(--v-theme-surface), 0.6);
+      box-shadow: 0 0 8px 0 rgba(var(--v-theme-on-surface), 0.1);
+    }
     
     &::before {
       position: absolute;
@@ -11,29 +19,17 @@
       inset-block-start: 0;
       inset-inline: 0;
       pointer-events: none;
-      transition: opacity 0.2s ease-in-out, background 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
       
-      // PC端样式 (默认)
-      .v-theme--light & {
-        background: linear-gradient(
-          to bottom,
-          rgba(var(--v-theme-surface), 0.9) 0%,
-          rgba(var(--v-theme-surface), 0.7) 20%,
-          rgba(var(--v-theme-surface), 0.5) 40%,
-          rgba(var(--v-theme-surface), 0.3) 60%,
-          rgba(var(--v-theme-surface), 0.1) 80%,
-          rgba(var(--v-theme-surface), 0.0) 100%
-        );
-      }
       
       .v-theme--dark & {
         background: linear-gradient(
           to bottom,
-          rgba(var(--v-theme-background), 0.8) 0%,
-          rgba(var(--v-theme-background), 0.6) 20%,
-          rgba(var(--v-theme-background), 0.4) 40%,
-          rgba(var(--v-theme-background), 0.25) 60%,
-          rgba(var(--v-theme-background), 0.1) 80%,
+          rgba(var(--v-theme-background), 1) 0%,
+          rgba(var(--v-theme-background), 0.8) 20%,
+          rgba(var(--v-theme-background), 0.6) 40%,
+          rgba(var(--v-theme-background), 0.4) 60%,
+          rgba(var(--v-theme-background), 0.2) 80%,
           rgba(var(--v-theme-background), 0.0) 100%
         );
       }
@@ -41,11 +37,11 @@
       .v-theme--purple & {
         background: linear-gradient(
           to bottom,
-          rgba(var(--v-theme-background), 0.8) 0%,
-          rgba(var(--v-theme-background), 0.6) 20%,
-          rgba(var(--v-theme-background), 0.4) 40%,
-          rgba(var(--v-theme-background), 0.25) 60%,
-          rgba(var(--v-theme-background), 0.1) 80%,
+          rgba(var(--v-theme-background), 1) 0%,
+          rgba(var(--v-theme-background), 0.8) 20%,
+          rgba(var(--v-theme-background), 0.6) 40%,
+          rgba(var(--v-theme-background), 0.4) 60%,
+          rgba(var(--v-theme-background), 0.2) 80%,
           rgba(var(--v-theme-background), 0.0) 100%
         );
       }
@@ -53,68 +49,25 @@
       .v-theme--transparent & {
         background: linear-gradient(
           to bottom,
-          rgba(11, 11, 11, 60%) 0%,
-          rgba(11, 11, 11, 50%) 20%,
-          rgba(11, 11, 11, 40%) 40%,
-          rgba(11, 11, 11, 25%) 60%,
-          rgba(11, 11, 11, 10%) 80%,
-          rgba(11, 11, 11, 0%) 100%
+          rgba(var(--v-theme-background), 0.5) 0%,
+          rgba(var(--v-theme-background), 0.4) 20%,
+          rgba(var(--v-theme-background), 0.3) 40%,
+          rgba(var(--v-theme-background), 0.2) 60%,
+          rgba(var(--v-theme-background), 0.1) 80%,
+          rgba(var(--v-theme-background), 0.0) 100%
         );
+
+        @media (width <= 640px) {
+          background: linear-gradient(
+          to bottom,
+          rgba(var(--v-theme-background), 0.9) 0%,
+          rgba(var(--v-theme-background), 0.7) 20%,
+          rgba(var(--v-theme-background), 0.5) 40%,
+          rgba(var(--v-theme-background), 0.3) 60%,
+          rgba(var(--v-theme-background), 0.1) 80%,
+          rgba(var(--v-theme-background), 0.0) 100%
+        );
+        }
       }
     }
 }
-
-// 移动端样式
-@media (pointer: coarse) {
-  %blurry-bg {
-    &::before {
-      .v-theme--light & {
-        background: linear-gradient(
-          to bottom,
-          rgba(var(--v-theme-surface), 1) 0%,
-          rgba(var(--v-theme-surface), 0.9) 20%,
-          rgba(var(--v-theme-surface), 0.7) 40%,
-          rgba(var(--v-theme-surface), 0.5) 60%,
-          rgba(var(--v-theme-surface), 0.2) 80%,
-          rgba(var(--v-theme-surface), 0.0) 100%
-        );
-      }
-      
-      .v-theme--dark & {
-        background: linear-gradient(
-          to bottom,
-          rgba(var(--v-theme-background), 1) 0%,
-          rgba(var(--v-theme-background), 0.85) 20%,
-          rgba(var(--v-theme-background), 0.7) 40%,
-          rgba(var(--v-theme-background), 0.5) 60%,
-          rgba(var(--v-theme-background), 0.3) 80%,
-          rgba(var(--v-theme-background), 0.0) 100%
-        );
-      }
-
-      .v-theme--purple & {
-        background: linear-gradient(
-          to bottom,
-          rgba(var(--v-theme-background), 1) 0%,
-          rgba(var(--v-theme-background), 0.85) 20%,
-          rgba(var(--v-theme-background), 0.7) 40%,
-          rgba(var(--v-theme-background), 0.5) 60%,
-          rgba(var(--v-theme-background), 0.3) 80%,
-          rgba(var(--v-theme-background), 0.0) 100%
-        );
-      }
-
-      .v-theme--transparent & {
-        background: linear-gradient(
-          to bottom,
-          rgba(11, 11, 11, 90%) 0%,
-          rgba(11, 11, 11, 80%) 20%,
-          rgba(11, 11, 11, 60%) 40%,
-          rgba(11, 11, 11, 40%) 60%,
-          rgba(11, 11, 11, 15%) 80%,
-          rgba(11, 11, 11, 0%) 100%
-        );
-      }
-    }
-  }
-} 
