@@ -632,7 +632,7 @@ export interface DashboardItem {
   // 页面元素
   elements: RenderProps[]
   // 渲染方式
-  render_mode: string
+  render_mode?: string
 }
 
 // 种子信息
