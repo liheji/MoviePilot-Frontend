@@ -1067,6 +1067,7 @@ export default {
       mb: 'MB',
       hour: '小時',
       customizeWallpaperApi: '自定義壁紙API',
+      customizeWallpaperApiHint: '會獲取 API 返回內容中所有設置中允許的圖片文件後綴格式圖片',
       customizeWallpaperApiRequired: '必填項；請輸出自定義壁紙API',
     },
     site: {

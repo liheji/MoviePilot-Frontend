@@ -427,7 +427,7 @@ onDeactivated(() => {
                     <VTextField
                       v-model="SystemSettings.Basic.CUSTOMIZE_WALLPAPER_API_URL"
                       :label="t('setting.system.customizeWallpaperApi')"
-                      :hint="t('setting.system.customizeWallpaperApi')"
+                      :hint="t('setting.system.customizeWallpaperApiHint')"
                       :placeholder="t('setting.system.customizeWallpaperApi')"
                       persistent-hint
                       :rules="[v => !!v || t('setting.system.customizeWallpaperApiRequired')]"
