@@ -1069,9 +1069,14 @@ export default {
         bing: 'Bing Daily Wallpaper',
         mediaserver: 'Media Server',
         none: 'No Wallpaper',
+        customize: 'Customize',
       },
       mb: 'MB',
       hour: 'hour',
+      customizeWallpaperApi: 'Customize Wallpaper Api',
+      customizeWallpaperApiHint:
+        'It will get the image file extension format images that are allowed in all the settings in the content returned by the API.',
+      customizeWallpaperApiRequired: 'Required field; please enter Wallpaper API',
     },
     site: {
       siteSync: 'Site Synchronization',
