@@ -52,6 +52,7 @@ const SystemSettings = ref<any>({
     DOH_ENABLE: false,
     DOH_RESOLVERS: null,
     DOH_DOMAINS: null,
+    SECURITY_IMAGE_DOMAINS: [],
     // 日志
     DEBUG: false,
     LOG_LEVEL: 'INFO',
@@ -91,6 +92,29 @@ const tmdbLanguageItems = [
   { title: t('setting.system.tmdbLanguage.zhTW'), value: 'zh-TW' },
   { title: t('setting.system.tmdbLanguage.en'), value: 'en' },
 ]
+
+// 日志等级
+const logLevelItems = [
+  { title: t('setting.system.logLevelItems.debug'), value: 'DEBUG' },
+  { title: t('setting.system.logLevelItems.info'), value: 'INFO' },
+  { title: t('setting.system.logLevelItems.warning'), value: 'WARNING' },
+  { title: t('setting.system.logLevelItems.error'), value: 'ERROR' },
+  { title: t('setting.system.logLevelItems.critical'), value: 'CRITICAL' },
+]
+
+// 安全域名添加变量
+const newSecurityDomain = ref('')
+
+// 添加安全域名
+function addSecurityDomain() {
+  if (
+    newSecurityDomain.value &&
+    !SystemSettings.value.Advanced.SECURITY_IMAGE_DOMAINS.includes(newSecurityDomain.value)
+  ) {
+    SystemSettings.value.Advanced.SECURITY_IMAGE_DOMAINS.push(newSecurityDomain.value)
+    newSecurityDomain.value = ''
+  }
+}
 
 // 调用API查询下载器设置
 async function loadDownloaderSetting() {
@@ -296,15 +320,6 @@ const pipProxyDisplay = computed({
     SystemSettings.value.Advanced.PIP_PROXY = val === null ? '' : val
   },
 })
-
-// 日志等级
-const logLevelItems = [
-  { title: t('setting.system.logLevelItems.debug'), value: 'DEBUG' },
-  { title: t('setting.system.logLevelItems.info'), value: 'INFO' },
-  { title: t('setting.system.logLevelItems.warning'), value: 'WARNING' },
-  { title: t('setting.system.logLevelItems.error'), value: 'ERROR' },
-  { title: t('setting.system.logLevelItems.critical'), value: 'CRITICAL' },
-]
 
 // 创建随机字符串
 function createRandomString() {
@@ -830,6 +845,46 @@ onDeactivated(() => {
                     :hint="t('setting.system.dohDomainsHint')"
                     persistent-hint
                   />
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol cols="12">
+                  <!-- 安全域名 -->
+                  <VCard>
+                    <VCardItem>
+                      <VCardTitle>{{ t('setting.system.securityImageDomains') }}</VCardTitle>
+                      <VCardSubtitle>{{ t('setting.system.securityImageDomainsHint') }}</VCardSubtitle>
+                    </VCardItem>
+                    <VCardText>
+                      <div class="d-flex flex-wrap gap-2 mb-3">
+                        <VChip
+                          v-for="(domain, index) in SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS"
+                          :key="index"
+                          closable
+                          @click:close="SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS.splice(index, 1)"
+                        >
+                          {{ domain }}
+                        </VChip>
+                        <VChip v-if="SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS.length === 0" color="warning">
+                          {{ t('setting.system.noSecurityImageDomains') }}
+                        </VChip>
+                      </div>
+                      <div class="d-flex align-center gap-2">
+                        <VTextField
+                          v-model="newSecurityDomain"
+                          :placeholder="t('setting.system.securityImageDomainAdd')"
+                          hide-details
+                          density="compact"
+                        >
+                          <template #append>
+                            <VBtn icon color="primary" @click="addSecurityDomain" :disabled="!newSecurityDomain">
+                              <VIcon icon="mdi-plus" />
+                            </VBtn>
+                          </template>
+                        </VTextField>
+                      </div>
+                    </VCardText>
+                  </VCard>
                 </VCol>
               </VRow>
             </div>

@@ -1075,8 +1075,12 @@ export default {
       hour: 'hour',
       customizeWallpaperApi: 'Customize Wallpaper Api',
       customizeWallpaperApiHint:
-        'It will get the image file extension format images that are allowed in all the settings in the content returned by the API.',
+        'It will get the image file extension format images that are allowed in settings in the content returned by the API.',
       customizeWallpaperApiRequired: 'Required field; please enter Wallpaper API',
+      securityImageDomains: 'Security Image Domains',
+      securityImageDomainsHint: 'Allowed image domains whitelist for caching, used to control trusted image sources',
+      noSecurityImageDomains: 'No security domains',
+      securityImageDomainAdd: 'Add domain, e.g.: image.tmdb.org',
     },
     site: {
       siteSync: 'Site Synchronization',

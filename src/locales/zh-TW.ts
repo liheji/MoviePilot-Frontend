@@ -1067,8 +1067,12 @@ export default {
       mb: 'MB',
       hour: '小時',
       customizeWallpaperApi: '自定義壁紙API',
-      customizeWallpaperApiHint: '會獲取 API 返回內容中所有設置中允許的圖片文件後綴格式圖片',
+      customizeWallpaperApiHint: '會獲取 API 返回內容中所有安全設置中允許的圖片地址，需要設置安全域名白名單',
       customizeWallpaperApiRequired: '必填項；請輸出自定義壁紙API',
+      securityImageDomains: '安全圖片域名',
+      securityImageDomainsHint: '允許緩存的圖片域名白名單，用於控制可信任的圖片來源',
+      noSecurityImageDomains: '暫無安全域名',
+      securityImageDomainAdd: '添加域名，如：image.tmdb.org',
     },
     site: {
       siteSync: '站點同步',
