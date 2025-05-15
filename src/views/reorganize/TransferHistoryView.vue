@@ -683,7 +683,7 @@ onMounted(() => {
     <VDivider />
     <div class="flex items-center justify-between">
       <div class="w-auto">
-        <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" flat />
+        <VSelect v-model="itemsPerPage" :items="pageRange" density="compact" flat class="ms-1" />
       </div>
       <div class="w-auto text-sm">{{ t('transferHistory.pageInfo', pageTip) }} {{ totalItems }}</div>
       <VPagination
