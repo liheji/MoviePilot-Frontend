@@ -71,6 +71,7 @@ function getActionIcon(type: string): string {
     'SendEventAction': 'mdi-send-check',
     'SendMessageAction': 'mdi-message-arrow-right',
     'TransferFileAction': 'mdi-file-move',
+    'InvokePluginAction': 'mdi-run',
   }
 
   return iconMap[type] || 'mdi-puzzle-outline'

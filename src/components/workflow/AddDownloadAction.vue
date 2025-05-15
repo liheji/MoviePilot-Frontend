@@ -32,7 +32,7 @@ async function loadDownloaderSetting() {
       })),
     ]
   } catch (error) {
-    console.error('加载下载器设置失败:', error)
+    console.error(error)
   }
 }
 
@@ -69,7 +69,7 @@ onMounted(() => {
             <VTextField
               v-model="data.labels"
               :label="t('workflow.addDownload.category')"
-              placeholder="多个使用,分隔"
+              :placeholder="t('workflow.addDownload.categoryPlaceholder')"
               outlined
               dense
             />
@@ -80,7 +80,7 @@ onMounted(() => {
               storage="local"
               :label="t('workflow.addDownload.savePath')"
               clearable
-              placeholder="留空自动"
+              :placeholder="t('workflow.addDownload.savePathPlaceholder')"
             />
           </VCol>
           <VCol cols="12">

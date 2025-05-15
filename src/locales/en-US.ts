@@ -71,6 +71,7 @@ export default {
     sendEvent: 'Send Event',
     sendMessage: 'Send Message',
     transferFile: 'Transfer File',
+    invokePlugin: 'Invoke Plugin',
   },
   qualityOptions: {
     all: 'All',
@@ -427,6 +428,8 @@ export default {
       forceResume: 'Force Resume',
       firstLastPiece: 'First Last Piece',
       onlyLack: 'Only Download Lack Resource',
+      categoryPlaceholder: 'Use comma to separate multiple',
+      savePathPlaceholder: 'Leave empty for auto',
     },
     addSubscribe: {
       title: 'Add Subscribe',
@@ -533,6 +536,14 @@ export default {
       include: 'Include (Keywords, Regex)',
       exclude: 'Exclude (Keywords, Regex)',
       ruleGroups: 'Filter Rule Groups',
+    },
+    invokePlugin: {
+      title: 'Invoke Plugin',
+      subtitle: 'Call plugin to perform specific actions',
+      plugin: 'Plugin',
+      actionid: 'Action ID',
+      actionParams: 'Action Parameters',
+      loadPluginSettingFailed: 'Failed to load plugin settings',
     },
     title: 'Workflow',
     noWorkflow: 'No Workflow',

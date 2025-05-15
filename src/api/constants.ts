@@ -335,6 +335,10 @@ export const actionStepOptions = [
     title: i18n.global.t('actionStep.transferFile'),
     value: '整理文件',
   },
+  {
+    title: i18n.global.t('actionStep.invokePlugin'),
+    value: '调用插件',
+  },
 ]
 
 // 操作步骤字典

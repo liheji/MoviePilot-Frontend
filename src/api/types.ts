@@ -565,9 +565,9 @@ export interface NotExistMediaInfo {
 
 // 插件
 export interface Plugin {
-  id?: string
+  id: string
   // 插件名称
-  plugin_name?: string
+  plugin_name: string
   // 插件描述
   plugin_desc?: string
   // 插件图标

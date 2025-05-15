@@ -71,6 +71,7 @@ export default {
     sendEvent: '發送事件',
     sendMessage: '發送消息',
     transferFile: '整理文件',
+    invokePlugin: '調用插件',
   },
   qualityOptions: {
     all: '全部',
@@ -426,6 +427,8 @@ export default {
       forceResume: '强制继续',
       firstLastPiece: '优先首尾文件',
       onlyLack: '仅下载缺失资源',
+      categoryPlaceholder: '多個使用,分隔',
+      savePathPlaceholder: '留空自動',
     },
     addSubscribe: {
       title: '添加订阅',
@@ -532,6 +535,14 @@ export default {
       include: '包含（關鍵字、正則式）',
       exclude: '排除（關鍵字、正則式）',
       ruleGroups: '過濾規則組',
+    },
+    invokePlugin: {
+      title: '調用插件',
+      subtitle: '調用插件執行特定操作',
+      plugin: '插件',
+      actionid: '動作ID',
+      actionParams: '動作參數',
+      loadPluginSettingFailed: '加載插件設置失敗',
     },
     title: '工作流',
     noWorkflow: '沒有工作流',
