@@ -2,7 +2,6 @@
 import api from '@/api'
 import { Handle, Position } from '@vue-flow/core'
 import { useI18n } from 'vue-i18n'
-import type { Plugin } from '@/api/types'
 
 const { t } = useI18n()
 
@@ -22,11 +21,32 @@ interface ActionItem {
   name: string
 }
 
+interface PluginAction {
+  plugin_id: string
+  plugin_name: string
+  actions: ActionItem[]
+}
+
+// 插件所有动作
+const pluginActions = ref<PluginAction[]>([])
+
 // 插件选项
-const pluginOptions = ref<{ title: string; value: string }[]>([])
+const pluginOptions = computed(() => {
+  return pluginActions.value.map((item: PluginAction) => ({
+    title: item.plugin_name,
+    value: item.plugin_id,
+  }))
+})
 
 // 动作选项
-const actionOptions = ref<{ title: string; value: string }[]>([])
+const actionOptions = computed(() => {
+  return pluginActions.value
+    .find((item: PluginAction) => item.plugin_id === props.data.plugin_id)
+    ?.actions.map((item: ActionItem) => ({
+      title: item.name,
+      value: item.id,
+    }))
+})
 
 // 用于在文本框显示和保存时转换action_params
 const actionParamsText = computed({
@@ -51,45 +71,17 @@ const actionParamsText = computed({
   },
 })
 
-// 加载所有插件
-async function loadPluginSetting() {
-  try {
-    const plugins: Plugin[] = await api.get('plugin/', {
-      params: {
-        state: 'installed',
-      },
-    })
-    pluginOptions.value = plugins.map((item: Plugin) => ({
-      title: item.plugin_name,
-      value: item.id,
-    }))
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 // 加载动作选项
-async function loadPluginActions(pluginId: string) {
+async function loadPluginActions() {
   try {
-    const actions: ActionItem[] = await api.get(`workflow/actions/${pluginId}`)
-    actionOptions.value = actions.map((item: ActionItem) => ({
-      title: item.name,
-      value: item.id,
-    }))
+    pluginActions.value = await api.get('workflow/plugin/actions')
   } catch (error) {
     console.error(error)
   }
 }
-
-watch(
-  () => props.data.plugin_id,
-  newVal => {
-    loadPluginActions(newVal)
-  },
-)
 
 onMounted(() => {
-  loadPluginSetting()
+  loadPluginActions()
 })
 </script>
 <template>
