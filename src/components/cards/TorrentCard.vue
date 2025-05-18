@@ -283,7 +283,7 @@ onMounted(() => {
               v-for="(item, index) in props.more"
               :key="index"
               @click.stop="handleAddDownload(item)"
-              class="border-b border-opacity-5 hover:bg-primary-lighten-5"
+              class="hover:bg-primary-lighten-5"
             >
               <template v-slot:prepend>
                 <div class="d-flex align-center gap-1">

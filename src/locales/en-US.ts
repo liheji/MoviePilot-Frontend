@@ -1196,7 +1196,7 @@ export default {
         'Word to replace => Replacement\n' +
         'Front word <> Back word >> Episode offset (EP)\n' +
         'Word to replace => Replacement && Front word <> Back word >> Episode offset (EP)\n' +
-        'Replacement format supports: &#123;tmdbid/doubanid=xxx;type=movie/tv;s=xxx;e=xxx&#125; to directly specify TMDBID/Douban ID, where s and e are season and episode numbers (optional)',
+        'Replacement format supports: &#123;[tmdbid/doubanid=xxx;type=movie/tv;s=xxx;e=xxx]&#125; to directly specify TMDBID/Douban ID, where s and e are season and episode numbers (optional)',
       identifierSaveSuccess: 'Custom identifiers saved successfully',
       identifierSaveFailed: 'Failed to save custom identifiers!',
 

@@ -1185,7 +1185,7 @@ export default {
         '被替換詞 => 替換詞\n' +
         '前定位詞 <> 後定位詞 >> 集偏移量（EP）\n' +
         '被替換詞 => 替換詞 && 前定位詞 <> 後定位詞 >> 集偏移量（EP）\n' +
-        '其中替換詞支持格式：&#123;tmdbid/doubanid=xxx;type=movie/tv;s=xxx;e=xxx&#125; 直接指定TMDBID/豆瓣ID識別，其中s、e為季數和集數（可選）',
+        '其中替換詞支持格式：&#123;[tmdbid/doubanid=xxx;type=movie/tv;s=xxx;e=xxx]&#125; 直接指定TMDBID/豆瓣ID識別，其中s、e為季數和集數（可選）',
       identifierSaveSuccess: '自定義識別詞保存成功',
       identifierSaveFailed: '自定義識別詞保存失敗！',
 
