@@ -279,6 +279,9 @@ export default {
     nameHint: '通知渠道名稱',
     type: '類型',
     typeHint: '通知渠道類型',
+    customTypeHint: '自定義通知類型，用於插件實現場景',
+    customTypePlaceholder: 'custom',
+    nameRequired: '請輸入名稱',
     enabled: '啟用',
     config: '配置',
     wechat: {
@@ -1173,6 +1176,7 @@ export default {
       synologyChat: 'SynologyChat',
       voceChat: 'VoceChat',
       webPush: 'WebPush',
+      custom: '自定義通知',
     },
     words: {
       customIdentifiers: '自定義識別詞',

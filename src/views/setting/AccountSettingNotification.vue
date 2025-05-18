@@ -313,6 +313,9 @@ onMounted(() => {
                     <VListItem @click="addNotification('webpush')">
                       <VListItemTitle>{{ t('setting.notification.webPush') }}</VListItemTitle>
                     </VListItem>
+                    <VListItem @click="addNotification('custom')">
+                      <VListItemTitle>{{ t('setting.system.custom') }}</VListItemTitle>
+                    </VListItem>
                   </VList>
                 </VMenu>
               </VBtn>
@@ -466,10 +469,10 @@ onMounted(() => {
 <style scoped>
 /* Monaco编辑器容器样式 */
 .monaco-editor-container {
+  overflow: hidden;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
-  overflow: hidden;
-  margin-top: 1rem;
+  margin-block-start: 1rem;
 }
 
 .template-card {

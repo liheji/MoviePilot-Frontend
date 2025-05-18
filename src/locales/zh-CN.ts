@@ -278,6 +278,9 @@ export default {
     nameHint: '通知渠道名称',
     type: '类型',
     typeHint: '通知渠道类型',
+    customTypeHint: '自定义通知类型，用于插件实现场景',
+    customTypePlaceholder: 'custom',
+    nameRequired: '请输入名称',
     enabled: '启用',
     config: '配置',
     wechat: {
@@ -1171,6 +1174,7 @@ export default {
       synologyChat: 'SynologyChat',
       voceChat: 'VoceChat',
       webPush: 'WebPush',
+      custom: '自定义通知',
     },
     words: {
       customIdentifiers: '自定义识别词',

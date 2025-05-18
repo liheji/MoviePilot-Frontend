@@ -279,6 +279,9 @@ export default {
     nameHint: 'Name of notification channel',
     type: 'Type',
     typeHint: 'Type of notification channel',
+    customTypeHint: 'Custom notification type, used for plugin implementation scenarios',
+    customTypePlaceholder: 'custom',
+    nameRequired: 'Please enter name',
     enabled: 'Enabled',
     config: 'Configuration',
     wechat: {
@@ -1184,6 +1187,7 @@ export default {
       synologyChat: 'SynologyChat',
       voceChat: 'VoceChat',
       webPush: 'WebPush',
+      custom: 'Custom Notification',
     },
     words: {
       customIdentifiers: 'Custom Identifiers',

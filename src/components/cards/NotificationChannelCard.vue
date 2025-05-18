@@ -6,6 +6,7 @@ import vocechat_image from '@images/logos/vocechat.png'
 import synologychat_image from '@images/logos/synologychat.png'
 import slack_image from '@images/logos/slack.webp'
 import chrome_image from '@images/logos/chrome.png'
+import custom_image from '@images/logos/notification.png'
 import { useToast } from 'vue-toast-notification'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
@@ -51,6 +52,7 @@ const notificationTypeNames: { [key: string]: string } = {
   synologychat: t('notification.synologychat.name'),
   slack: t('notification.slack.name'),
   webpush: t('notification.webpush.name'),
+  custom: t('setting.notification.custom'),
 }
 
 // 消息类型下拉字典
@@ -104,8 +106,10 @@ const getIcon = computed(() => {
       return slack_image
     case 'webpush':
       return chrome_image
-    default:
+    case 'wechat':
       return wechat_image
+    default:
+      return custom_image
   }
 })
 
@@ -131,7 +135,7 @@ function onClose() {
           </div>
           <div class="text-body-1 mb-3">{{ notificationTypeNames[notification.type] }}</div>
         </div>
-        <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" />
+        <VImg :src="getIcon" cover class="mt-7 me-1" max-width="3rem" />
       </VCardText>
     </VCard>
     <VDialog v-if="notificationInfoDialog" v-model="notificationInfoDialog" scrollable max-width="40rem">
@@ -225,7 +229,7 @@ function onClose() {
                 />
               </VCol>
             </VRow>
-            <VRow v-if="notificationInfo.type == 'telegram'">
+            <VRow v-else-if="notificationInfo.type == 'telegram'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
@@ -270,7 +274,7 @@ function onClose() {
                 />
               </VCol>
             </VRow>
-            <VRow v-if="notificationInfo.type == 'slack'">
+            <VRow v-else-if="notificationInfo.type == 'slack'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
@@ -308,7 +312,7 @@ function onClose() {
                 />
               </VCol>
             </VRow>
-            <VRow v-if="notificationInfo.type == 'synologychat'">
+            <VRow v-else-if="notificationInfo.type == 'synologychat'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
@@ -335,7 +339,7 @@ function onClose() {
                 />
               </VCol>
             </VRow>
-            <VRow v-if="notificationInfo.type == 'vocechat'">
+            <VRow v-else-if="notificationInfo.type == 'vocechat'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
@@ -371,7 +375,7 @@ function onClose() {
                 />
               </VCol>
             </VRow>
-            <VRow v-if="notificationInfo.type == 'webpush'">
+            <VRow v-else-if="notificationInfo.type == 'webpush'">
               <VCol cols="12" md="6">
                 <VTextField
                   v-model="notificationInfo.name"
@@ -387,6 +391,26 @@ function onClose() {
                   :label="t('notification.webpush.username')"
                   :hint="t('notification.webpush.usernameHint')"
                   persistent-hint
+                />
+              </VCol>
+            </VRow>
+            <VRow v-else>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="notificationInfo.type"
+                  :label="t('notification.type')"
+                  :hint="t('notification.customTypeHint')"
+                  persistent-hint
+                  active
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="notificationInfo.name"
+                  :label="t('notification.name')"
+                  :hint="t('notification.nameRequired')"
+                  persistent-hint
+                  active
                 />
               </VCol>
             </VRow>
