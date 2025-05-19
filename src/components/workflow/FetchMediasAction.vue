@@ -100,7 +100,7 @@ const sourceTypeOptions = [
 ]
 
 // 计算下拉框
-const sourceOptions = computed(() => innerList.map(item => item.name))
+const sourceOptions = computed(() => innerList.map(item => ({ value: item.api_path, title: item.name })))
 
 onMounted(() => {
   loadExtraRecommendSources()
