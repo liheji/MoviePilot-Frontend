@@ -39,7 +39,7 @@ export function getBrowserLocale(): SupportedLocale | null {
     return navigatorLocale.includes(locale.split('-')[0])
   })
 
-  return (locale as SupportedLocale) || null
+  return (locale as SupportedLocale) || zh-CN
 }
 
 /**
