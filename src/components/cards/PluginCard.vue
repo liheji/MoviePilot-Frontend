@@ -350,14 +350,14 @@ watch(
               <VCardTitle
                 class="text-white px-2 pb-0 text-lg text-shadow whitespace-nowrap overflow-hidden text-ellipsis"
               >
-                <VBadge v-if="props.plugin?.state" dot inline color="success" />
+                <VBadge dot inline :color="props.plugin?.state ? 'success' : 'secondary'" />
                 {{ props.plugin?.plugin_name }}
                 <span class="text-sm mt-1 text-gray-200"> v{{ props.plugin?.plugin_version }} </span>
               </VCardTitle>
             </VCardText>
             <div class="relative flex flex-row items-start px-2 justify-between grow">
               <div class="relative flex-1 min-w-0">
-                <VCardText class="px-2 py-0 text-white text-sm text-shadow overflow-hidden line-clamp-3 ...">
+                <VCardText class="px-2 py-1 text-white text-sm text-shadow overflow-hidden line-clamp-3 ...">
                   {{ props.plugin?.plugin_desc }}
                 </VCardText>
               </div>
