@@ -118,11 +118,6 @@
         opacity: var(--v-disabled-opacity);
         pointer-events: none;
       }
-    }
-
-    // 👉 Vertical nav link
-    .nav-link {
-      @extend %nav-link;
 
       > .router-link-exact-active {
         @extend %nav-link-active;
