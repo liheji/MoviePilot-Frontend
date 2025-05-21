@@ -374,12 +374,12 @@ function onSubscribeEditRemove() {
                     color="white"
                     class="me-1"
                   />
-                  <div v-if="props.media?.season" class="text-sm me-2 text-white">
+                  <div v-if="props.media?.season" class="text-xs me-2 text-white">
                     {{ (props.media?.total_episode || 0) - (props.media?.lack_episode || 0) }} /
                     {{ props.media?.total_episode }}
                   </div>
                   <IconBtn v-if="props.media?.username" icon="mdi-account" color="white" class="me-1" />
-                  <span v-if="props.media?.username" class="text-sm me-2 text-white">
+                  <span v-if="props.media?.username" class="text-xs text-white">
                     {{ props.media?.username }}
                   </span>
                 </div>
