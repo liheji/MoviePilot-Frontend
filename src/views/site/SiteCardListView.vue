@@ -111,7 +111,7 @@ useDynamicButton({
       handle=".cursor-move"
       item-key="id"
       tag="div"
-      :component-data="{ 'class': 'grid gap-4 grid-site-card' }"
+      :component-data="{ 'class': 'grid gap-4 grid-site-card px-2' }"
     >
       <template #item="{ element }">
         <SiteCard :site="element" :data="getUserData(element.domain)" @remove="fetchData" @update="fetchData" />

@@ -108,7 +108,7 @@ function doDelete() {
             :key="props.media?.id"
             class="flex flex-col h-full"
             rounded="0"
-            min-height="170"
+            min-height="150"
             @click="showForkSubscribe"
           >
             <template #image>
@@ -122,8 +122,8 @@ function doDelete() {
               </VImg>
             </template>
             <div class="h-full flex flex-col">
-              <VCardText class="flex items-center pb-1 grow">
-                <div class="h-auto w-12 flex-shrink-0 overflow-hidden rounded-md" v-if="imageLoaded">
+              <VCardText class="flex items-center pa-3 pb-1 grow">
+                <div class="h-auto w-16 flex-shrink-0 overflow-hidden rounded-md" v-if="imageLoaded">
                   <VImg :src="posterUrl" aspect-ratio="2/3" cover @click.stop="viewMediaDetail">
                     <template #placeholder>
                       <div class="w-full h-full">
@@ -141,7 +141,7 @@ function doDelete() {
                   </div>
                 </div>
               </VCardText>
-              <VCardText class="flex justify-space-between align-center flex-wrap">
+              <VCardText class="flex justify-space-between align-center flex-wrap py-2">
                 <div class="flex align-center">
                   <IconBtn v-bind="props" icon="mdi-account" color="white" class="me-1" />
                   <div class="text-subtitle-2 me-4 text-white">

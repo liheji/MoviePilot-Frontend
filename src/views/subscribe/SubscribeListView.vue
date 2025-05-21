@@ -173,7 +173,7 @@ useDynamicButton({
     handle=".cursor-move"
     item-key="id"
     tag="div"
-    :component-data="{ class: 'grid gap-4 grid-subscribe-card' }"
+    :component-data="{ class: 'grid gap-4 grid-subscribe-card px-2' }"
   >
     <template #item="{ element }">
       <SubscribeCard :key="element.id" :media="element" @remove="fetchData" @save="fetchData" />

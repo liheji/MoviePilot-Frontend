@@ -78,7 +78,7 @@ useDynamicButton({
     <!-- 加载中提示 -->
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <!-- 用户卡片网格 -->
-    <div v-if="allUsers.length > 0 && isRefreshed" class="grid gap- grid-user-card">
+    <div v-if="allUsers.length > 0 && isRefreshed" class="grid gap-4 grid-user-card px-2">
       <!-- 普通用户卡片 -->
       <UserCard
         v-for="user in allUsers"

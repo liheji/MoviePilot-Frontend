@@ -172,88 +172,56 @@ html.v-overlay-scroll-blocked {
  }
 
  .grid-site-card {
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   padding-block-end: 1rem;
 }
 
 .grid-media-card {
-  grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
 }
 
 .grid-backdrop-card {
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-  padding-block-end: 1rem;
 }
 
 .grid-torrent-card {
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  padding-block-end: 1rem;
 }
 
 .grid-plugin-card {
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  padding-block-end: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
 }
 
 .grid-downloading-card {
   grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-  padding-block-end: 1rem;
 }
 
 .grid-directory-card {
   grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-  padding-block-end: 1rem;
 }
-
 
 .grid-filterrule-card {
   grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-  padding-block-end: 1rem;
 }
 
 .grid-customrule-card {
   grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
-  padding-block-end: 1rem;
 }
 
 .grid-subscribe-card {
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  padding-block-end: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
 .grid-user-card {
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  padding-block-end: 1rem;
-}
-
-@media (width <= 600px) {
-  .user-list-container {
-    padding: 12px;
-  }
-
-  .grid-user-card {
-    gap: 1rem;
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (width >= 601px) and (width <= 960px) {
-  .grid-user-card{
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-}
-
-@media (width >= 961px) {
-  .grid-user-card {
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  }
 }
 
 .grid-app-card {
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-  padding-block-end: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+
+.grid-workflow-card {
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
 }
 
 .v-tabs:not(.v-tabs-pill).v-tabs--horizontal {

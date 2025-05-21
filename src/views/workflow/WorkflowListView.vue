@@ -60,11 +60,9 @@ useDynamicButton({
   <div>
     <VPageContentTitle :title="t('workflow.title')" />
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-    <VRow v-if="workflowList.length > 0" class="match-height">
-      <VCol cols="12" md="6" lg="4" v-for="item in workflowList" :key="item.id">
-        <WorkflowTaskCard :workflow="item" @refresh="fetchData" />
-      </VCol>
-    </VRow>
+    <div v-if="workflowList.length > 0 && isRefreshed" class="grid gap-4 grid-workflow-card px-2">
+      <WorkflowTaskCard v-for="item in workflowList" :key="item.id" :workflow="item" @refresh="fetchData" />
+    </div>
     <NoDataFound
       v-if="workflowList.length === 0 && isRefreshed"
       error-code="404"

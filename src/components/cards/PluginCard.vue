@@ -344,30 +344,35 @@ watch(
           }"
         >
           <div
-            class="relative flex flex-row items-start pa-3 justify-between grow"
             :style="`background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(${backgroundColor} 0%, ${backgroundColor} 100%)`"
           >
-            <div class="relative flex-1 min-w-0">
-              <VCardTitle class="text-white text-lg px-2 text-shadow whitespace-nowrap overflow-hidden text-ellipsis">
+            <VCardText class="pa-2 pb-1">
+              <VCardTitle
+                class="text-white px-2 pb-0 text-lg text-shadow whitespace-nowrap overflow-hidden text-ellipsis"
+              >
                 <VBadge v-if="props.plugin?.state" dot inline color="success" />
                 {{ props.plugin?.plugin_name }}
                 <span class="text-sm mt-1 text-gray-200"> v{{ props.plugin?.plugin_version }} </span>
               </VCardTitle>
-              <VCardText class="px-2 py-0 text-white text-sm text-shadow overflow-hidden line-clamp-3 ...">
-                {{ props.plugin?.plugin_desc }}
-              </VCardText>
-            </div>
-            <div class="relative flex-shrink-0 self-center cursor-move">
-              <VAvatar size="64">
-                <VImg
-                  ref="imageRef"
-                  :src="iconPath"
-                  aspect-ratio="4/3"
-                  cover
-                  @load="imageLoaded"
-                  @error="imageLoadError = true"
-                />
-              </VAvatar>
+            </VCardText>
+            <div class="relative flex flex-row items-start px-2 justify-between grow">
+              <div class="relative flex-1 min-w-0">
+                <VCardText class="px-2 py-0 text-white text-sm text-shadow overflow-hidden line-clamp-3 ...">
+                  {{ props.plugin?.plugin_desc }}
+                </VCardText>
+              </div>
+              <div class="relative flex-shrink-0 self-center cursor-move pb-3">
+                <VAvatar size="48">
+                  <VImg
+                    ref="imageRef"
+                    :src="iconPath"
+                    aspect-ratio="4/3"
+                    cover
+                    @load="imageLoaded"
+                    @error="imageLoadError = true"
+                  />
+                </VAvatar>
+              </div>
             </div>
           </div>
           <VCardText class="flex flex-none align-self-baseline py-3 w-full align-end">

@@ -111,7 +111,7 @@ async function fetchData({ done }: { done: any }) {
 
 <template>
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-  <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-visible" @load="fetchData">
+  <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-visible px-2" @load="fetchData">
     <template #loading />
     <template #empty />
     <div v-if="dataList.length > 0" class="grid gap-4 grid-media-card" tabindex="0">

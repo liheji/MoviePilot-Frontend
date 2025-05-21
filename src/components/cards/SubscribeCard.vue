@@ -311,7 +311,7 @@ function onSubscribeEditRemove() {
               'opacity-70': subscribeState === 'S',
             }"
             rounded="0"
-            min-height="170"
+            min-height="150"
             @click="editSubscribeDialog"
             :ripple="false"
           >
@@ -347,7 +347,7 @@ function onSubscribeEditRemove() {
               />
             </template>
             <div>
-              <VCardText class="flex items-center py-3">
+              <VCardText class="flex items-center pt-3 pb-1">
                 <div class="h-auto w-16 flex-shrink-0 overflow-hidden rounded-md cursor-move" v-if="imageLoaded">
                   <VImg :src="posterUrl" aspect-ratio="2/3" cover>
                     <template #placeholder>
@@ -365,7 +365,7 @@ function onSubscribeEditRemove() {
                   </div>
                 </div>
               </VCardText>
-              <VCardText class="flex justify-space-between align-center flex-wrap py-3">
+              <VCardText class="flex justify-space-between align-center flex-wrap">
                 <div class="flex align-center">
                   <IconBtn
                     v-if="props.media?.total_episode"
@@ -384,7 +384,10 @@ function onSubscribeEditRemove() {
                   </span>
                 </div>
               </VCardText>
-              <VCardText v-if="lastUpdateText" class="absolute right-0 bottom-0 d-flex align-center p-2 text-gray-300">
+              <VCardText
+                v-if="lastUpdateText"
+                class="absolute right-0 bottom-0 d-flex align-center p-2 text-gray-300 text-xs"
+              >
                 <VIcon icon="mdi-download" class="me-1" />
                 {{ lastUpdateText }}
               </VCardText>

@@ -609,7 +609,7 @@ useDynamicButton({
       </template>
     </VHeaderTab>
 
-    <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
+    <VWindow v-model="activeTab" class="mt-5 disable-tab-transition px-2" :touch="false">
       <!-- 我的插件 -->
       <VWindowItem value="installed">
         <transition name="fade-slide" appear>
