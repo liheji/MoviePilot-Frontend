@@ -169,7 +169,7 @@ const dropdownItems = ref([
           <div
             :style="`background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(${backgroundColor} 0%, ${backgroundColor} 100%)`"
           >
-            <VCardText class="pa-2 pb-1">
+            <VCardText class="px-2 pt-2 pb-0">
               <VCardTitle
                 class="text-white px-2 pb-0 text-lg text-shadow whitespace-nowrap overflow-hidden text-ellipsis"
               >
@@ -198,7 +198,7 @@ const dropdownItems = ref([
               </div>
             </div>
           </div>
-          <VCardText class="flex flex-none align-self-baseline py-3 w-full align-end">
+          <VCardText class="flex flex-none align-self-baseline py-2 w-full align-end">
             <span>
               <VIcon icon="mdi-github" class="me-1" />
               <a :href="props.plugin?.author_url" target="_blank" @click.stop>
@@ -209,7 +209,7 @@ const dropdownItems = ref([
               <VIcon icon="mdi-download" />
               <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
             </span>
-            <div class="me-n3 absolute bottom-1 right-3">
+            <div class="me-n3 absolute bottom-0 right-3">
               <IconBtn>
                 <VIcon icon="mdi-dots-vertical" />
                 <VMenu activator="parent" close-on-content-click>
