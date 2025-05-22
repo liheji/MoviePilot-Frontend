@@ -365,7 +365,7 @@ function onSubscribeEditRemove() {
                   </div>
                 </div>
               </VCardText>
-              <VCardText class="flex justify-space-between align-center flex-wrap px-2">
+              <VCardText class="flex justify-space-between align-center flex-wrap px-3">
                 <div class="flex align-center">
                   <IconBtn
                     v-if="props.media?.total_episode"
