@@ -167,6 +167,7 @@ const dropdownItems = ref([
           }"
         >
           <div
+            class="flex-grow"
             :style="`background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(${backgroundColor} 0%, ${backgroundColor} 100%)`"
           >
             <VCardText class="px-2 pt-2 pb-0">
@@ -197,20 +198,27 @@ const dropdownItems = ref([
               </div>
             </div>
           </div>
-          <VCardText class="flex flex-none align-self-baseline py-2 w-full align-end">
-            <span>
-              <VIcon icon="mdi-github" class="me-1" />
-              <a :href="props.plugin?.author_url" target="_blank" @click.stop>
-                {{ props.plugin?.plugin_author }}
-              </a>
-            </span>
-            <span v-if="props.count" class="ms-3">
-              <VIcon icon="mdi-download" />
-              <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
-            </span>
+          <VCardText class="flex flex-col align-self-baseline px-2 py-2 w-full overflow-hidden">
+            <div class="flex flex-nowrap items-center w-full pe-7">
+              <span>
+                <VIcon icon="mdi-github" class="me-1" />
+                <a
+                  class="overflow-hidden text-ellipsis whitespace-nowrap"
+                  :href="props.plugin?.author_url"
+                  target="_blank"
+                  @click.stop
+                >
+                  {{ props.plugin?.plugin_author }}
+                </a>
+              </span>
+              <span v-if="props.count" class="ms-2 flex-shrink-0 download-count">
+                <VIcon icon="mdi-download" />
+                <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
+              </span>
+            </div>
             <div class="me-n3 absolute bottom-0 right-3">
               <IconBtn>
-                <VIcon icon="mdi-dots-vertical" />
+                <VIcon size="small" icon="mdi-dots-vertical" />
                 <VMenu activator="parent" close-on-content-click>
                   <VList>
                     <VListItem v-for="(item, i) in dropdownItems" v-show="item.show" :key="i" @click="item.props.click">

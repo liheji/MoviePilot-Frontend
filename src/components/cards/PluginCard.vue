@@ -344,6 +344,7 @@ watch(
           }"
         >
           <div
+            class="flex-grow"
             :style="`background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(${backgroundColor} 0%, ${backgroundColor} 100%)`"
           >
             <VCardText class="px-2 pt-2 pb-0">
@@ -375,22 +376,29 @@ watch(
               </div>
             </div>
           </div>
-          <VCardText class="flex flex-none align-self-baseline py-2 w-full align-end">
-            <span class="author-info">
-              <VImg :src="authorPath" class="author-avatar" @load="isAvatarLoaded = true">
-                <VIcon v-if="!isAvatarLoaded" icon="mdi-github" class="me-1" />
-              </VImg>
-              <a :href="props.plugin?.author_url" target="_blank" @click.stop>
-                {{ props.plugin?.plugin_author }}
-              </a>
-            </span>
-            <span v-if="props.count" class="ms-3">
-              <VIcon icon="mdi-download" />
-              <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
-            </span>
+          <VCardText class="flex flex-col align-self-baseline px-2 py-2 w-full overflow-hidden">
+            <div class="flex flex-nowrap items-center w-full pe-7">
+              <span class="author-info flex-shrink-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                <VImg :src="authorPath" class="author-avatar" @load="isAvatarLoaded = true">
+                  <VIcon v-if="!isAvatarLoaded" size="small" icon="mdi-github" class="me-1" />
+                </VImg>
+                <a
+                  :href="props.plugin?.author_url"
+                  target="_blank"
+                  @click.stop
+                  class="overflow-hidden text-ellipsis whitespace-nowrap"
+                >
+                  {{ props.plugin?.plugin_author }}
+                </a>
+              </span>
+              <span v-if="props.count" class="ms-2 flex-shrink-0 download-count">
+                <VIcon size="small" icon="mdi-download" />
+                <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
+              </span>
+            </div>
             <div class="me-n3 absolute bottom-0 right-3">
               <IconBtn>
-                <VIcon icon="mdi-dots-vertical" />
+                <VIcon size="small" icon="mdi-dots-vertical" />
                 <VMenu v-model="menuVisible" activator="parent" close-on-content-click>
                   <VList>
                     <VListItem

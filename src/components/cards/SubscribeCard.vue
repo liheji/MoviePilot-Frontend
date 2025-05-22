@@ -365,21 +365,20 @@ function onSubscribeEditRemove() {
                   </div>
                 </div>
               </VCardText>
-              <VCardText class="flex justify-space-between align-center flex-wrap">
+              <VCardText class="flex justify-space-between align-center flex-wrap px-2">
                 <div class="flex align-center">
                   <IconBtn
                     v-if="props.media?.total_episode"
                     v-bind="props"
                     icon="mdi-progress-download"
                     color="white"
-                    class="me-1"
                   />
-                  <div v-if="props.media?.season" class="text-xs me-2 text-white">
+                  <div v-if="props.media?.season" class="text-sm me-2 text-white">
                     {{ (props.media?.total_episode || 0) - (props.media?.lack_episode || 0) }} /
                     {{ props.media?.total_episode }}
                   </div>
-                  <IconBtn v-if="props.media?.username" icon="mdi-account" color="white" class="me-1" />
-                  <span v-if="props.media?.username" class="text-xs text-white">
+                  <IconBtn v-if="props.media?.username" icon="mdi-account" color="white" />
+                  <span v-if="props.media?.username" class="text-sm text-white">
                     {{ props.media?.username }}
                   </span>
                 </div>
