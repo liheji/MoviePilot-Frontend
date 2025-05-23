@@ -8,6 +8,7 @@ import { getDominantColor } from '@/@core/utils/image'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
 
 // 输入参数
 const props = defineProps({
@@ -22,6 +23,9 @@ const emit = defineEmits(['install'])
 
 // 多语言
 const { t } = useI18n()
+
+// 响应式显示
+const display = useDisplay()
 
 // 背景颜色
 const backgroundColor = ref('#28A9E1')
@@ -49,6 +53,19 @@ const releaseDialog = ref(false)
 
 // 插件详情弹窗
 const detailDialog = ref(false)
+
+// 用户头像是否加载完成
+const isAvatarLoaded = ref(false)
+
+// 菜单显示状态
+const menuVisible = ref(false)
+
+// 获取当前插件的标签
+const currentPluginLabels = computed(() => {
+  if (!props.plugin?.plugin_label) return []
+  
+  return props.plugin.plugin_label.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+})
 
 // 图片加载完成
 async function imageLoaded() {
@@ -99,6 +116,14 @@ const iconPath: Ref<string> = computed(() => {
     return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(props.plugin?.plugin_icon)}`
 
   return `./plugin_icon/${props.plugin?.plugin_icon}`
+})
+
+// 插件作者头像路径
+const authorPath: Ref<string> = computed(() => {
+  // 网络图片则使用代理后返回
+  return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(
+    props.plugin?.author_url + '.png',
+  )}`
 })
 
 // 访问插件页面
@@ -154,6 +179,7 @@ const dropdownItems = ref([
 
 <template>
   <div>
+    <!-- 重新设计的插件卡片 -->
     <VHover>
       <template #default="hover">
         <VCard
@@ -161,90 +187,177 @@ const dropdownItems = ref([
           :width="props.width"
           :height="props.height"
           @click="detailDialog = true"
-          class="flex flex-col h-full"
+          class="plugin-app-card"
           :class="{
-            'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
+            'plugin-app-card--mobile': display.mobile,
+            'plugin-app-card--hover': hover.isHovering,
           }"
+          variant="elevated"
+          :elevation="hover.isHovering ? 16 : 6"
         >
-          <div
-            class="flex-grow"
-            :style="`background: linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(${backgroundColor} 0%, ${backgroundColor} 100%)`"
-          >
-            <VCardText class="px-2 pt-2 pb-0">
-              <VCardTitle
-                class="text-white px-2 pb-0 text-lg text-shadow whitespace-nowrap overflow-hidden text-ellipsis"
-              >
-                {{ props.plugin?.plugin_name }}
-                <span class="text-sm mt-1 text-gray-200"> v{{ props.plugin?.plugin_version }} </span>
-              </VCardTitle>
-            </VCardText>
-            <div class="relative flex flex-row items-start px-2 justify-between grow">
-              <div class="relative flex-1 min-w-0">
-                <VCardText class="text-white text-sm px-2 py-1 text-shadow overflow-hidden line-clamp-3 ...">
-                  {{ props.plugin?.plugin_desc }}
-                </VCardText>
+          <!-- 背景渐变层 -->
+          <div 
+            class="plugin-app-card__bg"
+            :style="`background: linear-gradient(135deg, ${backgroundColor}15 0%, ${backgroundColor}25 100%)`"
+          />
+          
+          <!-- 卡片内容 -->
+          <div class="plugin-app-card__content">
+            <!-- 主体内容 -->
+            <div class="plugin-app-card__body">
+              <!-- 左侧区域：图标和安装按钮 -->
+              <div class="plugin-app-card__left-section">
+                <!-- 插件图标 -->
+                <div class="plugin-app-card__avatar-container">
+                  <VAvatar
+                    :size="display.mobile ? 40 : 48"
+                    class="plugin-app-card__avatar"
+                    variant="elevated"
+                  >
+                    <VImg
+                      ref="imageRef"
+                      :src="iconPath"
+                      @load="imageLoaded"
+                      @error="imageLoadError = true"
+                    >
+                      <template #placeholder>
+                        <VSkeletonLoader type="avatar" />
+                      </template>
+                    </VImg>
+                  </VAvatar>
+                </div>
+
+                <!-- 安装按钮在图标下方 -->
+                <VBtn
+                  size="x-small"
+                  color="primary"
+                  variant="elevated"
+                  @click.stop="installPlugin"
+                  class="plugin-app-card__install-btn-compact"
+                >
+                  <VIcon icon="mdi-download" size="12" />
+                  安装
+                </VBtn>
               </div>
-              <div class="relative flex-shrink-0 self-center pb-3">
-                <VAvatar size="48">
-                  <VImg
-                    ref="imageRef"
-                    :src="iconPath"
-                    aspect-ratio="4/3"
-                    cover
-                    @load="imageLoaded"
-                    @error="imageLoadError = true"
-                  />
+
+              <!-- 右侧信息区域 -->
+              <div class="plugin-app-card__info-section">
+                <!-- 标题行 -->
+                <div class="plugin-app-card__title-row">
+                  <h3 class="plugin-app-card__title">
+                    {{ props.plugin?.plugin_name }}
+                  </h3>
+                  <VChip
+                    size="x-small"
+                    variant="tonal"
+                    color="primary"
+                    class="plugin-app-card__version-chip"
+                  >
+                    v{{ props.plugin?.plugin_version }}
+                  </VChip>
+                </div>
+
+                <!-- 描述 -->
+                <VTooltip :text="props.plugin?.plugin_desc" location="bottom">
+                  <template #activator="{ props: tooltipProps }">
+                    <p 
+                      class="plugin-app-card__description"
+                      v-bind="tooltipProps"
+                    >
+                      {{ props.plugin?.plugin_desc }}
+                    </p>
+                  </template>
+                </VTooltip>
+
+                <!-- 插件标签 -->
+                <div 
+                  v-if="currentPluginLabels.length > 0" 
+                  class="plugin-app-card__tags-section"
+                >
+                  <VChip
+                    v-for="tag in currentPluginLabels"
+                    :key="tag"
+                    size="x-small"
+                    variant="tonal"
+                    color="primary"
+                    class="plugin-app-card__tag"
+                  >
+                    {{ tag }}
+                  </VChip>
+                </div>
+              </div>
+            </div>
+
+            <!-- 底部信息栏 -->
+            <div class="plugin-app-card__footer">
+              <!-- 作者信息 -->
+              <div class="plugin-app-card__author-info">
+                <VAvatar size="18" class="plugin-app-card__author-avatar">
+                  <VImg :src="authorPath" @load="isAvatarLoaded = true">
+                    <VIcon v-if="!isAvatarLoaded" icon="mdi-github" size="10" />
+                  </VImg>
                 </VAvatar>
+                <span class="plugin-app-card__author-name">
+                  {{ props.plugin?.plugin_author }}
+                </span>
               </div>
+
+              <!-- 统计信息 -->
+              <div class="plugin-app-card__stats-info">
+                <div v-if="props.count" class="plugin-app-card__download-stats">
+                  <VIcon icon="mdi-download" size="14" />
+                  <span class="plugin-app-card__stats-text">{{ props.count?.toLocaleString() }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 更多菜单按钮 - 右下角 -->
+            <div class="plugin-app-card__menu-section">
+              <VMenu v-model="menuVisible" location="top end" :close-on-content-click="true">
+                <template #activator="{ props: menuProps }">
+                  <VBtn
+                    v-bind="menuProps"
+                    icon="mdi-dots-vertical"
+                    size="small"
+                    variant="text"
+                    @click.stop
+                    class="plugin-app-card__menu-btn-corner"
+                    :class="{ 'plugin-app-card__menu-btn-corner--visible': hover.isHovering || display.mobile }"
+                  />
+                </template>
+                <VList>
+                  <VListItem
+                    v-for="(item, i) in dropdownItems"
+                    v-show="item.show"
+                    :key="i"
+                    @click="item.props.click"
+                    density="compact"
+                  >
+                    <template #prepend>
+                      <VIcon :icon="item.props.prependIcon" size="16" />
+                    </template>
+                    <VListItemTitle class="text-body-2">{{ item.title }}</VListItemTitle>
+                  </VListItem>
+                </VList>
+              </VMenu>
             </div>
           </div>
-          <VCardText class="flex flex-col align-self-baseline px-2 py-2 w-full overflow-hidden">
-            <div class="flex flex-nowrap items-center w-full pe-7">
-              <span>
-                <VIcon icon="mdi-github" class="me-1" />
-                <a
-                  class="overflow-hidden text-ellipsis whitespace-nowrap"
-                  :href="props.plugin?.author_url"
-                  target="_blank"
-                  @click.stop
-                >
-                  {{ props.plugin?.plugin_author }}
-                </a>
-              </span>
-              <span v-if="props.count" class="ms-2 flex-shrink-0 download-count">
-                <VIcon icon="mdi-download" />
-                <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
-              </span>
-            </div>
-            <div class="me-n3 absolute bottom-0 right-3">
-              <IconBtn>
-                <VIcon size="small" icon="mdi-dots-vertical" />
-                <VMenu activator="parent" close-on-content-click>
-                  <VList>
-                    <VListItem v-for="(item, i) in dropdownItems" v-show="item.show" :key="i" @click="item.props.click">
-                      <template #prepend>
-                        <VIcon :icon="item.props.prependIcon" />
-                      </template>
-                      <VListItemTitle v-text="item.title" />
-                    </VListItem>
-                  </VList>
-                </VMenu>
-              </IconBtn>
-            </div>
-          </VCardText>
         </VCard>
       </template>
     </VHover>
+
     <!-- 安装插件进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
+    
     <!-- 更新日志 -->
-    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
+    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" max-height="85vh" scrollable>
       <VCard :title="t('plugin.updateHistoryTitle', { name: props.plugin?.plugin_name })">
         <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />
         <VersionHistory :history="props.plugin?.history" />
       </VCard>
     </VDialog>
+    
     <!-- 插件详情-->
     <VDialog v-if="detailDialog" v-model="detailDialog" max-width="30rem">
       <VCard>
@@ -309,3 +422,295 @@ const dropdownItems = ref([
     </VDialog>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.plugin-app-card {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  
+  // 与PluginCard相同的高度
+  height: 170px;
+  
+  &--mobile {
+    border-radius: 12px;
+    height: 150px; // 移动端高度
+  }
+  
+  &--hover {
+    transform: translateY(-6px);
+  }
+  
+  &__bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+  }
+  
+  &__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    padding-bottom: 12px; // 为右下角按钮留空间
+    
+    .plugin-app-card--mobile & {
+      padding: 12px;
+      padding-bottom: 10px;
+    }
+  }
+  
+  &__body {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    
+    .plugin-app-card--mobile & {
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+  }
+  
+  &__left-section {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  &__avatar-container {
+    position: relative;
+  }
+  
+  &__avatar {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  &__install-btn-compact {
+    font-size: 0.7rem;
+    height: 24px;
+    padding: 0 8px;
+    min-width: auto;
+    border-radius: 4px;
+    
+    .plugin-app-card--mobile & {
+      font-size: 0.65rem;
+      height: 22px;
+      padding: 0 6px;
+    }
+  }
+  
+  &__info-section {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; // 增加间距
+    
+    .plugin-app-card--mobile & {
+      gap: 8px;
+    }
+  }
+  
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 0; // 移除额外间距
+  }
+  
+  &__title {
+    margin: 0;
+    font-size: 1.0rem; // 稍微缩小字体
+    font-weight: 600;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    
+    .plugin-app-card--mobile & {
+      font-size: 0.9rem;
+    }
+  }
+  
+  &__version-chip {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+  }
+  
+  &__description {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    opacity: 0.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    cursor: help;
+    min-height: 2.6rem; // 固定最小高度，确保标签位置一致
+    
+    .plugin-app-card--mobile & {
+      font-size: 0.75rem;
+      line-height: 1.25;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      min-height: 2.5rem; // 移动端固定高度
+    }
+  }
+  
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    gap: 8px;
+    padding-top: 12px; // 增加上边距
+  }
+  
+  &__author-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  &__author-avatar {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+  }
+  
+  &__author-name {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  &__stats-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 36px;
+    
+    .plugin-app-card--mobile & {
+      margin-right: 32px;
+    }
+  }
+  
+  &__download-stats {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    opacity: 0.8;
+  }
+  
+  &__stats-text {
+    font-size: 0.8rem;
+  }
+  
+  &__tags-section {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin: 0;
+    overflow-x: hidden;
+    padding-right: 8px;
+    min-height: 20px; // 固定最小高度，即使没有标签也占位
+    align-items: flex-start; // 标签顶部对齐
+    
+    .plugin-app-card--mobile & {
+      gap: 4px;
+      min-height: 18px;
+    }
+  }
+  
+  &__tag {
+    font-size: 0.65rem;
+    height: 20px; // 缩小高度
+    opacity: 0.9;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+    
+    .plugin-app-card--mobile & {
+      font-size: 0.6rem;
+      height: 18px;
+    }
+    
+    &:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+  
+  &__menu-section {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    z-index: 10;
+    
+    .plugin-app-card--mobile & {
+      bottom: 6px;
+      right: 6px;
+    }
+  }
+  
+  &__menu-btn-corner {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    &--visible {
+      opacity: 0.9;
+    }
+    
+    &:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.2) !important;
+      transform: scale(1.05);
+    }
+  }
+}
+
+// 全局网格布局调整
+:global(.grid-plugin-card) {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; // 移动端单列
+    gap: 12px;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr; // 小屏幕单列
+    gap: 10px;
+  }
+}
+</style>
