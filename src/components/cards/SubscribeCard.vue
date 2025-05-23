@@ -347,7 +347,7 @@ function onSubscribeEditRemove() {
               />
             </template>
             <div>
-              <VCardText class="flex items-center pt-3 pb-1">
+              <VCardText class="flex items-center pt-3 pb-2">
                 <div class="h-auto w-14 flex-shrink-0 overflow-hidden rounded-md cursor-move" v-if="imageLoaded">
                   <VImg :src="posterUrl" aspect-ratio="2/3" cover>
                     <template #placeholder>
