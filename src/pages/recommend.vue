@@ -115,14 +115,16 @@ async function loadExtraRecommendSources() {
   try {
     extraRecommendSources.value = await api.get('recommend/source')
     if (extraRecommendSources.value.length > 0) {
-      viewList.push(
-        ...extraRecommendSources.value.map(source => ({
-          apipath: source.api_path,
-          linkurl: `/browse/recommend/${source.api_path}?title=${source.name}`,
-          title: source.name,
-          type: source.type,
-        })),
-      )
+      extraRecommendSources.value.map(source => {
+        if (!viewList.some(item => item.apipath === source.api_path)) {
+          viewList.push({
+            apipath: source.api_path,
+            linkurl: `/browse/${source.api_path}&title=${source.name}`,
+            title: source.name,
+            type: source.type,
+          })
+        }
+      })
     }
   } catch (error) {
     console.log(error)
