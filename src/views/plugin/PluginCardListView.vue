@@ -13,6 +13,7 @@ import { getPluginTabs } from '@/router/i18n-menu'
 import PluginMarketSettingDialog from '@/components/dialog/PluginMarketSettingDialog.vue'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
+import PluginFolderCard from '@/components/cards/PluginFolderCard.vue'
 
 // 国际化
 const { t } = useI18n()
@@ -100,7 +101,7 @@ const keyword = ref('')
 const pluginIconLoaded = ref<{ [key: string]: boolean }>({})
 
 // 每一个插件的动作标识
-const pluginActions = ref<{ [key: string]: boolean }>({})
+const pluginActions: Ref<{ [key: string]: boolean }> = ref({})
 
 // 提示框
 const $toast = useToast()
@@ -152,6 +153,93 @@ const labelFilterOptions = ref<string[]>([])
 // 插件库过滤项
 const repoFilterOptions = ref<string[]>([])
 
+// 插件文件夹配置
+const pluginFolders: Ref<{ [key: string]: any }> = ref({})
+
+// 文件夹排序
+const folderOrder = ref<string[]>([])
+
+// 当前查看的文件夹
+const currentFolder = ref('')
+
+// 新建文件夹对话框
+const newFolderDialog = ref(false)
+
+// 新文件夹名称
+const newFolderName = ref('')
+
+// 显示的插件列表（考虑文件夹筛选）
+const displayedPlugins = computed(() => {
+  if (!currentFolder.value) {
+    // 主列表：显示未归类的插件
+    const folderedPluginIds = new Set()
+    Object.values(pluginFolders.value).forEach(folderData => {
+      const plugins = Array.isArray(folderData) ? folderData : (folderData.plugins || [])
+      plugins.forEach(id => folderedPluginIds.add(id))
+    })
+    return filteredDataList.value.filter(plugin => !folderedPluginIds.has(plugin.id))
+  } else {
+    // 文件夹内：只显示文件夹中的插件
+    const folderData = pluginFolders.value[currentFolder.value]
+    const folderPluginIds = Array.isArray(folderData) ? folderData : (folderData?.plugins || [])
+    return filteredDataList.value.filter(plugin => folderPluginIds.includes(plugin.id))
+  }
+})
+
+// 可拖拽的插件列表（主列表用）
+const draggableMainPlugins = ref<Plugin[]>([])
+
+// 可拖拽的插件列表（文件夹内用）
+const draggableFolderPlugins = ref<Plugin[]>([])
+
+// 是否正在拖拽排序中
+const isDraggingSortMode = ref(false)
+
+// 监听displayedPlugins变化，更新可拖拽列表（避免拖拽时的循环更新）
+watch(displayedPlugins, (newPlugins) => {
+  if (isDraggingSortMode.value) return // 拖拽排序时跳过更新
+  
+  if (!currentFolder.value) {
+    draggableMainPlugins.value = [...newPlugins]
+  } else {
+    draggableFolderPlugins.value = [...newPlugins]
+  }
+}, { immediate: true })
+
+// 监听文件夹切换，更新可拖拽列表
+watch(currentFolder, () => {
+  if (!currentFolder.value) {
+    draggableMainPlugins.value = [...displayedPlugins.value]
+  } else {
+    draggableFolderPlugins.value = [...displayedPlugins.value]
+  }
+})
+
+// 显示的文件夹列表（按排序显示）
+const displayedFolders = computed(() => {
+  if (currentFolder.value) return [] // 在文件夹内不显示其他文件夹
+  
+  const folderNames = Object.keys(pluginFolders.value)
+  
+  // 按排序显示文件夹
+  const sortedFolderNames = [...folderOrder.value].filter(name => folderNames.includes(name))
+  // 添加不在排序中的新文件夹
+  const unsortedFolders = folderNames.filter(name => !folderOrder.value.includes(name))
+  sortedFolderNames.push(...unsortedFolders)
+  
+  return sortedFolderNames.map(folderName => {
+    const folderData = pluginFolders.value[folderName]
+    const plugins = Array.isArray(folderData) ? folderData : (folderData?.plugins || [])
+    const config = Array.isArray(folderData) ? {} : folderData
+    
+    return {
+      name: folderName,
+      pluginCount: plugins.length,
+      config: config
+    }
+  })
+})
+
 // 加载插件顺序
 async function loadPluginOrderConfig() {
   // 顺序配置
@@ -184,6 +272,9 @@ function sortPluginOrder() {
 
 // 保存顺序设置
 async function savePluginOrder() {
+  // 只在主列表中保存顺序，文件夹内不保存全局顺序
+  if (currentFolder.value) return
+  
   // 顺序配置
   const orderObj = filteredDataList.value.map(item => ({ id: item.id || '' }))
   orderConfig.value = orderObj
@@ -195,6 +286,74 @@ async function savePluginOrder() {
     await api.post('/user/config/PluginOrder', orderObj)
   } catch (error) {
     console.error(error)
+  }
+}
+
+// 保存主列表插件顺序
+async function saveMainPluginOrder() {
+  try {
+    // 更新主列表数据
+    const newOrderedList = [...draggableMainPlugins.value]
+    
+    // 添加文件夹中的插件到末尾
+    Object.values(pluginFolders.value).forEach(folderData => {
+      const plugins = Array.isArray(folderData) ? folderData : (folderData.plugins || [])
+      plugins.forEach(id => {
+        const folderPlugin = dataList.value.find(p => p.id === id)
+        if (folderPlugin && !newOrderedList.find(p => p.id === id)) {
+          newOrderedList.push(folderPlugin)
+        }
+      })
+    })
+    
+    filteredDataList.value = newOrderedList
+    
+    // 保存排序配置
+    const orderObj = newOrderedList.map(item => ({ id: item.id || '' }))
+    orderConfig.value = orderObj
+    const orderString = JSON.stringify(orderObj)
+    localStorage.setItem('MP_PLUGIN_ORDER', orderString)
+
+    // 保存到服务端
+    await api.post('/user/config/PluginOrder', orderObj)
+    
+    console.log('主列表排序已保存')
+  } catch (error) {
+    console.error('保存主列表排序失败:', error)
+  } finally {
+    // 清除拖拽标志
+    isDraggingSortMode.value = false
+  }
+}
+
+// 保存文件夹内插件顺序
+async function saveFolderPluginOrder() {
+  if (!currentFolder.value) return
+  
+  try {
+    // 更新文件夹内插件顺序
+    const folderData = pluginFolders.value[currentFolder.value]
+    if (folderData) {
+      const newPluginIds = draggableFolderPlugins.value.map(plugin => plugin.id)
+      
+      if (Array.isArray(folderData)) {
+        // 旧格式，直接替换数组
+        pluginFolders.value[currentFolder.value] = newPluginIds
+      } else {
+        // 新格式，更新plugins字段
+        folderData.plugins = newPluginIds
+      }
+      
+      // 保存到后端
+      await savePluginFolders()
+      
+      console.log(`文件夹 ${currentFolder.value} 内排序已保存`)
+    }
+  } catch (error) {
+    console.error('保存文件夹内排序失败:', error)
+  } finally {
+    // 清除拖拽标志
+    isDraggingSortMode.value = false
   }
 }
 
@@ -449,10 +608,11 @@ function loadMarketMore({ done }: { done: any }) {
   done('ok')
 }
 
-// 加载时获取数据
+// 组件挂载后
 onMounted(async () => {
   await loadPluginOrderConfig()
-  refreshData()
+  await loadPluginFolders() // 加载文件夹配置
+  await refreshData()
   getPluginStatistics()
   if (activeTab.value != 'market' && pluginId.value) {
     // 找到这个插件
@@ -470,6 +630,430 @@ useDynamicButton({
     SearchDialog.value = true
   },
 })
+
+// 获取插件文件夹配置
+async function loadPluginFolders() {
+  try {
+    const response = await api.get('plugin/folders')
+    const foldersData = response && typeof response === 'object' ? response : {}
+    
+    // 处理旧格式兼容性（array）和新格式（object with config）
+    const processedFolders = {}
+    const order = []
+    
+    Object.keys(foldersData).forEach(folderName => {
+      const folderData = foldersData[folderName]
+      
+      if (Array.isArray(folderData)) {
+        // 旧格式：直接是插件数组
+        processedFolders[folderName] = {
+          plugins: folderData,
+          order: order.length,
+          icon: 'mdi-folder',
+          color: '#2196F3',
+          gradient: 'linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.15) 100%)',
+          background: '',
+          showIcon: true,
+        }
+      } else if (folderData && typeof folderData === 'object') {
+        // 新格式：包含配置的对象
+        processedFolders[folderName] = {
+          plugins: folderData.plugins || [],
+          order: folderData.order ?? order.length,
+          icon: folderData.icon || 'mdi-folder',
+          color: folderData.color || '#2196F3',
+          gradient: folderData.gradient || 'linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.15) 100%)',
+          background: folderData.background || '',
+          showIcon: folderData.showIcon !== undefined ? folderData.showIcon : true,
+        }
+      }
+      
+      order.push(folderName)
+    })
+    
+    pluginFolders.value = processedFolders
+    
+    // 设置文件夹排序
+    folderOrder.value = Object.keys(processedFolders)
+      .sort((a, b) => (processedFolders[a].order || 0) - (processedFolders[b].order || 0))
+    
+    console.log('加载文件夹配置:', pluginFolders.value)
+    console.log('文件夹排序:', folderOrder.value)
+  } catch (error) {
+    console.error('加载插件文件夹配置失败:', error)
+    pluginFolders.value = {}
+    folderOrder.value = []
+  }
+}
+
+// 保存插件文件夹配置
+async function savePluginFolders() {
+  try {
+    // 更新排序信息
+    const foldersToSave = {}
+    Object.keys(pluginFolders.value).forEach(folderName => {
+      const folderData = pluginFolders.value[folderName]
+      const orderIndex = folderOrder.value.indexOf(folderName)
+      
+      foldersToSave[folderName] = {
+        ...folderData,
+        order: orderIndex >= 0 ? orderIndex : 999,
+      }
+    })
+    
+    await api.post('plugin/folders', foldersToSave)
+    console.log('文件夹配置已保存:', foldersToSave)
+  } catch (error) {
+    console.error('保存插件文件夹配置失败:', error)
+    throw error
+  }
+}
+
+// 创建新文件夹
+async function createNewFolder() {
+  if (!newFolderName.value.trim()) {
+    $toast.error('文件夹名称不能为空')
+    return
+  }
+  
+  if (pluginFolders.value[newFolderName.value]) {
+    $toast.error('文件夹已存在')
+    return
+  }
+  
+  try {
+    // 直接在本地添加文件夹
+    pluginFolders.value[newFolderName.value] = {
+      plugins: [],
+      order: folderOrder.value.length,
+      icon: 'mdi-folder',
+      color: '#2196F3',
+      gradient: 'linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.15) 100%)',
+      background: '',
+      showIcon: true,
+    }
+    
+    // 添加到排序列表
+    folderOrder.value.push(newFolderName.value)
+    
+    // 保存到后端
+    await savePluginFolders()
+    
+    newFolderDialog.value = false
+    newFolderName.value = ''
+    $toast.success('文件夹创建成功')
+    
+    console.log('创建文件夹后的配置:', pluginFolders.value)
+  } catch (error) {
+    console.error('创建文件夹失败:', error)
+    // 回滚本地更改
+    delete pluginFolders.value[newFolderName.value]
+    folderOrder.value = folderOrder.value.filter(name => name !== newFolderName.value)
+    $toast.error('创建文件夹失败')
+  }
+}
+
+// 打开文件夹
+function openFolder(folderName: string) {
+  currentFolder.value = folderName
+}
+
+// 返回主列表
+function backToMain() {
+  currentFolder.value = ''
+}
+
+// 重命名文件夹
+async function renameFolder(oldName: string, newName: string) {
+  if (pluginFolders.value[newName]) {
+    $toast.error('文件夹名称已存在')
+    return
+  }
+  
+  try {
+    // 更新本地状态
+    const folderData = pluginFolders.value[oldName] || { plugins: [] }
+    pluginFolders.value[newName] = folderData
+    delete pluginFolders.value[oldName]
+    
+    // 更新排序列表
+    const orderIndex = folderOrder.value.indexOf(oldName)
+    if (orderIndex >= 0) {
+      folderOrder.value[orderIndex] = newName
+    }
+    
+    // 如果正在查看该文件夹，更新当前文件夹名
+    if (currentFolder.value === oldName) {
+      currentFolder.value = newName
+    }
+    
+    // 保存到后端
+    await savePluginFolders()
+    
+    $toast.success('文件夹重命名成功')
+  } catch (error) {
+    console.error('重命名文件夹失败:', error)
+    // 回滚本地更改
+    pluginFolders.value[oldName] = pluginFolders.value[newName] || { plugins: [] }
+    delete pluginFolders.value[newName]
+    const orderIndex = folderOrder.value.indexOf(newName)
+    if (orderIndex >= 0) {
+      folderOrder.value[orderIndex] = oldName
+    }
+    if (currentFolder.value === newName) {
+      currentFolder.value = oldName
+    }
+    $toast.error('重命名文件夹失败')
+  }
+}
+
+// 删除文件夹
+async function deleteFolder(folderName: string) {
+  try {
+    // 保存被删除的文件夹内容以便回滚
+    const deletedFolder = { ...pluginFolders.value[folderName] }
+    delete pluginFolders.value[folderName]
+    
+    // 从排序列表中移除
+    folderOrder.value = folderOrder.value.filter(name => name !== folderName)
+    
+    // 如果正在查看该文件夹，返回主列表
+    if (currentFolder.value === folderName) {
+      currentFolder.value = ''
+    }
+    
+    // 保存到后端
+    await savePluginFolders()
+    
+    $toast.success('文件夹删除成功')
+  } catch (error) {
+    console.error('删除文件夹失败:', error)
+    // 回滚本地更改
+    pluginFolders.value[folderName] = deletedFolder
+    if (!folderOrder.value.includes(folderName)) {
+      folderOrder.value.push(folderName)
+    }
+    $toast.error('删除文件夹失败')
+  }
+}
+
+// 显示新建文件夹对话框
+function showNewFolderDialog() {
+  newFolderName.value = ''
+  newFolderDialog.value = true
+}
+
+// 移出文件夹
+async function removeFromFolder(pluginId: string) {
+  if (!currentFolder.value) return
+  
+  try {
+    // 从当前文件夹中移除插件
+    const folderData = pluginFolders.value[currentFolder.value]
+    const plugins = Array.isArray(folderData) ? folderData : (folderData?.plugins || [])
+    const index = plugins.indexOf(pluginId)
+    if (index > -1) {
+      plugins.splice(index, 1)
+      if (!Array.isArray(folderData)) {
+        folderData.plugins = plugins
+      }
+      
+      // 保存配置
+      await savePluginFolders()
+      
+      $toast.success('插件已移出文件夹')
+    }
+  } catch (error) {
+    console.error('移出文件夹失败:', error)
+    $toast.error('操作失败')
+  }
+}
+
+// 更新文件夹配置
+async function updateFolderConfig(folderName: string, config: any) {
+  try {
+    // 更新本地配置
+    if (pluginFolders.value[folderName]) {
+      pluginFolders.value[folderName] = {
+        ...pluginFolders.value[folderName],
+        ...config,
+      }
+      
+      // 保存到后端
+      await savePluginFolders()
+      
+      console.log('文件夹配置已更新:', folderName, config)
+    }
+  } catch (error) {
+    console.error('更新文件夹配置失败:', error)
+    $toast.error('保存文件夹配置失败')
+  }
+}
+
+// 文件夹拖拽排序结束事件
+function onFolderSortEnd() {
+  // 保存新的文件夹顺序
+  savePluginFolders()
+  console.log('文件夹排序已更新:', folderOrder.value)
+}
+
+// 当前拖拽的插件ID
+const currentDraggedPluginId = ref('')
+
+// 处理拖拽到文件夹的事件
+function handleDragOver(event: DragEvent) {
+  event.preventDefault()
+  event.dataTransfer!.dropEffect = 'move'
+  const target = event.currentTarget as HTMLElement
+  target.classList.add('drag-over')
+}
+
+function handleDragEnter(event: DragEvent) {
+  event.preventDefault()
+}
+
+function handleDragLeave(event: DragEvent) {
+  event.preventDefault()
+  const target = event.currentTarget as HTMLElement
+  target.classList.remove('drag-over')
+}
+
+async function handleDropToFolder(event: DragEvent, folderName: string) {
+  event.preventDefault()
+  event.stopPropagation()
+  const target = event.currentTarget as HTMLElement
+  target.classList.remove('drag-over')
+  
+  // 使用跟踪的插件ID
+  const pluginId = currentDraggedPluginId.value
+  console.log('拖拽到文件夹:', folderName, '插件ID:', pluginId)
+  
+  if (!pluginId) {
+    console.log('无法获取有效的插件ID')
+    return
+  }
+  
+  try {
+    // 检查是否是文件夹名（忽略文件夹拖入文件夹的情况）
+    if (Object.keys(pluginFolders.value).includes(pluginId)) {
+      console.log('忽略文件夹拖入文件夹的操作:', pluginId)
+      return
+    }
+    
+    // 验证插件ID
+    const plugin = filteredDataList.value.find(p => p.id === pluginId)
+    console.log('找到插件:', plugin?.plugin_name)
+    
+    if (!plugin) {
+      console.log('未找到对应插件:', pluginId)
+      return
+    }
+    
+    // 获取目标文件夹数据
+    const targetFolderData = pluginFolders.value[folderName] || { plugins: [] }
+    const targetPlugins = Array.isArray(targetFolderData) ? targetFolderData : (targetFolderData.plugins || [])
+    
+    // 检查插件是否已在此文件夹中
+    if (targetPlugins.includes(pluginId)) {
+      $toast.warning('插件已在此文件夹中')
+      return
+    }
+    
+    // 从其他文件夹中移除该插件
+    Object.keys(pluginFolders.value).forEach(fname => {
+      if (fname !== folderName) {
+        const folderData = pluginFolders.value[fname]
+        const plugins = Array.isArray(folderData) ? folderData : (folderData.plugins || [])
+        const index = plugins.indexOf(pluginId)
+        if (index > -1) {
+          plugins.splice(index, 1)
+          if (!Array.isArray(folderData)) {
+            folderData.plugins = plugins
+          }
+        }
+      }
+    })
+    
+    // 从主列表中移除（如果存在）
+    const mainIndex = draggableMainPlugins.value.findIndex(p => p.id === pluginId)
+    if (mainIndex > -1) {
+      draggableMainPlugins.value.splice(mainIndex, 1)
+    }
+    
+    // 添加到目标文件夹
+    if (!pluginFolders.value[folderName]) {
+      pluginFolders.value[folderName] = {
+        plugins: [],
+        order: folderOrder.value.length,
+        icon: 'mdi-folder',
+        color: '#2196F3',
+        gradient: 'linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.15) 100%)',
+        background: '',
+        showIcon: true,
+      }
+    }
+    
+    const targetFolder = pluginFolders.value[folderName]
+    if (Array.isArray(targetFolder)) {
+      targetFolder.push(pluginId)
+    } else {
+      targetFolder.plugins = targetFolder.plugins || []
+      targetFolder.plugins.push(pluginId)
+    }
+    
+    // 保存配置
+    await savePluginFolders()
+    
+    $toast.success(`插件已移动到文件夹 "${folderName}"`)
+  } catch (error) {
+    console.error('拖拽到文件夹失败:', error)
+    $toast.error('操作失败')
+  }
+}
+
+// 拖拽开始事件（修复版本）
+function onDragStartPlugin(evt: any) {
+  // 设置拖拽模式标志
+  isDraggingSortMode.value = true
+  
+  // 从oldIndex获取插件ID
+  const oldIndex = evt.oldIndex
+  if (oldIndex !== undefined) {
+    const plugin = currentFolder.value 
+      ? draggableFolderPlugins.value[oldIndex] 
+      : draggableMainPlugins.value[oldIndex]
+    if (plugin && plugin.id) {
+      currentDraggedPluginId.value = plugin.id
+      return
+    }
+  }
+  
+  // 从拖拽元素获取
+  const item = evt.item
+  if (item && item.dataset && item.dataset.pluginId) {
+    currentDraggedPluginId.value = item.dataset.pluginId
+    return
+  }
+  
+  // 查找data-plugin-id属性
+  const pluginCard = item?.querySelector('[data-plugin-id]')
+  if (pluginCard) {
+    currentDraggedPluginId.value = pluginCard.getAttribute('data-plugin-id') || ''
+    return
+  }
+  
+  // 直接从元素属性获取
+  if (item && item.getAttribute && item.getAttribute('data-plugin-id')) {
+    currentDraggedPluginId.value = item.getAttribute('data-plugin-id')
+  }
+}
+
+// 拖拽结束事件
+function onDragEndPlugin(evt: any) {
+  currentDraggedPluginId.value = ''
+  // 清除拖拽标志
+  isDraggingSortMode.value = false
+}
 </script>
 
 <template>
@@ -606,6 +1190,33 @@ useDynamicButton({
           class="settings-icon-button"
           @click="MarketSettingDialog = true"
         />
+        <VBtn
+          v-if="activeTab === 'installed' && !currentFolder"
+          icon="mdi-folder-plus"
+          variant="text"
+          color="gray"
+          size="default"
+          class="settings-icon-button"
+          @click="showNewFolderDialog"
+        />
+        <VBtn
+          v-if="activeTab === 'installed' && currentFolder"
+          icon="mdi-arrow-left"
+          variant="text"
+          color="gray"
+          size="default"
+          class="settings-icon-button"
+          @click="backToMain"
+        />
+        <VBtn
+          v-if="!appMode && !display.mobile && activeTab === 'installed'"
+          icon="mdi-filter"
+          variant="text"
+          color="gray"
+          size="default"
+          class="settings-icon-button"
+          @click="FilterDialog = true"
+        />
       </template>
     </VHeaderTab>
 
@@ -616,28 +1227,114 @@ useDynamicButton({
           <div>
             <VPageContentTitle v-if="installedFilter" :title="t('plugin.filter', { name: installedFilter })" />
             <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-            <draggable
-              v-if="filteredDataList.length > 0"
-              v-model="filteredDataList"
-              @end="savePluginOrder"
-              handle=".cursor-move"
-              item-key="id"
-              tag="div"
-              :component-data="{ class: 'grid gap-4 grid-plugin-card' }"
+            
+            <!-- 文件夹和插件网格 -->
+            <div 
+              v-if="displayedFolders.length > 0 || displayedPlugins.length > 0" 
+              class="grid gap-4 grid-plugin-card"
             >
-              <template #item="{ element }">
-                <PluginCard
-                  :count="PluginStatistics[element.id || '0']"
-                  :plugin="element"
-                  :action="pluginActions[element.id || '0']"
-                  @remove="refreshData"
-                  @save="refreshData"
-                  @action-done="pluginActions[element.id || '0'] = false"
-                />
+              <!-- 文件夹卡片 - 使用draggable进行排序 -->
+              <draggable
+                v-if="displayedFolders.length > 0"
+                v-model="folderOrder"
+                @end="onFolderSortEnd"
+                handle=".cursor-move"
+                item-key="name"
+                tag="div"
+                :component-data="{ style: 'display: contents;' }"
+                :disabled="currentFolder !== ''"
+                group="folders"
+              >
+                <template #item="{ element: folderName }">
+                  <div
+                    v-if="displayedFolders.find(f => f.name === folderName)"
+                    class="drop-zone"
+                    @dragover="handleDragOver($event)"
+                    @dragenter="handleDragEnter($event)"
+                    @dragleave="handleDragLeave($event)"
+                    @drop="handleDropToFolder($event, folderName)"
+                  >
+                    <PluginFolderCard
+                      :folder-name="folderName"
+                      :plugin-count="displayedFolders.find(f => f.name === folderName)?.pluginCount || 0"
+                      :folder-config="displayedFolders.find(f => f.name === folderName)?.config || {}"
+                      @open="openFolder"
+                      @delete="deleteFolder"
+                      @rename="renameFolder"
+                      @update-config="updateFolderConfig"
+                    />
+                  </div>
+                </template>
+              </draggable>
+              
+              <!-- 插件卡片 -->
+              <template v-if="!currentFolder">
+                <!-- 主列表：使用draggable进行排序 -->
+                <draggable
+                  v-model="draggableMainPlugins"
+                  @end="saveMainPluginOrder"
+                  @start="onDragStartPlugin"
+                  @sort="onDragEndPlugin"
+                  handle=".cursor-move"
+                  item-key="id"
+                  tag="div"
+                  :component-data="{ style: 'display: contents;' }"
+                  group="plugins"
+                >
+                  <template #item="{ element }">
+                    <div class="plugin-item-wrapper" :data-plugin-id="element.id">
+                      <PluginCard
+                        :count="PluginStatistics[element.id || '0']"
+                        :plugin="element"
+                        :action="pluginActions[element.id || '0']"
+                        @remove="refreshData"
+                        @save="refreshData"
+                        @action-done="pluginActions[element.id || '0'] = false"
+                      />
+                    </div>
+                  </template>
+                </draggable>
               </template>
-            </draggable>
+              
+              <template v-else>
+                <!-- 文件夹内：使用draggable排序 + 移出按钮 -->
+                <draggable
+                  v-model="draggableFolderPlugins"
+                  @end="saveFolderPluginOrder"
+                  @start="onDragStartPlugin"
+                  handle=".cursor-move"
+                  item-key="id"
+                  tag="div"
+                  :component-data="{ style: 'display: contents;' }"
+                  group="plugins"
+                >
+                  <template #item="{ element }">
+                    <div class="plugin-item-wrapper" :data-plugin-id="element.id">
+                      <PluginCard
+                        :count="PluginStatistics[element.id || '0']"
+                        :plugin="element"
+                        :action="pluginActions[element.id || '0']"
+                        @remove="refreshData"
+                        @save="refreshData"
+                        @action-done="pluginActions[element.id || '0'] = false"
+                      />
+                      <!-- 移出文件夹按钮 -->
+                      <VBtn
+                        icon="mdi-folder-remove"
+                        variant="text"
+                        color="warning"
+                        size="small"
+                        class="remove-from-folder-btn"
+                        @click="removeFromFolder(element.id || '')"
+                      />
+                    </div>
+                  </template>
+                </draggable>
+              </template>
+            </div>
+            
             <NoDataFound
-              v-if="filteredDataList.length === 0 && isRefreshed"
+              v-if="displayedFolders.length === 0 && displayedPlugins.length === 0 && isRefreshed"
               error-code="404"
               :error-title="t('common.noData')"
               :error-description="
@@ -777,4 +1474,75 @@ useDynamicButton({
       </VCardText>
     </VCard>
   </VDialog>
+  
+  <!-- 新建文件夹对话框 -->
+  <VDialog v-if="newFolderDialog" v-model="newFolderDialog" max-width="400">
+    <VCard>
+      <VCardTitle>新建文件夹</VCardTitle>
+      <VCardText>
+        <VTextField
+          v-model="newFolderName"
+          label="文件夹名称"
+          variant="outlined"
+          @keyup.enter="createNewFolder"
+        />
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn @click="newFolderDialog = false">取消</VBtn>
+        <VBtn color="primary" @click="createNewFolder">创建</VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
+
+<style lang="scss" scoped>
+// 拖拽相关样式
+.drop-zone {
+  transition: all 0.3s ease;
+  
+  &.drag-over {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.5);
+    border: 2px dashed #2196F3;
+    border-radius: 16px;
+  }
+}
+
+.plugin-item-wrapper {
+  position: relative;
+  
+  .remove-from-folder-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover .remove-from-folder-btn {
+    opacity: 1;
+  }
+}
+
+// 网格布局
+.grid-plugin-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+</style>
