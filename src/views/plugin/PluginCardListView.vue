@@ -725,12 +725,12 @@ async function savePluginFolders() {
 // 创建新文件夹
 async function createNewFolder() {
   if (!newFolderName.value.trim()) {
-    $toast.error('文件夹名称不能为空')
+    $toast.error(t('plugin.folderNameEmpty'))
     return
   }
 
   if (pluginFolders.value[newFolderName.value]) {
-    $toast.error('文件夹已存在')
+    $toast.error(t('plugin.folderExists'))
     return
   }
 
@@ -754,7 +754,7 @@ async function createNewFolder() {
 
     newFolderDialog.value = false
     newFolderName.value = ''
-    $toast.success('文件夹创建成功')
+    $toast.success(t('plugin.folderCreateSuccess'))
 
     console.log('创建文件夹后的配置:', pluginFolders.value)
   } catch (error) {
@@ -762,7 +762,7 @@ async function createNewFolder() {
     // 回滚本地更改
     delete pluginFolders.value[newFolderName.value]
     folderOrder.value = folderOrder.value.filter(name => name !== newFolderName.value)
-    $toast.error('创建文件夹失败')
+    $toast.error(t('plugin.folderCreateFailed'))
   }
 }
 
@@ -779,7 +779,7 @@ function backToMain() {
 // 重命名文件夹
 async function renameFolder(oldName: string, newName: string) {
   if (pluginFolders.value[newName]) {
-    $toast.error('文件夹名称已存在')
+    $toast.error(t('plugin.folderExists'))
     return
   }
 
@@ -803,7 +803,7 @@ async function renameFolder(oldName: string, newName: string) {
     // 保存到后端
     await savePluginFolders()
 
-    $toast.success('文件夹重命名成功')
+    $toast.success(t('plugin.folderRenameSuccess'))
   } catch (error) {
     console.error('重命名文件夹失败:', error)
     // 回滚本地更改
@@ -816,7 +816,7 @@ async function renameFolder(oldName: string, newName: string) {
     if (currentFolder.value === newName) {
       currentFolder.value = oldName
     }
-    $toast.error('重命名文件夹失败')
+    $toast.error(t('plugin.folderRenameFailed'))
   }
 }
 
@@ -838,7 +838,7 @@ async function deleteFolder(folderName: string) {
     // 保存到后端
     await savePluginFolders()
 
-    $toast.success('文件夹删除成功')
+    $toast.success(t('plugin.folderDeleteSuccess'))
   } catch (error) {
     console.error('删除文件夹失败:', error)
     // 回滚本地更改
@@ -846,7 +846,7 @@ async function deleteFolder(folderName: string) {
     if (!folderOrder.value.includes(folderName)) {
       folderOrder.value.push(folderName)
     }
-    $toast.error('删除文件夹失败')
+    $toast.error(t('plugin.folderDeleteFailed'))
   }
 }
 
@@ -874,11 +874,11 @@ async function removeFromFolder(pluginId: string) {
       // 保存配置
       await savePluginFolders()
 
-      $toast.success('插件已移出文件夹')
+      $toast.success(t('plugin.removeFromFolderSuccess'))
     }
   } catch (error) {
     console.error('移出文件夹失败:', error)
-    $toast.error('操作失败')
+    $toast.error(t('plugin.operationFailed'))
   }
 }
 
@@ -899,7 +899,7 @@ async function updateFolderConfig(folderName: string, config: any) {
     }
   } catch (error) {
     console.error('更新文件夹配置失败:', error)
-    $toast.error('保存文件夹配置失败')
+    $toast.error(t('plugin.saveFolderConfigFailed'))
   }
 }
 
@@ -1477,14 +1477,19 @@ function onDragEndPlugin(evt: any) {
   <!-- 新建文件夹对话框 -->
   <VDialog v-if="newFolderDialog" v-model="newFolderDialog" max-width="400">
     <VCard>
-      <VCardTitle>新建文件夹</VCardTitle>
+      <VCardTitle>{{ t('plugin.newFolder') }}</VCardTitle>
       <VCardText>
-        <VTextField v-model="newFolderName" label="文件夹名称" variant="outlined" @keyup.enter="createNewFolder" />
+        <VTextField
+          v-model="newFolderName"
+          :label="t('plugin.folderName')"
+          variant="outlined"
+          @keyup.enter="createNewFolder"
+        />
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn @click="newFolderDialog = false">取消</VBtn>
-        <VBtn color="primary" @click="createNewFolder">创建</VBtn>
+        <VBtn @click="newFolderDialog = false">{{ t('plugin.cancel') }}</VBtn>
+        <VBtn color="primary" @click="createNewFolder">{{ t('plugin.create') }}</VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
