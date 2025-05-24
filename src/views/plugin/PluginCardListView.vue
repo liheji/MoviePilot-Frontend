@@ -328,10 +328,7 @@ async function saveMainPluginOrder() {
 
     // 保存到服务端
     await api.post('/user/config/PluginOrder', orderObj)
-
-    console.log('主列表排序已保存')
   } catch (error) {
-    console.error('保存主列表排序失败:', error)
   } finally {
     // 清除拖拽标志
     isDraggingSortMode.value = false
@@ -358,8 +355,6 @@ async function saveFolderPluginOrder() {
 
       // 保存到后端
       await savePluginFolders()
-
-      console.log(`文件夹 ${currentFolder.value} 内排序已保存`)
     }
   } catch (error) {
     console.error('保存文件夹内排序失败:', error)
@@ -689,11 +684,7 @@ async function loadPluginFolders() {
     folderOrder.value = Object.keys(processedFolders).sort(
       (a, b) => (processedFolders[a].order || 0) - (processedFolders[b].order || 0),
     )
-
-    console.log('加载文件夹配置:', pluginFolders.value)
-    console.log('文件夹排序:', folderOrder.value)
   } catch (error) {
-    console.error('加载插件文件夹配置失败:', error)
     pluginFolders.value = {}
     folderOrder.value = []
   }
@@ -715,9 +706,7 @@ async function savePluginFolders() {
     })
 
     await api.post('plugin/folders', foldersToSave)
-    console.log('文件夹配置已保存:', foldersToSave)
   } catch (error) {
-    console.error('保存插件文件夹配置失败:', error)
     throw error
   }
 }
@@ -739,8 +728,8 @@ async function createNewFolder() {
     pluginFolders.value[newFolderName.value] = {
       plugins: [],
       order: folderOrder.value.length,
-      icon: 'mdi-folder',
-      color: '#2196F3',
+      icon: defaultIcon,
+      color: defaultColor,
       gradient: defaultGradient,
       background: '',
       showIcon: true,
@@ -755,10 +744,7 @@ async function createNewFolder() {
     newFolderDialog.value = false
     newFolderName.value = ''
     $toast.success(t('plugin.folderCreateSuccess'))
-
-    console.log('创建文件夹后的配置:', pluginFolders.value)
   } catch (error) {
-    console.error('创建文件夹失败:', error)
     // 回滚本地更改
     delete pluginFolders.value[newFolderName.value]
     folderOrder.value = folderOrder.value.filter(name => name !== newFolderName.value)
@@ -840,7 +826,6 @@ async function deleteFolder(folderName: string) {
 
     $toast.success(t('plugin.folderDeleteSuccess'))
   } catch (error) {
-    console.error('删除文件夹失败:', error)
     // 回滚本地更改
     pluginFolders.value[folderName] = deletedFolder
     if (!folderOrder.value.includes(folderName)) {
@@ -877,7 +862,7 @@ async function removeFromFolder(pluginId: string) {
       $toast.success(t('plugin.removeFromFolderSuccess'))
     }
   } catch (error) {
-    console.error('移出文件夹失败:', error)
+    console.error(error)
     $toast.error(t('plugin.operationFailed'))
   }
 }
@@ -894,11 +879,8 @@ async function updateFolderConfig(folderName: string, config: any) {
 
       // 保存到后端
       await savePluginFolders()
-
-      console.log('文件夹配置已更新:', folderName, config)
     }
   } catch (error) {
-    console.error('更新文件夹配置失败:', error)
     $toast.error(t('plugin.saveFolderConfigFailed'))
   }
 }
@@ -907,7 +889,6 @@ async function updateFolderConfig(folderName: string, config: any) {
 function onFolderSortEnd() {
   // 保存新的文件夹顺序
   savePluginFolders()
-  console.log('文件夹排序已更新:', folderOrder.value)
 }
 
 // 当前拖拽的插件ID
@@ -939,26 +920,21 @@ async function handleDropToFolder(event: DragEvent, folderName: string) {
 
   // 使用跟踪的插件ID
   const pluginId = currentDraggedPluginId.value
-  console.log('拖拽到文件夹:', folderName, '插件ID:', pluginId)
 
   if (!pluginId) {
-    console.log('无法获取有效的插件ID')
     return
   }
 
   try {
     // 检查是否是文件夹名（忽略文件夹拖入文件夹的情况）
     if (Object.keys(pluginFolders.value).includes(pluginId)) {
-      console.log('忽略文件夹拖入文件夹的操作:', pluginId)
       return
     }
 
     // 验证插件ID
     const plugin = filteredDataList.value.find(p => p.id === pluginId)
-    console.log('找到插件:', plugin?.plugin_name)
 
     if (!plugin) {
-      console.log('未找到对应插件:', pluginId)
       return
     }
 
