@@ -190,18 +190,22 @@ const dropdownItems = ref([
             </VCardText>
             <div class="relative flex flex-row items-start px-2 justify-between grow">
               <div class="relative flex-1 min-w-0">
-                <div class="text-white text-sm px-2 py-1 text-shadow overflow-hidden line-clamp-3 ...">
+                <div
+                  class="text-white text-sm px-2 py-1 text-shadow overflow-hidden ..."
+                  :class="{ 'line-clamp-3': !props.plugin?.plugin_label, 'line-clamp-2': props.plugin?.plugin_label }"
+                >
                   {{ props.plugin?.plugin_desc }}
                 </div>
                 <!-- 插件标签 -->
-                <div v-if="pluginLabels.length > 0" class="plugin-app-card__tags-section">
+                <div v-if="pluginLabels.length > 0" class="plugin-app-card__tags-section px-2">
                   <VChip
                     v-for="tag in pluginLabels"
                     :key="tag"
                     size="x-small"
                     variant="tonal"
-                    color="primary"
+                    color="info"
                     class="me-1 mb-1"
+                    tile
                   >
                     {{ tag }}
                   </VChip>
