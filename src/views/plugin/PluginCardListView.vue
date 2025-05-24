@@ -126,7 +126,7 @@ const filterForm = reactive({
 
 // 默认背景
 const defaultGradient =
-  'linear-gradient(rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.4) 100%), linear-gradient(135deg, rgba(33, 150, 243, 0.7) 0%, rgba(33, 150, 243, 0.8) 100%)'
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%), linear-gradient(135deg, rgba(33, 150, 243, 0.7) 0%, rgba(33, 150, 243, 0.8) 100%)'
 // 默认文件夹图标
 const defaultIcon = 'mdi-folder'
 // 默认文件夹颜色
