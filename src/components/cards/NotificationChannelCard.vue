@@ -106,8 +106,6 @@ const getIcon = computed(() => {
       return slack_image
     case 'webpush':
       return chrome_image
-    case 'wechat':
-      return wechat_image
     default:
       return custom_image
   }
