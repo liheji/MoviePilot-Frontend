@@ -207,8 +207,7 @@ onActivated(async () => {
             </template>
           </draggable>
         </VCardText>
-        <VDivider />
-        <VCardText class="pt-5 text-end">
+        <VCardActions class="pt-3">
           <VSpacer />
           <VBtn @click="saveTabOrder">
             <template #prepend>
@@ -216,7 +215,7 @@ onActivated(async () => {
             </template>
             {{ t('common.save') }}
           </VBtn>
-        </VCardText>
+        </VCardActions>
       </VCard>
     </VDialog>
     <!-- 快速滚动到顶部按钮 -->

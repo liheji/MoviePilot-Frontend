@@ -432,12 +432,8 @@ onMounted(() => {
         </div>
       </VCardItem>
       <VCardActions class="mx-auto">
-        <VBtn variant="tonal" color="secondary" class="px-5" @click="restartDialog = false">{{
-          t('common.cancel')
-        }}</VBtn>
-        <VBtn variant="elevated" color="error" @click="restart" prepend-icon="mdi-restart" class="px-5">{{
-          t('common.confirm')
-        }}</VBtn>
+        <VBtn color="secondary" class="px-5" @click="restartDialog = false">{{ t('common.cancel') }}</VBtn>
+        <VBtn color="error" @click="restart" prepend-icon="mdi-restart" class="px-5">{{ t('common.confirm') }}</VBtn>
       </VCardActions>
       <VDialogCloseBtn @click="restartDialog = false" />
     </VCard>

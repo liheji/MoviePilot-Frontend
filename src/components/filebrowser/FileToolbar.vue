@@ -179,7 +179,7 @@ const sortIcon = computed(() => {
         </VCardText>
         <VCardActions>
           <div class="flex-grow-1" />
-          <VBtn :disabled="!newFolderName" variant="elevated" @click="mkdir" prepend-icon="mdi-check" class="px-5 me-3">
+          <VBtn :disabled="!newFolderName" @click="mkdir" prepend-icon="mdi-folder-plus" class="px-5 me-3">
             {{ t('common.create') }}
           </VBtn>
         </VCardActions>

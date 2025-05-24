@@ -415,7 +415,7 @@ function onClose() {
           </VForm>
         </VCardText>
         <VCardActions class="pt-3">
-          <VBtn @click="saveNotificationInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
+          <VBtn @click="saveNotificationInfo" prepend-icon="mdi-content-save" class="px-5">
             {{ t('common.confirm') }}
           </VBtn>
         </VCardActions>

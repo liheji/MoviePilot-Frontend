@@ -271,8 +271,7 @@ onActivated(async () => {
             </div>
           </div>
         </VCardText>
-        <VDivider />
-        <VCardActions class="pt-5">
+        <VCardActions class="pt-3">
           <VBtn variant="text" @click="Object.keys(enableConfig).forEach(key => (enableConfig[key] = true))">
             {{ t('recommend.selectAll') }}
           </VBtn>
@@ -280,7 +279,7 @@ onActivated(async () => {
             {{ t('recommend.selectNone') }}
           </VBtn>
           <VSpacer />
-          <VBtn @click="saveConfig" variant="elevated" color="primary" class="px-5">
+          <VBtn @click="saveConfig" color="primary" class="px-5">
             <template #prepend>
               <VIcon icon="mdi-content-save" />
             </template>

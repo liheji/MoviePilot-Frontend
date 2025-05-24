@@ -107,8 +107,14 @@ onUnmounted(() => {
 
 <template>
   <VDialog width="40rem" scrollable max-height="85vh">
-    <VCard :title="t('dialog.aliyunAuth.loginTitle')">
+    <VCard>
       <VDialogCloseBtn @click="emit('close')" />
+      <VCardItem>
+        <VCardTitle>
+          {{ t('dialog.aliyunAuth.loginTitle') }}
+        </VCardTitle>
+      </VCardItem>
+      <VDivider />
       <VCardText class="pt-2 flex flex-col items-center">
         <div class="my-6 rounded text-center p-3 border">
           <VImg class="mx-auto" :src="qrCodeUrl" width="200" height="200">
@@ -124,11 +130,11 @@ onUnmounted(() => {
         </VAlert>
       </VCardText>
       <VCardActions>
-        <VSpacer />
-        <VBtn variant="tonal" color="error" @click="handleReset" prepend-icon="mdi-restore" class="px-5 me-3">
+        <VBtn color="error" @click="handleReset" prepend-icon="mdi-restore" class="px-5 me-3">
           {{ t('dialog.aliyunAuth.reset') }}
         </VBtn>
-        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
+        <VSpacer />
+        <VBtn @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
           {{ t('dialog.aliyunAuth.complete') }}
         </VBtn>
       </VCardActions>

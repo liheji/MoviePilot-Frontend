@@ -67,8 +67,14 @@ async function savaAlistConfig() {
 
 <template>
   <VDialog width="50rem" scrollable max-height="85vh">
-    <VCard :title="t('dialog.alistConfig.title')">
+    <VCard>
       <VDialogCloseBtn @click="emit('close')" />
+      <VCardItem>
+        <VCardTitle>
+          {{ t('dialog.alistConfig.title') }}
+        </VCardTitle>
+      </VCardItem>
+      <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
@@ -116,11 +122,11 @@ async function savaAlistConfig() {
         </VRow>
       </VCardText>
       <VCardActions>
-        <VSpacer />
-        <VBtn variant="tonal" color="error" @click="handleReset" prepend-icon="mdi-restore" class="px-5 me-3">
+        <VBtn color="error" @click="handleReset" prepend-icon="mdi-restore" class="px-5 me-3">
           {{ t('dialog.alistConfig.reset') }}
         </VBtn>
-        <VBtn variant="elevated" @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
+        <VSpacer />
+        <VBtn @click="handleDone" prepend-icon="mdi-check" class="px-5 me-3">
           {{ t('dialog.alistConfig.complete') }}
         </VBtn>
       </VCardActions>

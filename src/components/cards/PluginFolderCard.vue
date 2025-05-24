@@ -359,7 +359,11 @@ const dropdownItems = ref([
     <!-- 重命名对话框 -->
     <VDialog v-if="renameDialog" v-model="renameDialog" max-width="400">
       <VCard>
-        <VCardTitle>{{ t('folder.renameFolder') }}</VCardTitle>
+        <VDialogCloseBtn @click="renameDialog = false" />
+        <VCardItem>
+          <VCardTitle>{{ t('folder.renameFolder') }}</VCardTitle>
+        </VCardItem>
+        <VDivider />
         <VCardText>
           <VTextField
             v-model="newFolderName"
@@ -371,8 +375,7 @@ const dropdownItems = ref([
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn @click="renameDialog = false">取消</VBtn>
-          <VBtn color="primary" @click="confirmRename">确认</VBtn>
+          <VBtn color="primary" prepend-icon="mdi-check" class="px-5" @click="confirmRename">确认</VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
@@ -380,10 +383,14 @@ const dropdownItems = ref([
     <!-- 设置对话框 -->
     <VDialog v-if="settingDialog" v-model="settingDialog" max-width="600">
       <VCard>
-        <VCardTitle>
-          <VIcon icon="mdi-palette" class="mr-2" />
-          {{ t('folder.folderAppearanceSettings') }}
-        </VCardTitle>
+        <VDialogCloseBtn @click="settingDialog = false" />
+        <VCardItem>
+          <VCardTitle>
+            <VIcon icon="mdi-palette" class="mr-2" />
+            {{ t('folder.folderAppearanceSettings') }}
+          </VCardTitle>
+        </VCardItem>
+        <VDivider />
         <VCardText>
           <VRow>
             <!-- 显示图标开关 -->

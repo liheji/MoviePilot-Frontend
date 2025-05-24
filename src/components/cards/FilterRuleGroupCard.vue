@@ -280,17 +280,17 @@ function onClose() {
           <div class="text-center" v-if="filterRuleCards.length == 0">{{ t('filterRule.add') }}</div>
         </VCardText>
         <VCardActions class="pt-3">
-          <VBtn color="primary" variant="tonal" @click="addFilterCard">
+          <VBtn color="primary" @click="addFilterCard">
             <VIcon icon="mdi-plus" />
           </VBtn>
-          <VBtn color="success" variant="tonal" @click="importRules('priority')">
+          <VBtn color="success" @click="importRules('priority')">
             <VIcon icon="mdi-import" />
           </VBtn>
-          <VBtn color="info" variant="tonal" @click="shareRules">
+          <VBtn color="info" @click="shareRules">
             <VIcon icon="mdi-share" />
           </VBtn>
           <VSpacer />
-          <VBtn @click="saveGroupInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
+          <VBtn @click="saveGroupInfo" prepend-icon="mdi-content-save" class="px-5">
             {{ t('common.save') }}
           </VBtn>
         </VCardActions>

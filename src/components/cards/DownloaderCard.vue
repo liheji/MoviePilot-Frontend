@@ -347,7 +347,7 @@ onUnmounted(() => {
           </VForm>
         </VCardText>
         <VCardActions class="pt-3">
-          <VBtn @click="saveDownloaderInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
+          <VBtn @click="saveDownloaderInfo" prepend-icon="mdi-content-save" class="px-5">
             {{ t('common.save') }}
           </VBtn>
         </VCardActions>

@@ -710,10 +710,10 @@ onMounted(() => {
         </VRow>
       </VCardText>
       <VCardActions>
-        <VBtn color="success" variant="elevated" @click="get_recommend_name" prepend-icon="mdi-magic" class="px-5 me-3">
+        <VBtn color="success" @click="get_recommend_name" prepend-icon="mdi-magic" class="px-5 me-3">
           {{ t('file.autoRecognizeName') }}
         </VBtn>
-        <VBtn :disabled="!newName" variant="elevated" @click="rename" prepend-icon="mdi-check" class="px-5 me-3">
+        <VBtn :disabled="!newName" @click="rename" prepend-icon="mdi-check" class="px-5 me-3">
           {{ t('common.confirm') }}
         </VBtn>
       </VCardActions>

@@ -224,7 +224,7 @@ function onClose() {
           </VRow>
         </VCardText>
         <VCardActions class="pt-3">
-          <VBtn @click="handleDone" variant="elevated" prepend-icon="mdi-content-save" class="px-5">
+          <VBtn @click="handleDone" prepend-icon="mdi-content-save" class="px-5">
             {{ t('common.save') }}
           </VBtn>
         </VCardActions>

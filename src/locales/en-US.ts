@@ -1637,7 +1637,7 @@ export default {
       title: 'Plugin Market Settings',
       repoUrl: 'Plugin Repository URL',
       repoPlaceholder: 'Format: https://github.com/jxxghp/MoviePilot-Plugins/,https://github.com/xxxx/xxxxxx/',
-      repoHint: 'Multiple URLs separated by commas, only Github repositories are supported',
+      repoHint: 'Multiple URLs separated by lines, only Github repositories are supported',
       close: 'Close',
       save: 'Save',
       saveSuccess: 'Plugin repository saved successfully',

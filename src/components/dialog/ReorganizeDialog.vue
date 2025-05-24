@@ -438,10 +438,10 @@ onUnmounted(() => {
       </VCardText>
       <VCardActions class="pt-3">
         <VSpacer />
-        <VBtn variant="elevated" color="success" @click="transfer(true)" prepend-icon="mdi-plus" class="px-5">
+        <VBtn color="success" @click="transfer(true)" prepend-icon="mdi-plus" class="px-5">
           {{ t('dialog.reorganize.addToQueue') }}
         </VBtn>
-        <VBtn variant="elevated" @click="transfer(false)" prepend-icon="mdi-arrow-right-bold" class="px-5">
+        <VBtn @click="transfer(false)" prepend-icon="mdi-arrow-right-bold" class="px-5">
           {{ t('dialog.reorganize.reorganizeNow') }}
         </VBtn>
       </VCardActions>

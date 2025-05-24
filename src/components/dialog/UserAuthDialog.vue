@@ -165,14 +165,7 @@ onMounted(async () => {
         </VRow>
       </VCardText>
       <VCardText class="text-center">
-        <VBtn
-          variant="elevated"
-          @click="handleDone"
-          prepend-icon="mdi-check"
-          class="px-5"
-          size="large"
-          :disabled="loading"
-        >
+        <VBtn @click="handleDone" prepend-icon="mdi-check" class="px-5" size="large" :disabled="loading">
           {{ t('dialog.userAuth.authBtn') }}
         </VBtn>
       </VCardText>

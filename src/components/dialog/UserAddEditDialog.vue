@@ -461,7 +461,6 @@ onMounted(() => {
           v-if="props.oper === 'add'"
           :disabled="isAdding"
           color="primary"
-          variant="elevated"
           @click="addUser"
           prepend-icon="mdi-plus"
           class="px-5"
@@ -473,7 +472,6 @@ onMounted(() => {
           v-else
           :disabled="isUpdating"
           color="primary"
-          variant="elevated"
           @click="updateUser"
           prepend-icon="mdi-content-save"
           class="px-5"

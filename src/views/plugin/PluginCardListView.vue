@@ -1453,7 +1453,11 @@ function onDragEndPlugin(evt: any) {
   <!-- 新建文件夹对话框 -->
   <VDialog v-if="newFolderDialog" v-model="newFolderDialog" max-width="400">
     <VCard>
-      <VCardTitle>{{ t('plugin.newFolder') }}</VCardTitle>
+      <VDialogCloseBtn @click="newFolderDialog = false" />
+      <VCardItem>
+        <VCardTitle>{{ t('plugin.newFolder') }}</VCardTitle>
+      </VCardItem>
+      <VDivider />
       <VCardText>
         <VTextField
           v-model="newFolderName"
@@ -1464,8 +1468,9 @@ function onDragEndPlugin(evt: any) {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn @click="newFolderDialog = false">{{ t('plugin.cancel') }}</VBtn>
-        <VBtn color="primary" @click="createNewFolder">{{ t('plugin.create') }}</VBtn>
+        <VBtn color="primary" @click="createNewFolder" prepend-icon="mdi-folder-plus" class="px-5">{{
+          t('plugin.create')
+        }}</VBtn>
       </VCardActions>
     </VCard>
   </VDialog>

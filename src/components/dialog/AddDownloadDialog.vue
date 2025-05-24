@@ -197,11 +197,11 @@ onMounted(() => {
           />
         </VCol>
       </VRow>
-      <VCardText class="text-center">
-        <VBtn variant="elevated" :disabled="loading" @click="addDownload" :prepend-icon="icon" class="px-5">
+      <VCardActions class="text-center">
+        <VBtn :disabled="loading" @click="addDownload" :prepend-icon="icon" class="px-5">
           {{ buttonText }}
         </VBtn>
-      </VCardText>
+      </VCardActions>
     </VCard>
   </VDialog>
 </template>

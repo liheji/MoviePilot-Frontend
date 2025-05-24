@@ -8,6 +8,7 @@ import DashboardElement from '@/components/misc/DashboardElement.vue'
 import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
+import { VCardActions } from 'vuetify/components'
 
 // 国际化
 const { t } = useI18n()
@@ -396,8 +397,7 @@ onDeactivated(() => {
           <VSwitch v-model="isElevated" :label="t('dashboard.adaptiveHeight')" />
         </p>
       </VCardText>
-      <VDivider />
-      <VCardText class="pt-5 text-end">
+      <VCardActions class="pt-3">
         <VSpacer />
         <VBtn @click="saveDashboardConfig">
           <template #prepend>
@@ -405,7 +405,7 @@ onDeactivated(() => {
           </template>
           {{ t('common.save') }}
         </VBtn>
-      </VCardText>
+      </VCardActions>
     </VCard>
   </VDialog>
 </template>

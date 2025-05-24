@@ -1615,7 +1615,7 @@ export default {
       title: '插件市場設置',
       repoUrl: '插件倉庫地址',
       repoPlaceholder: '格式：https://github.com/jxxghp/MoviePilot-Plugins/,https://github.com/xxxx/xxxxxx/',
-      repoHint: '多個地址使用逗號分隔，僅支援Github倉庫',
+      repoHint: '多個地址使用换行分隔，僅支援Github倉庫',
       close: '關閉',
       save: '儲存',
       saveSuccess: '插件倉庫儲存成功',

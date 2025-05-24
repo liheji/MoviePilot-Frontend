@@ -395,7 +395,6 @@ onMounted(() => {
             </tr>
           </tbody>
         </VTable>
-        <VDivider />
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
@@ -458,8 +457,8 @@ onMounted(() => {
           class="w-full min-h-[30rem] rounded"
         />
       </VCardText>
-      <VCardActions class="mx-auto pt-3">
-        <VBtn variant="elevated" color="primary" @click="saveTemplate" prepend-icon="mdi-content-save" class="px-5">
+      <VCardActions class="pt-3">
+        <VBtn color="primary" @click="saveTemplate" prepend-icon="mdi-content-save" class="px-5">
           {{ t('common.save') }}
         </VBtn>
       </VCardActions>

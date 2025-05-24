@@ -979,13 +979,7 @@ onDeactivated(() => {
       <VCardActions class="pt-3">
         <VForm @submit.prevent="() => {}">
           <div class="d-flex flex-wrap gap-4 mt-4">
-            <VBtn
-              color="primary"
-              variant="elevated"
-              prepend-icon="mdi-content-save"
-              @click="saveAdvancedSettings"
-              class="px-5"
-            >
+            <VBtn color="primary" prepend-icon="mdi-content-save" @click="saveAdvancedSettings" class="px-5">
               {{ t('common.save') }}
             </VBtn>
           </div>

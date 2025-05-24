@@ -187,7 +187,7 @@ function onClose() {
           </VForm>
         </VCardText>
         <VCardActions class="pt-3">
-          <VBtn @click="saveRuleInfo" variant="elevated" prepend-icon="mdi-content-save" class="px-5">{{
+          <VBtn @click="saveRuleInfo" prepend-icon="mdi-content-save" class="px-5">{{
             t('customRule.action.confirm')
           }}</VBtn>
         </VCardActions>

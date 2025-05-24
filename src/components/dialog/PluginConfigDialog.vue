@@ -161,18 +161,12 @@ onBeforeMount(async () => {
         </div>
       </VCardText>
       <VCardActions class="pt-3">
-        <VBtn v-if="props.plugin?.has_page" @click="emit('switch')" variant="outlined" color="info">
+        <VBtn v-if="props.plugin?.has_page" @click="emit('switch')" color="info">
           {{ t('dialog.pluginConfig.viewData') }}
         </VBtn>
         <VSpacer />
         <!-- 只有Vuetify模式显示默认保存按钮，Vue模式由组件内部控制 -->
-        <VBtn
-          v-if="renderMode === 'vuetify'"
-          @click="savePluginConf"
-          variant="elevated"
-          prepend-icon="mdi-content-save"
-          class="px-5"
-        >
+        <VBtn v-if="renderMode === 'vuetify'" @click="savePluginConf" prepend-icon="mdi-content-save" class="px-5">
           保存
         </VBtn>
       </VCardActions>

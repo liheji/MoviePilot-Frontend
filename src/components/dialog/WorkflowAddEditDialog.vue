@@ -123,18 +123,10 @@ async function editWorkflow() {
       </VCardText>
       <VCardActions class="pt-3">
         <VSpacer />
-        <VBtn
-          v-if="workflow"
-          block
-          color="primary"
-          variant="elevated"
-          @click="editWorkflow"
-          prepend-icon="mdi-content-save"
-          class="px-5"
-        >
+        <VBtn v-if="workflow" color="primary" @click="editWorkflow" prepend-icon="mdi-content-save" class="px-5">
           {{ t('dialog.workflowAddEdit.confirm') }}
         </VBtn>
-        <VBtn v-else block color="primary" variant="elevated" @click="addWorkflow" prepend-icon="mdi-plus" class="px-5">
+        <VBtn v-else color="primary" @click="addWorkflow" prepend-icon="mdi-plus" class="px-5">
           {{ t('dialog.workflowAddEdit.confirm') }}
         </VBtn>
       </VCardActions>

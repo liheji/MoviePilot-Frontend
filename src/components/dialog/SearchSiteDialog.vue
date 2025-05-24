@@ -163,27 +163,19 @@ const filteredSites = computed(() => {
         </div>
       </VCardText>
 
-      <VDivider class="search-divider" />
-
-      <VCardActions class="pa-4">
-        <VSpacer />
-        <VBtn
-          color="grey-darken-1"
-          variant="text"
-          @click="emit('close')"
-          class="mr-2 d-flex align-center justify-center"
-        >
+      <VCardActions class="pt-3">
+        <VBtn color="secondary" @click="emit('close')" class="mr-2 d-flex align-center justify-center">
           {{ t('dialog.searchSite.cancel') }}
         </VBtn>
+        <VSpacer />
         <VBtn
           color="primary"
-          variant="flat"
           :disabled="selectedSites.length === 0"
           @click="emit('search', selectedSites)"
           prepend-icon="mdi-magnify"
           class="d-flex align-center justify-center px-5"
         >
-          {{ t('dialog.searchSite.confirm') }}
+          {{ t('common.search') }}
         </VBtn>
       </VCardActions>
     </VCard>

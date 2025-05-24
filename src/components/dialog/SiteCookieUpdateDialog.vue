@@ -102,7 +102,6 @@ async function updateSiteCookie() {
       <VCardActions class="mx-auto">
         <VBtn
           size="large"
-          variant="elevated"
           @click="updateSiteCookie"
           :disabled="updateButtonDisable"
           :loading="updateButtonDisable"

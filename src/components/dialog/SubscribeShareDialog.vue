@@ -97,14 +97,7 @@ const $toast = useToast()
       </VCardText>
       <VCardActions class="pt-3">
         <VSpacer />
-        <VBtn
-          variant="elevated"
-          :disabled="shareDoing"
-          @click="doShare"
-          prepend-icon="mdi-share"
-          class="px-5"
-          :loading="shareDoing"
-        >
+        <VBtn :disabled="shareDoing" @click="doShare" prepend-icon="mdi-share" class="px-5" :loading="shareDoing">
           {{ t('dialog.subscribeShare.confirmShare') }}
         </VBtn>
       </VCardActions>

@@ -58,6 +58,10 @@ html.v-overlay-scroll-blocked {
   margin-block-start: env(safe-area-inset-top);
 }
 
+.v-dialog > .v-overlay__content > .v-card > .v-card-item {
+  padding: 16px;
+}
+
 /* router view transition fade-slide */
 .fade-slide-leave-active,
 .fade-slide-enter-active {
@@ -221,7 +225,7 @@ html.v-overlay-scroll-blocked {
 }
 
 .grid-workflow-card {
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
 }
 
 .v-tabs:not(.v-tabs-pill).v-tabs--horizontal {

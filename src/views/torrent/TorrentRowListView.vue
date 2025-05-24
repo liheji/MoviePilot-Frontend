@@ -689,7 +689,7 @@ onMounted(() => {
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn variant="elevated" color="primary" @click="filterMenuOpen = false">
+          <VBtn color="primary" @click="filterMenuOpen = false">
             {{ t('torrent.confirm') }}
           </VBtn>
         </VCardActions>

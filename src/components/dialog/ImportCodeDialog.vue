@@ -32,7 +32,7 @@ function handleImport() {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn variant="elevated" @click="handleImport" prepend-icon="mdi-import" class="px-5 me-3">
+        <VBtn @click="handleImport" prepend-icon="mdi-import" class="px-5 me-3">
           {{ t('dialog.importCode.import') }}
         </VBtn>
       </VCardActions>
