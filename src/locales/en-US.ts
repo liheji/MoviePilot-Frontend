@@ -1866,6 +1866,7 @@ export default {
       peersColumn: 'Peers',
       viewDetails: 'View Details',
       downloadTorrent: 'Download Torrent',
+      pageText: '{0}-{1} of {2} items',
     },
     forkSubscribe: {
       title: 'Copy Subscription',

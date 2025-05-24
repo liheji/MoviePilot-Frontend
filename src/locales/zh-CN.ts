@@ -1843,6 +1843,7 @@ export default {
       peersColumn: '下载',
       viewDetails: '查看详情',
       downloadTorrent: '下载种子文件',
+      pageText: '{0}-{1} 共 {2} 条',
     },
     forkSubscribe: {
       title: '复制订阅',
