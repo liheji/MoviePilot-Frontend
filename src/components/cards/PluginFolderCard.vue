@@ -302,7 +302,10 @@ const dropdownItems = ref([
               </div>
 
               <!-- 文件夹信息 -->
-              <div class="plugin-folder-card__info" :class="{ 'plugin-folder-card__info--no-icon': !shouldShowIcon }">
+              <div
+                class="plugin-folder-card__info cursor-move"
+                :class="{ 'plugin-folder-card__info--no-icon': !shouldShowIcon }"
+              >
                 <!-- 文件夹名称 -->
                 <h3 class="plugin-folder-card__name">
                   {{ props.folderName }}

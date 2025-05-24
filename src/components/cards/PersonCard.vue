@@ -98,10 +98,7 @@ function goPersonDetail() {
               <div class="w-full truncate text-center font-bold">
                 {{ getPersonName() }}
               </div>
-              <div
-                class="overflow-hidden whitespace-normal text-center text-sm"
-                style="display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2"
-              >
+              <div class="overflow-hidden whitespace-normal text-center text-sm text-ellipsis line-clamp-2">
                 {{ getPersonCharacter() }}
               </div>
               <div class="absolute bottom-0 left-0 right-0 h-12 rounded-b" />

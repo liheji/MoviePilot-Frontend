@@ -328,7 +328,7 @@ watch(
 </script>
 
 <template>
-  <div>
+  <div class="h-full">
     <!-- 插件卡片 -->
     <VHover>
       <template #default="hover">
@@ -358,9 +358,9 @@ watch(
             </VCardText>
             <div class="relative flex flex-row items-start px-2 justify-between grow">
               <div class="relative flex-1 min-w-0">
-                <VCardText class="px-2 py-1 text-white text-sm text-shadow overflow-hidden line-clamp-3 ...">
+                <div class="px-2 py-1 text-white text-sm text-shadow overflow-hidden line-clamp-3 ...">
                   {{ props.plugin?.plugin_desc }}
-                </VCardText>
+                </div>
               </div>
               <div class="relative flex-shrink-0 self-center cursor-move pb-3">
                 <VAvatar size="48">
@@ -376,9 +376,11 @@ watch(
               </div>
             </div>
           </div>
-          <VCardText class="flex flex-col align-self-baseline px-2 py-2 w-full overflow-hidden">
-            <div class="flex flex-nowrap items-center w-full pe-7">
-              <span class="author-info flex-shrink-1 overflow-hidden text-ellipsis whitespace-nowrap">
+          <VCardText
+            class="flex flex-col align-self-baseline justify-between px-2 py-2 w-full overflow-hidden max-h-10 min-h-10"
+          >
+            <div class="flex flex-nowrap items-center w-full pe-10">
+              <div class="flex flex-nowrap max-w-32">
                 <VImg :src="authorPath" class="author-avatar" @load="isAvatarLoaded = true">
                   <VIcon v-if="!isAvatarLoaded" size="small" icon="mdi-github" class="me-1" />
                 </VImg>
@@ -390,7 +392,7 @@ watch(
                 >
                   {{ props.plugin?.plugin_author }}
                 </a>
-              </span>
+              </div>
               <span v-if="props.count" class="ms-2 flex-shrink-0 download-count">
                 <VIcon size="small" icon="mdi-download" />
                 <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
@@ -476,11 +478,6 @@ watch(
   background: rgba(29, 39, 59, 48%);
   content: '';
   inset: 0;
-}
-
-.author-info {
-  display: flex;
-  align-items: center;
 }
 
 .author-avatar {
