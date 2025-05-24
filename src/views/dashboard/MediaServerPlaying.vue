@@ -70,7 +70,7 @@ onActivated(() => {
           <VCardTitle>{{ t('dashboard.playing') }}</VCardTitle>
         </VCardItem>
 
-        <div class="grid gap-4 grid-backdrop-card mx-3" tabindex="0">
+        <div class="grid gap-4 grid-backdrop-card mx-3 mb-3" tabindex="0">
           <BackdropCard v-for="item in playingList" :key="item.id" :media="item" height="10rem" />
         </div>
       </VCard>
