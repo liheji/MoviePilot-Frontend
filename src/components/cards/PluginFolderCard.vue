@@ -22,7 +22,7 @@ const props = defineProps({
   pluginCount: Number,
   folderConfig: {
     type: Object as PropType<FolderConfig>,
-    default: () => ({})
+    default: () => ({}),
   },
   width: String,
   height: String,
@@ -60,7 +60,8 @@ const folderSettings = ref<FolderConfig>({
   background: '',
   icon: 'mdi-folder',
   color: '#2196F3',
-  gradient: 'linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.15) 100%)',
+  gradient:
+    'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(33, 150, 243, 0.7) 0%, rgba(33, 150, 243, 0.8s) 100%)',
   showIcon: true,
 })
 
@@ -92,27 +93,27 @@ const colorOptions = [
 
 // 预设渐变选项
 const gradientOptions = [
-  'linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.15) 100%)',
-  'linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.15) 100%)',
-  'linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 152, 0, 0.15) 100%)',
-  'linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, rgba(156, 39, 176, 0.15) 100%)',
-  'linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(244, 67, 54, 0.15) 100%)',
-  'linear-gradient(135deg, rgba(96, 125, 139, 0.1) 0%, rgba(96, 125, 139, 0.15) 100%)',
-  'linear-gradient(135deg, rgba(233, 30, 99, 0.1) 0%, rgba(233, 30, 99, 0.15) 100%)',
-  'linear-gradient(135deg, rgba(63, 81, 181, 0.1) 0%, rgba(156, 39, 176, 0.15) 100%)',
+  'linear-gradient(rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.4) 100%), linear-gradient(135deg, rgba(33, 150, 243, 0.7) 0%, rgba(33, 150, 243, 0.8) 100%)',
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(76, 175, 80, 0.7) 0%, rgba(76, 175, 80, 0.8) 100%)',
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(255, 152, 0, 0.7) 0%, rgba(255, 152, 0, 0.8) 100%)',
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(156, 39, 176, 0.7) 0%, rgba(156, 39, 176, 0.8) 100%)',
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(244, 67, 54, 0.7) 0%, rgba(244, 67, 54, 0.8) 100%)',
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(96, 125, 139, 0.7) 0%, rgba(96, 125, 139, 0.8) 100%)',
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(233, 30, 99, 0.7) 0%, rgba(233, 30, 99, 0.8) 100%)',
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(63, 81, 181, 0.7) 0%, rgba(156, 39, 176, 0.8) 100%)',
 ]
 
 // 计算文件夹样式
-const folderStyle = computed(() => {
+const folderStyle: any = computed(() => {
   const config = props.folderConfig || {}
   const settings = folderSettings.value
-  
+
   let style = {}
-  
+
   // 背景图片
   if (config.background || settings.background) {
     const bg = config.background || settings.background
-    if (bg.startsWith('http')) {
+    if (bg?.startsWith('http')) {
       style = {
         ...style,
         backgroundImage: `url(${bg})`,
@@ -122,7 +123,7 @@ const folderStyle = computed(() => {
       }
     }
   }
-  
+
   return style
 })
 
@@ -130,7 +131,7 @@ const folderStyle = computed(() => {
 const backgroundGradient = computed(() => {
   const config = props.folderConfig || {}
   const settings = folderSettings.value
-  
+
   return config.gradient || settings.gradient || gradientOptions[0]
 })
 
@@ -138,7 +139,7 @@ const backgroundGradient = computed(() => {
 const folderIcon = computed(() => {
   const config = props.folderConfig || {}
   const settings = folderSettings.value
-  
+
   return config.icon || settings.icon || 'mdi-folder'
 })
 
@@ -146,7 +147,7 @@ const folderIcon = computed(() => {
 const iconColor = computed(() => {
   const config = props.folderConfig || {}
   const settings = folderSettings.value
-  
+
   return config.color || settings.color || '#2196F3'
 })
 
@@ -154,19 +155,23 @@ const iconColor = computed(() => {
 const shouldShowIcon = computed(() => {
   const config = props.folderConfig || {}
   const settings = folderSettings.value
-  
-  return config.showIcon !== undefined ? config.showIcon : (settings.showIcon !== undefined ? settings.showIcon : true)
+
+  return config.showIcon !== undefined ? config.showIcon : settings.showIcon !== undefined ? settings.showIcon : true
 })
 
 // 监听props变化，更新本地设置
-watch(() => props.folderConfig, (newConfig) => {
-  if (newConfig) {
-    folderSettings.value = {
-      ...folderSettings.value,
-      ...newConfig,
+watch(
+  () => props.folderConfig,
+  newConfig => {
+    if (newConfig) {
+      folderSettings.value = {
+        ...folderSettings.value,
+        ...newConfig,
+      }
     }
-  }
-}, { deep: true, immediate: true })
+  },
+  { deep: true, immediate: true },
+)
 
 // 打开文件夹
 function openFolder() {
@@ -185,12 +190,12 @@ async function confirmRename() {
     $toast.error('文件夹名称不能为空')
     return
   }
-  
+
   if (newFolderName.value === props.folderName) {
     renameDialog.value = false
     return
   }
-  
+
   try {
     emit('rename', props.folderName, newFolderName.value)
     renameDialog.value = false
@@ -233,7 +238,7 @@ function saveSettings() {
     ...props.folderConfig,
     ...folderSettings.value,
   }
-  
+
   emit('update-config', props.folderName, config)
   settingDialog.value = false
   $toast.success('文件夹设置已保存')
@@ -273,38 +278,38 @@ const dropdownItems = ref([
 </script>
 
 <template>
-  <div>
+  <div class="h-full">
     <!-- 文件夹卡片 -->
     <VHover>
       <template #default="hover">
         <VCard
           v-bind="hover.props"
+          :ripple="false"
           :width="props.width"
           :height="props.height"
+          min-height="9rem"
           @click="openFolder"
-          class="plugin-folder-card cursor-move"
+          class="plugin-folder-card h-full"
           :class="{
             'plugin-folder-card--mobile': display.mobile,
             'plugin-folder-card--hover': hover.isHovering,
           }"
-          variant="elevated"
-          :elevation="hover.isHovering ? 16 : 6"
           :style="folderStyle"
         >
           <!-- 背景渐变层 -->
           <div class="plugin-folder-card__bg" :style="{ background: backgroundGradient }" />
-          
+
           <!-- 背景遮罩（当有背景图片时） -->
           <div v-if="folderStyle.backgroundImage" class="plugin-folder-card__overlay" />
-          
+
           <!-- 卡片内容 -->
           <div class="plugin-folder-card__content">
             <!-- 主体内容 -->
             <div class="plugin-folder-card__body" :class="{ 'plugin-folder-card__body--no-icon': !shouldShowIcon }">
               <!-- 文件夹图标 -->
               <div v-if="shouldShowIcon" class="plugin-folder-card__icon-container">
-                <VIcon 
-                  :icon="folderIcon" 
+                <VIcon
+                  :icon="folderIcon"
                   :size="display.mobile ? 56 : 72"
                   class="plugin-folder-card__folder-icon"
                   :color="iconColor"
@@ -318,25 +323,17 @@ const dropdownItems = ref([
                   {{ props.folderName }}
                 </h3>
                 <!-- 插件数量 -->
-                <p class="plugin-folder-card__count">
-                  {{ props.pluginCount }} 个插件
-                </p>
+                <p class="plugin-folder-card__count">{{ props.pluginCount }} 个插件</p>
               </div>
             </div>
 
             <!-- 更多菜单按钮 - 右下角 -->
-            <div class="plugin-folder-card__menu-section">
+            <div class="absolute bottom-0 right-0">
               <VMenu v-model="menuVisible" location="top end" :close-on-content-click="true">
                 <template #activator="{ props: menuProps }">
-                  <VBtn
-                    v-bind="menuProps"
-                    icon="mdi-dots-vertical"
-                    size="small"
-                    variant="text"
-                    @click.stop
-                    class="plugin-folder-card__menu-btn-corner"
-                    :class="{ 'plugin-folder-card__menu-btn-corner--visible': hover.isHovering || display.mobile }"
-                  />
+                  <IconBtn v-bind="menuProps" @click.stop>
+                    <VIcon size="small" icon="mdi-dots-vertical" color="white" />
+                  </IconBtn>
                 </template>
                 <VList>
                   <VListItem
@@ -345,7 +342,6 @@ const dropdownItems = ref([
                     :key="i"
                     :base-color="item.props.color"
                     @click="item.props.click"
-                    density="compact"
                   >
                     <template #prepend>
                       <VIcon :icon="item.props.prependIcon" size="16" />
@@ -392,20 +388,16 @@ const dropdownItems = ref([
           <VRow>
             <!-- 显示图标开关 -->
             <VCol cols="12">
-              <VSwitch
-                v-model="folderSettings.showIcon"
-                label="显示文件夹图标"
-                color="primary"
-                hide-details
-              />
+              <VSwitch v-model="folderSettings.showIcon" label="显示文件夹图标" color="primary" hide-details />
             </VCol>
-            
+
             <!-- 图标选择 -->
             <VCol v-if="folderSettings.showIcon" cols="12" md="6">
               <VCardSubtitle class="pa-0 mb-2">图标</VCardSubtitle>
               <div class="icon-grid">
                 <VBtn
                   v-for="icon in iconOptions"
+                  icon
                   :key="icon"
                   :variant="folderSettings.icon === icon ? 'tonal' : 'text'"
                   :color="folderSettings.icon === icon ? 'primary' : 'default'"
@@ -417,7 +409,7 @@ const dropdownItems = ref([
                 </VBtn>
               </div>
             </VCol>
-            
+
             <!-- 颜色选择 -->
             <VCol v-if="folderSettings.showIcon" cols="12" md="6">
               <VCardSubtitle class="pa-0 mb-2">图标颜色</VCardSubtitle>
@@ -436,7 +428,7 @@ const dropdownItems = ref([
                 </VBtn>
               </div>
             </VCol>
-            
+
             <!-- 渐变背景选择 -->
             <VCol cols="12">
               <VCardSubtitle class="pa-0 mb-2">背景渐变</VCardSubtitle>
@@ -454,7 +446,7 @@ const dropdownItems = ref([
                 </VBtn>
               </div>
             </VCol>
-            
+
             <!-- 自定义背景图片 -->
             <VCol cols="12">
               <VTextField
@@ -482,22 +474,13 @@ const dropdownItems = ref([
 .plugin-folder-card {
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  
-  // 与插件卡片相同的高度
-  height: 170px;
-  
-  &--mobile {
-    border-radius: 12px;
-    height: 150px;
-  }
-  
+
   &--hover {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
   }
-  
+
   &__bg {
     position: absolute;
     top: 0;
@@ -506,7 +489,7 @@ const dropdownItems = ref([
     bottom: 0;
     z-index: 0;
   }
-  
+
   &__overlay {
     position: absolute;
     top: 0;
@@ -516,7 +499,7 @@ const dropdownItems = ref([
     z-index: 1;
     background: rgba(0, 0, 0, 0.2);
   }
-  
+
   &__content {
     position: relative;
     z-index: 2;
@@ -525,13 +508,13 @@ const dropdownItems = ref([
     flex-direction: column;
     padding: 16px;
     padding-bottom: 12px;
-    
+
     .plugin-folder-card--mobile & {
       padding: 12px;
       padding-bottom: 10px;
     }
   }
-  
+
   &__body {
     display: flex;
     flex-direction: row;
@@ -540,52 +523,51 @@ const dropdownItems = ref([
     flex: 1;
     gap: 16px;
     padding: 0 8px;
-    
+
     .plugin-folder-card--mobile & {
       gap: 12px;
       padding: 0 4px;
     }
-    
+
     &--no-icon {
       justify-content: flex-start;
       align-items: flex-start;
       padding: 16px;
       gap: 0;
-      
+
       .plugin-folder-card--mobile & {
         padding: 12px;
         gap: 0;
       }
     }
   }
-  
+
   &__icon-container {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
-  
+
   &__folder-icon {
     transition: all 0.3s ease;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-    
+
     .plugin-folder-card--hover & {
       transform: scale(1.05);
     }
   }
-  
+
   &__info {
     text-align: left;
     min-height: 0;
     flex: 1;
-    
+
     &--no-icon {
       text-align: left;
       flex: none;
     }
   }
-  
+
   &__name {
     margin: 0;
     font-size: 1.1rem;
@@ -600,72 +582,42 @@ const dropdownItems = ref([
     max-width: none;
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    
+
     .plugin-folder-card--mobile & {
-      font-size: 1.0rem;
+      font-size: 1rem;
     }
-    
+
     .plugin-folder-card__info--no-icon & {
       font-size: 1.3rem;
       font-weight: 700;
       -webkit-line-clamp: 2;
       line-clamp: 2;
       margin-bottom: 4px;
-      
+
       .plugin-folder-card--mobile & {
         font-size: 1.2rem;
       }
     }
   }
-  
+
   &__count {
     margin: 2px 0 0 0;
     font-size: 0.85rem;
     opacity: 0.9;
     color: white;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    
+
     .plugin-folder-card--mobile & {
       font-size: 0.8rem;
     }
-    
+
     .plugin-folder-card__info--no-icon & {
       margin-top: 0;
       font-size: 0.9rem;
-      
+
       .plugin-folder-card--mobile & {
         font-size: 0.85rem;
       }
-    }
-  }
-  
-  &__menu-section {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    z-index: 10;
-    
-    .plugin-folder-card--mobile & {
-      bottom: 6px;
-      right: 6px;
-    }
-  }
-  
-  &__menu-btn-corner {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    
-    &--visible {
-      opacity: 0.9;
-    }
-    
-    &:hover {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.2) !important;
-      transform: scale(1.05);
     }
   }
 }
@@ -704,4 +656,4 @@ const dropdownItems = ref([
   height: 60px !important;
   border-radius: 8px !important;
 }
-</style> 
+</style>
