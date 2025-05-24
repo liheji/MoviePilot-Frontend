@@ -1210,7 +1210,7 @@ function onDragEndPlugin(evt: any) {
             <div v-if="displayedFolders.length > 0 || displayedPlugins.length > 0" class="grid gap-4 grid-plugin-card">
               <!-- 文件夹卡片 - 使用draggable进行排序 -->
               <draggable
-                v-if="displayedFolders.length > 0"
+                v-if="displayedFolders.length > 0 && isRefreshed"
                 v-model="folderOrder"
                 @end="onFolderSortEnd"
                 handle=".cursor-move"

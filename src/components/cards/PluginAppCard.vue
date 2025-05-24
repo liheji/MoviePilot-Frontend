@@ -190,9 +190,22 @@ const dropdownItems = ref([
             </VCardText>
             <div class="relative flex flex-row items-start px-2 justify-between grow">
               <div class="relative flex-1 min-w-0">
-                <VCardText class="text-white text-sm px-2 py-1 text-shadow overflow-hidden line-clamp-3 ...">
+                <div class="text-white text-sm px-2 py-1 text-shadow overflow-hidden line-clamp-3 ...">
                   {{ props.plugin?.plugin_desc }}
-                </VCardText>
+                </div>
+                <!-- 插件标签 -->
+                <div v-if="pluginLabels.length > 0" class="plugin-app-card__tags-section">
+                  <VChip
+                    v-for="tag in pluginLabels"
+                    :key="tag"
+                    size="x-small"
+                    variant="tonal"
+                    color="primary"
+                    class="me-1 mb-1"
+                  >
+                    {{ tag }}
+                  </VChip>
+                </div>
               </div>
               <div class="relative flex-shrink-0 self-center pb-3">
                 <VAvatar size="48">
@@ -208,14 +221,6 @@ const dropdownItems = ref([
               </div>
             </div>
           </div>
-
-          <!-- 插件标签 -->
-          <div v-if="pluginLabels.length > 0" class="plugin-app-card__tags-section">
-            <VChip v-for="tag in pluginLabels" :key="tag" size="x-small" variant="tonal" color="primary">
-              {{ tag }}
-            </VChip>
-          </div>
-
           <VCardText class="flex flex-col align-self-baseline px-2 py-2 w-full overflow-hidden">
             <div class="flex flex-nowrap items-center w-full pe-7">
               <span>

@@ -310,11 +310,11 @@ const dropdownItems = ref([
             </div>
 
             <!-- 更多菜单按钮 - 右下角 -->
-            <div class="absolute bottom-0 right-0">
+            <div class="absolute top-0 right-0">
               <VMenu v-model="menuVisible" location="top end" :close-on-content-click="true">
                 <template #activator="{ props: menuProps }">
                   <IconBtn v-bind="menuProps" @click.stop>
-                    <VIcon size="small" icon="mdi-dots-vertical" />
+                    <VIcon size="small" icon="mdi-dots-vertical" class="text-white" />
                   </IconBtn>
                 </template>
                 <VList>
