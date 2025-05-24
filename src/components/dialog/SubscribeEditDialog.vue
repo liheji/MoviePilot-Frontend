@@ -4,7 +4,7 @@ import { numberValidator } from '@/@validators'
 import api from '@/api'
 import type { DownloaderConf, FilterRuleGroup, Site, Subscribe, TransferDirectoryConf } from '@/api/types'
 import { useDisplay } from 'vuetify'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/useConfirm'
 import { useI18n } from 'vue-i18n'
 import { qualityOptions, resolutionOptions, effectOptions } from '@/api/constants'
 // i18n

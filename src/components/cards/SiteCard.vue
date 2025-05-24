@@ -11,7 +11,7 @@ import api from '@/api'
 import type { Site, SiteStatistic, SiteUserData } from '@/api/types'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { formatFileSize } from '@/@core/utils/formatters'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/useConfirm'
 
 // 国际化
 const { t } = useI18n()

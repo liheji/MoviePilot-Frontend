@@ -7704,13 +7704,6 @@ vuedraggable@^4.1.0:
   dependencies:
     sortablejs "1.14.0"
 
-vuetify-use-dialog@^0.6.11:
-  version "0.6.11"
-  resolved "https://registry.yarnpkg.com/vuetify-use-dialog/-/vuetify-use-dialog-0.6.11.tgz#8800cc56b234dae1dfa44a7f06a6bb1a33ad4b39"
-  integrity sha512-iPAu6MsN8suuNAS1M6JN2CaOXRgr7LZ2u+UNtAw0Fi3AjianzVIrnRNhQcAZjmE8Hu6ZwAbgte1p47qU6OazLw==
-  dependencies:
-    defu "^6.1.4"
-
 vuetify@3.7.3:
   version "3.7.3"
   resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.7.3.tgz#0e89f7f0298d452510bcbc01b0e9b53a5ce6e883"

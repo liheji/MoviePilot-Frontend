@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/useConfirm'
 import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
 import SubscribeFilesDialog from '../dialog/SubscribeFilesDialog.vue'
 import SubscribeShareDialog from '../dialog/SubscribeShareDialog.vue'

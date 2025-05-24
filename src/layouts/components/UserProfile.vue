@@ -13,6 +13,7 @@ import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { getCurrentLocale, setI18nLanguage } from '@/plugins/i18n'
 import { saveLocalTheme } from '@/@core/utils/theme'
 import type { ThemeSwitcherTheme } from '@layouts/types'
+import { useConfirm } from '@/composables/useConfirm'
 
 // 认证 Store
 const authStore = useAuthStore()
@@ -32,9 +33,6 @@ const progressDialog = ref(false)
 // 站点认证对话框
 const siteAuthDialog = ref(false)
 
-// 重启确认对话框
-const restartDialog = ref(false)
-
 // 自定义CSS弹窗
 const cssDialog = ref(false)
 
@@ -47,6 +45,9 @@ const showLanguageMenu = ref(false)
 // 自定义CSS
 const customCSS = ref('')
 
+// 确认框
+const { createConfirm } = useConfirm()
+
 // 执行注销操作
 function logout() {
   // 清除登录状态信息
@@ -57,7 +58,6 @@ function logout() {
 
 // 执行重启操作
 async function restart() {
-  restartDialog.value = false
   // 调用API重启
   try {
     // 显示等待框
@@ -79,7 +79,15 @@ async function restart() {
 
 // 显示重启确认对话框
 async function showRestartDialog() {
-  restartDialog.value = true
+  const isConfirmed = await createConfirm({
+    type: 'warn',
+    title: t('app.confirmRestart'),
+    content: t('app.restartTip'),
+  })
+
+  if (!isConfirmed) return
+
+  await restart()
 }
 
 // 显示站点认证对话框
@@ -417,32 +425,6 @@ onMounted(() => {
   <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="t('app.restarting')" />
   <!-- 用户认证对话框 -->
   <UserAuthDialog v-if="siteAuthDialog" v-model="siteAuthDialog" @done="siteAuthDone" @close="siteAuthDialog = false" />
-  <!-- 重启确认对话框 -->
-  <VDialog v-if="restartDialog" v-model="restartDialog" max-width="25rem">
-    <VCard>
-      <VCardItem>
-        <div class="d-flex align-center justify-center mt-3">
-          <VAvatar color="warning" variant="text" size="x-large">
-            <VIcon size="x-large" icon="mdi-alert" />
-          </VAvatar>
-          <div class="ms-3">
-            <p class="font-weight-bold text-xl text-high-emphasis">{{ t('app.confirmRestart') }}</p>
-            <p>{{ t('app.restartTip') }}</p>
-          </div>
-        </div>
-      </VCardItem>
-      <VCardActions class="mx-auto">
-        <VBtn variant="tonal" color="secondary" class="px-5" @click="restartDialog = false">{{
-          t('common.cancel')
-        }}</VBtn>
-        <VBtn variant="elevated" color="error" @click="restart" prepend-icon="mdi-restart" class="px-5">{{
-          t('common.confirm')
-        }}</VBtn>
-      </VCardActions>
-      <VDialogCloseBtn @click="restartDialog = false" />
-    </VCard>
-  </VDialog>
-
   <!-- 自定义 CSS -->
   <VDialog v-if="cssDialog" v-model="cssDialog" max-width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>

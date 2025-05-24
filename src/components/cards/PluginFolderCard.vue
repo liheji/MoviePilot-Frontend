@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/useConfirm'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 
@@ -290,12 +290,7 @@ const dropdownItems = ref([
             <div class="plugin-folder-card__body" :class="{ 'plugin-folder-card__body--no-icon': !shouldShowIcon }">
               <!-- 文件夹图标 -->
               <div v-if="shouldShowIcon" class="plugin-folder-card__icon-container">
-                <VIcon
-                  :icon="folderIcon"
-                  :size="display.mobile ? 56 : 72"
-                  class="plugin-folder-card__folder-icon"
-                  :color="iconColor"
-                />
+                <VIcon :icon="folderIcon" :size="display.mobile ? 56 : 72" class="cursor-move" :color="iconColor" />
               </div>
 
               <!-- 文件夹信息 -->
@@ -532,14 +527,6 @@ const dropdownItems = ref([
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-  }
-
-  &__folder-icon {
-    transition: all 0.3s ease;
-
-    .plugin-folder-card--hover & {
-      transform: scale(1.05);
-    }
   }
 
   &__info {

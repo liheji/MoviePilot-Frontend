@@ -24,7 +24,7 @@ import { fetchGlobalSettings } from './utils/globalSetting'
 
 // 5. 其他插件和功能模块
 import ToastPlugin from 'vue-toast-notification'
-import VuetifyUseDialog from 'vuetify-use-dialog'
+import ConfirmDialog from '@/composables/useConfirm'
 import VueApexCharts from 'vue3-apexcharts'
 
 // 6. 注册自定义组件
@@ -102,24 +102,7 @@ initializeApp().then(() => {
     .use(ToastPlugin, {
       position: 'bottom-right',
     })
-    .use(VuetifyUseDialog, {
-      confirmDialog: {
-        dialogProps: {
-          maxWidth: '30rem',
-        },
-        confirmationButtonProps: {
-          color: 'primary',
-          class: 'me-3 px-5',
-          'prepend-icon': 'mdi-check',
-        },
-        cancellationButtonProps: {
-          color: 'secondary',
-          class: 'me-3',
-        },
-        confirmationText: i18n.global.t('common.confirm'),
-        cancellationText: i18n.global.t('common.cancel'),
-      },
-    })
+    .use(ConfirmDialog)
     .use(i18n)
     .mount('#app')
 })

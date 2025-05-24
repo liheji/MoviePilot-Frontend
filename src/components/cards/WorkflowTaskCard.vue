@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { Workflow } from '@/api/types'
 import { useToast } from 'vue-toast-notification'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/useConfirm'
 import WorkflowAddEditDialog from '@/components/dialog/WorkflowAddEditDialog.vue'
 import WorkflowActionsDialog from '@/components/dialog/WorkflowActionsDialog.vue'
 import api from '@/api'

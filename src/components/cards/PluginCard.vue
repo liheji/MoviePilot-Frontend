@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toast-notification'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/useConfirm'
 import api from '@/api'
 import type { Plugin } from '@/api/types'
 import { isNullOrEmptyObject } from '@core/utils'

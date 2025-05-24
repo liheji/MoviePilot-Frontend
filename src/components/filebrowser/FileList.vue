@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { AxiosRequestConfig } from 'axios'
 import type { PropType } from 'vue'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/useConfirm'
 import { useToast } from 'vue-toast-notification'
 import ReorganizeDialog from '../dialog/ReorganizeDialog.vue'
 import { formatBytes } from '@core/utils/formatters'
