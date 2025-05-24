@@ -363,7 +363,7 @@ const dropdownItems = ref([
     </VDialog>
 
     <!-- 设置对话框 -->
-    <VDialog v-if="settingDialog" v-model="settingDialog" max-width="600">
+    <VDialog v-if="settingDialog" max-height="85vh" v-model="settingDialog" max-width="600" scrollable>
       <VCard>
         <VDialogCloseBtn @click="settingDialog = false" />
         <VCardItem>
@@ -456,8 +456,7 @@ const dropdownItems = ref([
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn @click="settingDialog = false">取消</VBtn>
-          <VBtn color="primary" @click="saveSettings">保存</VBtn>
+          <VBtn color="primary" prepend-icon="mdi-content-save" class="px-5" @click="saveSettings">保存</VBtn>
         </VCardActions>
       </VCard>
     </VDialog>

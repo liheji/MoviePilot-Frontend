@@ -108,13 +108,11 @@ initializeApp().then(() => {
           maxWidth: '30rem',
         },
         confirmationButtonProps: {
-          variant: 'elevated',
           color: 'primary',
           class: 'me-3 px-5',
           'prepend-icon': 'mdi-check',
         },
         cancellationButtonProps: {
-          variant: 'outlined',
           color: 'secondary',
           class: 'me-3',
         },
