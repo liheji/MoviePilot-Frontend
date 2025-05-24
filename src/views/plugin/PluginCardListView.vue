@@ -1508,10 +1508,10 @@ function onDragEndPlugin(evt: any) {
 
   .remove-from-folder-btn {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 4px;
+    right: 4px;
     z-index: 10;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(4px);
     border-radius: 50%;
     opacity: 0;
