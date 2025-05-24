@@ -71,6 +71,11 @@ const folderSettings = ref<FolderConfig>({
   showIcon: true,
 })
 
+// 计算背景图片
+const backgroundImage = computed(() => {
+  return props.folderConfig.background || folderSettings.value.background
+})
+
 // 预设图标选项
 const iconOptions = [
   'mdi-folder',
@@ -277,12 +282,15 @@ const dropdownItems = ref([
             'plugin-folder-card--hover': hover.isHovering,
           }"
         >
-          <template v-if="props.folderConfig.background || folderSettings.background" #image>
-            <VImg :src="props.folderConfig.background || folderSettings.background" cover position="top"> </VImg>
+          <template v-if="backgroundImage" #image>
+            <VImg :src="backgroundImage" cover position="top"> </VImg>
           </template>
 
+          <!-- 背景遮罩（当有背景图片时） -->
+          <div v-if="backgroundImage" class="plugin-folder-card__overlay" />
+
           <!-- 背景渐变层 -->
-          <div class="plugin-folder-card__bg" :style="{ background: backgroundGradient }" />
+          <div v-else class="plugin-folder-card__bg" :style="{ background: backgroundGradient }" />
 
           <!-- 卡片内容 -->
           <div class="plugin-folder-card__content">
@@ -478,6 +486,16 @@ const dropdownItems = ref([
     bottom: 0;
     z-index: 0;
     outline: none;
+  }
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.6);
   }
 
   &__content {
