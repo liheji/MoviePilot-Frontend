@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
   content: '',
   confirmText: '',
   cancelText: '',
-  width: '30rem',
+  width: '28rem',
 })
 
 const emit = defineEmits<{
@@ -62,7 +62,7 @@ function handleCancel() {
   <VDialog :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)" :max-width="width">
     <VCard>
       <VCardItem>
-        <div class="d-flex align-center justify-center mt-3">
+        <div class="d-flex align-center justify-start mt-3">
           <VAvatar :color="currentType.color" variant="text" size="x-large">
             <VIcon size="x-large" :icon="currentType.icon" />
           </VAvatar>
