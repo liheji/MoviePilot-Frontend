@@ -1508,21 +1508,4 @@ function onDragEndPlugin(evt: any) {
     opacity: 1;
   }
 }
-
-// 网格布局
-.grid-plugin-card {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 12px;
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-}
 </style>

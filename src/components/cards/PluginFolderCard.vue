@@ -3,7 +3,6 @@ import { useToast } from 'vue-toast-notification'
 import { useConfirm } from 'vuetify-use-dialog'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
-import api from '@/api'
 
 // 文件夹配置接口
 interface FolderConfig {
@@ -55,13 +54,20 @@ const settingDialog = ref(false)
 // 新名称
 const newFolderName = ref('')
 
+// 默认颜色
+const defaultColor = '#2196F3'
+// 默认图标
+const defaultIcon = 'mdi-folder'
+// 默认渐变
+const defaultGradient =
+  'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(33, 150, 243, 0.7) 0%, rgba(33, 150, 243, 0.8s) 100%)'
+
 // 文件夹设置
 const folderSettings = ref<FolderConfig>({
   background: '',
-  icon: 'mdi-folder',
-  color: '#2196F3',
-  gradient:
-    'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(33, 150, 243, 0.7) 0%, rgba(33, 150, 243, 0.8s) 100%)',
+  icon: defaultIcon,
+  color: defaultColor,
+  gradient: defaultGradient,
   showIcon: true,
 })
 
@@ -103,30 +109,6 @@ const gradientOptions = [
   'linear-gradient(rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(135deg, rgba(63, 81, 181, 0.7) 0%, rgba(156, 39, 176, 0.8) 100%)',
 ]
 
-// 计算文件夹样式
-const folderStyle: any = computed(() => {
-  const config = props.folderConfig || {}
-  const settings = folderSettings.value
-
-  let style = {}
-
-  // 背景图片
-  if (config.background || settings.background) {
-    const bg = config.background || settings.background
-    if (bg?.startsWith('http')) {
-      style = {
-        ...style,
-        backgroundImage: `url(${bg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }
-    }
-  }
-
-  return style
-})
-
 // 计算背景渐变
 const backgroundGradient = computed(() => {
   const config = props.folderConfig || {}
@@ -140,7 +122,7 @@ const folderIcon = computed(() => {
   const config = props.folderConfig || {}
   const settings = folderSettings.value
 
-  return config.icon || settings.icon || 'mdi-folder'
+  return config.icon || settings.icon || defaultIcon
 })
 
 // 计算图标颜色
@@ -148,7 +130,7 @@ const iconColor = computed(() => {
   const config = props.folderConfig || {}
   const settings = folderSettings.value
 
-  return config.color || settings.color || '#2196F3'
+  return config.color || settings.color || defaultColor
 })
 
 // 计算是否显示图标
@@ -224,8 +206,8 @@ async function deleteFolder() {
 function showSettingDialog() {
   folderSettings.value = {
     background: props.folderConfig?.background || '',
-    icon: props.folderConfig?.icon || 'mdi-folder',
-    color: props.folderConfig?.color || '#2196F3',
+    icon: props.folderConfig?.icon || defaultIcon,
+    color: props.folderConfig?.color || defaultColor,
     gradient: props.folderConfig?.gradient || gradientOptions[0],
     showIcon: props.folderConfig?.showIcon !== undefined ? props.folderConfig.showIcon : true,
   }
@@ -294,13 +276,13 @@ const dropdownItems = ref([
             'plugin-folder-card--mobile': display.mobile,
             'plugin-folder-card--hover': hover.isHovering,
           }"
-          :style="folderStyle"
         >
+          <template v-if="props.folderConfig.background || folderSettings.background" #image>
+            <VImg :src="props.folderConfig.background || folderSettings.background" cover position="top"> </VImg>
+          </template>
+
           <!-- 背景渐变层 -->
           <div class="plugin-folder-card__bg" :style="{ background: backgroundGradient }" />
-
-          <!-- 背景遮罩（当有背景图片时） -->
-          <div v-if="folderStyle.backgroundImage" class="plugin-folder-card__overlay" />
 
           <!-- 卡片内容 -->
           <div class="plugin-folder-card__content">
@@ -332,7 +314,7 @@ const dropdownItems = ref([
               <VMenu v-model="menuVisible" location="top end" :close-on-content-click="true">
                 <template #activator="{ props: menuProps }">
                   <IconBtn v-bind="menuProps" @click.stop>
-                    <VIcon size="small" icon="mdi-dots-vertical" color="white" />
+                    <VIcon size="small" icon="mdi-dots-vertical" />
                   </IconBtn>
                 </template>
                 <VList>
@@ -495,21 +477,13 @@ const dropdownItems = ref([
 
   &__bg {
     position: absolute;
+    inset: 0;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: 0;
-  }
-
-  &__overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
-    background: rgba(0, 0, 0, 0.2);
+    outline: none;
   }
 
   &__content {
