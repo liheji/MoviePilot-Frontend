@@ -187,7 +187,7 @@ function showRenameDialog() {
 // 确认重命名
 async function confirmRename() {
   if (!newFolderName.value.trim()) {
-    $toast.error('文件夹名称不能为空')
+    $toast.error(t('folder.folderNameCannotBeEmpty'))
     return
   }
 
@@ -208,7 +208,7 @@ async function confirmRename() {
 async function deleteFolder() {
   const isConfirmed = await createConfirm({
     title: t('common.confirm'),
-    content: `确定要删除文件夹 "${props.folderName}" 吗？文件夹中的插件将移回主列表。`,
+    content: t('folder.confirmDeleteFolder', { folderName: props.folderName }),
   })
 
   if (!isConfirmed) return
@@ -241,13 +241,13 @@ function saveSettings() {
 
   emit('update-config', props.folderName, config)
   settingDialog.value = false
-  $toast.success('文件夹设置已保存')
+  $toast.success(t('folder.folderSettingsSaved'))
 }
 
 // 弹出菜单
 const dropdownItems = ref([
   {
-    title: '设置外观',
+    title: t('folder.settingAppearance'),
     value: 0,
     show: true,
     props: {
@@ -256,7 +256,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '重命名',
+    title: t('folder.rename'),
     value: 1,
     show: true,
     props: {
@@ -265,7 +265,7 @@ const dropdownItems = ref([
     },
   },
   {
-    title: '删除文件夹',
+    title: t('folder.deleteFolder'),
     value: 2,
     show: true,
     props: {
@@ -323,7 +323,7 @@ const dropdownItems = ref([
                   {{ props.folderName }}
                 </h3>
                 <!-- 插件数量 -->
-                <p class="plugin-folder-card__count">{{ props.pluginCount }} 个插件</p>
+                <p class="plugin-folder-card__count">{{ t('folder.pluginCount', { count: props.pluginCount }) }}</p>
               </div>
             </div>
 
@@ -359,11 +359,11 @@ const dropdownItems = ref([
     <!-- 重命名对话框 -->
     <VDialog v-if="renameDialog" v-model="renameDialog" max-width="400">
       <VCard>
-        <VCardTitle>重命名文件夹</VCardTitle>
+        <VCardTitle>{{ t('folder.renameFolder') }}</VCardTitle>
         <VCardText>
           <VTextField
             v-model="newFolderName"
-            label="文件夹名称"
+            :label="t('folder.folderName')"
             variant="outlined"
             autofocus
             @keyup.enter="confirmRename"
@@ -382,18 +382,23 @@ const dropdownItems = ref([
       <VCard>
         <VCardTitle>
           <VIcon icon="mdi-palette" class="mr-2" />
-          文件夹外观设置
+          {{ t('folder.folderAppearanceSettings') }}
         </VCardTitle>
         <VCardText>
           <VRow>
             <!-- 显示图标开关 -->
             <VCol cols="12">
-              <VSwitch v-model="folderSettings.showIcon" label="显示文件夹图标" color="primary" hide-details />
+              <VSwitch
+                v-model="folderSettings.showIcon"
+                :label="t('folder.showFolderIcon')"
+                color="primary"
+                hide-details
+              />
             </VCol>
 
             <!-- 图标选择 -->
             <VCol v-if="folderSettings.showIcon" cols="12" md="6">
-              <VCardSubtitle class="pa-0 mb-2">图标</VCardSubtitle>
+              <VCardSubtitle class="pa-0 mb-2">{{ t('folder.icon') }}</VCardSubtitle>
               <div class="icon-grid">
                 <VBtn
                   v-for="icon in iconOptions"
@@ -412,7 +417,7 @@ const dropdownItems = ref([
 
             <!-- 颜色选择 -->
             <VCol v-if="folderSettings.showIcon" cols="12" md="6">
-              <VCardSubtitle class="pa-0 mb-2">图标颜色</VCardSubtitle>
+              <VCardSubtitle class="pa-0 mb-2">{{ t('folder.iconColor') }}</VCardSubtitle>
               <div class="color-grid">
                 <VBtn
                   v-for="color in colorOptions"
@@ -431,7 +436,7 @@ const dropdownItems = ref([
 
             <!-- 渐变背景选择 -->
             <VCol cols="12">
-              <VCardSubtitle class="pa-0 mb-2">背景渐变</VCardSubtitle>
+              <VCardSubtitle class="pa-0 mb-2">{{ t('folder.backgroundGradient') }}</VCardSubtitle>
               <div class="gradient-grid">
                 <VBtn
                   v-for="(gradient, index) in gradientOptions"
@@ -451,10 +456,10 @@ const dropdownItems = ref([
             <VCol cols="12">
               <VTextField
                 v-model="folderSettings.background"
-                label="自定义背景图片URL（可选）"
+                :label="t('folder.customBackgroundImageURL')"
                 placeholder="https://example.com/image.jpg"
                 variant="outlined"
-                hint="支持网络图片URL，留空则使用渐变背景"
+                :hint="t('folder.customBackgroundImageHint')"
                 persistent-hint
               />
             </VCol>

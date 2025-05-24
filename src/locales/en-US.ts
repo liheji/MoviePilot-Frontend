@@ -2380,4 +2380,23 @@ export default {
     required: 'This field is required',
     number: 'Please enter a number',
   },
+  folder: {
+    settingAppearance: 'Appearance Settings',
+    rename: 'Rename',
+    deleteFolder: 'Delete Folder',
+    folderNameCannotBeEmpty: 'Folder name cannot be empty',
+    confirmDeleteFolder:
+      'Are you sure you want to delete folder "{folderName}"? Plugins in this folder will be moved back to the main list.',
+    folderSettingsSaved: 'Folder settings saved',
+    renameFolder: 'Rename Folder',
+    folderName: 'Folder Name',
+    folderAppearanceSettings: 'Folder Appearance Settings',
+    showFolderIcon: 'Show Folder Icon',
+    icon: 'Icon',
+    iconColor: 'Icon Color',
+    backgroundGradient: 'Background Gradient',
+    customBackgroundImageURL: 'Custom Background Image URL (Optional)',
+    customBackgroundImageHint: 'Supports web image URLs, leave blank for gradient background',
+    pluginCount: '{count} Plugins',
+  },
 }
