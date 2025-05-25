@@ -384,7 +384,7 @@ watch(
             class="flex flex-col align-self-baseline justify-between px-2 py-2 w-full overflow-hidden max-h-10 min-h-10"
           >
             <div class="flex flex-nowrap items-center w-full pe-10">
-              <div class="flex flex-nowrap max-w-32">
+              <div class="flex flex-nowrap max-w-32 items-center align-middle">
                 <VImg :src="authorPath" class="author-avatar" @load="isAvatarLoaded = true">
                   <VIcon v-if="!isAvatarLoaded" size="small" icon="mdi-github" class="me-1" />
                 </VImg>
@@ -397,14 +397,14 @@ watch(
                   {{ props.plugin?.plugin_author }}
                 </a>
               </div>
-              <span v-if="props.count" class="ms-2 flex-shrink-0 download-count">
+              <span v-if="props.count" class="ms-2 flex-shrink-0 download-count items-center align-middle">
                 <VIcon size="small" icon="mdi-download" />
-                <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
+                <span class="text-sm">{{ props.count?.toLocaleString() }}</span>
               </span>
             </div>
             <div class="absolute bottom-0 right-0">
               <IconBtn>
-                <VIcon size="small" icon="mdi-dots-vertical" />
+                <VIcon icon="mdi-dots-vertical" />
                 <VMenu v-model="menuVisible" activator="parent" close-on-content-click>
                   <VList>
                     <VListItem

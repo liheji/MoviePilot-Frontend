@@ -229,7 +229,7 @@ const dropdownItems = ref([
             class="flex flex-col align-self-baseline justify-between px-2 py-2 w-full overflow-hidden max-h-10 min-h-10"
           >
             <div class="flex flex-nowrap items-center w-full pe-10">
-              <div class="flex flex-nowrap max-w-32">
+              <div class="flex flex-nowrap max-w-32 items-center align-middle">
                 <VIcon icon="mdi-github" class="me-1" />
                 <a
                   class="overflow-hidden text-ellipsis whitespace-nowrap"
@@ -240,9 +240,9 @@ const dropdownItems = ref([
                   {{ props.plugin?.plugin_author }}
                 </a>
               </div>
-              <div v-if="props.count" class="ms-2 flex-shrink-0 download-count">
+              <div v-if="props.count" class="ms-2 flex-shrink-0 download-count align-middle items-center">
                 <VIcon size="small" icon="mdi-download" />
-                <span class="text-sm ms-1 mt-1">{{ props.count?.toLocaleString() }}</span>
+                <span class="text-sm">{{ props.count?.toLocaleString() }}</span>
               </div>
             </div>
             <div class="absolute bottom-0 right-0">
