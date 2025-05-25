@@ -713,7 +713,7 @@ const handleSortIconClick = () => {
       </VCardText>
       <VCardActions>
         <VSpacer />
-        <VBtn color="primary" @click="filterMenuOpen = false">
+        <VBtn color="primary" prepend-icon="mdi-check" class="px-5" @click="filterMenuOpen = false">
           {{ t('torrent.confirm') }}
         </VBtn>
       </VCardActions>

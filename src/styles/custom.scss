@@ -354,11 +354,6 @@ html.v-overlay-scroll-blocked {
   .v-table {
     border-radius: 0;
     background-color: rgba(var(--v-theme-surface), 0.3);
-
-    .v-table__wrapper > table > thead {
-      backdrop-filter: blur(10px);
-      background-color: rgba(var(--v-theme-surface), 0.3);
-    }
   }
   
   // 页脚
