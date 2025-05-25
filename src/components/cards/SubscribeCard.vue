@@ -9,6 +9,10 @@ import api from '@/api'
 import type { Subscribe } from '@/api/types'
 import router from '@/router'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -348,7 +352,11 @@ function onSubscribeEditRemove() {
             </template>
             <div>
               <VCardText class="flex items-center pt-3 pb-2">
-                <div class="h-auto w-14 flex-shrink-0 overflow-hidden rounded-md cursor-move" v-if="imageLoaded">
+                <div
+                  class="h-auto w-14 flex-shrink-0 overflow-hidden rounded-md"
+                  v-if="imageLoaded"
+                  :class="{ 'cursor-move': display.mdAndUp.value }"
+                >
                   <VImg :src="posterUrl" aspect-ratio="2/3" cover>
                     <template #placeholder>
                       <div class="w-full h-full">

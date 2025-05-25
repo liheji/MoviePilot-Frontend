@@ -12,6 +12,10 @@ import type { Site, SiteStatistic, SiteUserData } from '@/api/types'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { formatFileSize } from '@/@core/utils/formatters'
 import { useConfirm } from '@/composables/useConfirm'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -224,7 +228,7 @@ onMounted(() => {
         <!-- 顶部：图标和站点名称 -->
         <div class="flex items-center mb-1">
           <!-- 站点图标 -->
-          <VAvatar tile rounded="lg" size="32" class="me-2 cursor-move">
+          <VAvatar tile rounded="lg" size="32" class="me-2" :class="{ 'cursor-move': display.mdAndUp.value }">
             <VImg :src="siteIcon" class="w-full h-full" :alt="cardProps.site?.name" cover>
               <template #placeholder>
                 <div class="w-full h-full">
