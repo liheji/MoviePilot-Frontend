@@ -369,7 +369,13 @@ const dropdownItems = ref([
     </VDialog>
 
     <!-- 设置对话框 -->
-    <VDialog v-if="settingDialog" max-height="85vh" v-model="settingDialog" max-width="600" scrollable>
+    <VDialog
+      v-if="settingDialog"
+      v-model="settingDialog"
+      max-width="600"
+      scrollable
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard>
         <VDialogCloseBtn @click="settingDialog = false" />
         <VCardItem>
@@ -472,9 +478,9 @@ const dropdownItems = ref([
 <style lang="scss" scoped>
 .plugin-folder-card {
   position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &--hover {
     transform: translateY(-4px);
@@ -482,57 +488,52 @@ const dropdownItems = ref([
 
   &__bg {
     position: absolute;
-    inset: 0;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     z-index: 0;
+    inset: 0;
     outline: none;
   }
 
   &__overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     z-index: 1;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 60%);
+    inset: 0;
   }
 
   &__content {
     position: relative;
     z-index: 2;
-    height: 100%;
     display: flex;
     flex-direction: column;
     padding: 16px;
-    padding-bottom: 12px;
+    block-size: 100%;
+    padding-block-end: 12px;
 
     .plugin-folder-card--mobile & {
       padding: 12px;
-      padding-bottom: 10px;
+      padding-block-end: 10px;
     }
   }
 
   &__body {
     display: flex;
+    flex: 1;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    flex: 1;
     gap: 16px;
-    padding: 0 8px;
+    padding-block: 0;
+    padding-inline: 8px;
 
     .plugin-folder-card--mobile & {
       gap: 12px;
-      padding: 0 4px;
+      padding-block: 0;
+      padding-inline: 4px;
     }
 
     &--no-icon {
-      justify-content: flex-start;
       align-items: flex-start;
+      justify-content: flex-start;
       padding: 16px;
       gap: 0;
 
@@ -545,36 +546,36 @@ const dropdownItems = ref([
 
   &__icon-container {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
   }
 
   &__info {
-    text-align: left;
-    min-height: 0;
     flex: 1;
+    min-block-size: 0;
+    text-align: start;
 
     &--no-icon {
-      text-align: left;
       flex: none;
+      text-align: start;
     }
   }
 
   &__name {
+    display: -webkit-box;
+    overflow: hidden;
     margin: 0;
+    -webkit-box-orient: vertical;
+    color: white;
     font-size: 1.1rem;
     font-weight: 600;
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
     -webkit-line-clamp: 1;
     line-clamp: 1;
-    -webkit-box-orient: vertical;
-    max-width: none;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    line-height: 1.3;
+    max-inline-size: none;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 50%);
 
     .plugin-folder-card--mobile & {
       font-size: 1rem;
@@ -585,7 +586,7 @@ const dropdownItems = ref([
       font-weight: 700;
       -webkit-line-clamp: 2;
       line-clamp: 2;
-      margin-bottom: 4px;
+      margin-block-end: 4px;
 
       .plugin-folder-card--mobile & {
         font-size: 1.2rem;
@@ -594,19 +595,20 @@ const dropdownItems = ref([
   }
 
   &__count {
-    margin: 2px 0 0 0;
-    font-size: 0.85rem;
-    opacity: 0.9;
     color: white;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    font-size: 0.85rem;
+    margin-block: 2px 0;
+    margin-inline: 0;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 50%);
 
     .plugin-folder-card--mobile & {
       font-size: 0.8rem;
     }
 
     .plugin-folder-card__info--no-icon & {
-      margin-top: 0;
       font-size: 0.9rem;
+      margin-block-start: 0;
 
       .plugin-folder-card--mobile & {
         font-size: 0.85rem;
@@ -618,35 +620,35 @@ const dropdownItems = ref([
 // 设置对话框样式
 .icon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
   gap: 8px;
-  max-height: 200px;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  max-block-size: 200px;
   overflow-y: auto;
 }
 
 .color-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
   gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
 }
 
 .gradient-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 8px;
-  max-height: 200px;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  max-block-size: 200px;
   overflow-y: auto;
 }
 
 .color-btn {
-  min-width: 60px !important;
-  height: 60px !important;
   border-radius: 8px !important;
+  block-size: 60px !important;
+  min-inline-size: 60px !important;
 }
 
 .gradient-btn {
-  min-width: 120px !important;
-  height: 60px !important;
   border-radius: 8px !important;
+  block-size: 60px !important;
+  min-inline-size: 120px !important;
 }
 </style>

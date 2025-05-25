@@ -3,6 +3,9 @@ import api from '@/api'
 import { RecommendSource } from '@/api/types'
 import MediaCardSlideView from '@/views/discover/MediaCardSlideView.vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -235,7 +238,7 @@ onActivated(async () => {
     </div>
 
     <!-- 设置面板 -->
-    <VDialog v-model="dialog" width="35rem" class="settings-dialog" scrollable>
+    <VDialog v-model="dialog" width="35rem" class="settings-dialog" scrollable :fullscreen="!display.mdAndUp.value">
       <VCard class="settings-card">
         <VCardItem class="settings-card-header">
           <VCardTitle>
@@ -248,7 +251,7 @@ onActivated(async () => {
         <VCardText>
           <p class="settings-hint">{{ t('recommend.selectContentToDisplay') }}</p>
           <div class="settings-grid">
-            <div
+            <VCard
               v-for="item in viewList"
               :key="item.title"
               class="setting-item"
@@ -268,7 +271,7 @@ onActivated(async () => {
                 </div>
                 <span class="setting-label">{{ item.title }}</span>
               </div>
-            </div>
+            </VCard>
           </div>
         </VCardText>
         <VCardActions class="pt-3">

@@ -203,7 +203,13 @@ onMounted(() => {
     </VCard>
   </VMenu>
   <!-- 名称测试弹窗 -->
-  <VDialog v-if="nameTestDialog" v-model="nameTestDialog" max-width="45rem" scrollable>
+  <VDialog
+    v-if="nameTestDialog"
+    v-model="nameTestDialog"
+    max-width="45rem"
+    scrollable
+    :fullscreen="!display.mdAndUp.value"
+  >
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -219,7 +225,13 @@ onMounted(() => {
     </VCard>
   </VDialog>
   <!-- 网络测试弹窗 -->
-  <VDialog v-if="netTestDialog" v-model="netTestDialog" max-width="35rem" max-height="85vh" scrollable>
+  <VDialog
+    v-if="netTestDialog"
+    v-model="netTestDialog"
+    max-width="35rem"
+    scrollable
+    :fullscreen="!display.mdAndUp.value"
+  >
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -263,7 +275,13 @@ onMounted(() => {
     </VCard>
   </VDialog>
   <!-- 过滤规则弹窗 -->
-  <VDialog v-if="ruleTestDialog" v-model="ruleTestDialog" max-width="35rem" scrollable>
+  <VDialog
+    v-if="ruleTestDialog"
+    v-model="ruleTestDialog"
+    max-width="35rem"
+    scrollable
+    :fullscreen="!display.mdAndUp.value"
+  >
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -279,7 +297,13 @@ onMounted(() => {
     </VCard>
   </VDialog>
   <!-- 系统健康检查弹窗 -->
-  <VDialog v-if="systemTestDialog" v-model="systemTestDialog" max-width="35rem" scrollable>
+  <VDialog
+    v-if="systemTestDialog"
+    v-model="systemTestDialog"
+    max-width="35rem"
+    scrollable
+    :fullscreen="!display.mdAndUp.value"
+  >
     <VCard>
       <VCardItem>
         <VCardTitle>

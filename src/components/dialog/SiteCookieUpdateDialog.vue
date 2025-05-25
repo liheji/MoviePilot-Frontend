@@ -71,7 +71,7 @@ async function updateSiteCookie() {
 }
 </script>
 <template>
-  <VDialog max-width="30rem">
+  <VDialog max-width="30rem" scrollable>
     <!-- Dialog Content -->
     <VCard :title="t('dialog.siteCookieUpdate.title')">
       <VDialogCloseBtn @click="emit('close')" />

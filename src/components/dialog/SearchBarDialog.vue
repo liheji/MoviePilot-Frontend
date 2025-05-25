@@ -6,6 +6,10 @@ import { NavMenu } from '@/@layouts/types'
 import { useUserStore } from '@/stores'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 多语言支持
 const { t } = useI18n()
@@ -302,29 +306,24 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VDialog v-model="dialog" max-width="42rem" scrollable maxHeight="85vh">
+  <VDialog v-model="dialog" max-width="42rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard class="search-dialog">
       <!-- 搜索输入框 -->
       <VCardItem class="pa-4 pa-sm-5 search-box-container">
-        <template #prepend>
-          <VIcon icon="mdi-magnify" color="primary" size="x-large" />
-        </template>
         <VCombobox
           ref="searchWordInput"
           v-model="searchWord"
           density="comfortable"
           variant="outlined"
           class="search-input"
+          prepend-inner-icon="mdi-magnify"
+          append-inner-icon="mdi-close"
+          @click:append-inner="emit('close')"
           :placeholder="t('dialog.searchBar.searchPlaceholder')"
           @keydown.enter="searchMedia('media')"
           hide-details
           clearable
         />
-        <template #append>
-          <IconBtn>
-            <VIcon icon="mdi-close" color="primary" @click="emit('close')" size="x-large" />
-          </IconBtn>
-        </template>
       </VCardItem>
 
       <VDivider />

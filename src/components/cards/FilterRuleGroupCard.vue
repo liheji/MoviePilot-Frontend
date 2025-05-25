@@ -8,6 +8,10 @@ import ImportCodeDialog from '@/components/dialog/ImportCodeDialog.vue'
 import filter_group_svg from '@images/svg/filter-group.svg'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 获取i18n实例
 const { t } = useI18n()
@@ -219,7 +223,13 @@ function onClose() {
         <VImg :src="filter_group_svg" cover class="mt-10" max-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog v-if="groupInfoDialog" v-model="groupInfoDialog" scrollable max-width="80rem">
+    <VDialog
+      v-if="groupInfoDialog"
+      v-model="groupInfoDialog"
+      scrollable
+      max-width="80rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard :title="`${props.group.name} - ${t('filterRule.title')}`">
         <VDialogCloseBtn v-model="groupInfoDialog" />
         <VDivider />

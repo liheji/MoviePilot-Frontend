@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import api from '@/api'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 多语言支持
 const { t } = useI18n()
@@ -66,7 +70,7 @@ async function savaAlistConfig() {
 </script>
 
 <template>
-  <VDialog width="50rem" scrollable max-height="85vh">
+  <VDialog width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>

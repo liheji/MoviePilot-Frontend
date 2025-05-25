@@ -10,6 +10,10 @@ import custom_image from '@images/logos/downloader.png'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 import { downloaderDict } from '@/api/constants'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 获取i18n实例
 const { t } = useI18n()
@@ -188,7 +192,14 @@ onUnmounted(() => {
         </VCardText>
       </VCard>
     </VHover>
-    <VDialog v-if="downloaderInfoDialog" v-model="downloaderInfoDialog" scrollable max-width="40rem">
+
+    <VDialog
+      v-if="downloaderInfoDialog"
+      v-model="downloaderInfoDialog"
+      scrollable
+      max-width="40rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard :title="`${props.downloader.name} - ${t('downloader.title')}`">
         <VDialogCloseBtn v-model="downloaderInfoDialog" />
         <VDivider />

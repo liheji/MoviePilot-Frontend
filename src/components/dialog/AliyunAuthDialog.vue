@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import api from '@/api'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 多语言支持
 const { t } = useI18n()
@@ -106,7 +110,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <VDialog width="40rem" scrollable max-height="85vh">
+  <VDialog width="40rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
@@ -115,8 +119,8 @@ onUnmounted(() => {
         </VCardTitle>
       </VCardItem>
       <VDivider />
-      <VCardText class="pt-2 flex flex-col items-center">
-        <div class="my-6 rounded text-center p-3 border">
+      <VCardText class="pt-2 flex flex-col items-center justify-center">
+        <div class="mt-6 rounded text-center p-3 border">
           <VImg class="mx-auto" :src="qrCodeUrl" width="200" height="200">
             <template #placeholder>
               <div class="w-full h-full">
@@ -125,9 +129,11 @@ onUnmounted(() => {
             </template>
           </VImg>
         </div>
-        <VAlert variant="tonal" :type="alertType" class="my-4 text-center" :text="text">
-          <template #prepend />
-        </VAlert>
+        <div>
+          <VAlert variant="tonal" :type="alertType" class="my-4 text-center" :text="text">
+            <template #prepend />
+          </VAlert>
+        </div>
       </VCardText>
       <VCardActions>
         <VBtn color="error" @click="handleReset" prepend-icon="mdi-restore" class="px-5 me-3">

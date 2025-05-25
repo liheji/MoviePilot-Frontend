@@ -3,6 +3,10 @@ import api from '@/api'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -59,7 +63,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VDialog width="50rem" scrollable max-height="85vh">
+  <VDialog width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -69,13 +73,13 @@ onMounted(() => {
         <VDialogCloseBtn @click="emit('close')" />
       </VCardItem>
       <VDivider />
-
       <VCardText class="pt-2">
         <VTextarea
           v-model="displayRepos"
           :placeholder="t('dialog.pluginMarketSetting.repoPlaceholder')"
           :hint="t('dialog.pluginMarketSetting.repoHint')"
           persistent-hint
+          auto-grow
         />
       </VCardText>
       <VCardActions>

@@ -7,7 +7,10 @@ import NotificationChannelCard from '@/components/cards/NotificationChannelCard.
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { notificationSwitchDict } from '@/api/constants'
-import { useTheme } from 'vuetify'
+import { useTheme, useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -440,7 +443,7 @@ onMounted(() => {
     :indeterminate="true"
   />
   <!-- 模板编辑器对话框 -->
-  <VDialog v-model="editorVisible" v-if="editorVisible" max-width="50rem">
+  <VDialog v-model="editorVisible" v-if="editorVisible" max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -454,7 +457,7 @@ onMounted(() => {
           v-model:value="editorContent"
           lang="json"
           :theme="editorTheme"
-          class="w-full min-h-[30rem] rounded"
+          class="w-full h-full min-h-[30rem] rounded"
         />
       </VCardText>
       <VCardActions class="pt-3">

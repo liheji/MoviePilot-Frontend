@@ -8,6 +8,9 @@ import ExtraSourceView from '@/views/discover/ExtraSourceView.vue'
 import { DiscoverSource } from '@/api/types'
 import api from '@/api'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -179,7 +182,13 @@ onActivated(async () => {
       </VWindowItem>
     </VWindow>
     <!-- 弹窗，根据配置生成选项 -->
-    <VDialog v-if="orderConfigDialog" v-model="orderConfigDialog" max-width="35rem" scrollable>
+    <VDialog
+      v-if="orderConfigDialog"
+      v-model="orderConfigDialog"
+      max-width="35rem"
+      scrollable
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard>
         <VCardItem>
           <VCardTitle>
@@ -199,11 +208,11 @@ onActivated(async () => {
             :component-data="{ 'class': 'settings-grid' }"
           >
             <template #item="{ element }">
-              <div class="setting-item enabled">
+              <VCard variant="text" class="setting-item enabled">
                 <div class="setting-item-inner cursor-move text-center">
                   <span class="setting-label">{{ element.name }}</span>
                 </div>
-              </div>
+              </VCard>
             </template>
           </draggable>
         </VCardText>
@@ -260,6 +269,7 @@ onActivated(async () => {
   &::before {
     position: absolute;
     background-color: transparent;
+    background-color: rgb(var(--v-theme-primary));
     block-size: 100%;
     content: '';
     inline-size: 4px;

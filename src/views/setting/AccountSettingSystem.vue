@@ -11,6 +11,9 @@ import { copyToClipboard } from '@/@core/utils/navigator'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { downloaderOptions, mediaServerOptions } from '@/api/constants'
+import { useDisplay } from 'vuetify'
+
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -633,8 +636,15 @@ onDeactivated(() => {
       </VCard>
     </VCol>
   </VRow>
+
   <!-- 高级系统设置 -->
-  <VDialog v-if="advancedDialog" v-model="advancedDialog" scrollable max-width="60rem">
+  <VDialog
+    v-if="advancedDialog"
+    v-model="advancedDialog"
+    scrollable
+    max-width="60rem"
+    :fullscreen="!display.mdAndUp.value"
+  >
     <VCard>
       <VCardItem>
         <VDialogCloseBtn @click="advancedDialog = false" />

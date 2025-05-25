@@ -5,6 +5,10 @@ import filter_svg from '@images/svg/filter.svg'
 import { cloneDeep } from 'lodash-es'
 import { innerFilterRules } from '@/api/constants'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 输入参数
 const props = defineProps({
@@ -106,7 +110,13 @@ function onClose() {
         <VImg :src="filter_svg" cover class="mt-7" max-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog v-if="ruleInfoDialog" v-model="ruleInfoDialog" scrollable max-width="40rem">
+    <VDialog
+      v-if="ruleInfoDialog"
+      v-model="ruleInfoDialog"
+      scrollable
+      max-width="40rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard :title="t('customRule.title', { id: props.rule.id })">
         <VDialogCloseBtn v-model="ruleInfoDialog" />
         <VDivider />

@@ -290,7 +290,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VDialog scrollable :close-on-back="false" eager max-width="40rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="40rem" :fullscreen="!display.mdAndUp.value">
     <VCard
       :title="`${props.oper === 'add' ? t('dialog.userAddEdit.add') : t('dialog.userAddEdit.edit')}${
         props.oper !== 'add' ? ` - ${userName}` : ''

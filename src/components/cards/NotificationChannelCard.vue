@@ -10,6 +10,10 @@ import custom_image from '@images/logos/notification.png'
 import { useToast } from 'vue-toast-notification'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 const { t } = useI18n()
 
@@ -136,7 +140,14 @@ function onClose() {
         <VImg :src="getIcon" cover class="mt-7 me-1" max-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog v-if="notificationInfoDialog" v-model="notificationInfoDialog" scrollable max-width="40rem">
+
+    <VDialog
+      v-if="notificationInfoDialog"
+      v-model="notificationInfoDialog"
+      scrollable
+      max-width="40rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard :title="`${props.notification.name} - ${t('notification.config')}`">
         <VDialogCloseBtn v-model="notificationInfoDialog" />
         <VDivider />

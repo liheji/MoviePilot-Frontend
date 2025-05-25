@@ -3,6 +3,10 @@ import { isNullOrEmptyObject } from '@/@core/utils'
 import api from '@/api'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 多语言支持
 const { t } = useI18n()
@@ -133,7 +137,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VDialog width="40rem" max-height="85vh">
+  <VDialog width="40rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard :title="t('dialog.userAuth.title')">
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText>

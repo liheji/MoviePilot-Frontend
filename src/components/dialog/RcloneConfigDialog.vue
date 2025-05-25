@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import api from '@/api'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 多语言支持
 const { t } = useI18n()
@@ -53,7 +57,7 @@ async function handleReset() {
 </script>
 
 <template>
-  <VDialog width="50rem" scrollable max-height="85vh">
+  <VDialog width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
@@ -72,8 +76,7 @@ async function handleReset() {
               v-model:value="props.conf.content"
               lang="ini"
               theme="monokai"
-              style="block-size: 30rem"
-              class="rounded"
+              class="rounded h-full min-h-[30rem]"
             >
             </VAceEditor>
           </VCol>

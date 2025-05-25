@@ -10,6 +10,10 @@ import api from '@/api'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 import { mediaServerDict } from '@/api/constants'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 获取i18n实例
 const { t } = useI18n()
@@ -199,7 +203,14 @@ onMounted(() => {
         <VImg :src="getIcon" cover class="mt-7 me-3" max-width="3rem" min-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog v-if="mediaServerInfoDialog" v-model="mediaServerInfoDialog" scrollable max-width="40rem">
+
+    <VDialog
+      v-if="mediaServerInfoDialog"
+      v-model="mediaServerInfoDialog"
+      scrollable
+      max-width="40rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard :title="`${props.mediaserver.name} - ${t('common.config')}`">
         <VDialogCloseBtn v-model="mediaServerInfoDialog" />
         <VDivider />

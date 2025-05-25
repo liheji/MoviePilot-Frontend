@@ -114,7 +114,6 @@ useDynamicButton({
       v-model="addUserDialog"
       oper="add"
       max-width="45rem"
-      persistent
       @save="onUserAdd"
       @close="addUserDialog = false"
     />

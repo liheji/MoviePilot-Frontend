@@ -2,6 +2,10 @@
 import type { Context } from '@/api/types'
 import TorrentItem from '@/components/cards/TorrentItem.vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -582,7 +586,13 @@ onMounted(() => {
     </VCard>
 
     <!-- 全部筛选弹窗 -->
-    <VDialog v-model="allFilterMenuOpen" max-width="50rem" max-height="90%" location="center" scrollable>
+    <VDialog
+      v-model="allFilterMenuOpen"
+      max-width="50rem"
+      location="center"
+      scrollable
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard>
         <VDialogCloseBtn @click="allFilterMenuOpen = false" />
         <VCardTitle class="py-3 d-flex align-center">
@@ -652,7 +662,7 @@ onMounted(() => {
     </VDialog>
 
     <!-- 筛选弹窗 -->
-    <VDialog v-model="filterMenuOpen" max-width="25rem" max-height="80%" location="center">
+    <VDialog v-model="filterMenuOpen" max-width="25rem" max-height="85vh" location="center">
       <VCard>
         <VCardTitle class="py-3 d-flex align-center">
           <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>

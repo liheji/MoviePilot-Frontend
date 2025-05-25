@@ -11,6 +11,10 @@ import ProgressDialog from '../dialog/ProgressDialog.vue'
 import PluginConfigDialog from '../dialog/PluginConfigDialog.vue'
 import PluginDataDialog from '../dialog/PluginDataDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 输入参数
 const props = defineProps({
@@ -450,7 +454,7 @@ watch(
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
 
     <!-- 更新日志 -->
-    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" max-height="85vh" scrollable>
+    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable :fullscreen="!display.mdAndUp.value">
       <VCard :title="t('plugin.updateHistoryTitle', { name: props.plugin?.plugin_name })">
         <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />

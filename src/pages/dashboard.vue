@@ -354,7 +354,7 @@ onDeactivated(() => {
   />
 
   <!-- 弹窗，根据配置生成选项 -->
-  <VDialog v-if="dialog" v-model="dialog" max-width="35rem" max-height="85vh" scrollable>
+  <VDialog v-if="dialog" v-model="dialog" max-width="35rem" :fullscreen="!display.mdAndUp.value" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>

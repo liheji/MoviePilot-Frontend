@@ -16,6 +16,10 @@ import { useToast } from 'vue-toast-notification'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { useI18n } from 'vue-i18n'
 import { storageIconDict } from '@/api/constants'
+import { useDisplay } from 'vuetify'
+
+// 显示器宽度
+const display = useDisplay()
 
 // 国际化
 const { t } = useI18n()
@@ -200,7 +204,13 @@ function onClose() {
       @close="aListConfigDialog = false"
       @done="handleDone"
     />
-    <VDialog v-if="customConfigDialog" v-model="customConfigDialog" scrollable max-width="30rem">
+    <VDialog
+      v-if="customConfigDialog"
+      v-model="customConfigDialog"
+      scrollable
+      max-width="30rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard>
         <VCardItem>
           <VCardTitle>{{ t('storage.custom') }}</VCardTitle>
