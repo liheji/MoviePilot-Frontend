@@ -435,21 +435,6 @@ onMounted(() => {
                   @click:append-inner="loadLibrary(mediaServerInfo.name)"
                 />
               </VCol>
-              <VCol cols="12">
-                <VSelect
-                  v-model="mediaServerInfo.sync_libraries"
-                  :label="t('mediaserver.syncLibraries')"
-                  :items="librariesOptions"
-                  chips
-                  multiple
-                  clearable
-                  :hint="t('mediaserver.syncLibrariesHint')"
-                  persistent-hint
-                  active
-                  append-inner-icon="mdi-refresh"
-                  @click:append-inner="loadLibrary(mediaServerInfo.name)"
-                />
-              </VCol>
             </VRow>
             <VRow v-else>
               <VCol cols="12" md="6">
