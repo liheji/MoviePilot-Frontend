@@ -270,7 +270,7 @@ onMounted(() => {
       </VCardItem>
       <VDivider />
       <VCardText>
-        <LoggingView />
+        <LoggingView logfile="moviepilot.log" />
       </VCardText>
     </VCard>
   </VDialog>

@@ -58,6 +58,9 @@ const progressDialog = ref(false)
 // 插件数据页面
 const pluginInfoDialog = ref(false)
 
+// 实时日志弹窗
+const loggingDialog = ref(false)
+
 // 进度框文本
 const progressText = ref('正在更新插件...')
 
@@ -82,7 +85,7 @@ const cloneForm = ref({
   name: '',
   description: '',
   version: '',
-  icon: ''
+  icon: '',
 })
 
 // 监听动作标识，如为true则打开详情
@@ -136,7 +139,12 @@ async function uninstallPlugin() {
       // 通知父组件刷新
       emit('remove')
     } else {
-      $toast.error(t('plugin.uninstallFailed', { name: props.plugin?.plugin_name, message: result.message }))
+      $toast.error(
+        t('plugin.uninstallFailed', {
+          name: props.plugin?.plugin_name,
+          message: result.message,
+        }),
+      )
     }
   } catch (error) {
     console.error(error)
@@ -190,7 +198,12 @@ async function resetPlugin() {
       // 通知父组件刷新
       emit('save')
     } else {
-      $toast.error(t('plugin.resetFailed', { name: props.plugin?.plugin_name, message: result.message }))
+      $toast.error(
+        t('plugin.resetFailed', {
+          name: props.plugin?.plugin_name,
+          message: result.message,
+        }),
+      )
     }
   } catch (error) {
     console.error(error)
@@ -221,7 +234,12 @@ async function updatePlugin() {
       // 通知父组件刷新
       emit('save')
     } else {
-      $toast.error(t('plugin.updateFailed', { name: props.plugin?.plugin_name, message: result.message }))
+      $toast.error(
+        t('plugin.updateFailed', {
+          name: props.plugin?.plugin_name,
+          message: result.message,
+        }),
+      )
     }
   } catch (error) {
     console.error(error)
@@ -260,7 +278,7 @@ function showPluginClone() {
     name: t('plugin.cloneDefaultName', { name: props.plugin?.plugin_name }),
     description: t('plugin.cloneDefaultDescription', { description: props.plugin?.plugin_desc }),
     version: props.plugin?.plugin_version || '1.0',
-    icon: props.plugin?.plugin_icon || ''
+    icon: props.plugin?.plugin_icon || '',
   }
   pluginCloneDialog.value = true
 }
@@ -281,7 +299,7 @@ async function executePluginClone() {
       name: cloneForm.value.name.trim(),
       description: cloneForm.value.description.trim(),
       version: cloneForm.value.version.trim(),
-      icon: cloneForm.value.icon.trim()
+      icon: cloneForm.value.icon.trim(),
     })
 
     progressDialog.value = false
@@ -368,7 +386,7 @@ const dropdownItems = ref([
     props: {
       prependIcon: 'mdi-file-document-outline',
       click: () => {
-        openLoggerWindow()
+        loggingDialog.value = true
       },
     },
   },
@@ -541,135 +559,178 @@ watch(
       </VCard>
     </VDialog>
 
-         <!-- 插件分身对话框 -->
-     <VDialog v-if="pluginCloneDialog" v-model="pluginCloneDialog" width="600" :fullscreen="!display.mdAndUp.value">
-       <VCard>
-         <VCardTitle class="d-flex align-center pa-4">
-           <VIcon icon="mdi-content-copy" class="me-3" color="primary" />
-           <div>
-             <div class="text-h6">🎭 {{ t('plugin.cloneTitle') }}</div>
-             <div class="text-caption text-medium-emphasis">{{ t('plugin.cloneSubtitle', { name: props.plugin?.plugin_name }) }}</div>
-           </div>
-         </VCardTitle>
-         <VDialogCloseBtn @click="pluginCloneDialog = false" />
-         <VDivider />
+    <!-- 实时日志弹窗 -->
+    <VDialog
+      v-if="loggingDialog"
+      v-model="loggingDialog"
+      scrollable
+      max-width="60rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
+      <VCard>
+        <VDialogCloseBtn @click="loggingDialog = false" />
+        <VCardItem>
+          <VCardTitle class="d-inline-flex">
+            <VIcon icon="mdi-file-document" class="me-2" />
+            {{ t('plugin.logTitle') }}
+            <a class="mx-2 d-inline-flex align-center cursor-pointer" @click="openLoggerWindow">
+              <VChip color="grey-darken-1" size="small" class="ml-2">
+                <VIcon icon="mdi-open-in-new" size="small" start />
+                {{ t('common.openInNewWindow') }}
+              </VChip>
+            </a>
+          </VCardTitle>
+        </VCardItem>
+        <VDivider />
+        <VCardText>
+          <LoggingView :logfile="`plugins/${props.plugin?.id?.toLowerCase()}.log`" />
+        </VCardText>
+      </VCard>
+    </VDialog>
 
-         <VCardText class="pa-4">
-           <!-- 功能说明 -->
-           <VAlert
-             type="info"
-             variant="tonal"
-             density="compact"
-             class="mb-4"
-             icon="mdi-information-outline"
-           >
-             <div class="text-body-2">
-               <strong>{{ t('plugin.cloneFeature') }}</strong>：{{ t('plugin.cloneDescription') }}
-             </div>
-           </VAlert>
+    <!-- 插件分身对话框 -->
+    <VDialog v-if="pluginCloneDialog" v-model="pluginCloneDialog" width="600" :fullscreen="!display.mdAndUp.value">
+      <VCard>
+        <VCardTitle class="d-flex align-center pa-4">
+          <VIcon icon="mdi-content-copy" class="me-3" color="primary" />
+          <div>
+            <div class="text-h6">🎭 {{ t('plugin.cloneTitle') }}</div>
+            <div class="text-caption text-medium-emphasis">
+              {{ t('plugin.cloneSubtitle', { name: props.plugin?.plugin_name }) }}
+            </div>
+          </div>
+        </VCardTitle>
+        <VDialogCloseBtn @click="pluginCloneDialog = false" />
+        <VDivider />
 
-           <VForm>
-             <VRow>
-               <VCol cols="12" md="6">
-                 <VTextField
-                   v-model="cloneForm.suffix"
-                   :label="t('plugin.suffix') + ' *'"
-                   :placeholder="t('plugin.suffixPlaceholder')"
-                   :hint="t('plugin.suffixHint')"
-                   persistent-hint
-                   :rules="[
-                     v => !!v || t('plugin.suffixRequired'),
-                     v => /^[a-zA-Z0-9]+$/.test(v) || t('plugin.suffixFormatError'),
-                     v => v.length <= 20 || t('plugin.suffixLengthError')
-                   ]"
-                   required
-                   prepend-inner-icon="mdi-tag"
-                 />
-               </VCol>
-               
-               <VCol cols="12" md="6">
-                 <VTextField
-                   v-model="cloneForm.name"
-                   :label="t('plugin.cloneName')"
-                   :placeholder="t('plugin.cloneNamePlaceholder')"
-                   :hint="t('plugin.cloneNameHint')"
-                   persistent-hint
-                   prepend-inner-icon="mdi-rename-box"
-                 />
-               </VCol>
-               
-               <VCol cols="12">
-                 <VTextarea
-                   v-model="cloneForm.description"
-                   :label="t('plugin.cloneDescriptionLabel')"
-                   :placeholder="t('plugin.cloneDescriptionPlaceholder')"
-                   :hint="t('plugin.cloneDescriptionHint')"
-                   persistent-hint
-                   rows="2"
-                   prepend-inner-icon="mdi-text"
-                 />
-               </VCol>
-               
-               <VCol cols="12" md="6">
-                 <VTextField
-                   v-model="cloneForm.version"
-                   :label="t('plugin.cloneVersion')"
-                   :placeholder="t('plugin.cloneVersionPlaceholder')"
-                   :hint="t('plugin.cloneVersionHint')"
-                   persistent-hint
-                   prepend-inner-icon="mdi-numeric"
-                 />
-               </VCol>
-               
-               <VCol cols="12" md="6">
-                 <VTextField
-                   v-model="cloneForm.icon"
-                   :label="t('plugin.cloneIcon')"
-                   :placeholder="t('plugin.cloneIconPlaceholder')"
-                   :hint="t('plugin.cloneIconHint')"
-                   persistent-hint
-                   prepend-inner-icon="mdi-image"
-                 />
-               </VCol>
+        <VCardText class="pa-4">
+          <!-- 功能说明 -->
+          <VAlert type="info" variant="tonal" density="compact" class="mb-4" icon="mdi-information-outline">
+            <div class="text-body-2">
+              <strong>{{ t('plugin.cloneFeature') }}</strong
+              >：{{ t('plugin.cloneDescription') }}
+            </div>
+          </VAlert>
 
-               <!-- 重要提醒 -->
-               <VCol cols="12">
-                 <VAlert
-                   type="warning"
-                   variant="tonal"
-                   density="compact"
-                   class="mt-2"
-                   icon="mdi-alert-circle-outline"
-                 >
-                   <div class="text-body-2">
-                     <strong>{{ t('common.notice') }}</strong>：{{ t('plugin.cloneNotice') }}
-                   </div>
-                 </VAlert>
-               </VCol>
-             </VRow>
-           </VForm>
-         </VCardText>
-         
-         <VDivider />
-         <VCardActions class="pa-4">
-           <VSpacer />
-           <VBtn 
-             @click="pluginCloneDialog = false"
-             variant="outlined"
-           >
-             {{ t('common.cancel') }}
-           </VBtn>
-           <VBtn 
-             color="primary" 
-             @click="executePluginClone"
-             :disabled="!cloneForm.suffix.trim()"
-           >
-             <VIcon icon="mdi-content-copy" class="me-2" />
-             {{ t('plugin.createClone') }}
-           </VBtn>
-         </VCardActions>
-       </VCard>
-     </VDialog>
+          <VForm>
+            <VRow>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="cloneForm.suffix"
+                  :label="t('plugin.suffix') + ' *'"
+                  :placeholder="t('plugin.suffixPlaceholder')"
+                  :hint="t('plugin.suffixHint')"
+                  persistent-hint
+                  :rules="[
+                    v => !!v || t('plugin.suffixRequired'),
+                    v => /^[a-zA-Z0-9]+$/.test(v) || t('plugin.suffixFormatError'),
+                    v => v.length <= 20 || t('plugin.suffixLengthError'),
+                  ]"
+                  required
+                  prepend-inner-icon="mdi-tag"
+                />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="cloneForm.name"
+                  :label="t('plugin.cloneName')"
+                  :placeholder="t('plugin.cloneNamePlaceholder')"
+                  :hint="t('plugin.cloneNameHint')"
+                  persistent-hint
+                  prepend-inner-icon="mdi-rename-box"
+                />
+              </VCol>
+
+              <VCol cols="12">
+                <VTextarea
+                  v-model="cloneForm.description"
+                  :label="t('plugin.cloneDescriptionLabel')"
+                  :placeholder="t('plugin.cloneDescriptionPlaceholder')"
+                  :hint="t('plugin.cloneDescriptionHint')"
+                  persistent-hint
+                  rows="2"
+                  prepend-inner-icon="mdi-text"
+                />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="cloneForm.version"
+                  :label="t('plugin.cloneVersion')"
+                  :placeholder="t('plugin.cloneVersionPlaceholder')"
+                  :hint="t('plugin.cloneVersionHint')"
+                  persistent-hint
+                  prepend-inner-icon="mdi-numeric"
+                />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="cloneForm.icon"
+                  :label="t('plugin.cloneIcon')"
+                  :placeholder="t('plugin.cloneIconPlaceholder')"
+                  :hint="t('plugin.cloneIconHint')"
+                  persistent-hint
+                  prepend-inner-icon="mdi-image"
+                />
+              </VCol>
+
+              <!-- 重要提醒 -->
+              <VCol cols="12">
+                <VAlert type="warning" variant="tonal" density="compact" class="mt-2" icon="mdi-alert-circle-outline">
+                  <div class="text-body-2">
+                    <strong>{{ t('common.notice') }}</strong
+                    >：{{ t('plugin.cloneNotice') }}
+                  </div>
+                </VAlert>
+              </VCol>
+            </VRow>
+          </VForm>
+        </VCardText>
+
+        <VDivider />
+        <VCardActions class="pt-3">
+          <VSpacer />
+          <VBtn @click="pluginCloneDialog = false" variant="outlined">
+            {{ t('common.cancel') }}
+          </VBtn>
+          <VBtn color="primary" @click="executePluginClone" :disabled="!cloneForm.suffix.trim()">
+            <VIcon icon="mdi-content-copy" class="me-2" />
+            {{ t('plugin.createClone') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <!-- 实时日志弹窗 -->
+    <VDialog
+      v-if="loggingDialog"
+      v-model="loggingDialog"
+      scrollable
+      max-width="60rem"
+      :fullscreen="!display.mdAndUp.value"
+    >
+      <VCard>
+        <VDialogCloseBtn @click="loggingDialog = false" />
+        <VCardItem>
+          <VCardTitle class="d-inline-flex">
+            <VIcon icon="mdi-file-document" class="me-2" />
+            {{ t('plugin.logTitle') }}
+            <a class="mx-2 d-inline-flex align-center cursor-pointer" @click="openLoggerWindow">
+              <VChip color="grey-darken-1" size="small" class="ml-2">
+                <VIcon icon="mdi-open-in-new" size="small" start />
+                {{ t('common.openInNewWindow') }}
+              </VChip>
+            </a>
+          </VCardTitle>
+        </VCardItem>
+        <VDivider />
+        <VCardText>
+          <LoggingView :logfile="`plugins/${props.plugin?.id?.toLowerCase()}.log`" />
+        </VCardText>
+      </VCard>
+    </VDialog>
   </div>
 </template>
 

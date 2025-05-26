@@ -2021,6 +2021,7 @@ export default {
     cloneSuccess: '插件分身 {name} 创建成功！',
     cloneFailed: '插件分身创建失败：{message}',
     cloneFailedGeneral: '插件分身创建失败',
+    logTitle: '插件日志',
   },
   profile: {
     personalInfo: '个人信息',

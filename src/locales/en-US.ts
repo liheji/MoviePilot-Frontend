@@ -2018,7 +2018,8 @@ export default {
     cloneTitle: 'Create Plugin Clone',
     cloneSubtitle: 'Create an independent clone instance for {name}',
     cloneFeature: 'Plugin Clone Feature',
-    cloneDescription: 'Create an independent copy of the plugin with separate configuration and data, suitable for multi-account, testing environments, etc.',
+    cloneDescription:
+      'Create an independent copy of the plugin with separate configuration and data, suitable for multi-account, testing environments, etc.',
     suffix: 'Clone Suffix',
     suffixPlaceholder: 'e.g.: Test, Backup, Site1',
     suffixHint: 'Unique identifier to distinguish clones, only letters and numbers allowed',
@@ -2039,12 +2040,14 @@ export default {
     cloneIcon: 'Icon URL',
     cloneIconPlaceholder: 'https://example.com/icon.png',
     cloneIconHint: 'Custom icon for the clone plugin (optional)',
-    cloneNotice: 'Clone plugins are disabled by default after creation and need to be manually configured and enabled. The clone suffix cannot be modified once set.',
+    cloneNotice:
+      'Clone plugins are disabled by default after creation and need to be manually configured and enabled. The clone suffix cannot be modified once set.',
     createClone: 'Create Clone',
     cloning: 'Creating clone for {name}...',
     cloneSuccess: 'Plugin clone {name} created successfully!',
     cloneFailed: 'Plugin clone creation failed: {message}',
     cloneFailedGeneral: 'Plugin clone creation failed',
+    logTitle: 'Plugin Logging',
   },
   profile: {
     personalInfo: 'Personal Information',
