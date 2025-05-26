@@ -590,12 +590,12 @@ watch(
     </VDialog>
 
     <!-- 插件分身对话框 -->
-    <VDialog v-if="pluginCloneDialog" v-model="pluginCloneDialog" width="600" :fullscreen="!display.mdAndUp.value">
+    <VDialog v-if="pluginCloneDialog" v-model="pluginCloneDialog" width="600" scrollable :fullscreen="!display.mdAndUp.value">
       <VCard>
         <VCardTitle class="d-flex align-center pa-4">
           <VIcon icon="mdi-content-copy" class="me-3" color="primary" />
           <div>
-            <div class="text-h6">🎭 {{ t('plugin.cloneTitle') }}</div>
+            <div class="text-h6">{{ t('plugin.cloneTitle') }}</div>
             <div class="text-caption text-medium-emphasis">
               {{ t('plugin.cloneSubtitle', { name: props.plugin?.plugin_name }) }}
             </div>
