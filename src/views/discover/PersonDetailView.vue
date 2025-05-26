@@ -114,7 +114,7 @@ onBeforeMount(() => {
           'ring-1 ring-gray-700': isImageLoaded,
         }"
       >
-        <VImg v-img :src="getPersonImage()" cover @load="isImageLoaded = true" />
+        <VImg :src="getPersonImage()" cover @load="isImageLoaded = true" />
       </VAvatar>
       <div class="ms-3">
         <h1 class="text-3xl lg:text-4xl text-center text-lg-left">
