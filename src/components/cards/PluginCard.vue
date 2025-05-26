@@ -10,6 +10,7 @@ import VersionHistory from '@/components/misc/VersionHistory.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import PluginConfigDialog from '../dialog/PluginConfigDialog.vue'
 import PluginDataDialog from '../dialog/PluginDataDialog.vue'
+import LoggingView from '@/views/system/LoggingView.vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 
@@ -700,35 +701,6 @@ watch(
             {{ t('plugin.createClone') }}
           </VBtn>
         </VCardActions>
-      </VCard>
-    </VDialog>
-
-    <!-- 实时日志弹窗 -->
-    <VDialog
-      v-if="loggingDialog"
-      v-model="loggingDialog"
-      scrollable
-      max-width="60rem"
-      :fullscreen="!display.mdAndUp.value"
-    >
-      <VCard>
-        <VDialogCloseBtn @click="loggingDialog = false" />
-        <VCardItem>
-          <VCardTitle class="d-inline-flex">
-            <VIcon icon="mdi-file-document" class="me-2" />
-            {{ t('plugin.logTitle') }}
-            <a class="mx-2 d-inline-flex align-center cursor-pointer" @click="openLoggerWindow">
-              <VChip color="grey-darken-1" size="small" class="ml-2">
-                <VIcon icon="mdi-open-in-new" size="small" start />
-                {{ t('common.openInNewWindow') }}
-              </VChip>
-            </a>
-          </VCardTitle>
-        </VCardItem>
-        <VDivider />
-        <VCardText>
-          <LoggingView :logfile="`plugins/${props.plugin?.id?.toLowerCase()}.log`" />
-        </VCardText>
       </VCard>
     </VDialog>
   </div>
