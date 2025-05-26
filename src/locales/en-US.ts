@@ -2014,7 +2014,7 @@ export default {
     folderName: 'Folder Name',
     cancel: 'Cancel',
     create: 'Create',
-    clone: 'Plugin Clone',
+    clone: 'Clone',
     cloneTitle: 'Create Plugin Clone',
     cloneSubtitle: 'Create an independent clone instance for {name}',
     cloneFeature: 'Plugin Clone Feature',

@@ -1991,7 +1991,7 @@ export default {
     folderName: '文件夾名稱',
     cancel: '取消',
     create: '創建',
-    clone: '插件分身',
+    clone: '分身',
     cloneTitle: '創建插件分身',
     cloneSubtitle: '為 {name} 創建獨立的分身實例',
     cloneFeature: '插件分身功能',

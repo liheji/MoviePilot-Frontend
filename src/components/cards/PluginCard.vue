@@ -688,15 +688,15 @@ watch(
             </VRow>
           </VForm>
         </VCardText>
-
-        <VDivider />
         <VCardActions class="pt-3">
           <VSpacer />
-          <VBtn @click="pluginCloneDialog = false" variant="outlined">
-            {{ t('common.cancel') }}
-          </VBtn>
-          <VBtn color="primary" @click="executePluginClone" :disabled="!cloneForm.suffix.trim()">
-            <VIcon icon="mdi-content-copy" class="me-2" />
+          <VBtn
+            color="primary"
+            @click="executePluginClone"
+            prepend-icon="mdi-content-copy"
+            class="px-5"
+            :disabled="!cloneForm.suffix.trim()"
+          >
             {{ t('plugin.createClone') }}
           </VBtn>
         </VCardActions>
