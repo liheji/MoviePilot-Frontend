@@ -6,10 +6,6 @@ import type { DownloaderConf, MediaInfo, TorrentInfo, TransferDirectoryConf } fr
 import { formatFileSize } from '@/@core/utils/formatters'
 import { VCardTitle, VChip } from 'vuetify/lib/components/index.mjs'
 import { useI18n } from 'vue-i18n'
-import { useDisplay } from 'vuetify'
-
-// 显示器宽度
-const display = useDisplay()
 
 // 多语言支持
 const { t } = useI18n()
@@ -136,7 +132,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VDialog max-width="35rem" scrollable :fullscreen="!display.mdAndUp.value">
+  <VDialog max-width="35rem" scrollable>
     <VCard>
       <VCardTitle class="py-4 me-12">
         <VIcon icon="mdi-download" class="me-2" />
