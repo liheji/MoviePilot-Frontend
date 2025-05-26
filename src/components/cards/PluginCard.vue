@@ -73,6 +73,18 @@ const imageLoadError = ref(false)
 // 更新日志弹窗
 const releaseDialog = ref(false)
 
+// 插件分身对话框
+const pluginCloneDialog = ref(false)
+
+// 插件分身表单
+const cloneForm = ref({
+  suffix: '',
+  name: '',
+  description: '',
+  version: '',
+  icon: ''
+})
+
 // 监听动作标识，如为true则打开详情
 watch(
   () => props.action,
@@ -241,6 +253,54 @@ function configDone() {
   emit('save')
 }
 
+// 显示插件分身对话框
+function showPluginClone() {
+  cloneForm.value = {
+    suffix: '',
+    name: `${props.plugin?.plugin_name} 分身`,
+    description: `${props.plugin?.plugin_desc} (分身版本)`,
+    version: props.plugin?.plugin_version || '1.0',
+    icon: props.plugin?.plugin_icon || ''
+  }
+  pluginCloneDialog.value = true
+}
+
+// 执行插件分身
+async function executePluginClone() {
+  if (!cloneForm.value.suffix.trim()) {
+    $toast.error('请输入分身后缀')
+    return
+  }
+
+  try {
+    progressDialog.value = true
+    progressText.value = `正在创建 ${props.plugin?.plugin_name} 的分身...`
+
+    const result: { [key: string]: any } = await api.post(`plugin/clone/${props.plugin?.id}`, {
+      suffix: cloneForm.value.suffix.trim(),
+      name: cloneForm.value.name.trim(),
+      description: cloneForm.value.description.trim(),
+      version: cloneForm.value.version.trim(),
+      icon: cloneForm.value.icon.trim()
+    })
+
+    progressDialog.value = false
+
+    if (result.success) {
+      $toast.success(`插件分身 ${cloneForm.value.name} 创建成功！`)
+      pluginCloneDialog.value = false
+      // 通知父组件刷新
+      emit('remove')
+    } else {
+      $toast.error(`插件分身创建失败：${result.message}`)
+    }
+  } catch (error) {
+    progressDialog.value = false
+    $toast.error('插件分身创建失败')
+    console.error(error)
+  }
+}
+
 // 弹出菜单
 const dropdownItems = ref([
   {
@@ -259,6 +319,16 @@ const dropdownItems = ref([
     props: {
       prependIcon: 'mdi-cog-outline',
       click: showPluginConfig,
+    },
+  },
+  {
+    title: '插件分身',
+    value: 8,
+    show: true,
+    props: {
+      prependIcon: 'mdi-content-copy',
+      color: 'info',
+      click: showPluginClone,
     },
   },
   {
@@ -470,6 +540,136 @@ watch(
         </VCardItem>
       </VCard>
     </VDialog>
+
+         <!-- 插件分身对话框 -->
+     <VDialog v-if="pluginCloneDialog" v-model="pluginCloneDialog" width="600" :fullscreen="!display.mdAndUp.value">
+       <VCard>
+         <VCardTitle class="d-flex align-center pa-4">
+           <VIcon icon="mdi-content-copy" class="me-3" color="primary" />
+           <div>
+             <div class="text-h6">🎭 创建插件分身</div>
+             <div class="text-caption text-medium-emphasis">为 {{ props.plugin?.plugin_name }} 创建独立的分身实例</div>
+           </div>
+         </VCardTitle>
+         <VDialogCloseBtn @click="pluginCloneDialog = false" />
+         <VDivider />
+
+         <VCardText class="pa-4">
+           <!-- 功能说明 -->
+           <VAlert
+             type="info"
+             variant="tonal"
+             density="compact"
+             class="mb-4"
+             icon="mdi-information-outline"
+           >
+             <div class="text-body-2">
+               <strong>插件分身功能</strong>：创建插件的独立副本，拥有独立的配置和数据，适用于多账号、测试环境等场景
+             </div>
+           </VAlert>
+
+           <VForm>
+             <VRow>
+               <VCol cols="12" md="6">
+                 <VTextField
+                   v-model="cloneForm.suffix"
+                   label="分身后缀 *"
+                   placeholder="例如：Test、Backup、Site1"
+                   hint="用于区分分身的唯一标识，只能包含英文字母和数字"
+                   persistent-hint
+                   :rules="[
+                     v => !!v || '分身后缀不能为空',
+                     v => /^[a-zA-Z0-9]+$/.test(v) || '只能包含英文字母和数字',
+                     v => v.length <= 20 || '长度不能超过20个字符'
+                   ]"
+                   required
+                   prepend-inner-icon="mdi-tag"
+                 />
+               </VCol>
+               
+               <VCol cols="12" md="6">
+                 <VTextField
+                   v-model="cloneForm.name"
+                   label="分身名称"
+                   placeholder="例如：自动备份 测试版"
+                   hint="分身插件的显示名称（可选）"
+                   persistent-hint
+                   prepend-inner-icon="mdi-rename-box"
+                 />
+               </VCol>
+               
+               <VCol cols="12">
+                 <VTextarea
+                   v-model="cloneForm.description"
+                   label="分身描述"
+                   placeholder="描述这个分身的用途和特点..."
+                   hint="详细描述分身插件的用途（可选）"
+                   persistent-hint
+                   rows="2"
+                   prepend-inner-icon="mdi-text"
+                 />
+               </VCol>
+               
+               <VCol cols="12" md="6">
+                 <VTextField
+                   v-model="cloneForm.version"
+                   label="版本号"
+                   placeholder="例如：1.0、2.1.0"
+                   hint="自定义分身插件的版本号（可选）"
+                   persistent-hint
+                   prepend-inner-icon="mdi-numeric"
+                 />
+               </VCol>
+               
+               <VCol cols="12" md="6">
+                 <VTextField
+                   v-model="cloneForm.icon"
+                   label="图标URL"
+                   placeholder="https://example.com/icon.png"
+                   hint="自定义分身插件的图标（可选）"
+                   persistent-hint
+                   prepend-inner-icon="mdi-image"
+                 />
+               </VCol>
+
+               <!-- 重要提醒 -->
+               <VCol cols="12">
+                 <VAlert
+                   type="warning"
+                   variant="tonal"
+                   density="compact"
+                   class="mt-2"
+                   icon="mdi-alert-circle-outline"
+                 >
+                   <div class="text-body-2">
+                     <strong>注意</strong>：分身插件创建后默认为禁用状态，需要手动配置启用。分身后缀一旦确定无法修改。
+                   </div>
+                 </VAlert>
+               </VCol>
+             </VRow>
+           </VForm>
+         </VCardText>
+         
+         <VDivider />
+         <VCardActions class="pa-4">
+           <VSpacer />
+           <VBtn 
+             @click="pluginCloneDialog = false"
+             variant="outlined"
+           >
+             取消
+           </VBtn>
+           <VBtn 
+             color="primary" 
+             @click="executePluginClone"
+             :disabled="!cloneForm.suffix.trim()"
+           >
+             <VIcon icon="mdi-content-copy" class="me-2" />
+             创建分身
+           </VBtn>
+         </VCardActions>
+       </VCard>
+     </VDialog>
   </div>
 </template>
 
