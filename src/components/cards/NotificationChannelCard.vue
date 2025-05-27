@@ -148,8 +148,15 @@ function onClose() {
       max-width="40rem"
       :fullscreen="!display.mdAndUp.value"
     >
-      <VCard :title="`${props.notification.name} - ${t('notification.config')}`">
-        <VDialogCloseBtn v-model="notificationInfoDialog" />
+      <VCard>
+        <VCardItem class="py-2">
+          <template #prepend>
+            <VIcon icon="mdi-cog" class="me-2" />
+          </template>
+          <VCardTitle>{{ t('common.config') }}</VCardTitle>
+          <VCardSubtitle>{{ props.notification.name }}</VCardSubtitle>
+        </VCardItem>
+        <VDialogCloseBtn @click="notificationInfoDialog = false" />
         <VDivider />
         <VCardText>
           <VForm>
@@ -167,6 +174,7 @@ function onClose() {
                   clearable
                   chips
                   persistent-hint
+                  prepend-inner-icon="mdi-bell-outline"
                 />
               </VCol>
             </VRow>
@@ -178,6 +186,7 @@ function onClose() {
                   :placeholder="t('notification.name')"
                   :hint="t('notification.nameHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -186,6 +195,7 @@ function onClose() {
                   :label="t('notification.wechat.corpId')"
                   :hint="t('notification.wechat.corpIdHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-domain"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -194,6 +204,7 @@ function onClose() {
                   :label="t('notification.wechat.appId')"
                   :hint="t('notification.wechat.appIdHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-application"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -202,6 +213,7 @@ function onClose() {
                   :label="t('notification.wechat.appSecret')"
                   :hint="t('notification.wechat.appSecretHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -210,6 +222,7 @@ function onClose() {
                   :label="t('notification.wechat.proxy')"
                   :hint="t('notification.wechat.proxyHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-server-network"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -218,6 +231,7 @@ function onClose() {
                   :label="t('notification.wechat.token')"
                   :hint="t('notification.wechat.tokenHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-key-variant"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -226,6 +240,7 @@ function onClose() {
                   :label="t('notification.wechat.encodingAesKey')"
                   :hint="t('notification.wechat.encodingAesKeyHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-lock"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -235,6 +250,7 @@ function onClose() {
                   :placeholder="t('notification.wechat.adminsPlaceholder')"
                   :hint="t('notification.wechat.adminsHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-account-supervisor"
                 />
               </VCol>
             </VRow>
@@ -246,6 +262,7 @@ function onClose() {
                   :placeholder="t('notification.name')"
                   :hint="t('notification.nameHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -254,6 +271,7 @@ function onClose() {
                   :label="t('notification.telegram.token')"
                   :hint="t('notification.telegram.tokenHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -262,6 +280,7 @@ function onClose() {
                   :label="t('notification.telegram.chatId')"
                   :hint="t('notification.telegram.chatIdHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-chat"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -271,6 +290,7 @@ function onClose() {
                   :placeholder="t('notification.telegram.usersPlaceholder')"
                   :hint="t('notification.telegram.usersHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-account-group"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -280,6 +300,7 @@ function onClose() {
                   :placeholder="t('notification.telegram.adminsPlaceholder')"
                   :hint="t('notification.telegram.adminsHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-account-supervisor"
                 />
               </VCol>
             </VRow>
@@ -291,6 +312,7 @@ function onClose() {
                   :placeholder="t('notification.name')"
                   :hint="t('notification.nameHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -300,6 +322,7 @@ function onClose() {
                   :placeholder="t('notification.slack.oauthTokenPlaceholder')"
                   :hint="t('notification.slack.oauthTokenHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -309,6 +332,7 @@ function onClose() {
                   :placeholder="t('notification.slack.appTokenPlaceholder')"
                   :hint="t('notification.slack.appTokenHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-application"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -318,6 +342,7 @@ function onClose() {
                   :placeholder="t('notification.slack.channelPlaceholder')"
                   :hint="t('notification.slack.channelHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-pound"
                 />
               </VCol>
             </VRow>
@@ -329,6 +354,7 @@ function onClose() {
                   :placeholder="t('notification.name')"
                   :hint="t('notification.nameHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -337,6 +363,7 @@ function onClose() {
                   :label="t('notification.synologychat.webhook')"
                   :hint="t('notification.synologychat.webhookHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-webhook"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -345,6 +372,7 @@ function onClose() {
                   :label="t('notification.synologychat.token')"
                   :hint="t('notification.synologychat.tokenHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
             </VRow>
@@ -356,6 +384,7 @@ function onClose() {
                   :placeholder="t('notification.name')"
                   :hint="t('notification.nameHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -364,6 +393,7 @@ function onClose() {
                   :label="t('notification.vocechat.host')"
                   :hint="t('notification.vocechat.hostHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -372,6 +402,7 @@ function onClose() {
                   :label="t('notification.vocechat.apiKey')"
                   :hint="t('notification.vocechat.apiKeyHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -381,6 +412,7 @@ function onClose() {
                   :placeholder="t('notification.vocechat.channelIdPlaceholder')"
                   :hint="t('notification.vocechat.channelIdHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-pound"
                 />
               </VCol>
             </VRow>
@@ -392,6 +424,7 @@ function onClose() {
                   :placeholder="t('notification.name')"
                   :hint="t('notification.nameHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -400,6 +433,7 @@ function onClose() {
                   :label="t('notification.webpush.username')"
                   :hint="t('notification.webpush.usernameHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-account"
                 />
               </VCol>
             </VRow>
@@ -411,6 +445,7 @@ function onClose() {
                   :hint="t('notification.customTypeHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-cog"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -420,6 +455,7 @@ function onClose() {
                   :hint="t('notification.nameRequired')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
             </VRow>

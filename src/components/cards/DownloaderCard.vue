@@ -205,7 +205,7 @@ onUnmounted(() => {
           <template #prepend>
             <VIcon icon="mdi-download" class="me-2" />
           </template>
-          <VCardTitle>{{ t('downloader.title') }}</VCardTitle>
+          <VCardTitle>{{ t('common.config') }}</VCardTitle>
           <VCardSubtitle>{{ props.downloader.name }}</VCardSubtitle>
         </VCardItem>
         <VDialogCloseBtn v-model="downloaderInfoDialog" />

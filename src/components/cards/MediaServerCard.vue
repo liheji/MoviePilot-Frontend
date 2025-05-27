@@ -211,7 +211,14 @@ onMounted(() => {
       max-width="40rem"
       :fullscreen="!display.mdAndUp.value"
     >
-      <VCard :title="`${props.mediaserver.name} - ${t('common.config')}`">
+      <VCard>
+        <VCardItem class="py-2">
+          <template #prepend>
+            <VIcon icon="mdi-cog" class="me-2" />
+          </template>
+          <VCardTitle>{{ t('common.config') }}</VCardTitle>
+          <VCardSubtitle>{{ props.mediaserver.name }}</VCardSubtitle>
+        </VCardItem>
         <VDialogCloseBtn v-model="mediaServerInfoDialog" />
         <VDivider />
         <VCardText>
@@ -230,6 +237,7 @@ onMounted(() => {
                   :hint="t('mediaserver.serverAlias')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -240,6 +248,7 @@ onMounted(() => {
                   :hint="t('mediaserver.hostHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -250,6 +259,7 @@ onMounted(() => {
                   :hint="t('mediaserver.playHostHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-play-network"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -259,6 +269,7 @@ onMounted(() => {
                   :hint="t('mediaserver.embyApiKeyHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
               <VCol cols="12">
@@ -273,6 +284,7 @@ onMounted(() => {
                   persistent-hint
                   active
                   append-inner-icon="mdi-refresh"
+                  prepend-inner-icon="mdi-library"
                   @click:append-inner="loadLibrary(mediaServerInfo.name)"
                 />
               </VCol>
@@ -286,6 +298,7 @@ onMounted(() => {
                   :hint="t('mediaserver.serverAlias')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -296,6 +309,7 @@ onMounted(() => {
                   :hint="t('mediaserver.hostHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -306,6 +320,7 @@ onMounted(() => {
                   :hint="t('mediaserver.playHostHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-play-network"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -315,6 +330,7 @@ onMounted(() => {
                   :hint="t('mediaserver.jellyfinApiKeyHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
               <VCol cols="12">
@@ -329,6 +345,7 @@ onMounted(() => {
                   persistent-hint
                   active
                   append-inner-icon="mdi-refresh"
+                  prepend-inner-icon="mdi-library"
                   @click:append-inner="loadLibrary(mediaServerInfo.name)"
                 />
               </VCol>
@@ -342,6 +359,7 @@ onMounted(() => {
                   :hint="t('mediaserver.serverAlias')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -352,6 +370,7 @@ onMounted(() => {
                   :hint="t('mediaserver.hostHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
               <VCol cols="12">
@@ -362,10 +381,16 @@ onMounted(() => {
                   :hint="t('mediaserver.playHostHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-play-network"
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField v-model="mediaServerInfo.config.username" :label="t('mediaserver.username')" active />
+                <VTextField
+                  v-model="mediaServerInfo.config.username"
+                  :label="t('mediaserver.username')"
+                  active
+                  prepend-inner-icon="mdi-account"
+                />
               </VCol>
               <VCol cols="12" md="6">
                 <VTextField
@@ -373,6 +398,7 @@ onMounted(() => {
                   v-model="mediaServerInfo.config.password"
                   :label="t('mediaserver.password')"
                   active
+                  prepend-inner-icon="mdi-lock"
                 />
               </VCol>
               <VCol cols="12">
@@ -387,6 +413,7 @@ onMounted(() => {
                   persistent-hint
                   active
                   append-inner-icon="mdi-refresh"
+                  prepend-inner-icon="mdi-library"
                   @click:append-inner="loadLibrary(mediaServerInfo.name)"
                 />
               </VCol>
@@ -400,6 +427,7 @@ onMounted(() => {
                   :hint="t('mediaserver.serverAlias')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -410,6 +438,7 @@ onMounted(() => {
                   :hint="t('mediaserver.hostHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -420,6 +449,7 @@ onMounted(() => {
                   :hint="t('mediaserver.playHostHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-play-network"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -429,6 +459,7 @@ onMounted(() => {
                   :hint="t('mediaserver.plexTokenHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
               <VCol cols="12">
@@ -443,6 +474,7 @@ onMounted(() => {
                   persistent-hint
                   active
                   append-inner-icon="mdi-refresh"
+                  prepend-inner-icon="mdi-library"
                   @click:append-inner="loadLibrary(mediaServerInfo.name)"
                 />
               </VCol>
@@ -454,10 +486,16 @@ onMounted(() => {
                   :label="t('mediaserver.type')"
                   :hint="t('mediaserver.customTypeHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-cog"
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField :label="t('common.name')" :hint="t('mediaserver.nameRequired')" persistent-hint />
+                <VTextField
+                  :label="t('common.name')"
+                  :hint="t('mediaserver.nameRequired')"
+                  persistent-hint
+                  prepend-inner-icon="mdi-label"
+                />
               </VCol>
             </VRow>
           </VForm>
