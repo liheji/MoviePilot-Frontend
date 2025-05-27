@@ -186,10 +186,20 @@ const displayedPlugins = computed(() => {
     })
     return filteredDataList.value.filter(plugin => !folderedPluginIds.has(plugin.id))
   } else {
-    // 文件夹内：只显示文件夹中的插件
+    // 文件夹内：按照文件夹内保存的顺序显示插件
     const folderData = pluginFolders.value[currentFolder.value]
     const folderPluginIds = Array.isArray(folderData) ? folderData : folderData?.plugins || []
-    return filteredDataList.value.filter(plugin => folderPluginIds.includes(plugin.id))
+
+    // 按照文件夹内的顺序排列插件
+    const orderedPlugins: Plugin[] = []
+    folderPluginIds.forEach((pluginId: string) => {
+      const plugin = filteredDataList.value.find(p => p.id === pluginId)
+      if (plugin) {
+        orderedPlugins.push(plugin)
+      }
+    })
+
+    return orderedPlugins
   }
 })
 
