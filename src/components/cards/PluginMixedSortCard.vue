@@ -1,51 +1,3 @@
-<template>
-  <div class="mixed-sort-card-wrapper">
-    <!-- 文件夹卡片 -->
-    <div
-      v-if="item.type === 'folder'"
-      class="drop-zone cursor-move"
-      :data-plugin-id="item.id"
-      @dragover="handleDragOver"
-      @dragenter="handleDragEnter"
-      @dragleave="handleDragLeave"
-      @drop="handleDropToFolder"
-    >
-      <PluginFolderCard
-        :folder-name="item.data.name"
-        :plugin-count="item.data.pluginCount"
-        :folder-config="item.data.config"
-        @open="$emit('openFolder', item.id)"
-        @delete="$emit('deleteFolder', item.id)"
-        @rename="(oldName, newName) => $emit('renameFolder', oldName, newName)"
-        @update-config="config => $emit('updateFolderConfig', item.id, config)"
-      />
-    </div>
-
-    <!-- 插件卡片 -->
-    <div v-else-if="item.type === 'plugin'" class="plugin-item-wrapper cursor-move" :data-plugin-id="item.id">
-      <PluginCard
-        :count="pluginStatistics[item.id] || 0"
-        :plugin="item.data"
-        :action="pluginActions[item.id] || false"
-        @remove="$emit('refreshData')"
-        @save="$emit('refreshData')"
-        @action-done="$emit('actionDone', item.id)"
-      />
-
-      <!-- 移出文件夹按钮（仅在文件夹内显示） -->
-      <VBtn
-        v-if="showRemoveButton"
-        icon="mdi-folder-remove"
-        variant="text"
-        color="warning"
-        size="small"
-        class="remove-from-folder-btn"
-        @click="$emit('removeFromFolder', item.id)"
-      />
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import PluginCard from './PluginCard.vue'
 import PluginFolderCard from './PluginFolderCard.vue'
@@ -121,14 +73,76 @@ function handleDropToFolder(event: DragEvent) {
 }
 </script>
 
+<template>
+  <div class="mixed-sort-card-wrapper">
+    <!-- 文件夹卡片 -->
+    <div
+      v-if="item.type === 'folder'"
+      class="drop-zone cursor-move"
+      :data-plugin-id="item.id"
+      @dragover="handleDragOver"
+      @dragenter="handleDragEnter"
+      @dragleave="handleDragLeave"
+      @drop="handleDropToFolder"
+    >
+      <PluginFolderCard
+        :folder-name="item.data.name"
+        :plugin-count="item.data.pluginCount"
+        :folder-config="item.data.config"
+        @open="$emit('openFolder', item.id)"
+        @delete="$emit('deleteFolder', item.id)"
+        @rename="(oldName, newName) => $emit('renameFolder', oldName, newName)"
+        @update-config="(folderName, config) => $emit('updateFolderConfig', folderName, config)"
+      />
+    </div>
+
+    <!-- 插件卡片 -->
+    <div v-else-if="item.type === 'plugin'" class="plugin-item-wrapper cursor-move" :data-plugin-id="item.id">
+      <PluginCard
+        :count="pluginStatistics[item.id] || 0"
+        :plugin="item.data"
+        :action="pluginActions[item.id] || false"
+        @remove="$emit('refreshData')"
+        @save="$emit('refreshData')"
+        @action-done="$emit('actionDone', item.id)"
+      />
+
+      <!-- 移出文件夹按钮（仅在文件夹内显示） -->
+      <VBtn
+        v-if="showRemoveButton"
+        icon="mdi-folder-remove"
+        variant="text"
+        color="warning"
+        size="small"
+        class="remove-from-folder-btn"
+        @click="$emit('removeFromFolder', item.id)"
+      />
+    </div>
+  </div>
+</template>
+
 <style lang="scss" scoped>
 .mixed-sort-card-wrapper {
   block-size: 100%;
   inline-size: 100%;
+
+  // 确保拖拽时的边界清晰
+  &.sortable-chosen {
+    opacity: 0.5;
+  }
+
+  &.sortable-ghost {
+    border: 2px dashed #2196f3;
+    border-radius: 16px;
+    background: rgba(33, 150, 243, 10%);
+    opacity: 0.3;
+  }
 }
 
 // 拖拽相关样式
 .drop-zone {
+  position: relative;
+  isolation: isolate; // 创建新的层叠上下文
   transition: all 0.3s ease;
 
   &.drag-over {
@@ -141,6 +155,7 @@ function handleDropToFolder(event: DragEvent) {
 
 .plugin-item-wrapper {
   position: relative;
+  isolation: isolate; // 创建新的层叠上下文
 
   .remove-from-folder-btn {
     position: absolute;
@@ -156,6 +171,13 @@ function handleDropToFolder(event: DragEvent) {
 
   &:hover .remove-from-folder-btn {
     opacity: 1;
+  }
+}
+
+// 拖拽时的样式优化
+.mixed-sort-card-wrapper.sortable-drag {
+  .remove-from-folder-btn {
+    display: none !important;
   }
 }
 </style>

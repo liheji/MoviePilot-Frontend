@@ -5,7 +5,6 @@ import api from '@/api'
 import type { Plugin } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import PluginAppCard from '@/components/cards/PluginAppCard.vue'
-import PluginCard from '@/components/cards/PluginCard.vue'
 import noImage from '@images/logos/plugin.png'
 import { useDisplay } from 'vuetify'
 import { isNullOrEmptyObject } from '@/@core/utils'
@@ -13,8 +12,7 @@ import { getPluginTabs } from '@/router/i18n-menu'
 import PluginMarketSettingDialog from '@/components/dialog/PluginMarketSettingDialog.vue'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
-import PluginFolderCard from '@/components/cards/PluginFolderCard.vue'
-import MixedSortCard from '@/components/cards/MixedSortCard.vue'
+import PluginMixedSortCard from '@/components/cards/PluginMixedSortCard.vue'
 
 // 国际化
 const { t } = useI18n()
@@ -1345,7 +1343,7 @@ function onDragEndPlugin(evt: any) {
                   group="mixed"
                 >
                   <template #item="{ element }">
-                    <MixedSortCard
+                    <PluginMixedSortCard
                       :item="element"
                       :plugin-statistics="PluginStatistics"
                       :plugin-actions="pluginActions"
@@ -1378,7 +1376,7 @@ function onDragEndPlugin(evt: any) {
                   group="plugins"
                 >
                   <template #item="{ element }">
-                    <MixedSortCard
+                    <PluginMixedSortCard
                       :item="{ type: 'plugin', id: element.id, data: element, order: 0 }"
                       :plugin-statistics="PluginStatistics"
                       :plugin-actions="pluginActions"
@@ -1565,5 +1563,5 @@ function onDragEndPlugin(evt: any) {
 </template>
 
 <style lang="scss" scoped>
-// 样式已移至 MixedSortCard 组件
+// 样式已移至 PluginMixedSortCard 组件
 </style>
