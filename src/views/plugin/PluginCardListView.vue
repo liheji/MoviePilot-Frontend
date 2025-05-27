@@ -38,7 +38,7 @@ const pluginId = ref(route.query.id)
 const activeSort = ref(null)
 
 // 插件顺序配置
-const orderConfig = ref<{ id: string }[]>([])
+const orderConfig = ref<{ id: string; type?: string; order?: number }[]>([])
 
 // 排序选项
 const sortOptions = computed(() => [
@@ -246,92 +246,43 @@ function updateMixedSortList() {
     // 创建统一的排序索引
     let globalOrder = 0
 
-    // 先按现有的混合排序列表顺序创建，如果没有则按默认顺序
-    if (mixedSortList.value.length > 0) {
-      // 如果已有混合排序列表，保持现有顺序
-      mixedSortList.value.forEach((existingItem, index) => {
-        if (existingItem.type === 'folder') {
-          // 检查文件夹是否仍然存在
-          const folder = displayedFolders.value.find(f => f.name === existingItem.id)
-          if (folder) {
-            items.push({
-              type: 'folder',
-              id: folder.name,
-              data: folder,
-              order: index,
-            })
-          }
-        } else if (existingItem.type === 'plugin') {
-          // 检查插件是否仍然存在
-          const plugin = displayedPlugins.value.find(p => p.id === existingItem.id)
-          if (plugin) {
-            items.push({
-              type: 'plugin',
-              id: plugin.id || '',
-              data: plugin,
-              order: index,
-            })
-          }
-        }
-      })
+    // 始终使用全局排序配置来创建混合列表
+    const allItems: { type: 'folder' | 'plugin'; id: string; data: any; order: number }[] = []
 
-      // 添加新的文件夹（不在现有列表中的）
-      displayedFolders.value.forEach(folder => {
-        if (!items.find(item => item.type === 'folder' && item.id === folder.name)) {
-          items.push({
-            type: 'folder',
-            id: folder.name,
-            data: folder,
-            order: items.length,
-          })
-        }
+    // 添加文件夹项目
+    displayedFolders.value.forEach(folder => {
+      const orderItem = orderConfig.value.find((item: any) => item.type === 'folder' && item.id === folder.name)
+      allItems.push({
+        type: 'folder',
+        id: folder.name,
+        data: folder,
+        order: orderItem?.order ?? 999,
       })
+    })
 
-      // 添加新的插件（不在现有列表中的）
-      displayedPlugins.value.forEach(plugin => {
-        if (!items.find(item => item.type === 'plugin' && item.id === plugin.id)) {
-          items.push({
-            type: 'plugin',
-            id: plugin.id || '',
-            data: plugin,
-            order: items.length,
-          })
-        }
+    // 添加插件项目
+    displayedPlugins.value.forEach(plugin => {
+      const orderItem = orderConfig.value.find((item: any) => item.type === 'plugin' && item.id === plugin.id)
+      allItems.push({
+        type: 'plugin',
+        id: plugin.id || '',
+        data: plugin,
+        order: orderItem?.order ?? 999,
       })
-    } else {
-      // 初次创建混合列表，按文件夹排序和插件排序交替排列
-      const sortedFolders = [...displayedFolders.value].sort((a, b) => {
-        const aIndex = folderOrder.value.indexOf(a.name)
-        const bIndex = folderOrder.value.indexOf(b.name)
-        return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
-      })
+    })
 
-      const sortedPlugins = [...displayedPlugins.value].sort((a, b) => {
-        const aIndex = orderConfig.value.findIndex((item: { id: string }) => item.id === a.id)
-        const bIndex = orderConfig.value.findIndex((item: { id: string }) => item.id === b.id)
-        return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
-      })
+    // 按order排序
+    allItems.sort((a, b) => a.order - b.order)
 
-      // 先添加所有文件夹
-      sortedFolders.forEach(folder => {
-        items.push({
-          type: 'folder',
-          id: folder.name,
-          data: folder,
-          order: globalOrder++,
-        })
+    // 转换为MixedSortItem格式
+    allItems.forEach((item, index) => {
+      items.push({
+        type: item.type,
+        id: item.id,
+        data: item.data,
+        order: index,
       })
-
-      // 再添加所有插件
-      sortedPlugins.forEach(plugin => {
-        items.push({
-          type: 'plugin',
-          id: plugin.id || '',
-          data: plugin,
-          order: globalOrder++,
-        })
-      })
-    }
+    })
 
     // 按order排序
     items.sort((a, b) => a.order - b.order)
@@ -370,11 +321,33 @@ async function loadPluginOrderConfig() {
   // 顺序配置
   const local_order = localStorage.getItem('MP_PLUGIN_ORDER')
   if (local_order) {
-    orderConfig.value = JSON.parse(local_order)
+    const parsed = JSON.parse(local_order)
+    // 兼容旧格式（只有id）和新格式（包含type和order）
+    if (parsed.length > 0 && typeof parsed[0] === 'object' && 'type' in parsed[0]) {
+      orderConfig.value = parsed
+    } else {
+      // 旧格式，转换为新格式
+      orderConfig.value = parsed.map((item: any, index: number) => ({
+        id: typeof item === 'string' ? item : item.id,
+        type: 'plugin',
+        order: index,
+      }))
+    }
   } else {
     const response2 = await api.get('/user/config/PluginOrder')
     if (response2 && response2.data && response2.data.value) {
-      orderConfig.value = response2.data.value
+      const serverData = response2.data.value
+      // 兼容服务端的旧格式和新格式
+      if (serverData.length > 0 && typeof serverData[0] === 'object' && 'type' in serverData[0]) {
+        orderConfig.value = serverData
+      } else {
+        // 旧格式，转换为新格式
+        orderConfig.value = serverData.map((item: any, index: number) => ({
+          id: typeof item === 'string' ? item : item.id,
+          type: 'plugin',
+          order: index,
+        }))
+      }
       localStorage.setItem('MP_PLUGIN_ORDER', JSON.stringify(orderConfig.value))
     }
   }
@@ -417,11 +390,18 @@ async function savePluginOrder() {
 // 保存混合排序
 async function saveMixedSortOrder() {
   try {
-    // 分离文件夹和插件
+    // 分离文件夹和插件，并记录它们的全局排序位置
     const newFolderOrder: string[] = []
     const newPluginOrder: Plugin[] = []
+    const globalOrder: { type: 'folder' | 'plugin'; id: string; order: number }[] = []
 
-    mixedSortList.value.forEach(item => {
+    mixedSortList.value.forEach((item, index) => {
+      globalOrder.push({
+        type: item.type,
+        id: item.id,
+        order: index,
+      })
+
       if (item.type === 'folder') {
         newFolderOrder.push(item.id)
       } else if (item.type === 'plugin') {
@@ -429,8 +409,15 @@ async function saveMixedSortOrder() {
       }
     })
 
-    // 更新文件夹排序
+    // 更新文件夹排序并设置order属性
     folderOrder.value = newFolderOrder
+    newFolderOrder.forEach((folderName, index) => {
+      if (pluginFolders.value[folderName]) {
+        // 找到该文件夹在全局排序中的位置
+        const globalOrderItem = globalOrder.find(item => item.type === 'folder' && item.id === folderName)
+        pluginFolders.value[folderName].order = globalOrderItem ? globalOrderItem.order : index
+      }
+    })
 
     // 添加文件夹中的插件到插件列表末尾
     Object.values(pluginFolders.value).forEach(folderData => {
@@ -446,8 +433,12 @@ async function saveMixedSortOrder() {
     // 更新插件列表
     filteredDataList.value = newPluginOrder
 
-    // 保存插件排序配置
-    const orderObj = newPluginOrder.map(item => ({ id: item.id || '' }))
+    // 保存插件排序配置（包含全局排序信息）
+    const orderObj = globalOrder.map(item => ({
+      id: item.id,
+      type: item.type,
+      order: item.order,
+    }))
     orderConfig.value = orderObj
     const orderString = JSON.stringify(orderObj)
     localStorage.setItem('MP_PLUGIN_ORDER', orderString)
@@ -485,6 +476,31 @@ async function saveFolderPluginOrder() {
         // 新格式，更新plugins字段
         folderData.plugins = newPluginIds
       }
+
+      // 更新全局排序配置中文件夹内插件的顺序
+      const folderOrderItem = orderConfig.value.find(
+        (item: any) => item.type === 'folder' && item.id === currentFolder.value,
+      )
+      const folderGlobalOrder = folderOrderItem?.order ?? 999
+
+      // 为文件夹内的插件分配连续的order值
+      newPluginIds.forEach((pluginId, index) => {
+        const existingItem = orderConfig.value.find((item: any) => item.type === 'plugin' && item.id === pluginId)
+        if (existingItem) {
+          existingItem.order = folderGlobalOrder + 0.1 + index * 0.01 // 使用小数确保在文件夹后面
+        } else {
+          orderConfig.value.push({
+            id: pluginId,
+            type: 'plugin',
+            order: folderGlobalOrder + 0.1 + index * 0.01,
+          })
+        }
+      })
+
+      // 保存全局排序配置
+      const orderString = JSON.stringify(orderConfig.value)
+      localStorage.setItem('MP_PLUGIN_ORDER', orderString)
+      await api.post('/user/config/PluginOrder', orderConfig.value)
 
       // 保存到后端
       await savePluginFolders()
@@ -813,10 +829,18 @@ async function loadPluginFolders() {
 
     pluginFolders.value = processedFolders
 
-    // 设置文件夹排序
-    folderOrder.value = Object.keys(processedFolders).sort(
-      (a, b) => (processedFolders[a].order || 0) - (processedFolders[b].order || 0),
-    )
+    // 设置文件夹排序 - 使用全局排序配置
+    const folderNames = Object.keys(processedFolders)
+    folderOrder.value = folderNames.sort((a, b) => {
+      // 从全局排序配置中查找文件夹的order
+      const aOrderItem = orderConfig.value.find((item: any) => item.type === 'folder' && item.id === a)
+      const bOrderItem = orderConfig.value.find((item: any) => item.type === 'folder' && item.id === b)
+
+      const aOrder = aOrderItem?.order ?? processedFolders[a].order ?? 999
+      const bOrder = bOrderItem?.order ?? processedFolders[b].order ?? 999
+
+      return aOrder - bOrder
+    })
   } catch (error) {
     pluginFolders.value = {}
     folderOrder.value = []
