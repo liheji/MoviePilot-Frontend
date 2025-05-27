@@ -426,6 +426,7 @@ onDeactivated(() => {
                   :hint="t('setting.system.appDomainHint')"
                   placeholder="http://localhost:3000"
                   persistent-hint
+                  prepend-inner-icon="mdi-web"
                 />
               </VCol>
 
@@ -438,6 +439,7 @@ onDeactivated(() => {
                       :hint="t('setting.system.wallpaperHint')"
                       persistent-hint
                       :items="wallpaperItems"
+                      prepend-inner-icon="mdi-image"
                     />
                   </VCol>
 
@@ -449,6 +451,7 @@ onDeactivated(() => {
                       :placeholder="t('setting.system.customizeWallpaperApi')"
                       persistent-hint
                       :rules="[v => !!v || t('setting.system.customizeWallpaperApiRequired')]"
+                      prepend-inner-icon="mdi-api"
                     />
                   </VCol>
                 </VRow>
@@ -463,6 +466,7 @@ onDeactivated(() => {
                     { title: 'TheMovieDb', value: 'themoviedb' },
                     { title: '豆瓣', value: 'douban' },
                   ]"
+                  prepend-inner-icon="mdi-database"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -479,6 +483,7 @@ onDeactivated(() => {
                     (v: any) => !isNaN(v) || t('setting.system.numbersOnly'),
                     (v: any) => v >= 1 || t('setting.system.minInterval'),
                   ]"
+                  prepend-inner-icon="mdi-sync"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -488,10 +493,11 @@ onDeactivated(() => {
                   :hint="t('setting.system.apiTokenHint')"
                   :placeholder="t('setting.system.apiTokenMinChars')"
                   persistent-hint
-                  prependInnerIcon="mdi-reload"
-                  :appendInnerIcon="SystemSettings.Basic.API_TOKEN ? 'mdi-content-copy' : ''"
-                  @click:prependInner="createRandomString"
-                  @click:appendInner="copyValue(SystemSettings.Basic.API_TOKEN)"
+                  prepend-inner-icon="mdi-key"
+                  :append-inner-icon="SystemSettings.Basic.API_TOKEN ? 'mdi-content-copy' : 'mdi-reload'"
+                  @click:append-inner="
+                    SystemSettings.Basic.API_TOKEN ? copyValue(SystemSettings.Basic.API_TOKEN) : createRandomString()
+                  "
                   :rules="[
                     (v: string) => !!v || t('setting.system.apiTokenRequired'),
                     (v: string) => v.length >= 16 || t('setting.system.apiTokenLength'),
@@ -505,6 +511,7 @@ onDeactivated(() => {
                   :placeholder="t('setting.system.githubTokenFormat')"
                   :hint="t('setting.system.githubTokenHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-github"
                 >
                 </VTextField>
               </VCol>
@@ -515,6 +522,7 @@ onDeactivated(() => {
                   placeholder="https://movie-pilot.org"
                   :hint="t('setting.system.ocrHostHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-text-recognition"
                 />
               </VCol>
             </VRow>
@@ -736,6 +744,7 @@ onDeactivated(() => {
                     persistent-hint
                     :items="['api.themoviedb.org', 'api.tmdb.org']"
                     :rules="[(v: string) => !!v || t('setting.system.tmdbApiDomainRequired')]"
+                    prepend-inner-icon="mdi-api"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -747,6 +756,7 @@ onDeactivated(() => {
                     persistent-hint
                     :items="['image.tmdb.org', 'static-mdb.v.geilijiasu.com']"
                     :rules="[(v: string) => !!v || t('setting.system.tmdbImageDomainRequired')]"
+                    prepend-inner-icon="mdi-image"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -757,6 +767,7 @@ onDeactivated(() => {
                     :hint="t('setting.system.tmdbLocaleHint')"
                     persistent-hint
                     :items="tmdbLanguageItems"
+                    prepend-inner-icon="mdi-translate"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -772,6 +783,7 @@ onDeactivated(() => {
                       (v: any) => v === 0 || !!v || t('setting.system.metaCacheExpireRequired'),
                       (v: any) => v >= 0 || t('setting.system.metaCacheExpireMin'),
                     ]"
+                    prepend-inner-icon="mdi-timer"
                   />
                 </VCol>
               </VRow>
@@ -815,6 +827,7 @@ onDeactivated(() => {
                     persistent-hint
                     :items="githubMirrorsItems"
                     clearable
+                    prepend-inner-icon="mdi-github"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -826,6 +839,7 @@ onDeactivated(() => {
                     persistent-hint
                     :items="pipMirrorsItems"
                     clearable
+                    prepend-inner-icon="mdi-package"
                   />
                 </VCol>
               </VRow>
@@ -845,6 +859,7 @@ onDeactivated(() => {
                     :placeholder="t('setting.system.dohResolversPlaceholder')"
                     :hint="t('setting.system.dohResolversHint')"
                     persistent-hint
+                    prepend-inner-icon="mdi-dns"
                   />
                 </VCol>
                 <VCol cols="12" v-show="SystemSettings.Advanced.DOH_ENABLE">
@@ -854,6 +869,7 @@ onDeactivated(() => {
                     :placeholder="t('setting.system.dohDomainsPlaceholder')"
                     :hint="t('setting.system.dohDomainsHint')"
                     persistent-hint
+                    prepend-inner-icon="mdi-domain"
                   />
                 </VCol>
               </VRow>
@@ -885,6 +901,7 @@ onDeactivated(() => {
                           :placeholder="t('setting.system.securityImageDomainAdd')"
                           hide-details
                           density="compact"
+                          prepend-inner-icon="mdi-shield-check"
                         >
                           <template #append>
                             <VBtn icon color="primary" @click="addSecurityDomain" :disabled="!newSecurityDomain">
@@ -918,6 +935,7 @@ onDeactivated(() => {
                     :hint="t('setting.system.logLevelHint')"
                     persistent-hint
                     :items="logLevelItems"
+                    prepend-inner-icon="mdi-format-list-bulleted"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -930,6 +948,7 @@ onDeactivated(() => {
                     type="number"
                     :suffix="t('setting.system.mb')"
                     :rules="[(v: any) => v === 0 || !!v || t('setting.system.logMaxFileSizeRequired'), (v: any) => v >= 1 || t('setting.system.logMaxFileSizeMin')]"
+                    prepend-inner-icon="mdi-file-document"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -941,6 +960,7 @@ onDeactivated(() => {
                     min="1"
                     type="number"
                     :rules="[(v: any) => v === 0 || !!v || t('setting.system.logBackupCountRequired'), (v: any) => v >= 1 || t('setting.system.logBackupCountMin')]"
+                    prepend-inner-icon="mdi-backup-restore"
                   />
                 </VCol>
                 <VCol cols="12">
@@ -949,6 +969,7 @@ onDeactivated(() => {
                     :label="t('setting.system.logFileFormat')"
                     :hint="t('setting.system.logFileFormatHint')"
                     persistent-hint
+                    prepend-inner-icon="mdi-format-text"
                   />
                 </VCol>
               </VRow>

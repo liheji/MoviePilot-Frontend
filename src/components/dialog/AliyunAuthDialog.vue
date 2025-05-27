@@ -114,6 +114,9 @@ onUnmounted(() => {
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
+        <template #prepend>
+          <VIcon icon="mdi-qrcode" class="me-2" />
+        </template>
         <VCardTitle>
           {{ t('dialog.aliyunAuth.loginTitle') }}
         </VCardTitle>

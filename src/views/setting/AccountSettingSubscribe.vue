@@ -217,6 +217,7 @@ onMounted(() => {
                   :label="t('setting.subscribe.mode')"
                   :hint="t('setting.subscribe.modeHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-cog"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -226,6 +227,7 @@ onMounted(() => {
                   :label="t('setting.subscribe.rssInterval')"
                   :hint="t('setting.subscribe.rssIntervalHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-timer"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -238,6 +240,7 @@ onMounted(() => {
                   :label="t('setting.subscribe.filterRuleGroup')"
                   :hint="t('setting.subscribe.filterRuleGroupHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-filter"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -250,6 +253,7 @@ onMounted(() => {
                   :label="t('setting.subscribe.bestVersionRuleGroup')"
                   :hint="t('setting.subscribe.bestVersionRuleGroupHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-star"
                 />
               </VCol>
             </VRow>

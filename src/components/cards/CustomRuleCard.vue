@@ -117,7 +117,13 @@ function onClose() {
       max-width="40rem"
       :fullscreen="!display.mdAndUp.value"
     >
-      <VCard :title="t('customRule.title', { id: props.rule.id })">
+      <VCard>
+        <VCardItem>
+          <template #prepend>
+            <VIcon icon="mdi-filter-outline" class="me-2" />
+          </template>
+          <VCardTitle>{{ t('customRule.title', { id: props.rule.id }) }}</VCardTitle>
+        </VCardItem>
         <VDialogCloseBtn v-model="ruleInfoDialog" />
         <VDivider />
         <VCardText>
@@ -131,6 +137,7 @@ function onClose() {
                   :hint="t('customRule.hint.ruleId')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-identifier"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -141,6 +148,7 @@ function onClose() {
                   :hint="t('customRule.hint.ruleName')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12">
@@ -151,6 +159,7 @@ function onClose() {
                   :hint="t('customRule.hint.include')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-plus-circle"
                 />
               </VCol>
               <VCol cols="12">
@@ -161,6 +170,7 @@ function onClose() {
                   :hint="t('customRule.hint.exclude')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-minus-circle"
                 />
               </VCol>
               <VCol cols="6">
@@ -171,6 +181,7 @@ function onClose() {
                   :hint="t('customRule.hint.sizeRange')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-harddisk"
                 />
               </VCol>
               <VCol cols="6">
@@ -181,6 +192,7 @@ function onClose() {
                   :hint="t('customRule.hint.seeders')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-account-group"
                 />
               </VCol>
               <VCol cols="6">
@@ -191,6 +203,7 @@ function onClose() {
                   :hint="t('customRule.hint.publishTime')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-calendar-clock"
                 />
               </VCol>
             </VRow>

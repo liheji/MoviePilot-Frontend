@@ -243,6 +243,7 @@ function onClose() {
                 :hint="t('filterRule.groupName')"
                 persistent-hint
                 active
+                prepend-inner-icon="mdi-label"
               />
             </VCol>
             <VCol cols="6" md="3">
@@ -253,6 +254,7 @@ function onClose() {
                 :hint="t('filterRule.mediaType')"
                 persistent-hint
                 active
+                prepend-inner-icon="mdi-movie-open"
               />
             </VCol>
             <VCol cols="6" md="3">
@@ -263,6 +265,7 @@ function onClose() {
                 :hint="t('filterRule.category')"
                 persistent-hint
                 active
+                prepend-inner-icon="mdi-folder-open"
               />
             </VCol>
           </VRow>

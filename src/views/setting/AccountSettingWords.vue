@@ -143,6 +143,7 @@ onMounted(() => {
             :placeholder="t('setting.words.identifiersPlaceholder')"
             :hint="t('setting.words.identifiersHint')"
             persistent-hint
+            prepend-inner-icon="mdi-tag-text"
           />
         </VCardText>
         <VCardText>
@@ -173,6 +174,7 @@ onMounted(() => {
             :placeholder="t('setting.words.releaseGroupsPlaceholder')"
             :hint="t('setting.words.releaseGroupsHint')"
             persistent-hint
+            prepend-inner-icon="mdi-account-group"
           />
         </VCardText>
         <VCardText>
@@ -198,6 +200,7 @@ onMounted(() => {
             :placeholder="t('setting.words.customizationPlaceholder')"
             :hint="t('setting.words.customizationHint')"
             persistent-hint
+            prepend-inner-icon="mdi-code-braces"
           />
         </VCardText>
         <VCardText>
@@ -223,6 +226,7 @@ onMounted(() => {
             :placeholder="t('setting.words.excludeWordsPlaceholder')"
             :hint="t('setting.words.excludeWordsHint')"
             persistent-hint
+            prepend-inner-icon="mdi-block-helper"
           />
         </VCardText>
         <VCardText>

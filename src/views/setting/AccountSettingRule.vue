@@ -501,6 +501,7 @@ onMounted(() => {
                   :label="t('setting.rule.currentPriorityRules')"
                   :hint="t('setting.rule.currentPriorityRulesHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-priority-high"
                 />
               </VCol>
             </VRow>

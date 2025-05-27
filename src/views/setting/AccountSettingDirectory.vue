@@ -305,6 +305,7 @@ onMounted(() => {
                 :label="t('setting.directory.scrapSource')"
                 :hint="t('setting.directory.scrapSourceHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-database"
               />
             </VCol>
             <VCol cols="12">
@@ -315,6 +316,7 @@ onMounted(() => {
                 persistent-hint
                 clearable
                 active
+                prepend-inner-icon="mdi-movie-open"
               />
             </VCol>
             <VCol cols="12">
@@ -325,6 +327,7 @@ onMounted(() => {
                 persistent-hint
                 clearable
                 active
+                prepend-inner-icon="mdi-television"
               />
             </VCol>
           </VRow>

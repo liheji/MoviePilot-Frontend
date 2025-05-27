@@ -161,6 +161,7 @@ onMounted(() => {
                   :disabled="siteSetting.CookieCloud.COOKIECLOUD_ENABLE_LOCAL"
                   :hint="t('setting.site.serviceAddressHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -169,6 +170,7 @@ onMounted(() => {
                   :label="t('setting.site.userKey')"
                   :hint="t('setting.site.userKeyHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-key"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -180,6 +182,7 @@ onMounted(() => {
                   :label="t('setting.site.e2ePassword')"
                   :hint="t('setting.site.e2ePasswordHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-lock"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -189,6 +192,7 @@ onMounted(() => {
                   :items="CookieCloudIntervalItems"
                   :hint="t('setting.site.autoSyncIntervalHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-timer"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -198,6 +202,7 @@ onMounted(() => {
                   :placeholder="t('setting.site.syncBlacklistPlaceholder')"
                   :hint="t('setting.site.syncBlacklistHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-block-helper"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -206,6 +211,7 @@ onMounted(() => {
                   :label="t('setting.site.userAgent')"
                   :hint="t('setting.site.userAgentHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-web"
                 />
               </VCol>
             </VRow>
@@ -234,6 +240,7 @@ onMounted(() => {
                   :items="SiteDataRefreshIntervalItems"
                   :hint="t('setting.site.siteDataRefreshIntervalHint')"
                   persistent-hint
+                  prepend-inner-icon="mdi-refresh"
                 />
               </VCol>
             </VRow>

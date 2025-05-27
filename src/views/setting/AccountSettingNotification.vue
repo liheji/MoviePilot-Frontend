@@ -418,10 +418,20 @@ onMounted(() => {
         <VCardText>
           <VRow>
             <VCol cols="6">
-              <VTextField v-model="notificationTime.start" :label="t('setting.notification.startTime')" type="time" />
+              <VTextField
+                v-model="notificationTime.start"
+                :label="t('setting.notification.startTime')"
+                type="time"
+                prepend-inner-icon="mdi-clock-start"
+              />
             </VCol>
             <VCol cols="6">
-              <VTextField v-model="notificationTime.end" :label="t('setting.notification.endTime')" type="time" />
+              <VTextField
+                v-model="notificationTime.end"
+                :label="t('setting.notification.endTime')"
+                type="time"
+                prepend-inner-icon="mdi-clock-end"
+              />
             </VCol>
           </VRow>
         </VCardText>
@@ -445,11 +455,16 @@ onMounted(() => {
   <!-- 模板编辑器对话框 -->
   <VDialog v-model="editorVisible" v-if="editorVisible" max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
-      <VCardItem>
+      <VCardItem class="py-2">
+        <template #prepend>
+          <VIcon icon="mdi-code-json" class="me-2" />
+        </template>
         <VCardTitle>
-          {{ templateTypes.find(t => t.type === currentTemplate)?.label }}
           {{ t('setting.notification.templateConfigTitle') }}
         </VCardTitle>
+        <VCardSubtitle>
+          {{ templateTypes.find(t => t.type === currentTemplate)?.label }}
+        </VCardSubtitle>
         <VDialogCloseBtn @click="editorVisible = false" />
       </VCardItem>
       <VCardText class="py-0">

@@ -205,6 +205,7 @@ onMounted(() => {
                 :label="t('setting.search.mediaSource')"
                 :hint="t('setting.search.mediaSourceHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-database-search"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -217,6 +218,7 @@ onMounted(() => {
                 :label="t('setting.search.filterRuleGroup')"
                 :hint="t('setting.search.filterRuleGroupHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-filter"
               />
             </VCol>
           </VRow>
@@ -228,6 +230,7 @@ onMounted(() => {
                 placeholder="MOVIEPILOT"
                 :hint="t('setting.search.downloadLabelHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-tag"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -237,6 +240,7 @@ onMounted(() => {
                 :placeholder="t('setting.search.downloadUserPlaceholder')"
                 :hint="t('setting.search.downloadUserHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-account"
               />
             </VCol>
             <VCol cols="12" md="6">

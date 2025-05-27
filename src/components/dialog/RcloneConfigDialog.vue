@@ -61,6 +61,9 @@ async function handleReset() {
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
+        <template #prepend>
+          <VIcon icon="mdi-cog-outline" class="me-2" />
+        </template>
         <VCardTitle>
           {{ t('dialog.rcloneConfig.title') }}
         </VCardTitle>
@@ -69,7 +72,11 @@ async function handleReset() {
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VTextField v-model="props.conf.filepath" :label="t('dialog.rcloneConfig.filePath')" />
+            <VTextField
+              v-model="props.conf.filepath"
+              :label="t('dialog.rcloneConfig.filePath')"
+              prepend-inner-icon="mdi-file-document"
+            />
           </VCol>
           <VCol cols="12">
             <VAceEditor

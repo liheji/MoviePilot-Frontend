@@ -74,6 +74,9 @@ async function savaAlistConfig() {
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
+        <template #prepend>
+          <VIcon icon="mdi-cog-outline" class="me-2" />
+        </template>
         <VCardTitle>
           {{ t('dialog.alistConfig.title') }}
         </VCardTitle>
@@ -87,6 +90,7 @@ async function savaAlistConfig() {
               :hint="t('dialog.alistConfig.serverUrl')"
               :label="t('dialog.alistConfig.serverUrl')"
               persistent-hint
+              prepend-inner-icon="mdi-server"
             />
           </VCol>
           <VCol cols="12" md="4">
@@ -96,6 +100,7 @@ async function savaAlistConfig() {
               :label="t('dialog.alistConfig.loginType')"
               :hint="t('dialog.alistConfig.loginType')"
               persistent-hint
+              prepend-inner-icon="mdi-login"
             />
           </VCol>
           <VCol cols="12" md="4" v-if="loginType == 'username'">
@@ -104,6 +109,7 @@ async function savaAlistConfig() {
               :hint="t('dialog.alistConfig.username')"
               :label="t('dialog.alistConfig.username')"
               persistent-hint
+              prepend-inner-icon="mdi-account"
             />
           </VCol>
           <VCol cols="12" md="4" v-if="loginType == 'username'">
@@ -113,6 +119,7 @@ async function savaAlistConfig() {
               :hint="t('dialog.alistConfig.password')"
               :label="t('dialog.alistConfig.password')"
               persistent-hint
+              prepend-inner-icon="mdi-lock"
             />
           </VCol>
           <VCol cols="12" md="8" v-if="loginType == 'token'">
@@ -121,6 +128,7 @@ async function savaAlistConfig() {
               :hint="t('dialog.alistConfig.loginTypeOptions.token')"
               :label="t('dialog.alistConfig.loginTypeOptions.token')"
               persistent-hint
+              prepend-inner-icon="mdi-key"
             />
           </VCol>
         </VRow>
