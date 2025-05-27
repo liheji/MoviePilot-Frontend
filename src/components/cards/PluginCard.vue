@@ -455,7 +455,7 @@ watch(
                   {{ props.plugin?.plugin_desc }}
                 </div>
               </div>
-              <div class="relative flex-shrink-0 self-center cursor-move pb-3">
+              <div class="relative flex-shrink-0 self-center pb-3" :class="{ 'cursor-move': display.mdAndUp.value }">
                 <VAvatar size="48">
                   <VImg
                     ref="imageRef"
@@ -590,7 +590,13 @@ watch(
     </VDialog>
 
     <!-- 插件分身对话框 -->
-    <VDialog v-if="pluginCloneDialog" v-model="pluginCloneDialog" width="600" scrollable :fullscreen="!display.mdAndUp.value">
+    <VDialog
+      v-if="pluginCloneDialog"
+      v-model="pluginCloneDialog"
+      width="600"
+      scrollable
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard>
         <VCardTitle class="d-flex align-center pa-4">
           <VIcon icon="mdi-content-copy" class="me-3" color="primary" />

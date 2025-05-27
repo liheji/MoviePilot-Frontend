@@ -298,13 +298,18 @@ const dropdownItems = ref([
             <div class="plugin-folder-card__body" :class="{ 'plugin-folder-card__body--no-icon': !shouldShowIcon }">
               <!-- 文件夹图标 -->
               <div v-if="shouldShowIcon" class="plugin-folder-card__icon-container">
-                <VIcon :icon="folderIcon" :size="display.mobile ? 56 : 72" class="cursor-move" :color="iconColor" />
+                <VIcon
+                  :icon="folderIcon"
+                  :size="display.mobile ? 56 : 72"
+                  :color="iconColor"
+                  :class="{ 'cursor-move': display.mdAndUp.value }"
+                />
               </div>
 
               <!-- 文件夹信息 -->
               <div
-                class="plugin-folder-card__info cursor-move"
-                :class="{ 'plugin-folder-card__info--no-icon': !shouldShowIcon }"
+                class="plugin-folder-card__info"
+                :class="{ 'cursor-move': display.mdAndUp.value, 'plugin-folder-card__info--no-icon': !shouldShowIcon }"
               >
                 <!-- 文件夹名称 -->
                 <h3 class="plugin-folder-card__name">
