@@ -458,7 +458,7 @@ async function saveMixedSortOrder() {
     // 保存文件夹排序
     await savePluginFolders()
   } catch (error) {
-    console.error('保存排序失败:', error)
+    console.error(error)
   } finally {
     // 清除拖拽标志
     isDraggingSortMode.value = false
@@ -490,7 +490,7 @@ async function saveFolderPluginOrder() {
       await savePluginFolders()
     }
   } catch (error) {
-    console.error('保存文件夹内排序失败:', error)
+    console.error(error)
   } finally {
     // 清除拖拽标志
     isDraggingSortMode.value = false
@@ -924,7 +924,7 @@ async function renameFolder(oldName: string, newName: string) {
 
     $toast.success(t('plugin.folderRenameSuccess'))
   } catch (error) {
-    console.error('重命名文件夹失败:', error)
+    console.error(error)
     // 回滚本地更改
     pluginFolders.value[oldName] = pluginFolders.value[newName] || { plugins: [] }
     delete pluginFolders.value[newName]
@@ -1108,7 +1108,6 @@ async function handleDropToFolder(event: DragEvent, folderName: string) {
 
     $toast.success(`插件已移动到文件夹 "${folderName}"`)
   } catch (error) {
-    console.error('拖拽到文件夹失败:', error)
     $toast.error('操作失败')
   }
 }
@@ -1154,13 +1153,6 @@ function onDragStartPlugin(evt: any) {
   if (item && item.getAttribute && item.getAttribute('data-plugin-id')) {
     currentDraggedPluginId.value = item.getAttribute('data-plugin-id')
   }
-}
-
-// 拖拽结束事件
-function onDragEndPlugin(evt: any) {
-  currentDraggedPluginId.value = ''
-  // 注意：不在这里清除拖拽标志，而是在保存函数中清除
-  // 这样可以避免在拖拽过程中触发watch监听器
 }
 </script>
 
