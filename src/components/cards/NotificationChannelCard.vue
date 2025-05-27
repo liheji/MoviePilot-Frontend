@@ -454,7 +454,6 @@ function onClose() {
                   :label="t('notification.name')"
                   :hint="t('notification.nameRequired')"
                   persistent-hint
-                  active
                   prepend-inner-icon="mdi-label"
                 />
               </VCol>

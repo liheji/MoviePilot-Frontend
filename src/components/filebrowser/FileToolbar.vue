@@ -165,17 +165,24 @@ const sortIcon = computed(() => {
     <IconBtn v-if="pathSegments.length > 0" @click="goUp">
       <VIcon icon="mdi-arrow-up-bold-outline" />
     </IconBtn>
+    <!-- 新建文件夹 -->
     <VDialog v-model="newFolderPopper" max-width="35rem">
       <template #activator="{ props }">
         <IconBtn>
           <VIcon v-bind="props" icon="mdi-folder-plus-outline" />
         </IconBtn>
       </template>
-      <VCard :title="t('file.newFolder')">
+      <VCard>
+        <VCardItem>
+          <template #prepend>
+            <VIcon icon="mdi-folder-plus-outline" class="me-2" />
+          </template>
+          <VCardTitle>{{ t('file.newFolder') }}</VCardTitle>
+        </VCardItem>
         <VDialogCloseBtn @click="newFolderPopper = false" />
         <VDivider />
         <VCardText>
-          <VTextField v-model="newFolderName" :label="t('common.name')" />
+          <VTextField v-model="newFolderName" :label="t('common.name')" prepend-inner-icon="mdi-format-text" />
         </VCardText>
         <VCardActions>
           <div class="flex-grow-1" />

@@ -696,13 +696,24 @@ onMounted(() => {
   </VCard>
   <!-- 重命名弹窗 -->
   <VDialog v-if="renamePopper" v-model="renamePopper" max-width="35rem">
-    <VCard :title="t('file.rename')">
+    <VCard>
+      <VCardItem>
+        <template #prepend>
+          <VIcon icon="mdi-pencil" class="me-2" />
+        </template>
+        <VCardTitle>{{ t('file.rename') }}</VCardTitle>
+      </VCardItem>
       <VDialogCloseBtn @click="renamePopper = false" />
       <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <VTextField v-model="newName" :label="t('file.newName')" :loading="renameLoading" />
+            <VTextField
+              v-model="newName"
+              :label="t('file.newName')"
+              :loading="renameLoading"
+              prepend-inner-icon="mdi-format-text"
+            />
           </VCol>
           <VCol cols="12" v-if="currentItem && currentItem.type == 'dir'">
             <VSwitch v-model="renameAll" :label="t('file.includeSubfolders')" />

@@ -291,11 +291,14 @@ onMounted(() => {
 
 <template>
   <VDialog scrollable max-width="40rem" :fullscreen="!display.mdAndUp.value">
-    <VCard
-      :title="`${props.oper === 'add' ? t('dialog.userAddEdit.add') : t('dialog.userAddEdit.edit')}${
-        props.oper !== 'add' ? ` - ${userName}` : ''
-      }`"
-    >
+    <VCard>
+      <VCardItem :class="props.oper === 'add' ? 'py-3' : 'py-2'">
+        <template #prepend>
+          <VIcon icon="mdi-account" class="me-2" />
+        </template>
+        <VCardTitle>{{ props.oper === 'add' ? t('dialog.userAddEdit.add') : t('dialog.userAddEdit.edit') }}</VCardTitle>
+        <VCardSubtitle>{{ userName }}</VCardSubtitle>
+      </VCardItem>
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardItem>
@@ -350,6 +353,7 @@ onMounted(() => {
                 density="comfortable"
                 :readonly="props.oper !== 'add'"
                 :label="t('dialog.userAddEdit.username')"
+                prepend-inner-icon="mdi-account"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -359,6 +363,7 @@ onMounted(() => {
                 clearable
                 :label="t('dialog.userAddEdit.email')"
                 type="email"
+                prepend-inner-icon="mdi-email"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -370,6 +375,7 @@ onMounted(() => {
                 clearable
                 :label="t('dialog.userAddEdit.password')"
                 autocomplete=""
+                prepend-inner-icon="mdi-lock"
                 @click:append-inner="isNewPasswordVisible = !isNewPasswordVisible"
               />
             </VCol>
@@ -382,6 +388,7 @@ onMounted(() => {
                 :append-inner-icon="isConfirmPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                 clearable
                 :label="t('dialog.userAddEdit.confirmPassword')"
+                prepend-inner-icon="mdi-lock-check"
                 @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
               />
             </VCol>
@@ -392,6 +399,7 @@ onMounted(() => {
                 clearable
                 :label="t('dialog.userAddEdit.nickname')"
                 placeholder="显示昵称，优先于用户名显示"
+                prepend-inner-icon="mdi-card-account-details"
               />
             </VCol>
             <VCol cols="12" md="6" v-if="canControl">
@@ -402,6 +410,7 @@ onMounted(() => {
                 item-value="value"
                 :label="t('dialog.userAddEdit.status')"
                 dense
+                prepend-inner-icon="mdi-toggle-switch"
               />
             </VCol>
           </VRow>
@@ -415,6 +424,7 @@ onMounted(() => {
                 density="comfortable"
                 clearable
                 :label="t('dialog.userAddEdit.wechat')"
+                prepend-inner-icon="mdi-wechat"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -423,6 +433,7 @@ onMounted(() => {
                 density="comfortable"
                 clearable
                 :label="t('dialog.userAddEdit.telegram')"
+                prepend-inner-icon="mdi-send"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -431,6 +442,7 @@ onMounted(() => {
                 density="comfortable"
                 clearable
                 :label="t('dialog.userAddEdit.slack')"
+                prepend-inner-icon="mdi-slack"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -439,6 +451,7 @@ onMounted(() => {
                 density="comfortable"
                 clearable
                 :label="t('dialog.userAddEdit.vocechat')"
+                prepend-inner-icon="mdi-chat"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -447,10 +460,17 @@ onMounted(() => {
                 density="comfortable"
                 clearable
                 :label="t('dialog.userAddEdit.synologyChat')"
+                prepend-inner-icon="mdi-message"
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField v-model="userForm.settings.douban_userid" density="comfortable" clearable label="豆瓣用户" />
+              <VTextField
+                v-model="userForm.settings.douban_userid"
+                density="comfortable"
+                clearable
+                label="豆瓣用户"
+                prepend-inner-icon="mdi-movie"
+              />
             </VCol>
           </VRow>
         </VForm>

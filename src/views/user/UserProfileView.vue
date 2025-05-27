@@ -322,7 +322,13 @@ watch(
             <VForm class="mt-6">
               <VRow>
                 <VCol cols="12" md="6">
-                  <VTextField v-model="currentUserName" density="comfortable" readonly :label="t('user.username')" />
+                  <VTextField
+                    v-model="currentUserName"
+                    density="comfortable"
+                    readonly
+                    :label="t('user.username')"
+                    prepend-inner-icon="mdi-account"
+                  />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VTextField
@@ -331,6 +337,7 @@ watch(
                     clearable
                     :label="t('user.email')"
                     type="email"
+                    prepend-inner-icon="mdi-email"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -342,6 +349,7 @@ watch(
                     clearable
                     :label="t('user.password')"
                     autocomplete=""
+                    prepend-inner-icon="mdi-lock"
                     @click:append-inner="isNewPasswordVisible = !isNewPasswordVisible"
                   />
                 </VCol>
@@ -354,6 +362,7 @@ watch(
                     :append-inner-icon="isConfirmPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                     clearable
                     :label="t('user.confirmPassword')"
+                    prepend-inner-icon="mdi-lock-check"
                     @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
                   />
                 </VCol>
@@ -364,6 +373,7 @@ watch(
                     clearable
                     :label="t('profile.nickname')"
                     :placeholder="t('profile.nicknamePlaceholder')"
+                    prepend-inner-icon="mdi-card-account-details"
                   />
                 </VCol>
               </VRow>
@@ -379,6 +389,7 @@ watch(
                     density="comfortable"
                     clearable
                     :label="t('profile.wechatUser')"
+                    prepend-inner-icon="mdi-wechat"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -387,6 +398,7 @@ watch(
                     density="comfortable"
                     clearable
                     :label="t('profile.telegramUser')"
+                    prepend-inner-icon="mdi-send"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -395,6 +407,7 @@ watch(
                     density="comfortable"
                     clearable
                     :label="t('profile.slackUser')"
+                    prepend-inner-icon="mdi-slack"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -403,6 +416,7 @@ watch(
                     density="comfortable"
                     clearable
                     :label="t('profile.vocechatUser')"
+                    prepend-inner-icon="mdi-chat"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -411,6 +425,7 @@ watch(
                     density="comfortable"
                     clearable
                     :label="t('profile.synologychatUser')"
+                    prepend-inner-icon="mdi-message"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -419,6 +434,7 @@ watch(
                     density="comfortable"
                     clearable
                     :label="t('profile.doubanUser')"
+                    prepend-inner-icon="mdi-movie"
                   />
                 </VCol>
               </VRow>
@@ -462,6 +478,7 @@ watch(
               autocomplete=""
               class="mb-8"
               variant="outlined"
+              prepend-inner-icon="mdi-shield-key"
             />
             <div class="d-flex justify-end flex-wrap gap-4">
               <VBtn variant="outlined" color="secondary" @click="otpDialog = false"> {{ t('common.cancel') }} </VBtn>

@@ -352,10 +352,13 @@ const dropdownItems = ref([
     <!-- 重命名对话框 -->
     <VDialog v-if="renameDialog" v-model="renameDialog" max-width="400">
       <VCard>
-        <VDialogCloseBtn @click="renameDialog = false" />
         <VCardItem>
+          <template #prepend>
+            <VIcon icon="mdi-pencil" class="me-2" />
+          </template>
           <VCardTitle>{{ t('folder.renameFolder') }}</VCardTitle>
         </VCardItem>
+        <VDialogCloseBtn @click="renameDialog = false" />
         <VDivider />
         <VCardText>
           <VTextField
@@ -467,6 +470,7 @@ const dropdownItems = ref([
                 variant="outlined"
                 :hint="t('folder.customBackgroundImageHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-image"
               />
             </VCol>
           </VRow>
