@@ -1514,7 +1514,7 @@ function onDragStartPlugin(evt: any) {
         />
       </VToolbar>
       <VDialogCloseBtn @click="closeSearchDialog" />
-      <VList v-if="filterPlugins.length > 0" lines="three">
+      <VList v-if="filterPlugins.length > 0" lines="two">
         <VVirtualScroll :items="filterPlugins">
           <template #default="{ item }">
             <VListItem @click="openPlugin(item)">
@@ -1552,6 +1552,7 @@ function onDragStartPlugin(evt: any) {
       </VList>
     </VCard>
   </VDialog>
+
   <!-- 安装插件进度框 -->
   <VDialog v-if="progressDialog" v-model="progressDialog" :scrim="false" width="25rem">
     <VCard color="primary">
