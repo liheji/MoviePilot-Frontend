@@ -1354,7 +1354,7 @@ function onDragStartPlugin(evt: any) {
             <LoadingBanner v-if="!isRefreshed" class="mt-12" />
 
             <!-- 文件夹和插件网格 -->
-            <div v-if="mixedSortList.length > 0 || displayedPlugins.length > 0">
+            <div v-if="(mixedSortList.length > 0 || displayedPlugins.length > 0) && isRefreshed">
               <!-- 混合排序列表（文件夹和插件） -->
               <template v-if="!currentFolder">
                 <!-- 主列表：使用draggable进行混合排序 -->
