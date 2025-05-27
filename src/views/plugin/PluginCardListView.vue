@@ -14,6 +14,7 @@ import PluginMarketSettingDialog from '@/components/dialog/PluginMarketSettingDi
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 import PluginFolderCard from '@/components/cards/PluginFolderCard.vue'
+import MixedSortCard from '@/components/cards/MixedSortCard.vue'
 
 // 国际化
 const { t } = useI18n()
@@ -194,38 +195,22 @@ const displayedPlugins = computed(() => {
   }
 })
 
-// 可拖拽的插件列表（主列表用）
-const draggableMainPlugins = ref<Plugin[]>([])
+// 混合排序项目类型
+interface MixedSortItem {
+  type: 'folder' | 'plugin'
+  id: string
+  data: any
+  order: number
+}
+
+// 混合排序列表（包含文件夹和插件）
+const mixedSortList = ref<MixedSortItem[]>([])
 
 // 可拖拽的插件列表（文件夹内用）
 const draggableFolderPlugins = ref<Plugin[]>([])
 
 // 是否正在拖拽排序中
 const isDraggingSortMode = ref(false)
-
-// 监听displayedPlugins变化，更新可拖拽列表（避免拖拽时的循环更新）
-watch(
-  displayedPlugins,
-  newPlugins => {
-    if (isDraggingSortMode.value) return // 拖拽排序时跳过更新
-
-    if (!currentFolder.value) {
-      draggableMainPlugins.value = [...newPlugins]
-    } else {
-      draggableFolderPlugins.value = [...newPlugins]
-    }
-  },
-  { immediate: true },
-)
-
-// 监听文件夹切换，更新可拖拽列表
-watch(currentFolder, () => {
-  if (!currentFolder.value) {
-    draggableMainPlugins.value = [...displayedPlugins.value]
-  } else {
-    draggableFolderPlugins.value = [...displayedPlugins.value]
-  }
-})
 
 // 显示的文件夹列表（按排序显示）
 const displayedFolders = computed(() => {
@@ -250,6 +235,136 @@ const displayedFolders = computed(() => {
       config: config,
     }
   })
+})
+
+// 更新混合排序列表
+function updateMixedSortList() {
+  if (isDraggingSortMode.value) return // 拖拽排序时跳过更新
+
+  if (!currentFolder.value) {
+    // 主列表：创建混合列表
+    const items: MixedSortItem[] = []
+
+    // 创建统一的排序索引
+    let globalOrder = 0
+
+    // 先按现有的混合排序列表顺序创建，如果没有则按默认顺序
+    if (mixedSortList.value.length > 0) {
+      // 如果已有混合排序列表，保持现有顺序
+      mixedSortList.value.forEach((existingItem, index) => {
+        if (existingItem.type === 'folder') {
+          // 检查文件夹是否仍然存在
+          const folder = displayedFolders.value.find(f => f.name === existingItem.id)
+          if (folder) {
+            items.push({
+              type: 'folder',
+              id: folder.name,
+              data: folder,
+              order: index,
+            })
+          }
+        } else if (existingItem.type === 'plugin') {
+          // 检查插件是否仍然存在
+          const plugin = displayedPlugins.value.find(p => p.id === existingItem.id)
+          if (plugin) {
+            items.push({
+              type: 'plugin',
+              id: plugin.id || '',
+              data: plugin,
+              order: index,
+            })
+          }
+        }
+      })
+
+      // 添加新的文件夹（不在现有列表中的）
+      displayedFolders.value.forEach(folder => {
+        if (!items.find(item => item.type === 'folder' && item.id === folder.name)) {
+          items.push({
+            type: 'folder',
+            id: folder.name,
+            data: folder,
+            order: items.length,
+          })
+        }
+      })
+
+      // 添加新的插件（不在现有列表中的）
+      displayedPlugins.value.forEach(plugin => {
+        if (!items.find(item => item.type === 'plugin' && item.id === plugin.id)) {
+          items.push({
+            type: 'plugin',
+            id: plugin.id || '',
+            data: plugin,
+            order: items.length,
+          })
+        }
+      })
+    } else {
+      // 初次创建混合列表，按文件夹排序和插件排序交替排列
+      const sortedFolders = [...displayedFolders.value].sort((a, b) => {
+        const aIndex = folderOrder.value.indexOf(a.name)
+        const bIndex = folderOrder.value.indexOf(b.name)
+        return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
+      })
+
+      const sortedPlugins = [...displayedPlugins.value].sort((a, b) => {
+        const aIndex = orderConfig.value.findIndex((item: { id: string }) => item.id === a.id)
+        const bIndex = orderConfig.value.findIndex((item: { id: string }) => item.id === b.id)
+        return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex)
+      })
+
+      // 先添加所有文件夹
+      sortedFolders.forEach(folder => {
+        items.push({
+          type: 'folder',
+          id: folder.name,
+          data: folder,
+          order: globalOrder++,
+        })
+      })
+
+      // 再添加所有插件
+      sortedPlugins.forEach(plugin => {
+        items.push({
+          type: 'plugin',
+          id: plugin.id || '',
+          data: plugin,
+          order: globalOrder++,
+        })
+      })
+    }
+
+    // 按order排序
+    items.sort((a, b) => a.order - b.order)
+    mixedSortList.value = items
+  } else {
+    // 文件夹内：只更新插件列表
+    draggableFolderPlugins.value = [...displayedPlugins.value]
+  }
+}
+
+// 监听相关数据变化，更新混合排序列表
+watch(
+  [displayedPlugins, displayedFolders, orderConfig, folderOrder],
+  () => {
+    // 只有在非拖拽状态下才更新
+    if (!isDraggingSortMode.value) {
+      updateMixedSortList()
+    }
+  },
+  {
+    immediate: true,
+    deep: true,
+  },
+)
+
+// 监听文件夹切换，更新列表
+watch(currentFolder, () => {
+  // 只有在非拖拽状态下才更新
+  if (!isDraggingSortMode.value) {
+    updateMixedSortList()
+  }
 })
 
 // 加载插件顺序
@@ -301,37 +416,57 @@ async function savePluginOrder() {
   }
 }
 
-// 保存主列表插件顺序
-async function saveMainPluginOrder() {
+// 保存混合排序
+async function saveMixedSortOrder() {
   try {
-    // 更新主列表数据
-    const newOrderedList = [...draggableMainPlugins.value]
+    // 分离文件夹和插件
+    const newFolderOrder: string[] = []
+    const newPluginOrder: Plugin[] = []
 
-    // 添加文件夹中的插件到末尾
+    mixedSortList.value.forEach(item => {
+      if (item.type === 'folder') {
+        newFolderOrder.push(item.id)
+      } else if (item.type === 'plugin') {
+        newPluginOrder.push(item.data)
+      }
+    })
+
+    // 更新文件夹排序
+    folderOrder.value = newFolderOrder
+
+    // 添加文件夹中的插件到插件列表末尾
     Object.values(pluginFolders.value).forEach(folderData => {
       const plugins = Array.isArray(folderData) ? folderData : folderData.plugins || []
       plugins.forEach((id: string) => {
         const folderPlugin = dataList.value.find(p => p.id === id)
-        if (folderPlugin && !newOrderedList.find(p => p.id === id)) {
-          newOrderedList.push(folderPlugin)
+        if (folderPlugin && !newPluginOrder.find(p => p.id === id)) {
+          newPluginOrder.push(folderPlugin)
         }
       })
     })
 
-    filteredDataList.value = newOrderedList
+    // 更新插件列表
+    filteredDataList.value = newPluginOrder
 
-    // 保存排序配置
-    const orderObj = newOrderedList.map(item => ({ id: item.id || '' }))
+    // 保存插件排序配置
+    const orderObj = newPluginOrder.map(item => ({ id: item.id || '' }))
     orderConfig.value = orderObj
     const orderString = JSON.stringify(orderObj)
     localStorage.setItem('MP_PLUGIN_ORDER', orderString)
 
     // 保存到服务端
     await api.post('/user/config/PluginOrder', orderObj)
+
+    // 保存文件夹排序
+    await savePluginFolders()
   } catch (error) {
+    console.error('保存排序失败:', error)
   } finally {
     // 清除拖拽标志
     isDraggingSortMode.value = false
+
+    // 在清除拖拽标志后更新混合排序列表显示
+    updateMixedSortList()
   }
 }
 
@@ -885,33 +1020,10 @@ async function updateFolderConfig(folderName: string, config: any) {
   }
 }
 
-// 文件夹拖拽排序结束事件
-function onFolderSortEnd() {
-  // 保存新的文件夹顺序
-  savePluginFolders()
-}
-
 // 当前拖拽的插件ID
 const currentDraggedPluginId = ref('')
 
 // 处理拖拽到文件夹的事件
-function handleDragOver(event: DragEvent) {
-  event.preventDefault()
-  event.dataTransfer!.dropEffect = 'move'
-  const target = event.currentTarget as HTMLElement
-  target.classList.add('drag-over')
-}
-
-function handleDragEnter(event: DragEvent) {
-  event.preventDefault()
-}
-
-function handleDragLeave(event: DragEvent) {
-  event.preventDefault()
-  const target = event.currentTarget as HTMLElement
-  target.classList.remove('drag-over')
-}
-
 async function handleDropToFolder(event: DragEvent, folderName: string) {
   event.preventDefault()
   event.stopPropagation()
@@ -964,9 +1076,9 @@ async function handleDropToFolder(event: DragEvent, folderName: string) {
     })
 
     // 从主列表中移除（如果存在）
-    const mainIndex = draggableMainPlugins.value.findIndex(p => p.id === pluginId)
+    const mainIndex = mixedSortList.value.findIndex(item => item.type === 'plugin' && item.id === pluginId)
     if (mainIndex > -1) {
-      draggableMainPlugins.value.splice(mainIndex, 1)
+      mixedSortList.value.splice(mainIndex, 1)
     }
 
     // 添加到目标文件夹
@@ -993,6 +1105,9 @@ async function handleDropToFolder(event: DragEvent, folderName: string) {
     // 保存配置
     await savePluginFolders()
 
+    // 更新混合排序列表
+    updateMixedSortList()
+
     $toast.success(`插件已移动到文件夹 "${folderName}"`)
   } catch (error) {
     console.error('拖拽到文件夹失败:', error)
@@ -1008,10 +1123,18 @@ function onDragStartPlugin(evt: any) {
   // 从oldIndex获取插件ID
   const oldIndex = evt.oldIndex
   if (oldIndex !== undefined) {
-    const plugin = currentFolder.value ? draggableFolderPlugins.value[oldIndex] : draggableMainPlugins.value[oldIndex]
-    if (plugin && plugin.id) {
-      currentDraggedPluginId.value = plugin.id
-      return
+    if (currentFolder.value) {
+      const plugin = draggableFolderPlugins.value[oldIndex]
+      if (plugin && plugin.id) {
+        currentDraggedPluginId.value = plugin.id
+        return
+      }
+    } else {
+      const item = mixedSortList.value[oldIndex]
+      if (item && item.id) {
+        currentDraggedPluginId.value = item.id
+        return
+      }
     }
   }
 
@@ -1038,8 +1161,8 @@ function onDragStartPlugin(evt: any) {
 // 拖拽结束事件
 function onDragEndPlugin(evt: any) {
   currentDraggedPluginId.value = ''
-  // 清除拖拽标志
-  isDraggingSortMode.value = false
+  // 注意：不在这里清除拖拽标志，而是在保存函数中清除
+  // 这样可以避免在拖拽过程中触发watch监听器
 }
 </script>
 
@@ -1207,66 +1330,37 @@ function onDragEndPlugin(evt: any) {
             <LoadingBanner v-if="!isRefreshed" class="mt-12" />
 
             <!-- 文件夹和插件网格 -->
-            <div v-if="displayedFolders.length > 0 || displayedPlugins.length > 0" class="grid gap-4 grid-plugin-card">
-              <!-- 文件夹卡片 - 使用draggable进行排序 -->
-              <draggable
-                v-if="displayedFolders.length > 0 && isRefreshed"
-                v-model="folderOrder"
-                @end="onFolderSortEnd"
-                handle=".cursor-move"
-                item-key="name"
-                tag="div"
-                :component-data="{ style: 'display: contents;' }"
-                :disabled="currentFolder !== ''"
-                group="folders"
-              >
-                <template #item="{ element: folderName }">
-                  <div
-                    v-if="displayedFolders.find(f => f.name === folderName)"
-                    class="drop-zone"
-                    @dragover="handleDragOver($event)"
-                    @dragenter="handleDragEnter($event)"
-                    @dragleave="handleDragLeave($event)"
-                    @drop="handleDropToFolder($event, folderName)"
-                  >
-                    <PluginFolderCard
-                      :folder-name="folderName"
-                      :plugin-count="displayedFolders.find(f => f.name === folderName)?.pluginCount || 0"
-                      :folder-config="displayedFolders.find(f => f.name === folderName)?.config || {}"
-                      @open="openFolder"
-                      @delete="deleteFolder"
-                      @rename="renameFolder"
-                      @update-config="updateFolderConfig"
-                    />
-                  </div>
-                </template>
-              </draggable>
-
-              <!-- 插件卡片 -->
+            <div v-if="mixedSortList.length > 0 || displayedPlugins.length > 0">
+              <!-- 混合排序列表（文件夹和插件） -->
               <template v-if="!currentFolder">
-                <!-- 主列表：使用draggable进行排序 -->
+                <!-- 主列表：使用draggable进行混合排序 -->
                 <draggable
-                  v-model="draggableMainPlugins"
-                  @end="saveMainPluginOrder"
+                  v-model="mixedSortList"
+                  @end="saveMixedSortOrder"
                   @start="onDragStartPlugin"
-                  @sort="onDragEndPlugin"
                   handle=".cursor-move"
                   item-key="id"
                   tag="div"
-                  :component-data="{ style: 'display: contents;' }"
-                  group="plugins"
+                  class="grid gap-4 grid-plugin-card"
+                  group="mixed"
                 >
                   <template #item="{ element }">
-                    <div class="plugin-item-wrapper" :data-plugin-id="element.id">
-                      <PluginCard
-                        :count="PluginStatistics[element.id || '0']"
-                        :plugin="element"
-                        :action="pluginActions[element.id || '0']"
-                        @remove="refreshData"
-                        @save="refreshData"
-                        @action-done="pluginActions[element.id || '0'] = false"
-                      />
-                    </div>
+                    <MixedSortCard
+                      :item="element"
+                      :plugin-statistics="PluginStatistics"
+                      :plugin-actions="pluginActions"
+                      @open-folder="openFolder"
+                      @delete-folder="deleteFolder"
+                      @rename-folder="(oldName, newName) => renameFolder(oldName, newName)"
+                      @update-folder-config="(folderName, config) => updateFolderConfig(folderName, config)"
+                      @refresh-data="refreshData"
+                      @action-done="
+                        pluginId => {
+                          pluginActions[pluginId] = false
+                        }
+                      "
+                      @drop-to-folder="(event, folderName) => handleDropToFolder(event, folderName)"
+                    />
                   </template>
                 </draggable>
               </template>
@@ -1280,29 +1374,23 @@ function onDragEndPlugin(evt: any) {
                   handle=".cursor-move"
                   item-key="id"
                   tag="div"
-                  :component-data="{ style: 'display: contents;' }"
+                  class="grid gap-4 grid-plugin-card"
                   group="plugins"
                 >
                   <template #item="{ element }">
-                    <div class="plugin-item-wrapper" :data-plugin-id="element.id">
-                      <PluginCard
-                        :count="PluginStatistics[element.id || '0']"
-                        :plugin="element"
-                        :action="pluginActions[element.id || '0']"
-                        @remove="refreshData"
-                        @save="refreshData"
-                        @action-done="pluginActions[element.id || '0'] = false"
-                      />
-                      <!-- 移出文件夹按钮 -->
-                      <VBtn
-                        icon="mdi-folder-remove"
-                        variant="text"
-                        color="warning"
-                        size="small"
-                        class="remove-from-folder-btn"
-                        @click="removeFromFolder(element.id || '')"
-                      />
-                    </div>
+                    <MixedSortCard
+                      :item="{ type: 'plugin', id: element.id, data: element, order: 0 }"
+                      :plugin-statistics="PluginStatistics"
+                      :plugin-actions="pluginActions"
+                      :show-remove-button="true"
+                      @refresh-data="refreshData"
+                      @action-done="
+                        pluginId => {
+                          pluginActions[pluginId] = false
+                        }
+                      "
+                      @remove-from-folder="removeFromFolder"
+                    />
                   </template>
                 </draggable>
               </template>
@@ -1477,35 +1565,5 @@ function onDragEndPlugin(evt: any) {
 </template>
 
 <style lang="scss" scoped>
-// 拖拽相关样式
-.drop-zone {
-  transition: all 0.3s ease;
-
-  &.drag-over {
-    transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(33, 150, 243, 0.5);
-    border: 2px dashed #2196f3;
-    border-radius: 16px;
-  }
-}
-
-.plugin-item-wrapper {
-  position: relative;
-
-  .remove-from-folder-btn {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(4px);
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  &:hover .remove-from-folder-btn {
-    opacity: 1;
-  }
-}
+// 样式已移至 MixedSortCard 组件
 </style>
