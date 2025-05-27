@@ -54,10 +54,21 @@ async function nameTest() {
   <VForm @submit.prevent="() => {}">
     <VRow class="pt-2">
       <VCol cols="12">
-        <VTextField v-model="nameTestForm.title" :label="t('nameTest.title')" :rules="[requiredValidator]" />
+        <VTextField
+          v-model="nameTestForm.title"
+          :label="t('nameTest.title')"
+          :rules="[requiredValidator]"
+          prepend-inner-icon="mdi-movie-open"
+        />
       </VCol>
       <VCol cols="12">
-        <VTextarea v-model="nameTestForm.subtitle" :label="t('nameTest.subtitle')" rows="2" auto-grow />
+        <VTextarea
+          v-model="nameTestForm.subtitle"
+          :label="t('nameTest.subtitle')"
+          rows="2"
+          auto-grow
+          prepend-inner-icon="mdi-subtitles"
+        />
       </VCol>
     </VRow>
     <VRow>

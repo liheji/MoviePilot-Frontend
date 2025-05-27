@@ -80,13 +80,29 @@ onMounted(() => {
   <VForm @submit.prevent="() => {}">
     <VRow class="pt-2">
       <VCol cols="12" md="8">
-        <VTextField v-model="ruleTestForm.title" :label="t('ruleTest.title')" :rules="[requiredValidator]" />
+        <VTextField
+          v-model="ruleTestForm.title"
+          :label="t('ruleTest.title')"
+          :rules="[requiredValidator]"
+          prepend-inner-icon="mdi-movie-open"
+        />
       </VCol>
       <VCol cols="12" md="4">
-        <VSelect v-model="ruleTestForm.rulegroup" :label="t('ruleTest.ruleGroup')" :items="filterRuleGroupItems" />
+        <VSelect
+          v-model="ruleTestForm.rulegroup"
+          :label="t('ruleTest.ruleGroup')"
+          :items="filterRuleGroupItems"
+          prepend-inner-icon="mdi-filter"
+        />
       </VCol>
       <VCol cols="12">
-        <VTextarea v-model="ruleTestForm.subtitle" :label="t('ruleTest.subtitle')" rows="2" auto-grow />
+        <VTextarea
+          v-model="ruleTestForm.subtitle"
+          :label="t('ruleTest.subtitle')"
+          rows="2"
+          auto-grow
+          prepend-inner-icon="mdi-subtitles"
+        />
       </VCol>
     </VRow>
     <VRow>
