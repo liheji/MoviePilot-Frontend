@@ -82,15 +82,18 @@ const storageOptions = computed(() => {
 
 // 标题
 const dialogTitle = computed(() => {
+  return t('dialog.reorganize.manualTitle')
+})
+
+// 副标题
+const dialogSubtitle = computed(() => {
   if (props.items) {
     if (props.items.length > 1) return t('dialog.reorganize.multipleItemsTitle', { count: props.items.length })
     return t('dialog.reorganize.singleItemTitle', { path: props.items[0].path })
   } else if (props.logids) {
     return t('dialog.reorganize.multipleItemsTitle', { count: props.logids.length })
   }
-  return t('dialog.reorganize.manualTitle')
 })
-
 // 禁用指定集数
 const disableEpisodeDetail = computed(() => {
   if (props.items) {
@@ -250,7 +253,12 @@ onUnmounted(() => {
 
 <template>
   <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
-    <VCard :title="dialogTitle">
+    <VCard>
+      <VCardItem class="py-2">
+        <template #prepend> <VIcon icon="mdi-folder-move" class="me-2" /> </template>
+        <VCardTitle>{{ dialogTitle }}</VCardTitle>
+        <VCardSubtitle>{{ dialogSubtitle }}</VCardSubtitle>
+      </VCardItem>
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>
@@ -264,6 +272,7 @@ onUnmounted(() => {
                 :placeholder="t('dialog.reorganize.targetPathPlaceholder')"
                 :hint="t('dialog.reorganize.targetStorageHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-harddisk"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -273,6 +282,7 @@ onUnmounted(() => {
                 :items="transferTypeOptions"
                 :hint="t('dialog.reorganize.transferTypeHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-swap-horizontal"
               >
                 <template v-slot:selection="{ item }">
                   {{ transferForm.transfer_type === '' ? t('dialog.reorganize.auto') : item.title }}
@@ -287,6 +297,7 @@ onUnmounted(() => {
                 :placeholder="t('dialog.reorganize.targetPathPlaceholder')"
                 :hint="t('dialog.reorganize.targetPathHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-folder-outline"
               />
             </VCol>
           </VRow>
@@ -302,6 +313,7 @@ onUnmounted(() => {
                 ]"
                 :hint="t('dialog.reorganize.mediaTypeHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-movie-open"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -315,6 +327,7 @@ onUnmounted(() => {
                 append-inner-icon="mdi-magnify"
                 :hint="t('dialog.reorganize.mediaIdHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-identifier"
                 @click:append-inner="mediaSelectorDialog = true"
               />
               <VTextField
@@ -327,6 +340,7 @@ onUnmounted(() => {
                 append-inner-icon="mdi-magnify"
                 :hint="t('dialog.reorganize.mediaIdHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-identifier"
                 @click:append-inner="mediaSelectorDialog = true"
               />
             </VCol>
@@ -339,6 +353,7 @@ onUnmounted(() => {
                 :placeholder="t('dialog.reorganize.episodeGroupPlaceholder')"
                 :hint="t('dialog.reorganize.episodeGroupHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-view-list"
               />
             </VCol>
             <VCol cols="12" md="3">
@@ -348,6 +363,7 @@ onUnmounted(() => {
                 :items="seasonItems"
                 :hint="t('dialog.reorganize.seasonHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-calendar"
               />
             </VCol>
             <VCol cols="12" md="3">
@@ -358,6 +374,7 @@ onUnmounted(() => {
                 :placeholder="t('dialog.reorganize.episodeDetailPlaceholder')"
                 :hint="t('dialog.reorganize.episodeDetailHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-playlist-play"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -367,6 +384,7 @@ onUnmounted(() => {
                 :placeholder="t('dialog.reorganize.episodeFormatPlaceholder')"
                 :hint="t('dialog.reorganize.episodeFormatHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-format-text"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -376,6 +394,7 @@ onUnmounted(() => {
                 :placeholder="t('dialog.reorganize.episodeOffsetPlaceholder')"
                 :hint="t('dialog.reorganize.episodeOffsetHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-numeric"
               />
             </VCol>
           </VRow>
@@ -387,6 +406,7 @@ onUnmounted(() => {
                 :placeholder="t('dialog.reorganize.episodePartPlaceholder')"
                 :hint="t('dialog.reorganize.episodePartHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-file-multiple"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -397,6 +417,7 @@ onUnmounted(() => {
                 placeholder="0"
                 :hint="t('dialog.reorganize.minFileSizeHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-file-document-outline"
               />
             </VCol>
           </VRow>

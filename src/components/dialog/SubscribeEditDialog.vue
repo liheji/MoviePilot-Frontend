@@ -281,18 +281,24 @@ onMounted(() => {
 
 <template>
   <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
-    <VCard
-      :title="
-        props.default
-          ? t('dialog.subscribeEdit.titleDefault')
-          : t('dialog.subscribeEdit.titleEditFormat', {
-              name: subscribeForm.name,
-              season: subscribeForm.season
-                ? t('dialog.subscribeEdit.seasonFormat', { number: subscribeForm.season })
-                : '',
-            })
-      "
-    >
+    <VCard>
+      <VCardItem class="py-2">
+        <template #prepend>
+          <VIcon icon="mdi-clipboard-list-outline" class="me-2" />
+        </template>
+        <VCardTitle>
+          {{ props.default ? t('dialog.subscribeEdit.titleDefault') : t('dialog.subscribeEdit.titleEdit') }}
+        </VCardTitle>
+        <VCardSubtitle v-if="!props.default">
+          {{ subscribeForm.name }}
+          <span v-if="subscribeForm.season">
+            {{ t('dialog.subscribeEdit.seasonFormat', { number: subscribeForm.season }) }}
+          </span>
+        </VCardSubtitle>
+        <VCardSubtitle v-else>
+          {{ props.type }}
+        </VCardSubtitle>
+      </VCardItem>
       <VCardText>
         <VDialogCloseBtn @click="emit('close')" />
         <VForm @submit.prevent="() => {}">
@@ -314,6 +320,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.searchKeyword')"
                       :hint="t('dialog.subscribeEdit.searchKeywordHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-magnify"
                     />
                   </VCol>
                   <VCol v-if="subscribeForm.type === '电视剧'" cols="12" md="4">
@@ -323,6 +330,7 @@ onMounted(() => {
                       :rules="[numberValidator]"
                       :hint="t('dialog.subscribeEdit.totalEpisodeHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-playlist-play"
                     />
                   </VCol>
                   <VCol v-if="subscribeForm.type === '电视剧'" cols="12" md="4">
@@ -332,6 +340,7 @@ onMounted(() => {
                       :rules="[numberValidator]"
                       :hint="t('dialog.subscribeEdit.startEpisodeHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-play-circle-outline"
                     />
                   </VCol>
                 </VRow>
@@ -343,6 +352,7 @@ onMounted(() => {
                       :items="qualityOptions"
                       :hint="t('dialog.subscribeEdit.qualityHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-quality-high"
                     />
                   </VCol>
                   <VCol cols="12" md="4">
@@ -352,6 +362,7 @@ onMounted(() => {
                       :items="resolutionOptions"
                       :hint="t('dialog.subscribeEdit.resolutionHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-monitor"
                     />
                   </VCol>
                   <VCol cols="12" md="4">
@@ -361,6 +372,7 @@ onMounted(() => {
                       :items="effectOptions"
                       :hint="t('dialog.subscribeEdit.effectHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-auto-fix"
                     />
                   </VCol>
                 </VRow>
@@ -375,6 +387,7 @@ onMounted(() => {
                       clearable
                       :hint="t('dialog.subscribeEdit.subscribeSitesHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-web"
                     />
                   </VCol>
                 </VRow>
@@ -386,6 +399,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.downloader')"
                       :hint="t('dialog.subscribeEdit.downloaderHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-download"
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -395,6 +409,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.savePath')"
                       :hint="t('dialog.subscribeEdit.savePathHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-folder"
                     />
                   </VCol>
                 </VRow>
@@ -435,6 +450,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.include')"
                       :hint="t('dialog.subscribeEdit.includeHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-plus-circle-outline"
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -443,6 +459,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.exclude')"
                       :hint="t('dialog.subscribeEdit.excludeHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-minus-circle-outline"
                     />
                   </VCol>
                 </VRow>
@@ -457,6 +474,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.filterGroups')"
                       :hint="t('dialog.subscribeEdit.filterGroupsHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-filter"
                     />
                   </VCol>
                   <VCol v-if="!props.default && subscribeForm.type === '电视剧'" cols="12" md="6">
@@ -467,6 +485,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.episodeGroup')"
                       :hint="t('dialog.subscribeEdit.episodeGroupHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-view-list"
                     />
                   </VCol>
                   <VCol v-if="!props.default && subscribeForm.type === '电视剧'" cols="12" md="6">
@@ -476,6 +495,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.season')"
                       :hint="t('dialog.subscribeEdit.seasonHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-calendar"
                     />
                   </VCol>
                   <VCol cols="12" v-if="!props.default">
@@ -484,6 +504,7 @@ onMounted(() => {
                       :label="t('dialog.subscribeEdit.mediaCategory')"
                       :hint="t('dialog.subscribeEdit.mediaCategoryHint')"
                       persistent-hint
+                      prepend-inner-icon="mdi-tag"
                     />
                   </VCol>
                 </VRow>
@@ -495,6 +516,7 @@ onMounted(() => {
                       :hint="t('dialog.subscribeEdit.customWordsHint')"
                       persistent-hint
                       :placeholder="t('dialog.subscribeEdit.customWordsPlaceholder')"
+                      prepend-inner-icon="mdi-text"
                     />
                   </VCol>
                 </VRow>

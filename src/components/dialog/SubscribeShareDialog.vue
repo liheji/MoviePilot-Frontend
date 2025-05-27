@@ -56,11 +56,17 @@ const $toast = useToast()
 
 <template>
   <VDialog scrollable max-width="30rem" :fullscreen="!display.mdAndUp.value">
-    <VCard
-      :title="`${t('dialog.subscribeShare.shareSubscription')} - ${props.sub?.name} ${
-        props.sub?.season ? t('dialog.subscribeShare.season', { number: props.sub?.season }) : ''
-      }`"
-    >
+    <VCard>
+      <VCardItem class="py-2">
+        <template #prepend>
+          <VIcon icon="mdi-share-outline" class="me-2" />
+        </template>
+        <VCardTitle>{{ t('dialog.subscribeShare.shareSubscription') }}</VCardTitle>
+        <VCardSubtitle>
+          {{ props.sub?.name }}
+          {{ props.sub?.season ? t('dialog.subscribeShare.season', { number: props.sub?.season }) : '' }}
+        </VCardSubtitle>
+      </VCardItem>
       <VCardText>
         <VDialogCloseBtn @click="emit('close')" />
         <VForm @submit.prevent="() => {}" class="pt-2">
@@ -72,6 +78,7 @@ const $toast = useToast()
                 :label="t('dialog.subscribeShare.title')"
                 :rules="[requiredValidator]"
                 persistent-hint
+                prepend-inner-icon="mdi-format-title"
               />
             </VCol>
             <VCol cols="12">
@@ -81,6 +88,7 @@ const $toast = useToast()
                 :rules="[requiredValidator]"
                 :hint="t('dialog.subscribeShare.descriptionHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-comment-text-outline"
               />
             </VCol>
             <VCol cols="12">
@@ -90,6 +98,7 @@ const $toast = useToast()
                 :rules="[requiredValidator]"
                 :hint="t('dialog.subscribeShare.shareUserHint')"
                 persistent-hint
+                prepend-inner-icon="mdi-account-outline"
               />
             </VCol>
           </VRow>

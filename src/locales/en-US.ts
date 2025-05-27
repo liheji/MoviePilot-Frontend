@@ -853,8 +853,8 @@ export default {
       browserSimulation: 'Use browser simulation for authentic site access',
     },
     actions: {
-      add: 'Add',
-      edit: 'Edit',
+      add: 'Add Site',
+      edit: 'Edit Site',
     },
     messages: {
       addSuccess: 'Site added successfully',
@@ -1704,8 +1704,8 @@ export default {
       previous: 'Previous',
       confirm: 'Confirm',
       manualTitle: 'Manual Organization',
-      multipleItemsTitle: 'Organize - {count} Items',
-      singleItemTitle: 'Organize - {path}',
+      multipleItemsTitle: '{count} Items',
+      singleItemTitle: '{path}',
       targetStorage: 'Target Storage',
       targetStorageHint: 'Organization target storage',
       transferType: 'Organization Method',
@@ -1754,7 +1754,7 @@ export default {
     },
     subscribeEdit: {
       titleDefault: 'Default Subscription Rules',
-      titleEditFormat: 'Edit Subscription - {name} {season}',
+      titleEdit: 'Edit Subscription',
       seasonFormat: 'Season {number}',
       tabs: {
         basic: 'Basic',

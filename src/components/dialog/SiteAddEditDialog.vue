@@ -148,11 +148,14 @@ onMounted(async () => {
 
 <template>
   <VDialog scrollable :close-on-back="false" eager max-width="45rem" :fullscreen="!display.mdAndUp.value">
-    <VCard
-      :title="`${props.oper === 'add' ? t('site.actions.add') : t('site.actions.edit')}${t('site.title')}${
-        props.oper !== 'add' ? ` - ${siteForm.name}` : ''
-      }`"
-    >
+    <VCard>
+      <VCardItem :class="props.oper === 'add' ? 'py-3' : 'py-2'">
+        <template #prepend>
+          <VIcon :icon="oper == 'add' ? 'mdi-web-plus' : 'mdi-web'" class="me-2" />
+        </template>
+        <VCardTitle>{{ `${props.oper === 'add' ? t('site.actions.add') : t('site.actions.edit')}` }}</VCardTitle>
+        <VCardSubtitle>{{ siteForm.name }}</VCardSubtitle>
+      </VCardItem>
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>
@@ -165,6 +168,7 @@ onMounted(async () => {
                 :rules="[requiredValidator]"
                 :hint="t('site.hints.url')"
                 persistent-hint
+                prepend-inner-icon="mdi-web"
               />
             </VCol>
             <VCol cols="6" md="3">
@@ -175,6 +179,7 @@ onMounted(async () => {
                 :rules="[requiredValidator]"
                 :hint="t('site.hints.priority')"
                 persistent-hint
+                prepend-inner-icon="mdi-priority-high"
               />
             </VCol>
             <VCol cols="6" md="3">
@@ -184,6 +189,7 @@ onMounted(async () => {
                 :label="t('site.fields.status')"
                 :hint="t('site.hints.status')"
                 persistent-hint
+                prepend-inner-icon="mdi-toggle-switch"
               />
             </VCol>
           </VRow>
@@ -194,6 +200,7 @@ onMounted(async () => {
                 :label="t('site.fields.rss')"
                 :hint="t('site.hints.rss')"
                 persistent-hint
+                prepend-inner-icon="mdi-rss"
               />
             </VCol>
             <VCol cols="12" md="3">
@@ -202,6 +209,7 @@ onMounted(async () => {
                 :label="t('site.fields.timeout')"
                 :hint="t('site.hints.timeout')"
                 persistent-hint
+                prepend-inner-icon="mdi-timer"
               />
             </VCol>
             <VCol cols="6" md="3">
@@ -211,6 +219,7 @@ onMounted(async () => {
                 :items="downloaderOptions"
                 :hint="t('site.hints.downloader')"
                 persistent-hint
+                prepend-inner-icon="mdi-download"
               />
             </VCol>
           </VRow>
@@ -237,6 +246,7 @@ onMounted(async () => {
                     :label="t('site.fields.cookie')"
                     :hint="t('site.hints.cookie')"
                     persistent-hint
+                    prepend-inner-icon="mdi-cookie"
                   />
                 </VCol>
                 <VCol cols="12">
@@ -245,6 +255,7 @@ onMounted(async () => {
                     :label="t('site.fields.userAgent')"
                     :hint="t('site.hints.userAgent')"
                     persistent-hint
+                    prepend-inner-icon="mdi-web-box"
                   />
                 </VCol>
               </VRow>
@@ -257,6 +268,7 @@ onMounted(async () => {
                     :label="t('site.fields.authorization')"
                     :hint="t('site.hints.authorization')"
                     persistent-hint
+                    prepend-inner-icon="mdi-key"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -265,6 +277,7 @@ onMounted(async () => {
                     :label="t('site.fields.apiKey')"
                     :hint="t('site.hints.apiKey')"
                     persistent-hint
+                    prepend-inner-icon="mdi-api"
                   />
                 </VCol>
               </VRow>
@@ -283,6 +296,7 @@ onMounted(async () => {
                 :rules="[numberValidator]"
                 :hint="t('site.hints.limitInterval')"
                 persistent-hint
+                prepend-inner-icon="mdi-clock-outline"
               />
             </VCol>
             <VCol cols="12" md="4">
@@ -292,6 +306,7 @@ onMounted(async () => {
                 :rules="[numberValidator]"
                 :hint="t('site.hints.limitCount')"
                 persistent-hint
+                prepend-inner-icon="mdi-counter"
               />
             </VCol>
             <VCol cols="12" md="4">
@@ -301,6 +316,7 @@ onMounted(async () => {
                 :rules="[numberValidator]"
                 :hint="t('site.hints.limitSeconds')"
                 persistent-hint
+                prepend-inner-icon="mdi-timer-sand"
               />
             </VCol>
           </VRow>

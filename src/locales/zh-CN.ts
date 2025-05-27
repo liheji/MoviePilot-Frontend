@@ -850,8 +850,8 @@ export default {
       browserSimulation: '使用浏览器模拟真实访问该站点',
     },
     actions: {
-      add: '新增',
-      edit: '编辑',
+      add: '新增站点',
+      edit: '编辑站点',
     },
     messages: {
       addSuccess: '新增站点成功',
@@ -1681,8 +1681,8 @@ export default {
       previous: '上一步',
       confirm: '确认',
       manualTitle: '手动整理',
-      multipleItemsTitle: '整理 - 共 {count} 项',
-      singleItemTitle: '整理 - {path}',
+      multipleItemsTitle: '共 {count} 项',
+      singleItemTitle: '{path}',
       targetStorage: '目的存储',
       targetStorageHint: '整理目的存储',
       transferType: '整理方式',
@@ -1731,7 +1731,7 @@ export default {
     },
     subscribeEdit: {
       titleDefault: '默认订阅规则',
-      titleEditFormat: '编辑订阅 - {name} {season}',
+      titleEdit: '编辑订阅',
       seasonFormat: '第 {number} 季',
       tabs: {
         basic: '基础',

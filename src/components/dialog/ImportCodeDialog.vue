@@ -25,10 +25,16 @@ function handleImport() {
 
 <template>
   <VDialog width="40rem" scrollable max-height="85vh">
-    <VCard :title="props.title">
+    <VCard>
+      <VCardItem>
+        <template #prepend>
+          <VIcon icon="mdi-code-json" class="me-2" />
+        </template>
+        <VCardTitle>{{ props.title }}</VCardTitle>
+      </VCardItem>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardText class="pt-2">
-        <VTextarea v-model="codeString" />
+        <VTextarea v-model="codeString" prepend-inner-icon="mdi-code-json" />
       </VCardText>
       <VCardActions>
         <VSpacer />

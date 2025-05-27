@@ -134,69 +134,75 @@ onMounted(() => {
 <template>
   <VDialog max-width="35rem" scrollable>
     <VCard>
-      <VCardTitle class="py-4 me-12">
-        <VIcon icon="mdi-download" class="me-2" />
-        <span v-if="title">{{ torrent?.site_name }} - {{ title }}</span>
-        <span v-else>{{ t('dialog.addDownload.confirmDownload') }}</span>
-      </VCardTitle>
+      <VCardItem class="py-2">
+        <template #prepend>
+          <VIcon icon="mdi-monitor-arrow-down-variant" class="me-2" />
+        </template>
+        <VCardTitle>{{ t('dialog.addDownload.confirmDownload') }}</VCardTitle>
+        <VCardSubtitle>{{ torrent?.site_name }} - {{ title }}</VCardSubtitle>
+      </VCardItem>
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
-      <VList lines="one">
-        <VListItem>
-          <template #prepend>
-            <VIcon icon="mdi-web"></VIcon>
-          </template>
-          <VListItemTitle>
-            <span class="whitespace-break-spaces me-2">{{ torrent?.title }}</span>
-            <span class="text-green-700 ms-2 text-sm">↑{{ torrent?.seeders }}</span>
-            <span class="text-orange-700 ms-2 text-sm">↓{{ torrent?.peers }}</span>
-          </VListItemTitle>
-        </VListItem>
-        <VListItem v-if="torrent?.description">
-          <template #prepend>
-            <VIcon icon="mdi-subtitles-outline"></VIcon>
-          </template>
-          <VListItemTitle>
-            <span class="text-body-2 whitespace-break-spaces">{{ torrent?.description }}</span>
-          </VListItemTitle>
-        </VListItem>
-        <VListItem v-if="torrent?.size">
-          <template #prepend>
-            <VIcon icon="mdi-database"></VIcon>
-          </template>
-          <VListItemTitle>
-            <span class="text-body-2">
-              <VChip variant="tonal" label>
-                {{ formatFileSize(torrent?.size || 0) }}
-              </VChip>
-            </span>
-          </VListItemTitle>
-        </VListItem>
-      </VList>
-      <VRow class="px-7">
-        <VCol cols="12" md="4">
-          <VSelect
-            v-model="selectedDownloader"
-            :items="downloaderOptions"
-            size="small"
-            :label="t('dialog.addDownload.downloader')"
-            variant="underlined"
-            :placeholder="t('dialog.addDownload.defaultPlaceholder')"
-            density="compact"
-          />
-        </VCol>
-        <VCol cols="12" md="8">
-          <VCombobox
-            v-model="selectedDirectory"
-            :items="targetDirectories"
-            :label="t('dialog.addDownload.saveDirectory')"
-            size="small"
-            :placeholder="t('dialog.addDownload.autoPlaceholder')"
-            variant="underlined"
-            density="compact"
-          />
-        </VCol>
-      </VRow>
+      <VCardText>
+        <VList lines="one">
+          <VListItem>
+            <template #prepend>
+              <VIcon icon="mdi-web"></VIcon>
+            </template>
+            <VListItemTitle>
+              <span class="whitespace-break-spaces me-2">{{ torrent?.title }}</span>
+              <span class="text-green-700 ms-2 text-sm">↑{{ torrent?.seeders }}</span>
+              <span class="text-orange-700 ms-2 text-sm">↓{{ torrent?.peers }}</span>
+            </VListItemTitle>
+          </VListItem>
+          <VListItem v-if="torrent?.description">
+            <template #prepend>
+              <VIcon icon="mdi-subtitles-outline"></VIcon>
+            </template>
+            <VListItemTitle>
+              <span class="text-body-2 whitespace-break-spaces">{{ torrent?.description }}</span>
+            </VListItemTitle>
+          </VListItem>
+          <VListItem v-if="torrent?.size">
+            <template #prepend>
+              <VIcon icon="mdi-database"></VIcon>
+            </template>
+            <VListItemTitle>
+              <span class="text-body-2">
+                <VChip variant="tonal" label>
+                  {{ formatFileSize(torrent?.size || 0) }}
+                </VChip>
+              </span>
+            </VListItemTitle>
+          </VListItem>
+        </VList>
+        <VRow class="px-5">
+          <VCol cols="12" md="6">
+            <VSelect
+              v-model="selectedDownloader"
+              :items="downloaderOptions"
+              size="small"
+              :label="t('dialog.addDownload.downloader')"
+              variant="underlined"
+              :placeholder="t('dialog.addDownload.defaultPlaceholder')"
+              density="comfortable"
+              prepend-inner-icon="mdi-download"
+            />
+          </VCol>
+          <VCol cols="12" md="6">
+            <VCombobox
+              v-model="selectedDirectory"
+              :items="targetDirectories"
+              :label="t('dialog.addDownload.saveDirectory')"
+              size="small"
+              :placeholder="t('dialog.addDownload.autoPlaceholder')"
+              variant="underlined"
+              density="comfortable"
+              prepend-inner-icon="mdi-folder"
+            />
+          </VCol>
+        </VRow>
+      </VCardText>
       <VCardText class="text-center">
         <VBtn variant="elevated" :disabled="loading" @click="addDownload" :prepend-icon="icon" class="px-5">
           {{ buttonText }}

@@ -852,8 +852,8 @@ export default {
       browserSimulation: '使用瀏覽器模擬真實訪問該站點',
     },
     actions: {
-      add: '新增',
-      edit: '編輯',
+      add: '新增站點',
+      edit: '編輯站點',
     },
     messages: {
       addSuccess: '新增站點成功',
@@ -1682,8 +1682,8 @@ export default {
       previous: '上一步',
       confirm: '確認',
       manualTitle: '手動整理',
-      multipleItemsTitle: '整理 - 共 {count} 項',
-      singleItemTitle: '整理 - {path}',
+      multipleItemsTitle: '共 {count} 項',
+      singleItemTitle: '{path}',
       targetStorage: '目的存儲',
       targetStorageHint: '整理目的存儲',
       transferType: '整理方式',
@@ -1732,7 +1732,7 @@ export default {
     },
     subscribeEdit: {
       titleDefault: '默認訂閱規則',
-      titleEditFormat: '編輯訂閱 - {name} {season}',
+      titleEdit: '編輯訂閱',
       seasonFormat: '第 {number} 季',
       tabs: {
         basic: '基礎',

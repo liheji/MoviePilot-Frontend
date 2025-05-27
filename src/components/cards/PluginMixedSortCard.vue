@@ -74,11 +74,11 @@ function handleDropToFolder(event: DragEvent) {
 </script>
 
 <template>
-  <div class="mixed-sort-card-wrapper">
+  <div class="mixed-sort-card-wrapper h-full">
     <!-- 文件夹卡片 -->
     <div
       v-if="item.type === 'folder'"
-      class="drop-zone"
+      class="drop-zone h-full"
       :data-plugin-id="item.id"
       @dragover="handleDragOver"
       @dragenter="handleDragEnter"
@@ -97,7 +97,7 @@ function handleDropToFolder(event: DragEvent) {
     </div>
 
     <!-- 插件卡片 -->
-    <div v-else-if="item.type === 'plugin'" class="plugin-item-wrapper" :data-plugin-id="item.id">
+    <div v-else-if="item.type === 'plugin'" class="plugin-item-wrapper h-full" :data-plugin-id="item.id">
       <PluginCard
         :count="pluginStatistics[item.id] || 0"
         :plugin="item.data"

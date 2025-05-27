@@ -598,27 +598,16 @@ watch(
       :fullscreen="!display.mdAndUp.value"
     >
       <VCard>
-        <VCardTitle class="d-flex align-center pa-4">
-          <VIcon icon="mdi-content-copy" class="me-3" color="primary" />
-          <div>
-            <div class="text-h6">{{ t('plugin.cloneTitle') }}</div>
-            <div class="text-caption text-medium-emphasis">
-              {{ t('plugin.cloneSubtitle', { name: props.plugin?.plugin_name }) }}
-            </div>
-          </div>
-        </VCardTitle>
+        <VCardItem class="py-2">
+          <template #prepend>
+            <VIcon icon="mdi-content-copy" class="me-2" />
+          </template>
+          <VCardTitle>{{ t('plugin.cloneTitle') }}</VCardTitle>
+          <VCardSubtitle>{{ t('plugin.cloneSubtitle', { name: props.plugin?.plugin_name }) }}</VCardSubtitle>
+        </VCardItem>
         <VDialogCloseBtn @click="pluginCloneDialog = false" />
         <VDivider />
-
-        <VCardText class="pa-4">
-          <!-- 功能说明 -->
-          <VAlert type="info" variant="tonal" density="compact" class="mb-4" icon="mdi-information-outline">
-            <div class="text-body-2">
-              <strong>{{ t('plugin.cloneFeature') }}</strong
-              >：{{ t('plugin.cloneDescription') }}
-            </div>
-          </VAlert>
-
+        <VCardText>
           <VForm>
             <VRow>
               <VCol cols="12" md="6">
@@ -650,13 +639,12 @@ watch(
               </VCol>
 
               <VCol cols="12">
-                <VTextarea
+                <VTextField
                   v-model="cloneForm.description"
                   :label="t('plugin.cloneDescriptionLabel')"
                   :placeholder="t('plugin.cloneDescriptionPlaceholder')"
                   :hint="t('plugin.cloneDescriptionHint')"
                   persistent-hint
-                  rows="2"
                   prepend-inner-icon="mdi-text"
                 />
               </VCol>

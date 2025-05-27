@@ -200,7 +200,14 @@ onUnmounted(() => {
       max-width="40rem"
       :fullscreen="!display.mdAndUp.value"
     >
-      <VCard :title="`${props.downloader.name} - ${t('downloader.title')}`">
+      <VCard>
+        <VCardItem class="py-2">
+          <template #prepend>
+            <VIcon icon="mdi-download" class="me-2" />
+          </template>
+          <VCardTitle>{{ t('downloader.title') }}</VCardTitle>
+          <VCardSubtitle>{{ props.downloader.name }}</VCardSubtitle>
+        </VCardItem>
         <VDialogCloseBtn v-model="downloaderInfoDialog" />
         <VDivider />
         <VCardText>
@@ -226,6 +233,7 @@ onUnmounted(() => {
                   :hint="t('downloader.name')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -236,6 +244,7 @@ onUnmounted(() => {
                   :hint="t('downloader.host')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -245,6 +254,7 @@ onUnmounted(() => {
                   :hint="t('downloader.username')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-account"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -255,6 +265,7 @@ onUnmounted(() => {
                   :hint="t('downloader.password')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-lock"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -303,6 +314,7 @@ onUnmounted(() => {
                   :hint="t('downloader.name')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -313,6 +325,7 @@ onUnmounted(() => {
                   :hint="t('downloader.host')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -322,6 +335,7 @@ onUnmounted(() => {
                   :hint="t('downloader.username')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-account"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -332,6 +346,7 @@ onUnmounted(() => {
                   :hint="t('downloader.password')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-lock"
                 />
               </VCol>
             </VRow>
@@ -343,6 +358,7 @@ onUnmounted(() => {
                   :hint="t('downloader.customTypeHint')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-cog"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -352,6 +368,7 @@ onUnmounted(() => {
                   :hint="t('downloader.nameRequired')"
                   persistent-hint
                   active
+                  prepend-inner-icon="mdi-label"
                 />
               </VCol>
             </VRow>

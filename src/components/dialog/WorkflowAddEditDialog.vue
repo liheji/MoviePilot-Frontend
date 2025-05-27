@@ -86,7 +86,13 @@ async function editWorkflow() {
 
 <template>
   <VDialog scrollable :close-on-back="false" eager max-width="30rem" :fullscreen="!display.mdAndUp.value">
-    <VCard :title="title">
+    <VCard>
+      <VCardItem>
+        <template #prepend>
+          <VIcon icon="mdi-clock-outline" class="me-2" />
+        </template>
+        <VCardTitle>{{ title }}</VCardTitle>
+      </VCardItem>
       <VDialogCloseBtn @click="emit('close')" />
       <VDivider />
       <VCardText>
@@ -99,6 +105,7 @@ async function editWorkflow() {
                 :rules="[requiredValidator]"
                 persistent-hint
                 :hint="t('dialog.workflowAddEdit.namePlaceholder')"
+                prepend-inner-icon="mdi-workflow"
               />
             </VCol>
             <VCol cols="12">
@@ -109,6 +116,7 @@ async function editWorkflow() {
                 placeholder="5位cron表达式"
                 persistent-hint
                 :hint="t('dialog.workflowAddEdit.cronExprDesc')"
+                prepend-inner-icon="mdi-clock-outline"
               />
             </VCol>
             <VCol cols="12">
@@ -116,6 +124,7 @@ async function editWorkflow() {
                 v-model="workflowForm.description"
                 :label="t('dialog.workflowAddEdit.desc')"
                 :placeholder="t('dialog.workflowAddEdit.descPlaceholder')"
+                prepend-inner-icon="mdi-text-box-outline"
               />
             </VCol>
           </VRow>
