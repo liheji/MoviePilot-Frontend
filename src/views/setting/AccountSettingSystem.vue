@@ -390,7 +390,7 @@ function onMediaServerChange(mediaserver: MediaServerConf, name: string) {
 // 添加计算属性
 const moviePilotAutoUpdate = computed({
   get: () => {
-    return SystemSettings.value.Advanced.MOVIEPILOT_AUTO_UPDATE === 'release'
+    return ['release', 'dev'].includes(SystemSettings.value.Advanced.MOVIEPILOT_AUTO_UPDATE)
   },
   set: val => {
     SystemSettings.value.Advanced.MOVIEPILOT_AUTO_UPDATE = val ? 'release' : 'false'
