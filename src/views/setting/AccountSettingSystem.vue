@@ -40,6 +40,8 @@ const SystemSettings = ref<any>({
     PLUGIN_STATISTIC_SHARE: true,
     BIG_MEMORY_MODE: false,
     DB_WAL_ENABLE: false,
+    AUTO_UPDATE_RESOURCE: true,
+    MOVIEPILOT_AUTO_UPDATE: false,
     // 媒体
     TMDB_API_DOMAIN: null,
     TMDB_IMAGE_DOMAIN: null,
@@ -384,6 +386,16 @@ function onMediaServerChange(mediaserver: MediaServerConf, name: string) {
   const index = mediaServers.value.findIndex(item => item.name === name)
   if (index !== -1) mediaServers.value[index] = mediaserver
 }
+
+// 添加计算属性
+const moviePilotAutoUpdate = computed({
+  get: () => {
+    return SystemSettings.value.Advanced.MOVIEPILOT_AUTO_UPDATE === 'release'
+  },
+  set: val => {
+    SystemSettings.value.Advanced.MOVIEPILOT_AUTO_UPDATE = val ? 'release' : 'false'
+  },
+})
 
 // 加载数据
 onMounted(() => {
@@ -732,6 +744,22 @@ onDeactivated(() => {
                     v-model="SystemSettings.Advanced.DB_WAL_ENABLE"
                     :label="t('setting.system.dbWalEnable')"
                     :hint="t('setting.system.dbWalEnableHint')"
+                    persistent-hint
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSwitch
+                    v-model="moviePilotAutoUpdate"
+                    :label="t('setting.system.moviePilotAutoUpdate')"
+                    :hint="t('setting.system.moviePilotAutoUpdateHint')"
+                    persistent-hint
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.AUTO_UPDATE_RESOURCE"
+                    :label="t('setting.system.autoUpdateResource')"
+                    :hint="t('setting.system.autoUpdateResourceHint')"
                     persistent-hint
                   />
                 </VCol>

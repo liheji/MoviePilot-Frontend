@@ -1090,6 +1090,10 @@ export default {
       securityImageDomainAdd: '添加域名，如：image.tmdb.org',
       proxyHost: '代理服務器',
       proxyHostHint: '設置代理服務器地址，支持：http(s)、socks5、socks5h 等協議',
+      moviePilotAutoUpdate: '自動更新MoviePilot',
+      moviePilotAutoUpdateHint: '重啟時自動更新MoviePilot到最新發行版本',
+      autoUpdateResource: '自動更新站點資源',
+      autoUpdateResourceHint: '重啟時自動檢測和更新站點資源包',
     },
     site: {
       siteSync: '站點同步',

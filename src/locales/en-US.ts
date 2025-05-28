@@ -1098,6 +1098,10 @@ export default {
       securityImageDomainAdd: 'Add domain, e.g.: image.tmdb.org',
       proxyHost: 'Proxy Server',
       proxyHostHint: 'Set proxy server address, support: http(s), socks5, socks5h, etc.',
+      moviePilotAutoUpdate: 'Auto Update MoviePilot',
+      moviePilotAutoUpdateHint: 'Automatically update MoviePilot to the latest release version when restarting',
+      autoUpdateResource: 'Auto Update Resource',
+      autoUpdateResourceHint: 'Automatically detect and update site resource package when restarting',
     },
     site: {
       siteSync: 'Site Synchronization',
