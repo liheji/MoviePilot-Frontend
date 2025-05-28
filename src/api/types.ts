@@ -1305,3 +1305,155 @@ export interface Workflow {
   // 最后执行时间
   last_time?: string
 }
+
+// 种子缓存项
+export interface TorrentCacheItem {
+  // 种子hash（用于操作标识）
+  hash: string
+  // 站点域名
+  domain: string
+  // 种子标题
+  title: string
+  // 种子描述
+  description?: string
+  // 种子大小
+  size: number
+  // 发布时间
+  pubdate?: string
+  // 站点名称
+  site_name?: string
+  // 识别的媒体名称
+  media_name?: string
+  // 识别的媒体年份
+  media_year?: string
+  // 识别的媒体类型
+  media_type?: string
+  // 季集信息
+  season_episode?: string
+  // 资源信息
+  resource_term?: string
+  // 种子链接
+  enclosure?: string
+  // 详情页面
+  page_url?: string
+  // 海报图片
+  poster_path?: string
+  // 背景图片
+  backdrop_path?: string
+}
+
+// 种子缓存数据
+export interface TorrentCacheData {
+  // 缓存数量
+  count: number
+  // 站点数量
+  sites: number
+  // 缓存数据
+  data: TorrentCacheItem[]
+}
+
+// 种子缓存响应
+export interface TorrentCacheResponse {
+  // Spider缓存
+  spider: TorrentCacheData
+  // RSS缓存
+  rss: TorrentCacheData
+}
+
+// 站点缓存统计
+export interface SiteCacheStats {
+  // 站点域名
+  domain: string
+  // 缓存数量
+  count: number
+  // 最新发布时间
+  latest_date: string
+}
+
+// 缓存配置
+export interface CacheConfig {
+  // 缓存限制数量
+  cache_limit: number
+  // 刷新限制数量
+  refresh_limit: number
+  // 当前模式
+  current_mode: string
+}
+
+// 缓存统计数据
+export interface CacheStatsData {
+  // 总数量
+  total_count: number
+  // 站点数量
+  sites_count: number
+  // 站点统计
+  sites: SiteCacheStats[]
+}
+
+// 种子缓存统计响应
+export interface TorrentCacheStatsResponse {
+  // 配置信息
+  config: CacheConfig
+  // Spider统计
+  spider: CacheStatsData
+  // RSS统计
+  rss: CacheStatsData
+}
+
+// 图片缓存统计
+export interface ImageCacheStats {
+  // 总文件数
+  total_files: number
+  // 总大小（字节）
+  total_size: number
+  // 是否启用缓存
+  cache_enabled: boolean
+  // 缓存路径
+  cache_path?: string
+}
+
+// 图片缓存统计响应
+export interface ImageCacheStatsResponse {
+  success: boolean
+  data: ImageCacheStats
+  message?: string
+}
+
+// 图片缓存项
+export interface ImageCacheItem {
+  // 相对路径
+  path: string
+  // 文件名
+  name: string
+  // 文件大小
+  size: number
+  // 修改时间
+  modified_time: string
+  // 分类
+  category: string
+  // 访问URL
+  url: string
+}
+
+// 图片缓存详细数据
+export interface ImageCacheData {
+  // 总数量
+  total: number
+  // 当前页
+  page: number
+  // 每页大小
+  size: number
+  // 总页数
+  pages: number
+  // 图片列表
+  items: ImageCacheItem[]
+  // 分类统计
+  categories: Record<string, number>
+}
+
+// 图片缓存详细数据响应
+export interface ImageCacheDataResponse {
+  success: boolean
+  data: ImageCacheData
+  message?: string
+}
