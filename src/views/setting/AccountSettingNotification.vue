@@ -293,7 +293,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn mtype="submit" @click="saveNotificationSetting"> {{ t('common.save') }} </VBtn>
+              <VBtn mtype="submit" @click="saveNotificationSetting" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
               <VBtn color="success" variant="tonal">
                 <VIcon icon="mdi-plus" />
                 <VMenu :activator="'parent'" :close-on-content-click="true">
@@ -401,7 +403,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveNotificationSwitchs"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveNotificationSwitchs" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -438,7 +442,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveNotificationTime"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveNotificationTime" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>

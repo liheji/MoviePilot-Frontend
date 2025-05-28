@@ -531,7 +531,9 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveBasicSettings"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveBasicSettings" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
               <VSpacer />
               <VBtn
                 color="error"
@@ -576,7 +578,9 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveDownloaderSetting"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveDownloaderSetting" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
               <VBtn color="success" variant="tonal">
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>
@@ -624,7 +628,9 @@ onDeactivated(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveMediaServerSetting"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveMediaServerSetting" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
               <VBtn color="success" variant="tonal">
                 <VIcon icon="mdi-plus" />
                 <VMenu activator="parent" close-on-content-click>

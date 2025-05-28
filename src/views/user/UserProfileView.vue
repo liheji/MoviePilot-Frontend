@@ -441,7 +441,7 @@ watch(
               <VRow>
                 <!-- 👉 Form Actions -->
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
-                  <VBtn @click="saveAccountInfo" :disabled="isSaving">
+                  <VBtn @click="saveAccountInfo" :disabled="isSaving" prepend-icon="mdi-content-save">
                     <span v-if="isSaving">{{ t('common.saving') }}...</span>
                     <span v-else>{{ t('common.save') }}</span>
                   </VBtn>

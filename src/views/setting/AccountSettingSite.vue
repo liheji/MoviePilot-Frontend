@@ -220,7 +220,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSiteSetting(siteSetting.CookieCloud)"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveSiteSetting(siteSetting.CookieCloud)" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -259,7 +261,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSiteSetting(siteSetting.Site)"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveSiteSetting(siteSetting.Site)" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>

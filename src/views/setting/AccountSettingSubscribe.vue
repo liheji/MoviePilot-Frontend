@@ -280,7 +280,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSubscribeSetting"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveSubscribeSetting" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -311,7 +313,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSelectedRssSites"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveSelectedRssSites" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>

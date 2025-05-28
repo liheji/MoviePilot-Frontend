@@ -239,7 +239,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" class="me-2" @click="saveStorages"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" class="me-2" @click="saveStorages" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
               <VBtn color="success" variant="tonal" @click="addStorage">
                 <VIcon icon="mdi-plus" />
               </VBtn>
@@ -279,7 +281,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveDirectories"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveDirectories" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
               <VBtn color="success" variant="tonal" @click="addDirectory">
                 <VIcon icon="mdi-plus" />
               </VBtn>
@@ -335,7 +339,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveSystemSettings(SystemSettings.Basic)"> {{ t('common.save') }}</VBtn>
+              <VBtn type="submit" @click="saveSystemSettings(SystemSettings.Basic)" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>

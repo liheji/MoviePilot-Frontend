@@ -154,7 +154,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveCustomIdentifiers">{{ t('common.save') }}</VBtn>
+              <VBtn type="submit" @click="saveCustomIdentifiers" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -180,7 +182,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveCustomReleaseGroups">{{ t('common.save') }}</VBtn>
+              <VBtn type="submit" @click="saveCustomReleaseGroups" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -206,7 +210,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveCustomization">{{ t('common.save') }}</VBtn>
+              <VBtn type="submit" @click="saveCustomization" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>
@@ -232,7 +238,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveTransferExcludeWords">{{ t('common.save') }}</VBtn>
+              <VBtn type="submit" @click="saveTransferExcludeWords" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>

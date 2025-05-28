@@ -401,7 +401,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" class="me-2" @click="saveCustomRules"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" class="me-2" @click="saveCustomRules" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
               <VBtnGroup density="comfortable">
                 <VBtn color="success" variant="tonal" @click="addCustomRule">
                   <VIcon icon="mdi-plus" />
@@ -452,7 +454,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" class="me-2" @click="saveFilterRuleGroups" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
               <VBtnGroup density="comfortable">
                 <VBtn color="success" variant="tonal" @click="addFilterRuleGroup">
                   <VIcon icon="mdi-plus" />
@@ -510,7 +514,9 @@ onMounted(() => {
         <VCardText>
           <VForm @submit.prevent="() => {}">
             <div class="d-flex flex-wrap gap-4 mt-4">
-              <VBtn type="submit" @click="saveTorrentPriority"> {{ t('common.save') }} </VBtn>
+              <VBtn type="submit" @click="saveTorrentPriority" prepend-icon="mdi-content-save">
+                {{ t('common.save') }}
+              </VBtn>
             </div>
           </VForm>
         </VCardText>
