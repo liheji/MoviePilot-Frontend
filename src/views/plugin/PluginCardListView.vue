@@ -175,6 +175,33 @@ const newFolderDialog = ref(false)
 // 新文件夹名称
 const newFolderName = ref('')
 
+// 获取文件夹内筛选后的插件
+const getFilteredFolderPlugins = (folderName: string) => {
+  const folderData = pluginFolders.value[folderName]
+  const folderPluginIds = Array.isArray(folderData) ? folderData : folderData?.plugins || []
+
+  // 获取文件夹内的插件并应用筛选条件
+  const folderPlugins: Plugin[] = []
+  folderPluginIds.forEach((pluginId: string) => {
+    const plugin = dataList.value.find(p => p.id === pluginId)
+    if (plugin) {
+      folderPlugins.push(plugin)
+    }
+  })
+
+  // 应用筛选条件
+  return folderPlugins.filter(plugin => {
+    if (!installedFilter.value && !hasUpdateFilter.value) return true
+    if (hasUpdateFilter.value) {
+      return plugin.has_update
+    }
+    if (installedFilter.value) {
+      return plugin.plugin_name?.toLowerCase().includes((installedFilter.value as string).toLowerCase())
+    }
+    return true
+  })
+}
+
 // 显示的插件列表（考虑文件夹筛选）
 const displayedPlugins = computed(() => {
   if (!currentFolder.value) {
@@ -186,20 +213,8 @@ const displayedPlugins = computed(() => {
     })
     return filteredDataList.value.filter(plugin => !folderedPluginIds.has(plugin.id))
   } else {
-    // 文件夹内：按照文件夹内保存的顺序显示插件
-    const folderData = pluginFolders.value[currentFolder.value]
-    const folderPluginIds = Array.isArray(folderData) ? folderData : folderData?.plugins || []
-
-    // 按照文件夹内的顺序排列插件
-    const orderedPlugins: Plugin[] = []
-    folderPluginIds.forEach((pluginId: string) => {
-      const plugin = filteredDataList.value.find(p => p.id === pluginId)
-      if (plugin) {
-        orderedPlugins.push(plugin)
-      }
-    })
-
-    return orderedPlugins
+    // 文件夹内：返回筛选后的插件
+    return getFilteredFolderPlugins(currentFolder.value)
   }
 })
 
@@ -232,17 +247,27 @@ const displayedFolders = computed(() => {
   const unsortedFolders = folderNames.filter(name => !folderOrder.value.includes(name))
   sortedFolderNames.push(...unsortedFolders)
 
-  return sortedFolderNames.map(folderName => {
-    const folderData = pluginFolders.value[folderName]
-    const plugins = Array.isArray(folderData) ? folderData : folderData?.plugins || []
-    const config = Array.isArray(folderData) ? {} : folderData
+  return sortedFolderNames
+    .map(folderName => {
+      const folderData = pluginFolders.value[folderName]
+      const config = Array.isArray(folderData) ? {} : folderData
 
-    return {
-      name: folderName,
-      pluginCount: plugins.length,
-      config: config,
-    }
-  })
+      // 获取筛选后的插件数量
+      const filteredPlugins = getFilteredFolderPlugins(folderName)
+
+      return {
+        name: folderName,
+        pluginCount: filteredPlugins.length,
+        config: config,
+      }
+    })
+    .filter(folder => {
+      // 当有筛选条件时，只显示包含筛选后插件的文件夹
+      if (installedFilter.value || hasUpdateFilter.value) {
+        return folder.pluginCount > 0
+      }
+      return true
+    })
 })
 
 // 更新混合排序列表
@@ -305,7 +330,7 @@ function updateMixedSortList() {
 
 // 监听相关数据变化，更新混合排序列表
 watch(
-  [displayedPlugins, displayedFolders, orderConfig, folderOrder],
+  [displayedPlugins, displayedFolders, orderConfig, folderOrder, installedFilter, hasUpdateFilter],
   () => {
     // 只有在非拖拽状态下才更新
     if (!isDraggingSortMode.value) {
