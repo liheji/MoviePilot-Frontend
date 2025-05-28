@@ -138,8 +138,15 @@ onMounted(async () => {
 
 <template>
   <VDialog width="40rem" scrollable :fullscreen="!display.mdAndUp.value">
-    <VCard :title="t('dialog.userAuth.title')">
-      <VDialogCloseBtn @click="emit('close')" />
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-user-check" class="me-2" />
+          {{ t('dialog.userAuth.title') }}
+        </VCardTitle>
+        <VDialogCloseBtn @click="emit('close')" />
+      </VCardItem>
+      <VDivider />
       <VCardText>
         <VRow>
           <VCol cols="12">
@@ -150,6 +157,7 @@ onMounted(async () => {
               item-title="name"
               :label="t('dialog.userAuth.selectSite')"
               item-props
+              prepend-inner-icon="mdi-web"
             >
             </VSelect>
           </VCol>

@@ -153,6 +153,7 @@ onMounted(() => {
               density="compact"
               :label="t('dialog.siteResource.searchKeyword')"
               clearable
+              prepend-inner-icon="mdi-magnify"
             />
           </VCol>
           <VCol cols="6" md="5">
@@ -165,10 +166,13 @@ onMounted(() => {
               :label="t('dialog.siteResource.resourceCategory')"
               multiple
               clearable
+              prepend-inner-icon="mdi-folder"
             />
           </VCol>
           <VCol cols="12" md="2" class="text-center">
-            <VBtn block prepend-icon="mdi-magnify" @click="getResourceList">{{ t('dialog.siteResource.search') }}</VBtn>
+            <VBtn variant="tonal" block prepend-icon="mdi-magnify" @click="getResourceList">
+              {{ t('dialog.siteResource.search') }}
+            </VBtn>
           </VCol>
         </VRow>
       </div>
