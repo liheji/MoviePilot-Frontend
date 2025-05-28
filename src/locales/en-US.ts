@@ -1096,6 +1096,8 @@ export default {
       securityImageDomainsHint: 'Allowed image domains whitelist for caching, used to control trusted image sources',
       noSecurityImageDomains: 'No security domains',
       securityImageDomainAdd: 'Add domain, e.g.: image.tmdb.org',
+      proxyHost: 'Proxy Server',
+      proxyHostHint: 'Set proxy server address, support: http(s), socks5, socks5h, etc.',
     },
     site: {
       siteSync: 'Site Synchronization',

@@ -1086,6 +1086,8 @@ export default {
       securityImageDomainsHint: '允许缓存的图片域名白名单，用于控制可信任的图片来源',
       noSecurityImageDomains: '暂无安全域名',
       securityImageDomainAdd: '添加域名，如：image.tmdb.org',
+      proxyHost: '代理服务器',
+      proxyHostHint: '设置代理服务器地址，支持：http(s)、socks5、socks5h 等协议',
     },
     site: {
       siteSync: '站点同步',

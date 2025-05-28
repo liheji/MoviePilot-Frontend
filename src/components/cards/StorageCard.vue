@@ -213,6 +213,9 @@ function onClose() {
     >
       <VCard>
         <VCardItem>
+          <template #prepend>
+            <VIcon icon="mdi-cog" />
+          </template>
           <VCardTitle>{{ t('storage.custom') }}</VCardTitle>
           <VDialogCloseBtn v-model="customConfigDialog" />
         </VCardItem>
@@ -225,11 +228,16 @@ function onClose() {
                 :label="t('storage.type')"
                 :hint="t('storage.customTypeHint')"
                 persistent-hint
-                active
+                prepend-inner-icon="mdi-database"
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField v-model="customName" :label="t('storage.name')" persistent-hint active />
+              <VTextField
+                v-model="customName"
+                :label="t('storage.name')"
+                persistent-hint
+                prepend-inner-icon="mdi-label"
+              />
             </VCol>
           </VRow>
         </VCardText>

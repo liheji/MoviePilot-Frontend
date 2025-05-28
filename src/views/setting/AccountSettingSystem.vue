@@ -819,6 +819,16 @@ onDeactivated(() => {
             <div>
               <VRow>
                 <VCol cols="12" md="6">
+                  <VTextField
+                    v-model="SystemSettings.Advanced.PROXY_HOST"
+                    :label="t('setting.system.proxyHost')"
+                    placeholder="http://127.0.0.1:7890"
+                    :hint="t('setting.system.proxyHostHint')"
+                    persistent-hint
+                    prepend-inner-icon="mdi-server-network"
+                  />
+                </VCol>
+                <VCol cols="12" md="6">
                   <VCombobox
                     v-model="githubProxyDisplay"
                     :label="t('setting.system.githubProxy')"
@@ -830,7 +840,7 @@ onDeactivated(() => {
                     prepend-inner-icon="mdi-github"
                   />
                 </VCol>
-                <VCol cols="12" md="6">
+                <VCol cols="12">
                   <VCombobox
                     v-model="pipProxyDisplay"
                     :label="t('setting.system.pipProxy')"
