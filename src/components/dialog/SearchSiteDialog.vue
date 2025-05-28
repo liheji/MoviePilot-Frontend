@@ -58,23 +58,16 @@ const filteredSites = computed(() => {
   <!-- Site Selection Dialog -->
   <VDialog max-width="40rem" fullscreen-mobile>
     <VCard class="site-dialog">
-      <VCardTitle class="d-flex align-center pa-4">
-        <span class="text-h6 font-weight-medium">{{ t('dialog.searchSite.selectSites') }}</span>
-        <VSpacer />
-        <VTextField
-          v-model="siteFilter"
-          :placeholder="t('dialog.searchSite.siteSearch')"
-          density="compact"
-          variant="outlined"
-          hide-details
-          class="ml-4"
-          style="max-inline-size: 200px"
-          prepend-inner-icon="mdi-magnify"
-          clearable
-        />
-      </VCardTitle>
-      <VDivider class="search-divider" />
-
+      <VCardItem>
+        <template #prepend>
+          <VIcon icon="mdi-web-check" />
+        </template>
+        <VCardTitle>
+          {{ t('dialog.searchSite.selectSites') }}
+        </VCardTitle>
+      </VCardItem>
+      <VDialogCloseBtn @click="emit('close')" />
+      <VDivider />
       <VCardText style="max-block-size: 420px" class="overflow-y-auto px-4 py-4">
         <!-- 站点列表 -->
         <div v-if="filteredSites.length > 0">
@@ -164,9 +157,6 @@ const filteredSites = computed(() => {
       </VCardText>
 
       <VCardActions class="pt-3">
-        <VBtn color="secondary" @click="emit('close')" class="mr-2 d-flex align-center justify-center">
-          {{ t('dialog.searchSite.cancel') }}
-        </VBtn>
         <VSpacer />
         <VBtn
           color="primary"
