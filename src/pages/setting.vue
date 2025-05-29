@@ -8,7 +8,7 @@ import AccountSettingAbout from '@/views/setting/AccountSettingAbout.vue'
 import AccountSettingSearch from '@/views/setting/AccountSettingSearch.vue'
 import AccountSettingSubscribe from '@/views/setting/AccountSettingSubscribe.vue'
 import AccountSettingSystem from '@/views/setting/AccountSettingSystem.vue'
-import AccountSettingScheduler from '@/views/setting/AccountSettingScheduler.vue'
+import AccountSettingService from '@/views/setting/AccountSettingService.vue'
 import AccountSettingDirectory from '@/views/setting/AccountSettingDirectory.vue'
 import AccountSettingRule from '@/views/setting/AccountSettingRule.vue'
 import AccountSettingCache from '@/views/setting/AccountSettingCache.vue'
@@ -82,7 +82,7 @@ const settingTabs = computed(() => getSettingTabs())
       <VWindowItem value="scheduler">
         <transition name="fade-slide" appear>
           <div>
-            <AccountSettingScheduler />
+            <AccountSettingService />
           </div>
         </transition>
       </VWindowItem>
