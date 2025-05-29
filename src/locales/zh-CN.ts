@@ -1375,9 +1375,11 @@ export default {
       settingsSaveFailed: '订阅基础设置保存失败！',
     },
     cache: {
-      title: '缓存',
-      description: '种子缓存、图片文件缓存管理',
+      title: '缓存管理',
       subtitle: '管理缓存的站点资源',
+      filterByTitle: '按标题筛选',
+      filterBySite: '按站点筛选',
+      selectSite: '选择站点',
       refresh: '刷新缓存',
       deleteSelected: '删除选中',
       clearAll: '清空缓存',

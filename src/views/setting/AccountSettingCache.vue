@@ -29,6 +29,30 @@ const cacheData = ref<TorrentCacheData>({
   data: [],
 })
 
+// 筛选条件
+const titleFilter = ref('')
+const siteFilter = ref('')
+
+// 获取所有站点选项
+const siteOptions = computed(() => {
+  const sites = new Set<string>()
+  cacheData.value.data.forEach(item => {
+    if (item.site_name) {
+      sites.add(item.site_name)
+    }
+  })
+  return Array.from(sites).sort()
+})
+
+// 筛选后的数据
+const filteredData = computed(() => {
+  return cacheData.value.data.filter(item => {
+    const titleMatch = item.title.toLowerCase().includes(titleFilter.value.toLowerCase())
+    const siteMatch = !siteFilter.value || item.site_name === siteFilter.value
+    return titleMatch && siteMatch
+  })
+})
+
 // 选中的缓存项
 const selectedItems = ref<string[]>([])
 
@@ -43,8 +67,8 @@ const doubanId = ref<string | undefined>()
 
 const tableStyle = computed(() => {
   return appMode
-    ? 'height: calc(100vh - 17rem - env(safe-area-inset-bottom) - 6.5rem)'
-    : 'height: calc(100vh - 17rem - env(safe-area-inset-bottom)'
+    ? 'height: calc(100vh - 20rem - env(safe-area-inset-bottom) - 6.5rem)'
+    : 'height: calc(100vh - 20rem - env(safe-area-inset-bottom)'
 })
 
 // 调用API加载缓存数据
@@ -197,6 +221,11 @@ function getMediaTypeColor(type: string): string {
   }
 }
 
+// 打开详情页面
+function openPageUrl(url: string) {
+  window.open(url, '_blank')
+}
+
 onMounted(() => {
   loadCacheData()
 })
@@ -236,6 +265,32 @@ onMounted(() => {
       </template>
     </VCardItem>
 
+    <!-- 筛选框 -->
+    <VCardText>
+      <VRow>
+        <VCol cols="12" md="6">
+          <VTextField
+            v-model="titleFilter"
+            :label="t('setting.cache.filterByTitle')"
+            prepend-inner-icon="mdi-magnify"
+            clearable
+            density="compact"
+          />
+        </VCol>
+        <VCol cols="12" md="6">
+          <VSelect
+            v-model="siteFilter"
+            :label="t('setting.cache.filterBySite')"
+            :items="siteOptions"
+            prepend-inner-icon="mdi-web"
+            clearable
+            density="compact"
+            :placeholder="t('setting.cache.selectSite')"
+          />
+        </VCol>
+      </VRow>
+    </VCardText>
+
     <!-- 缓存列表 -->
     <VDataTable
       v-model="selectedItems"
@@ -249,7 +304,7 @@ onMounted(() => {
         { title: t('setting.cache.recognitionResult'), key: 'media_info', sortable: false, width: '200px' },
         { title: t('setting.cache.actions'), key: 'actions', sortable: false, width: '150px' },
       ]"
-      :items="cacheData.data"
+      :items="filteredData"
       :loading="loading"
       item-value="hash"
       show-select
@@ -345,7 +400,7 @@ onMounted(() => {
             size="small"
             color="info"
             variant="text"
-            :href="item.page_url"
+            @click="openPageUrl(item.page_url || '')"
             target="_blank"
           >
             <VIcon size="16">mdi-open-in-new</VIcon>
