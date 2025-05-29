@@ -171,6 +171,12 @@ export function getSettingTabs() {
       description: t('settingTabs.scheduler.description'),
     },
     {
+      title: t('settingTabs.cache.title'),
+      icon: 'mdi-database',
+      tab: 'cache',
+      description: t('settingTabs.cache.description'),
+    },
+    {
       title: t('settingTabs.notification.title'),
       icon: 'mdi-bell',
       tab: 'notification',

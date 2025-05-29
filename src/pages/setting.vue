@@ -11,6 +11,7 @@ import AccountSettingSystem from '@/views/setting/AccountSettingSystem.vue'
 import AccountSettingScheduler from '@/views/setting/AccountSettingScheduler.vue'
 import AccountSettingDirectory from '@/views/setting/AccountSettingDirectory.vue'
 import AccountSettingRule from '@/views/setting/AccountSettingRule.vue'
+import AccountSettingCache from '@/views/setting/AccountSettingCache.vue'
 import { getSettingTabs } from '@/router/i18n-menu'
 
 const route = useRoute()
@@ -82,6 +83,15 @@ const settingTabs = computed(() => getSettingTabs())
         <transition name="fade-slide" appear>
           <div>
             <AccountSettingScheduler />
+          </div>
+        </transition>
+      </VWindowItem>
+
+      <!-- 缓存 -->
+      <VWindowItem value="cache">
+        <transition name="fade-slide" appear>
+          <div>
+            <AccountSettingCache />
           </div>
         </transition>
       </VWindowItem>
