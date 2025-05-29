@@ -11,7 +11,6 @@ import router from '@/router'
 import { useDisplay } from 'vuetify'
 import { formatFileSize } from '@/@core/utils/formatters'
 import { useI18n } from 'vue-i18n'
-import { storageAttributes } from '@/api/constants'
 
 // i18n
 const { t } = useI18n()

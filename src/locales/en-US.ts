@@ -1439,6 +1439,7 @@ export default {
         movie: 'Movie',
         tv: 'TV Show',
       },
+      clearConfirm: 'Are you sure you want to clear all cache?',
     },
   },
   dialog: {

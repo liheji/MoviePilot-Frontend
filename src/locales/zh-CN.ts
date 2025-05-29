@@ -1419,6 +1419,7 @@ export default {
         movie: '电影',
         tv: '电视剧',
       },
+      clearConfirm: '确认清空所有缓存吗？',
     },
   },
   dialog: {

@@ -4,11 +4,20 @@ import api from '@/api'
 import type { TorrentCacheData, TorrentCacheItem } from '@/api/types'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
+import { formatFileSize, formatDateDifference } from '@core/utils/formatters'
+import { useConfirm } from '@/composables/useConfirm'
 
 // 国际化
 const { t } = useI18n()
 
 const display = useDisplay()
+const appMode = inject('pwaMode') && display.mdAndDown.value
+
+// 从 provide 中获取全局设置
+const globalSettings: any = inject('globalSettings')
+
+// 确认框
+const createConfirm = useConfirm()
 
 // 提示框
 const $toast = useToast()
@@ -32,6 +41,12 @@ const currentReidentifyItem = ref<TorrentCacheItem | null>(null)
 const tmdbId = ref<number | undefined>()
 const doubanId = ref<string | undefined>()
 
+const tableStyle = computed(() => {
+  return appMode
+    ? 'height: calc(100vh - 17rem - env(safe-area-inset-bottom) - 6.5rem)'
+    : 'height: calc(100vh - 17rem - env(safe-area-inset-bottom)'
+})
+
 // 调用API加载缓存数据
 async function loadCacheData() {
   try {
@@ -48,6 +63,13 @@ async function loadCacheData() {
 
 // 清空所有缓存
 async function clearAllCache() {
+  const isConfirmed = await createConfirm({
+    type: 'warn',
+    title: t('common.confirm'),
+    content: t('setting.cache.clearConfirm'),
+  })
+
+  if (!isConfirmed) return
   try {
     loading.value = true
     await api.delete('torrent/cache')
@@ -163,21 +185,6 @@ async function performReidentify() {
   }
 }
 
-// 格式化文件大小
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-// 格式化日期
-function formatDate(dateStr: string): string {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleString()
-}
-
 // 获取媒体类型颜色
 function getMediaTypeColor(type: string): string {
   switch (type) {
@@ -246,10 +253,11 @@ onMounted(() => {
       :loading="loading"
       item-value="hash"
       show-select
-      class="text-no-wrap"
+      hover
       :items-per-page-text="t('common.itemsPerPage')"
       :no-data-text="t('common.noDataText')"
       :loading-text="t('common.loadingText')"
+      :style="tableStyle"
     >
       <!-- 全选复选框 -->
       <template #header.data-table-select="{ allSelected, selectAll, someSelected }">
@@ -262,10 +270,19 @@ onMounted(() => {
 
       <!-- 海报列 -->
       <template #item.poster="{ item }">
-        <VAvatar size="60" rounded="lg" class="ma-1">
-          <VImg v-if="item.poster_path" :src="item.poster_path" :alt="item.media_name || item.title" cover />
-          <VIcon v-else size="30" color="grey-lighten-1"> mdi-movie-open </VIcon>
-        </VAvatar>
+        <div class="text-center">
+          <VImg
+            v-if="item.poster_path"
+            :src="item.poster_path"
+            :alt="item.media_name || item.title"
+            cover
+            rounded="md"
+            class="w-12 my-1 ms-auto"
+          />
+          <VIcon v-else size="x-large" color="grey-lighten-1">
+            {{ item.media_type === 'movie' ? 'mdi-movie-open' : 'mdi-television-play' }}
+          </VIcon>
+        </div>
       </template>
 
       <!-- 标题列 -->
@@ -290,7 +307,7 @@ onMounted(() => {
 
       <!-- 发布时间列 -->
       <template #item.pubdate="{ item }">
-        {{ formatDate(item.pubdate || '') }}
+        {{ formatDateDifference(item.pubdate || '') }}
       </template>
 
       <!-- 识别结果列 -->
@@ -298,12 +315,12 @@ onMounted(() => {
         <div v-if="item.media_name" class="d-flex flex-column">
           <div class="text-subtitle-2">
             {{ item.media_name }}
-            <VChip v-if="item.media_type" :color="getMediaTypeColor(item.media_type)" size="x-small" class="ml-1">
+            <span v-if="item.media_year" class="text-caption text-grey"> ({{ item.media_year }}) </span>
+          </div>
+          <div>
+            <VChip v-if="item.media_type" :color="getMediaTypeColor(item.media_type)" size="x-small">
               {{ item.media_type }}
             </VChip>
-          </div>
-          <div v-if="item.media_year" class="text-caption text-grey">
-            {{ item.media_year }}
           </div>
         </div>
         <div v-else class="text-caption text-grey">
@@ -314,15 +331,23 @@ onMounted(() => {
       <!-- 操作列 -->
       <template #item.actions="{ item }">
         <div class="d-flex gap-1">
-          <VBtn size="small" color="primary" variant="text" @click="openReidentifyDialog(item)">
-            <VIcon size="16">mdi-refresh</VIcon>
+          <VBtn icon size="small" color="primary" variant="text" @click="openReidentifyDialog(item)">
+            <VIcon size="16">mdi-text-recognition</VIcon>
           </VBtn>
 
-          <VBtn size="small" color="error" variant="text" @click="deleteSingleItem(item)">
+          <VBtn icon size="small" color="error" variant="text" @click="deleteSingleItem(item)">
             <VIcon size="16">mdi-delete</VIcon>
           </VBtn>
 
-          <VBtn v-if="item.page_url" size="small" color="info" variant="text" :href="item.page_url" target="_blank">
+          <VBtn
+            v-if="item.page_url"
+            icon
+            size="small"
+            color="info"
+            variant="text"
+            :href="item.page_url"
+            target="_blank"
+          >
             <VIcon size="16">mdi-open-in-new</VIcon>
           </VBtn>
         </div>
@@ -342,33 +367,39 @@ onMounted(() => {
   </VCard>
 
   <!-- 重新识别对话框 -->
-  <VDialog v-model="reidentifyDialog" scrollable max-width="40rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog v-model="reidentifyDialog" scrollable max-width="35rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
-      <VCardTitle>{{ t('setting.cache.reidentifyDialog.title') }}</VCardTitle>
-
+      <VCardItem>
+        <template #prepend>
+          <VIcon>mdi-text-recognition</VIcon>
+        </template>
+        <VCardTitle>{{ t('setting.cache.reidentifyDialog.title') }}</VCardTitle>
+        <VCardSubtitle>{{ currentReidentifyItem?.title }}</VCardSubtitle>
+      </VCardItem>
+      <VDialogCloseBtn @click="reidentifyDialog = false" />
+      <VDivider />
       <VCardText>
-        <div class="mb-4">
-          <div class="text-subtitle-2 mb-2">{{ t('setting.cache.reidentifyDialog.torrentInfo') }}</div>
-          <div class="text-body-2">{{ currentReidentifyItem?.title }}</div>
-          <div class="text-caption text-grey">{{ currentReidentifyItem?.site_name }}</div>
-        </div>
-
-        <VTextField
-          v-model="tmdbId"
-          :label="t('setting.cache.reidentifyDialog.tmdbId')"
-          :hint="t('setting.cache.reidentifyDialog.tmdbIdHint')"
-          type="number"
-          clearable
-        />
-
-        <VTextField
-          v-model="doubanId"
-          :label="t('setting.cache.reidentifyDialog.doubanId')"
-          :hint="t('setting.cache.reidentifyDialog.doubanIdHint')"
-          clearable
-          class="mt-4"
-        />
-
+        <VRow>
+          <VCol cols="12">
+            <VTextField
+              v-if="globalSettings.RECOGNIZE_SOURCE === 'themoviedb'"
+              v-model="tmdbId"
+              :label="t('setting.cache.reidentifyDialog.tmdbId')"
+              :hint="t('setting.cache.reidentifyDialog.tmdbIdHint')"
+              type="number"
+              clearable
+              prepend-inner-icon="mdi-id-card"
+            />
+            <VTextField
+              v-else
+              v-model="doubanId"
+              :label="t('setting.cache.reidentifyDialog.doubanId')"
+              :hint="t('setting.cache.reidentifyDialog.doubanIdHint')"
+              clearable
+              class="mt-4"
+            />
+          </VCol>
+        </VRow>
         <VAlert type="info" variant="tonal" class="mt-4">
           {{ t('setting.cache.reidentifyDialog.autoHint') }}
         </VAlert>
@@ -376,10 +407,7 @@ onMounted(() => {
 
       <VCardActions>
         <VSpacer />
-        <VBtn color="grey" variant="text" @click="reidentifyDialog = false">
-          {{ t('setting.cache.reidentifyDialog.cancel') }}
-        </VBtn>
-        <VBtn color="primary" :loading="loading" @click="performReidentify">
+        <VBtn color="primary" :loading="loading" prepend-icon="mdi-check" @click="performReidentify">
           {{ t('setting.cache.reidentifyDialog.confirm') }}
         </VBtn>
       </VCardActions>

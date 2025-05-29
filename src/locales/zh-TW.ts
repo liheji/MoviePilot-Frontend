@@ -1420,6 +1420,7 @@ export default {
         movie: '電影',
         tv: '電視劇',
       },
+      clearConfirm: '確認清空所有緩存嗎？',
     },
   },
   dialog: {
