@@ -403,25 +403,6 @@ function sortPluginOrder() {
   })
 }
 
-// 保存顺序设置
-async function savePluginOrder() {
-  // 只在主列表中保存顺序，文件夹内不保存全局顺序
-  if (currentFolder.value) return
-
-  // 顺序配置
-  const orderObj = filteredDataList.value.map(item => ({ id: item.id || '' }))
-  orderConfig.value = orderObj
-  const orderString = JSON.stringify(orderObj)
-  localStorage.setItem('MP_PLUGIN_ORDER', orderString)
-
-  // 保存到服务端
-  try {
-    await api.post('/user/config/PluginOrder', orderObj)
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 // 保存混合排序
 async function saveMixedSortOrder() {
   try {
@@ -707,6 +688,8 @@ async function getPluginStatistics() {
 async function refreshData() {
   await fetchInstalledPlugins()
   fetchUninstalledPlugins()
+  // 重新加载文件夹配置，确保分身插件能正确显示在文件夹中
+  await loadPluginFolders()
 }
 
 // 对uninstalledList进行排序到sortedUninstalledList
