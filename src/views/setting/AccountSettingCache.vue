@@ -66,9 +66,7 @@ const tmdbId = ref<number | undefined>()
 const doubanId = ref<string | undefined>()
 
 const tableStyle = computed(() => {
-  return appMode
-    ? 'height: calc(100vh - 21rem - env(safe-area-inset-bottom) - 6.5rem)'
-    : 'height: calc(100vh - 21rem - env(safe-area-inset-bottom)'
+  return appMode ? '' : 'height: calc(100vh - 21rem - env(safe-area-inset-bottom)'
 })
 
 // 调用API加载缓存数据
@@ -268,7 +266,7 @@ onMounted(() => {
     <!-- 筛选框 -->
     <VCardText>
       <VRow>
-        <VCol cols="12" md="6">
+        <VCol cols="6">
           <VTextField
             v-model="titleFilter"
             :label="t('setting.cache.filterByTitle')"
@@ -277,7 +275,7 @@ onMounted(() => {
             density="compact"
           />
         </VCol>
-        <VCol cols="12" md="6">
+        <VCol cols="6">
           <VSelect
             v-model="siteFilter"
             :label="t('setting.cache.filterBySite')"
@@ -343,7 +341,7 @@ onMounted(() => {
 
       <!-- 标题列 -->
       <template #item.title="{ item }">
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column min-w-40">
           <div class="text-subtitle-2 font-weight-bold">
             {{ item.title }}
           </div>
@@ -422,7 +420,7 @@ onMounted(() => {
   </VCard>
 
   <!-- 重新识别对话框 -->
-  <VDialog v-model="reidentifyDialog" scrollable max-width="35rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog v-model="reidentifyDialog" scrollable max-width="35rem">
     <VCard>
       <VCardItem class="py-2">
         <template #prepend>
