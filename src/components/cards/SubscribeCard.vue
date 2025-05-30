@@ -353,7 +353,7 @@ function onSubscribeEditRemove() {
             <div>
               <VCardText class="flex items-center pt-3 pb-2">
                 <div
-                  class="h-auto w-14 flex-shrink-0 overflow-hidden rounded-md"
+                  class="h-auto w-12 flex-shrink-0 overflow-hidden rounded-md"
                   v-if="imageLoaded"
                   :class="{ 'cursor-move': display.mdAndUp.value }"
                 >
@@ -367,7 +367,7 @@ function onSubscribeEditRemove() {
                 </div>
                 <div class="flex flex-col justify-center overflow-hidden pl-2 xl:pl-4">
                   <div class="text-sm font-medium text-white sm:pt-1">{{ props.media?.year }}</div>
-                  <div class="mr-2 min-w-0 text-lg font-bold text-white">
+                  <div class="mr-2 min-w-0 text-lg font-bold text-white text-ellipsis overflow-hidden line-clamp-2 ...">
                     {{ props.media?.name }}
                     {{ formatSeason(props.media?.season ? props.media?.season.toString() : '') }}
                   </div>
