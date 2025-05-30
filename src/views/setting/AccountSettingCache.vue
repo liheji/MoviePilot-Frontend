@@ -309,6 +309,7 @@ onMounted(() => {
       item-value="hash"
       show-select
       hover
+      fixed-header
       :items-per-page-text="t('common.itemsPerPage')"
       :no-data-text="t('common.noDataText')"
       :loading-text="t('common.loadingText')"
