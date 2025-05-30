@@ -441,9 +441,9 @@ onMounted(() => {
               v-model="tmdbId"
               :label="t('setting.cache.reidentifyDialog.tmdbId')"
               :hint="t('setting.cache.reidentifyDialog.tmdbIdHint')"
-              type="number"
               clearable
               prepend-inner-icon="mdi-id-card"
+              persistent-hint
             />
             <VTextField
               v-else
@@ -451,7 +451,8 @@ onMounted(() => {
               :label="t('setting.cache.reidentifyDialog.doubanId')"
               :hint="t('setting.cache.reidentifyDialog.doubanIdHint')"
               clearable
-              class="mt-4"
+              prepend-inner-icon="mdi-id-card"
+              persistent-hint
             />
           </VCol>
         </VRow>
