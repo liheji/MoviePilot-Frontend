@@ -229,7 +229,7 @@ const dropdownItems = ref([
             class="flex flex-col align-self-baseline justify-between px-2 py-2 w-full overflow-hidden max-h-10 min-h-10"
           >
             <div class="flex flex-nowrap items-center w-full pe-10">
-              <div class="flex flex-nowrap max-w-32 items-center align-middle">
+              <div class="flex flex-nowrap max-w-40 items-center align-middle">
                 <VIcon icon="mdi-github" class="me-1" />
                 <a
                   class="overflow-hidden text-ellipsis whitespace-nowrap"

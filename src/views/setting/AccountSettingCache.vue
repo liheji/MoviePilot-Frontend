@@ -67,8 +67,8 @@ const doubanId = ref<string | undefined>()
 
 const tableStyle = computed(() => {
   return appMode
-    ? 'height: calc(100vh - 20rem - env(safe-area-inset-bottom) - 6.5rem)'
-    : 'height: calc(100vh - 20rem - env(safe-area-inset-bottom)'
+    ? 'height: calc(100vh - 21rem - env(safe-area-inset-bottom) - 6.5rem)'
+    : 'height: calc(100vh - 21rem - env(safe-area-inset-bottom)'
 })
 
 // 调用API加载缓存数据
@@ -251,14 +251,14 @@ onMounted(() => {
             :disabled="selectedItems.length === 0"
             @click="deleteSelectedItems"
           >
-            <VIcon>mdi-delete</VIcon>
+            <VIcon>mdi-delete-sweep</VIcon>
             <VTooltip activator="parent" location="bottom"
               >{{ t('setting.cache.deleteSelected') }} ({{ selectedItems.length }})</VTooltip
             >
           </VBtn>
 
           <VBtn icon color="error" :loading="loading" @click="clearAllCache">
-            <VIcon>mdi-delete-sweep</VIcon>
+            <VIcon>mdi-delete-variant</VIcon>
             <VTooltip activator="parent" location="bottom">{{ t('setting.cache.clearAll') }}</VTooltip>
           </VBtn>
         </div>
@@ -411,10 +411,9 @@ onMounted(() => {
       <!-- 空状态 -->
       <template #no-data>
         <div class="text-center pa-4">
-          <VIcon size="64" color="grey-lighten-2" class="mb-4"> mdi-database-off </VIcon>
-          <div class="text-h6 text-grey">{{ t('setting.cache.noData') }}</div>
+          <VIcon size="64" class="mb-4"> mdi-database-off </VIcon>
           <div class="text-body-2 text-grey">
-            {{ t('setting.cache.noDataHint') }}
+            {{ t('setting.cache.noData') }}
           </div>
         </div>
       </template>
@@ -424,7 +423,7 @@ onMounted(() => {
   <!-- 重新识别对话框 -->
   <VDialog v-model="reidentifyDialog" scrollable max-width="35rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
-      <VCardItem>
+      <VCardItem class="py-2">
         <template #prepend>
           <VIcon>mdi-text-recognition</VIcon>
         </template>

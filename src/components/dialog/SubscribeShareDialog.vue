@@ -67,6 +67,7 @@ const $toast = useToast()
           {{ props.sub?.season ? t('dialog.subscribeShare.season', { number: props.sub?.season }) : '' }}
         </VCardSubtitle>
       </VCardItem>
+      <VDivider />
       <VCardText>
         <VDialogCloseBtn @click="emit('close')" />
         <VForm @submit.prevent="() => {}" class="pt-2">

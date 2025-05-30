@@ -179,7 +179,13 @@ const resolveProgress = (item: Workflow) => {
         :loading="loading"
         :class="{ 'transition transform-cpu duration-300 -translate-y-1': hover.isHovering }"
       >
-        <VCardItem class="py-3" :class="`bg-${resolveStatusVariant(workflow?.state).color}`">
+        <VCardItem
+          :class="{
+            'py-1': workflow?.description,
+            'py-3': !workflow?.description,
+            [`bg-${resolveStatusVariant(workflow?.state).color}`]: true,
+          }"
+        >
           <template #prepend>
             <VAvatar variant="text" class="me-2">
               <VIcon
