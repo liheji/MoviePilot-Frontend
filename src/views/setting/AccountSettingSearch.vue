@@ -209,7 +209,7 @@ onMounted(() => {
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VSelect
+              <VAutocomplete
                 v-model="selectedFilterGroup"
                 multiple
                 clearable

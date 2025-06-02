@@ -172,7 +172,7 @@ onMounted(async () => {
               />
             </VCol>
             <VCol cols="6" md="3">
-              <VSelect
+              <VAutocomplete
                 v-model="siteForm.pri"
                 :label="t('site.fields.priority')"
                 :items="priorityItems"
@@ -213,7 +213,7 @@ onMounted(async () => {
               />
             </VCol>
             <VCol cols="6" md="3">
-              <VSelect
+              <VAutocomplete
                 v-model="siteForm.downloader"
                 :label="t('site.fields.downloader')"
                 :items="downloaderOptions"

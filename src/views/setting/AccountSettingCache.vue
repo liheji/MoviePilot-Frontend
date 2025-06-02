@@ -276,7 +276,7 @@ onMounted(() => {
           />
         </VCol>
         <VCol cols="6">
-          <VSelect
+          <VAutocomplete
             v-model="siteFilter"
             :label="t('setting.cache.filterBySite')"
             :items="siteOptions"

@@ -231,7 +231,7 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VSelect
+                <VAutocomplete
                   v-model="selectedFilterRuleGroup"
                   :items="filterRuleGroupOptions"
                   chips
@@ -244,7 +244,7 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VSelect
+                <VAutocomplete
                   v-model="selectedBestVersionRuleGroup"
                   :items="filterRuleGroupOptions"
                   chips

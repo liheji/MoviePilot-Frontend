@@ -165,7 +165,7 @@ function onClose() {
                 <VSwitch v-model="notificationInfo.enabled" :label="t('notification.enabled')" />
               </VCol>
               <VCol cols="12">
-                <VSelect
+                <VAutocomplete
                   v-model="notificationInfo.switchs"
                   :items="notificationTypes"
                   :label="t('notification.type')"

@@ -273,7 +273,7 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12">
-                <VSelect
+                <VAutocomplete
                   v-model="mediaServerInfo.sync_libraries"
                   :label="t('mediaserver.syncLibraries')"
                   :items="librariesOptions"
@@ -334,7 +334,7 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12">
-                <VSelect
+                <VAutocomplete
                   v-model="mediaServerInfo.sync_libraries"
                   :label="t('mediaserver.syncLibraries')"
                   :items="librariesOptions"
@@ -402,7 +402,7 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12">
-                <VSelect
+                <VAutocomplete
                   v-model="mediaServerInfo.sync_libraries"
                   :label="t('mediaserver.syncLibraries')"
                   :items="librariesOptions"
@@ -463,7 +463,7 @@ onMounted(() => {
                 />
               </VCol>
               <VCol cols="12">
-                <VSelect
+                <VAutocomplete
                   v-model="mediaServerInfo.sync_libraries"
                   :label="t('mediaserver.syncLibraries')"
                   :items="librariesOptions"
