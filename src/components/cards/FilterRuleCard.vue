@@ -56,7 +56,7 @@ onMounted(() => {
       <VCardTitle>{{ t('filterRule.priority') }} {{ props.pri }}</VCardTitle>
       <VRow>
         <VCol>
-          <VSelect
+          <VAutocomplete
             v-model="props.rules"
             variant="underlined"
             :items="selectFilterOptions"

@@ -214,7 +214,7 @@ watch(
       <VForm>
         <VRow>
           <VCol cols="6">
-            <VSelect
+            <VAutocomplete
               v-model="props.directory.media_type"
               variant="underlined"
               :items="typeItems"
@@ -223,7 +223,7 @@ watch(
             />
           </VCol>
           <VCol cols="6">
-            <VSelect
+            <VAutocomplete
               v-model="props.directory.media_category"
               variant="underlined"
               :items="getCategories"
@@ -231,7 +231,7 @@ watch(
             />
           </VCol>
           <VCol cols="4">
-            <VSelect
+            <VAutocomplete
               v-model="props.directory.storage"
               variant="underlined"
               :items="resourceStorageOptions"

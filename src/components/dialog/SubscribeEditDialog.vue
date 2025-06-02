@@ -346,7 +346,7 @@ onMounted(() => {
                 </VRow>
                 <VRow>
                   <VCol cols="12" md="4">
-                    <VSelect
+                    <VAutocomplete
                       v-model="subscribeForm.quality"
                       :label="t('dialog.subscribeEdit.quality')"
                       :items="qualityOptions"
@@ -356,7 +356,7 @@ onMounted(() => {
                     />
                   </VCol>
                   <VCol cols="12" md="4">
-                    <VSelect
+                    <VAutocomplete
                       v-model="subscribeForm.resolution"
                       :label="t('dialog.subscribeEdit.resolution')"
                       :items="resolutionOptions"
@@ -366,7 +366,7 @@ onMounted(() => {
                     />
                   </VCol>
                   <VCol cols="12" md="4">
-                    <VSelect
+                    <VAutocomplete
                       v-model="subscribeForm.effect"
                       :label="t('dialog.subscribeEdit.effect')"
                       :items="effectOptions"
@@ -378,7 +378,7 @@ onMounted(() => {
                 </VRow>
                 <VRow>
                   <VCol cols="12">
-                    <VSelect
+                    <VAutocomplete
                       v-model="subscribeForm.sites"
                       :items="selectSitesOptions"
                       chips
@@ -393,7 +393,7 @@ onMounted(() => {
                 </VRow>
                 <VRow>
                   <VCol cols="12" md="6">
-                    <VSelect
+                    <VAutocomplete
                       v-model="subscribeForm.downloader"
                       :items="downloaderOptions"
                       :label="t('dialog.subscribeEdit.downloader')"
@@ -465,7 +465,7 @@ onMounted(() => {
                 </VRow>
                 <VRow>
                   <VCol cols="12">
-                    <VSelect
+                    <VAutocomplete
                       v-model="subscribeForm.filter_groups"
                       :items="filterRuleGroupOptions"
                       chips
@@ -478,7 +478,7 @@ onMounted(() => {
                     />
                   </VCol>
                   <VCol v-if="!props.default && subscribeForm.type === '电视剧'" cols="12" md="6">
-                    <VSelect
+                    <VAutocomplete
                       v-model="subscribeForm.episode_group"
                       :items="episodeGroupOptions"
                       :item-props="episodeGroupItemProps"
@@ -489,7 +489,7 @@ onMounted(() => {
                     />
                   </VCol>
                   <VCol v-if="!props.default && subscribeForm.type === '电视剧'" cols="12" md="6">
-                    <VSelect
+                    <VAutocomplete
                       v-model="subscribeForm.season"
                       :items="seasonItems"
                       :label="t('dialog.subscribeEdit.season')"
