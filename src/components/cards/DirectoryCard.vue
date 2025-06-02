@@ -277,7 +277,7 @@ watch(
             />
           </VCol>
           <VCol cols="4">
-            <VSelect
+            <VAutocomplete
               v-model="props.directory.library_storage"
               variant="underlined"
               :items="libraryStorageOptions"

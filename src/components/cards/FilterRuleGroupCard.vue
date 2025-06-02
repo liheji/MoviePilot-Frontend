@@ -247,7 +247,7 @@ function onClose() {
               />
             </VCol>
             <VCol cols="6" md="3">
-              <VSelect
+              <VAutocomplete
                 v-model="groupInfo.media_type"
                 :label="t('filterRule.mediaType')"
                 :items="mediaTypeItems"
@@ -258,7 +258,7 @@ function onClose() {
               />
             </VCol>
             <VCol cols="6" md="3">
-              <VSelect
+              <VAutocomplete
                 v-model="groupInfo.category"
                 :items="getCategories"
                 :label="t('filterRule.category')"
