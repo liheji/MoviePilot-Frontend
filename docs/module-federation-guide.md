@@ -266,7 +266,7 @@ yarn build
 
 - 将生成的dist文件夹上传到插件后端目录下（默认为`dist/assets`）
 
- ** 注意： `__federation_shared_vuetify` 目录以及 `index-`、`date-`、`runtime-` 开头的文件不需要上传 **，只需要上传以下命名格式文件：`__federation_*`、`_plugin-vue_export-helper-*`、`remoteEntry.js`
+ **注意： `__federation_shared_vuetify` 目录以及 `index-`、`date-`、`runtime-` 开头的文件不需要上传**，只需要上传以下命名格式文件：`__federation_*`、`_plugin-vue_export-helper-*`、`remoteEntry.js`
 
 
 - 在插件的后端python代码中，实现以下方法来集成远程组件：
