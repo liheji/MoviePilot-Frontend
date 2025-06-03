@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
+import { isToday } from '@/@core/utils/index'
+import dayjs from 'dayjs';
 
 // 定义输入变量
 const props = defineProps<{
@@ -10,7 +12,7 @@ const props = defineProps<{
 const { t } = useI18n()
 
 // 已解析的日志列表
-const parsedLogs = ref<{ level: string; time: string; program: string; content: string }[]>([])
+const parsedLogs = ref<{ level: string; date: string; time: string; program: string; content: string }[]>([])
 
 // 表头
 const headers = [
@@ -56,11 +58,11 @@ function startSSELogging() {
           // 解析新日志
           const newParsedLogs = buffer
             .map(log => {
-              const logPattern = /^【(.*?)】[0-9\-:]*\s(.*?)\s-\s(.*?)\s-\s(.*)$/
+              const logPattern = /^【(.*?)】\s*([\d]{4}-\d{2}-\d{2}(?:\s+\d{2}:\d{2})?)\s+(.*?)\s*-\s*(.*?)\s*-\s*(.*)$/
               const matches = log.match(logPattern)
               if (matches) {
-                const [, level, time, program, content] = matches
-                return { level, time, program, content }
+                const [, level, date, time, program, content] = matches
+                return { level, date, time, program, content }
               }
               return null
             })
@@ -104,7 +106,8 @@ onBeforeUnmount(() => {
             <VChip size="small" :color="getLogColor(item.level)" variant="elevated" v-text="item.level" />
           </template>
           <template #item.time="{ item }">
-            <span class="text-sm">{{ item.time }}</span>
+            <span class="text-sm">{{ isToday(dayjs(item.date).toDate()) ? item.time : `${item.date}
+              ${item.time}` }}</span>
           </template>
           <template #item.program="{ item }">
             <h6 class="text-sm font-weight-medium">{{ item.program }}</h6>
