@@ -96,27 +96,12 @@ async function loadSiteSettings() {
   }
 }
 
-// 重载系统生效配置
-async function reloadSystem() {
-  progressDialog.value = true
-  try {
-    const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
-    else $toast.error(t('setting.system.reloadFailed'))
-  } catch (error) {
-    console.log(error)
-  }
-  progressDialog.value = false
-}
-
 // 调用API保存设置
 async function saveSiteSetting(value: { [key: string]: any }) {
-  console.log(`正在保存设置：${JSON.stringify(value)}`)
   try {
     const result: { [key: string]: any } = await api.post('system/env', value)
     if (result.success) {
       $toast.success(t('setting.site.saveSuccess'))
-      await reloadSystem()
     } else {
       $toast.error(t('setting.site.saveFailed'))
     }

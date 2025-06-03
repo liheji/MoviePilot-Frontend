@@ -59,19 +59,6 @@ async function loadSystemSettings() {
   }
 }
 
-// 重载系统生效配置
-async function reloadSystem() {
-  progressDialog.value = true
-  try {
-    const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
-    else $toast.error(t('setting.system.reloadFailed'))
-  } catch (error) {
-    console.log(error)
-  }
-  progressDialog.value = false
-}
-
 // 移动结束
 function orderDirectoryCards() {
   // 更新所有目录的优先级
@@ -124,7 +111,6 @@ async function saveDirectories() {
     const result: { [key: string]: any } = await api.post('system/setting/Directories', directories.value)
     if (result.success) {
       $toast.success(t('setting.directory.directorySaveSuccess'))
-      await reloadSystem()
     } else $toast.error(t('setting.directory.directorySaveFailed'))
   } catch (error) {
     console.log(error)

@@ -131,19 +131,6 @@ async function loadDownloaderSetting() {
   }
 }
 
-// 重载系统生效配置
-async function reloadSystem() {
-  progressDialog.value = true
-  try {
-    const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
-    else $toast.error(t('setting.system.reloadFailed'))
-  } catch (error) {
-    console.log(error)
-  }
-  progressDialog.value = false
-}
-
 // 调用API保存下载器设置
 async function saveDownloaderSetting() {
   try {
@@ -158,7 +145,6 @@ async function saveDownloaderSetting() {
     else $toast.error(t('setting.system.downloaderSaveFailed'))
 
     await loadDownloaderSetting()
-    await reloadSystem()
   } catch (error) {
     console.log(error)
   }

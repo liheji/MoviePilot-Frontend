@@ -103,19 +103,6 @@ const notificationTime = ref({
   end: '23:59',
 })
 
-// 重载系统生效配置
-async function reloadSystem() {
-  progressDialog.value = true
-  try {
-    const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
-    else $toast.error(t('setting.system.reloadFailed'))
-  } catch (error) {
-    console.log(error)
-  }
-  progressDialog.value = false
-}
-
 // 添加通知渠道
 function addNotification(notification: string) {
   let name = `${t('setting.notification.channel')}${notifications.value.length + 1}`
@@ -199,7 +186,6 @@ async function saveNotificationSetting() {
     const result: { [key: string]: any } = await api.post('system/setting/Notifications', notifications.value)
     if (result.success) {
       $toast.success(t('setting.notification.saveSuccess'))
-      await reloadSystem()
     } else $toast.error(t('setting.notification.saveFailed'))
   } catch (error) {
     console.log(error)
@@ -212,7 +198,6 @@ async function saveNotificationTime() {
     const result: { [key: string]: any } = await api.post('system/setting/NotificationSendTime', notificationTime.value)
     if (result.success) {
       $toast.success(t('setting.notification.timeSaveSuccess'))
-      await reloadSystem()
     } else $toast.error(t('setting.notification.timeSaveFailed'))
   } catch (error) {
     console.log(error)

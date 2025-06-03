@@ -153,19 +153,6 @@ async function querySubscribeRules() {
   }
 }
 
-// 重载系统生效配置
-async function reloadSystem() {
-  progressDialog.value = true
-  try {
-    const result: { [key: string]: any } = await api.get('system/reload')
-    if (result.success) $toast.success(t('setting.system.reloadSuccess'))
-    else $toast.error(t('setting.system.reloadFailed'))
-  } catch (error) {
-    console.log(error)
-  }
-  progressDialog.value = false
-}
-
 // 保存订阅设置
 async function saveSubscribeSetting() {
   try {
@@ -183,7 +170,6 @@ async function saveSubscribeSetting() {
 
     if (result1.success && result2.success && result3) {
       $toast.success(t('setting.subscribe.settingsSaveSuccess'))
-      await reloadSystem()
     } else $toast.error(t('setting.subscribe.settingsSaveFailed'))
   } catch (error) {
     console.log(error)
