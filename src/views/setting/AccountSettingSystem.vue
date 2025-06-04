@@ -184,7 +184,6 @@ async function saveMediaServerSetting() {
     else $toast.error(t('setting.system.mediaServerSaveFailed'))
 
     await loadMediaServerSetting()
-    await reloadSystem()
   } catch (error) {
     console.log(error)
   }
@@ -227,7 +226,6 @@ async function saveSystemSetting(value: { [key: string]: any }) {
 async function saveBasicSettings() {
   if (await saveSystemSetting(SystemSettings.value.Basic)) {
     $toast.success(t('setting.system.basicSaveSuccess'))
-    await reloadSystem()
   }
 }
 
@@ -238,7 +236,6 @@ async function saveAdvancedSettings() {
   if (await saveSystemSetting(SystemSettings.value.Advanced)) {
     advancedDialog.value = false
     $toast.success(t('setting.system.advancedSaveSuccess'))
-    await reloadSystem()
   }
 }
 
