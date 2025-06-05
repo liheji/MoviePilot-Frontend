@@ -200,7 +200,7 @@ const isMacOS = computed(() => {
   <VDialog scrollable fullscreen :scrim="false" transition="dialog-bottom-transition">
     <VCard class="workflow-dialog">
       <!-- Toolbar -->
-      <VToolbar color="primary">
+      <VToolbar color="primary" density="comfortable">
         <VToolbarItems>
           <VBtn icon @click="emit('close')" class="ms-3">
             <VIcon size="large" color="white" icon="mdi-close" />

@@ -218,7 +218,7 @@ onMounted(() => {
       elevation="0"
       rounded="lg"
       hover
-      @click="siteEditDialog = true"
+      @click="handleResourceBrowse"
     >
       <!-- 装饰性状态指示器 -->
       <div v-if="cardProps.site?.is_active" class="site-status-indicator" :class="statColor"></div>
@@ -339,11 +339,11 @@ onMounted(() => {
           <VIcon icon="mdi-dots-vertical" size="20" />
           <VMenu :activator="'parent'" :close-on-content-click="true" :location="'left'">
             <VList>
-              <VListItem @click="handleResourceBrowse" base-color="info">
+              <VListItem @click="siteEditDialog = true" base-color="info">
                 <template #prepend>
-                  <VIcon icon="mdi-web" size="20" />
+                  <VIcon icon="mdi-file-edit-outline" size="20" />
                 </template>
-                <VListItemTitle>{{ t('site.browseResources') }}</VListItemTitle>
+                <VListItemTitle>{{ t('site.actions.edit') }}</VListItemTitle>
               </VListItem>
               <VListItem @click="deleteSiteInfo">
                 <template #prepend>

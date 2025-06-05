@@ -134,7 +134,7 @@ onMounted(() => {
     <VCard>
       <!-- Toolbar -->
       <div>
-        <VToolbar color="primary">
+        <VToolbar color="primary" density="comfortable">
           <VToolbarTitle>{{ t('dialog.siteResource.browseTitle', { name: props.site?.name }) }}</VToolbarTitle>
           <VSpacer />
           <VToolbarItems>
