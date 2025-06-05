@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { debounce } from 'lodash-es'
 import NoDataFound from '@/components/NoDataFound.vue'
 import api from '@/api'
 import type { Context } from '@/api/types'
@@ -51,6 +52,9 @@ const progressText = ref('')
 // 加载进度
 const progressValue = ref(0)
 
+// 进度是否有效
+const progressEnabled = ref(false)
+
 // 加载进度SSE
 const progressEventSource = ref<EventSource>()
 
@@ -60,23 +64,28 @@ const errorTitle = ref(t('resource.noData'))
 // 错误描述
 const errorDescription = ref(t('resource.noResourceFound'))
 
+// 添加安全超时，确保进度条不会永远卡住
+const watchProgressValue = watch(progressValue,
+  debounce(async () => {
+    if (progressEventSource.value && progressValue.value < 100) {
+      console.warn("卡进度超时 关闭进度条")
+      stopLoadingProgress()
+    }
+  }, 60_000))
+
 // 使用SSE监听加载进度
 function startLoadingProgress() {
+  watchProgressValue.resume()
   progressText.value = t('resource.searching')
-  progressValue.value = 10 // 初始进度设为10%，确保进度条显示
+  progressValue.value = 0
+  progressEnabled.value = true
   progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/search`)
   progressEventSource.value.onmessage = event => {
     const progress = JSON.parse(event.data)
     if (progress) {
       progressText.value = progress.text
       progressValue.value = progress.value
-
-      // 搜索完成条件调整：只有明确完成时才关闭
-      if (progress.text.includes('完成') && progress.value >= 99) {
-        setTimeout(() => {
-          stopLoadingProgress()
-        }, 1000) // 延迟1秒关闭，确保用户能看到100%
-      }
+      progressEnabled.value = progress.enable
     }
   }
 
@@ -86,26 +95,22 @@ function startLoadingProgress() {
       stopLoadingProgress()
     }, 1000)
   }
-
-  // 添加安全超时，确保不会永远卡住
-  setTimeout(() => {
-    if (progressEventSource.value && progressValue.value < 100) {
-      stopLoadingProgress()
-    }
-  }, 60000) // 60秒超时
 }
 
 // 停止监听加载进度
 function stopLoadingProgress() {
+  watchProgressValue.pause()
   if (progressEventSource.value) {
     progressEventSource.value.close()
     progressEventSource.value = undefined
+
+    // 确保进度显示100%，然后再渐进清零
+    progressValue.value = 100
+    setTimeout(() => {
+      progressValue.value = 0
+      progressEnabled.value = false
+    }, 1500) // 延长到1.5秒，让用户有足够时间看到完成状态
   }
-  // 确保进度显示100%，然后再渐进清零
-  progressValue.value = 100
-  setTimeout(() => {
-    progressValue.value = 0
-  }, 1500) // 延长到1.5秒，让用户有足够时间看到完成状态
 }
 
 // 设置视图类型
@@ -186,7 +191,7 @@ onUnmounted(() => {
   <div>
     <!-- 加载进度条 -->
     <VFadeTransition>
-      <div v-if="progressValue > 0" class="search-progress-container">
+      <div v-if="progressValue > 0 || progressEnabled" class="search-progress-container">
         <VCard elevation="3" class="search-progress-card">
           <div class="progress-header">
             <VIcon icon="mdi-movie-search" color="primary" size="small" class="me-2" />
