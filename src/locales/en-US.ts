@@ -1013,6 +1013,8 @@ export default {
       pluginStatisticShareHint: 'Report plugin installation data to the server for statistics and display purposes',
       bigMemoryMode: 'Large Memory Mode',
       bigMemoryModeHint: 'Use more memory to cache data and improve system performance',
+      memoryMonitorEnable: 'Memory Monitor',
+      memoryMonitorEnableHint: 'Monitor system memory usage and force memory recycling when exceeded',
       dbWalEnable: 'WAL Mode',
       dbWalEnableHint:
         'Can improve read/write concurrency performance, but may increase the risk of data loss in exceptional cases, requires restart to take effect',
