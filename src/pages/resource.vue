@@ -65,20 +65,22 @@ const errorTitle = ref(t('resource.noData'))
 const errorDescription = ref(t('resource.noResourceFound'))
 
 // 添加安全超时，确保进度条不会永远卡住
-const watchProgressValue = watch(progressValue,
+const watchProgressValue = watch(
+  progressValue,
   debounce(async () => {
     if (progressEventSource.value && progressValue.value < 100) {
-      console.warn("卡进度超时 关闭进度条")
+      console.warn('卡进度超时 关闭进度条')
       stopLoadingProgress()
     }
-  }, 60_000))
+  }, 60_000),
+)
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
   watchProgressValue.resume()
   progressText.value = t('resource.searching')
   progressValue.value = 0
-  progressEnabled.value = true
+  progressEnabled.value = false
   progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/search`)
   progressEventSource.value.onmessage = event => {
     const progress = JSON.parse(event.data)
@@ -278,17 +280,7 @@ onUnmounted(() => {
     </div>
 
     <!-- 初始加载状态 -->
-    <div v-else-if="!isRefreshed && !progressValue" class="initial-loading-container">
-      <div class="initial-loading-content">
-        <div class="wave-loader">
-          <div class="wave-dot"></div>
-          <div class="wave-dot"></div>
-          <div class="wave-dot"></div>
-          <div class="wave-dot"></div>
-        </div>
-        <div class="initial-loading-text">{{ t('resource.searching') }}</div>
-      </div>
-    </div>
+    <LoadingBanner v-else-if="!isRefreshed && !(progressEnabled || progressValue > 0)" />
     <!-- 滚动到顶部按钮 -->
     <VScrollToTopBtn />
   </div>
@@ -451,70 +443,6 @@ onUnmounted(() => {
 }
 
 .view-changing-text {
-  color: rgb(var(--v-theme-primary));
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-}
-
-/* 初始的加载状态 */
-.initial-loading-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-block-size: 50vh;
-}
-
-.initial-loading-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.wave-loader {
-  display: flex;
-  align-items: center;
-  block-size: 40px;
-  gap: 6px;
-}
-
-.wave-dot {
-  border-radius: 50%;
-  animation: wave 1.5s ease-in-out infinite;
-  background-color: rgb(var(--v-theme-primary));
-  block-size: 8px;
-  inline-size: 8px;
-}
-
-.wave-dot:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.wave-dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.wave-dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-.wave-dot:nth-child(4) {
-  animation-delay: 0.6s;
-}
-
-@keyframes wave {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-15px);
-  }
-}
-
-.initial-loading-text {
   color: rgb(var(--v-theme-primary));
   font-size: 0.9rem;
   font-weight: 500;

@@ -599,9 +599,7 @@ onMounted(() => {
         </IconBtn>
       </span>
     </div>
-    <VCardText v-if="loading" class="text-center flex flex-col items-center">
-      <VProgressCircular size="48" indeterminate color="primary" />
-    </VCardText>
+    <LoadingBanner v-if="loading" />
     <!-- 文件详情 -->
     <VCardText v-else-if="isFile && !isImage && items.length > 0" class="text-center break-all">
       <div v-if="items[0]?.thumbnail" class="flex justify-center">
