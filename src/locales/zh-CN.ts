@@ -1009,8 +1009,6 @@ export default {
       pluginStatisticShareHint: '上报插件安装数据给服务器，用于统计展示插件安装情况',
       bigMemoryMode: '大内存模式',
       bigMemoryModeHint: '使用更大的内存缓存数据，提升系统性能',
-      memoryMonitorEnable: '内存监控',
-      memoryMonitorEnableHint: '监控系统内存使用情况，超出阈值时强制回收内存',
       dbWalEnable: 'WAL模式',
       dbWalEnableHint: '可提升读写并发性能，但可能在异常情况下增加数据丢失风险，更改后需重启生效',
       tmdbApiDomain: 'TMDB API服务地址',

@@ -39,7 +39,6 @@ const SystemSettings = ref<any>({
     SUBSCRIBE_STATISTIC_SHARE: true,
     PLUGIN_STATISTIC_SHARE: true,
     BIG_MEMORY_MODE: false,
-    MEMORY_MONITOR_ENABLE: false,
     DB_WAL_ENABLE: false,
     AUTO_UPDATE_RESOURCE: true,
     MOVIEPILOT_AUTO_UPDATE: false,
@@ -720,14 +719,6 @@ onDeactivated(() => {
                     v-model="SystemSettings.Advanced.BIG_MEMORY_MODE"
                     :label="t('setting.system.bigMemoryMode')"
                     :hint="t('setting.system.bigMemoryModeHint')"
-                    persistent-hint
-                  />
-                </VCol>
-                <VCol cols="12" md="6">
-                  <VSwitch
-                    v-model="SystemSettings.Advanced.MEMORY_MONITOR_ENABLE"
-                    :label="t('setting.system.memoryMonitorEnable')"
-                    :hint="t('setting.system.memoryMonitorEnableHint')"
                     persistent-hint
                   />
                 </VCol>
