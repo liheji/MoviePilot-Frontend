@@ -56,6 +56,49 @@ function logout() {
   router.push('/login')
 }
 
+// 检测服务状态
+async function checkServiceStatus(): Promise<boolean> {
+  try {
+    const result: { [key: string]: any } = await api.get('system/env', { timeout: 3000 })
+    return result?.success === true
+  } catch (error) {
+    return false
+  }
+}
+
+// 轮询检测服务恢复状态
+async function pollServiceStatus() {
+  // 最大重试次数（约3分钟）
+  const maxRetries = 60
+  let retryCount = 0
+
+  const poll = async () => {
+    retryCount++
+    const isServiceUp = await checkServiceStatus()
+
+    if (isServiceUp) {
+      // 服务已恢复，执行注销
+      setTimeout(() => {
+        logout()
+      }, 1000)
+      return
+    }
+
+    if (retryCount >= maxRetries) {
+      // 超时未恢复，隐藏进度框并提示用户
+      progressDialog.value = false
+      $toast.error(t('app.restartTimeout'))
+      return
+    }
+
+    // 继续轮询，每3秒检测一次
+    setTimeout(poll, 3000)
+  }
+
+  // 开始轮询
+  poll()
+}
+
 // 执行重启操作
 async function restart() {
   // 调用API重启
@@ -73,10 +116,11 @@ async function restart() {
   } catch (error) {
     console.error(error)
   }
-  // 等待10秒后注销
+
+  // 重启请求成功，开始轮询检测服务状态
   setTimeout(() => {
-    logout()
-  }, 10000)
+    pollServiceStatus()
+  }, 5000)
 }
 
 // 显示重启确认对话框

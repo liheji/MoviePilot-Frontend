@@ -125,6 +125,8 @@ export default {
     restarting: '正在重啟...',
     confirmRestart: '確認重啟系統嗎？',
     restartTip: '重啟後，您將被註銷並需要重新登錄。',
+    restartTimeout: '重啟超時，系統可能需要更長時間恢復，請稍後手動刷新頁面',
+    restartFailed: '重啟失敗，請檢查系統狀態',
   },
   login: {
     wallpapers: '壁紙',

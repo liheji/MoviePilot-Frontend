@@ -124,6 +124,8 @@ export default {
     restarting: '正在重启...',
     confirmRestart: '确认重启系统吗？',
     restartTip: '重启后，您将被注销并需要重新登录。',
+    restartTimeout: '重启超时，系统可能需要更长时间恢复，请稍后手动刷新页面',
+    restartFailed: '重启失败，请检查系统状态',
   },
   login: {
     wallpapers: '壁纸',

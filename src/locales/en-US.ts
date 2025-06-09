@@ -124,6 +124,8 @@ export default {
     restarting: 'Restarting...',
     confirmRestart: 'Confirm restart system?',
     restartTip: 'After restart, you will be logged out and need to log in again.',
+    restartTimeout: 'Restart timeout, the system may need more time to recover, please refresh the page manually later',
+    restartFailed: 'Restart failed, please check system status',
   },
   login: {
     wallpapers: 'Wallpapers',
