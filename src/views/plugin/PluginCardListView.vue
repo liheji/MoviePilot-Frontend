@@ -147,6 +147,9 @@ const installedFilter = ref(null)
 // 有新版本过滤条件
 const hasUpdateFilter = ref(false)
 
+// 已启用过滤条件
+const enabledFilter = ref(false)
+
 // 已安装插件过滤窗口
 const filterInstalledPluginDialog = ref(false)
 
@@ -191,9 +194,17 @@ const getFilteredFolderPlugins = (folderName: string) => {
 
   // 应用筛选条件
   return folderPlugins.filter(plugin => {
-    if (!installedFilter.value && !hasUpdateFilter.value) return true
-    if (hasUpdateFilter.value) {
-      return plugin.has_update
+    if (!installedFilter.value && !hasUpdateFilter.value && !enabledFilter.value) return true
+    if (hasUpdateFilter.value && enabledFilter.value) {
+      return plugin.has_update && plugin.state
+    }
+    if (hasUpdateFilter.value) return plugin.has_update
+    if (enabledFilter.value) return plugin.state
+    if (installedFilter.value) {
+      return plugin.plugin_name?.toLowerCase().includes((installedFilter.value as string).toLowerCase())
+    }
+    if (installedFilter.value) {
+      return plugin.plugin_name?.toLowerCase().includes((installedFilter.value as string).toLowerCase())
     }
     if (installedFilter.value) {
       return plugin.plugin_name?.toLowerCase().includes((installedFilter.value as string).toLowerCase())
@@ -263,7 +274,7 @@ const displayedFolders = computed(() => {
     })
     .filter(folder => {
       // 当有筛选条件时，只显示包含筛选后插件的文件夹
-      if (installedFilter.value || hasUpdateFilter.value) {
+      if (installedFilter.value || hasUpdateFilter.value || enabledFilter.value) {
         return folder.pluginCount > 0
       }
       return true
@@ -277,9 +288,6 @@ function updateMixedSortList() {
   if (!currentFolder.value) {
     // 主列表：创建混合列表
     const items: MixedSortItem[] = []
-
-    // 创建统一的排序索引
-    let globalOrder = 0
 
     // 始终使用全局排序配置来创建混合列表
     const allItems: { type: 'folder' | 'plugin'; id: string; data: any; order: number }[] = []
@@ -330,7 +338,7 @@ function updateMixedSortList() {
 
 // 监听相关数据变化，更新混合排序列表
 watch(
-  [displayedPlugins, displayedFolders, orderConfig, folderOrder, installedFilter, hasUpdateFilter],
+  [displayedPlugins, displayedFolders, orderConfig, folderOrder, installedFilter, hasUpdateFilter, enabledFilter],
   () => {
     // 只有在非拖拽状态下才更新
     if (!isDraggingSortMode.value) {
@@ -761,12 +769,14 @@ function handleRepoUrl(url: string | undefined) {
 }
 
 // 监测dataList变化或installedFilter、hasUpdateFilter变化时更新filteredDataList
-watch([dataList, installedFilter, hasUpdateFilter], () => {
+watch([dataList, installedFilter, hasUpdateFilter, enabledFilter], () => {
   filteredDataList.value = dataList.value.filter(item => {
-    if (!installedFilter.value && !hasUpdateFilter.value) return true
-    if (hasUpdateFilter.value) {
-      return item.has_update
+    if (!installedFilter.value && !hasUpdateFilter.value && !enabledFilter.value) return true
+    if (hasUpdateFilter.value && enabledFilter.value) {
+      return item.has_update && item.state
     }
+    if (hasUpdateFilter.value) return item.has_update
+    if (enabledFilter.value) return item.state
     if (installedFilter.value) {
       return item.plugin_name?.toLowerCase().includes((installedFilter.value as string).toLowerCase())
     }
@@ -1238,7 +1248,10 @@ function onDragStartPlugin(evt: any) {
                     clearable
                   />
                 </VCol>
-                <VCol cols="12">
+                <VCol cols="6">
+                  <VSwitch v-model="enabledFilter" :label="t('plugin.running')" />
+                </VCol>
+                <VCol cols="6">
                   <VSwitch v-model="hasUpdateFilter" :label="t('plugin.hasNewVersion')" />
                 </VCol>
               </VRow>

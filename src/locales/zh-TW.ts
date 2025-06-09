@@ -2000,6 +2000,7 @@ export default {
     filterPlugins: '過濾插件',
     name: '名稱',
     hasNewVersion: '有新版本',
+    running: '運行中',
     author: '作者',
     label: '標籤',
     repository: '倉庫',

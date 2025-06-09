@@ -2020,6 +2020,7 @@ export default {
     filterPlugins: 'Filter Plugins',
     name: 'Name',
     hasNewVersion: 'Has New Version',
+    running: 'Running',
     author: 'Author',
     label: 'Label',
     repository: 'Repository',

@@ -1998,6 +1998,7 @@ export default {
     filterPlugins: '过滤插件',
     name: '名称',
     hasNewVersion: '有新版本',
+    running: '运行中',
     author: '作者',
     label: '标签',
     repository: '仓库',
