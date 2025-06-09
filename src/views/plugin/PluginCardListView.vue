@@ -1240,7 +1240,7 @@ function onDragStartPlugin(evt: any) {
             <VBtn
               icon="mdi-filter-multiple-outline"
               variant="text"
-              :color="installedFilter ? 'primary' : 'gray'"
+              :color="installedFilter || hasUpdateFilter || enabledFilter ? 'primary' : 'gray'"
               size="default"
               class="settings-icon-button"
               v-bind="props"
