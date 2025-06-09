@@ -73,8 +73,10 @@ async function restart() {
   } catch (error) {
     console.error(error)
   }
-  // 注销
-  logout()
+  // 等待10秒后注销
+  setTimeout(() => {
+    logout()
+  }, 10000)
 }
 
 // 显示重启确认对话框
