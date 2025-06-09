@@ -45,11 +45,22 @@ const showLanguageMenu = ref(false)
 // 自定义CSS
 const customCSS = ref('')
 
+// 重启轮询控制标识
+const restartPollingId = ref<number | null>(null)
+const isRestarting = ref(false)
+
 // 确认框
 const { createConfirm } = useConfirm()
 
 // 执行注销操作
 function logout() {
+  // 清理重启相关状态
+  isRestarting.value = false
+  if (restartPollingId.value) {
+    clearTimeout(restartPollingId.value)
+    restartPollingId.value = null
+  }
+
   // 清除登录状态信息
   authStore.logout()
   // 重定向到登录页面或其他适当的页面
@@ -68,16 +79,31 @@ async function checkServiceStatus(): Promise<boolean> {
 
 // 轮询检测服务恢复状态
 async function pollServiceStatus() {
+  // 如果已经有轮询在运行，先清除
+  if (restartPollingId.value) {
+    clearTimeout(restartPollingId.value)
+    restartPollingId.value = null
+  }
+
   // 最大重试次数（约3分钟）
   const maxRetries = 60
   let retryCount = 0
 
   const poll = async () => {
+    // 如果不在重启状态，停止轮询
+    if (!isRestarting.value) {
+      return
+    }
+
     retryCount++
     const isServiceUp = await checkServiceStatus()
 
     if (isServiceUp) {
-      // 服务已恢复，执行注销
+      // 服务已恢复，清理状态并执行注销
+      isRestarting.value = false
+      progressDialog.value = false
+      restartPollingId.value = null
+
       setTimeout(() => {
         logout()
       }, 1000)
@@ -85,14 +111,16 @@ async function pollServiceStatus() {
     }
 
     if (retryCount >= maxRetries) {
-      // 超时未恢复，隐藏进度框并提示用户
+      // 超时未恢复，清理状态并提示用户
+      isRestarting.value = false
       progressDialog.value = false
+      restartPollingId.value = null
       $toast.error(t('app.restartTimeout'))
       return
     }
 
     // 继续轮询，每3秒检测一次
-    setTimeout(poll, 3000)
+    restartPollingId.value = setTimeout(poll, 3000) as unknown as number
   }
 
   // 开始轮询
@@ -101,20 +129,27 @@ async function pollServiceStatus() {
 
 // 执行重启操作
 async function restart() {
+  // 设置重启状态
+  isRestarting.value = true
+
   // 调用API重启
   try {
     // 显示等待框
     progressDialog.value = true
     const result: { [key: string]: any } = await api.get('system/restart')
     if (!result?.success) {
-      // 隐藏等待框
+      // 重启失败，清理状态
+      isRestarting.value = false
       progressDialog.value = false
-      // 重启不成功
       $toast.error(result.message)
       return
     }
   } catch (error) {
+    // 重启失败，清理状态
+    isRestarting.value = false
+    progressDialog.value = false
     console.error(error)
+    return
   }
 
   // 重启请求成功，开始轮询检测服务状态
@@ -302,6 +337,16 @@ const getThemeIcon = computed(() => {
 
 onMounted(() => {
   getCustomCSS()
+})
+
+// 组件卸载时清理轮询
+onUnmounted(() => {
+  // 清理重启轮询
+  if (restartPollingId.value) {
+    clearTimeout(restartPollingId.value)
+    restartPollingId.value = null
+  }
+  isRestarting.value = false
 })
 </script>
 
