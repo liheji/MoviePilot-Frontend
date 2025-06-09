@@ -577,7 +577,10 @@ async function installPlugin(item: Plugin) {
 
     if (result.success) {
       $toast.success(t('plugin.installSuccess', { name: item?.plugin_name }))
-
+      // 清空过滤条件
+      hasUpdateFilter.value = false
+      enabledFilter.value = false
+      installedFilter.value = null
       // 刷新
       refreshData()
     } else {
