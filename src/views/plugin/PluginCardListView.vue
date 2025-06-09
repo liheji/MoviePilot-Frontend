@@ -93,6 +93,9 @@ const SearchDialog = ref(false)
 // 插件市场设置窗口
 const MarketSettingDialog = ref(false)
 
+// 插件市场刷新状态
+const isMarketRefreshing = ref(false)
+
 // 搜索关键字
 const keyword = ref('')
 
@@ -651,12 +654,13 @@ async function fetchInstalledPlugins() {
 }
 
 // 获取未安装插件列表数据
-async function fetchUninstalledPlugins() {
+async function fetchUninstalledPlugins(force: boolean = false) {
   try {
     loading.value = true
     uninstalledList.value = await api.get('plugin/', {
       params: {
         state: 'market',
+        force: force,
       },
     })
     // 设置更新状态
@@ -760,6 +764,19 @@ function marketSettingDone() {
   MarketSettingDialog.value = false
   // 重新加载数据
   refreshData()
+}
+
+// 手动刷新插件市场
+async function refreshMarket() {
+  isMarketRefreshing.value = true
+  try {
+    await fetchUninstalledPlugins(true)
+    await getPluginStatistics()
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isMarketRefreshing.value = false
+  }
 }
 
 // 处理掉github地址的前缀
@@ -1338,6 +1355,16 @@ function onDragStartPlugin(evt: any) {
         </VMenu>
         <VBtn
           v-if="activeTab === 'market'"
+          icon="mdi-refresh"
+          variant="text"
+          color="gray"
+          size="default"
+          class="settings-icon-button"
+          :loading="isMarketRefreshing"
+          @click="refreshMarket"
+        />
+        <VBtn
+          v-if="activeTab === 'market'"
           icon="mdi-store-cog"
           variant="text"
           color="gray"
@@ -1456,10 +1483,10 @@ function onDragStartPlugin(evt: any) {
       <VWindowItem value="market">
         <transition name="fade-slide" appear>
           <div>
-            <LoadingBanner v-if="!isAppMarketLoaded" class="mt-12" />
+            <LoadingBanner v-if="!isAppMarketLoaded || isMarketRefreshing" class="mt-12" />
             <!-- 资源列表 -->
             <VInfiniteScroll
-              v-if="isAppMarketLoaded"
+              v-if="isAppMarketLoaded && !isMarketRefreshing"
               mode="intersect"
               side="end"
               :items="displayUninstalledList"
