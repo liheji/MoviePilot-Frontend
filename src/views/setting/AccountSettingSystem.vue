@@ -71,6 +71,28 @@ const SystemSettings = ref<any>({
   },
 })
 
+// 刮削开关设置
+const ScrapingSwitchs = ref<any>({
+  movie_nfo: true, // 电影NFO
+  movie_poster: true, // 电影海报
+  movie_backdrop: true, // 电影背景图
+  movie_logo: true, // 电影Logo
+  movie_disc: true, // 电影光盘图
+  movie_banner: true, // 电影横幅图
+  movie_thumb: true, // 电影缩略图
+  tv_nfo: true, // 电视剧NFO
+  tv_poster: true, // 电视剧海报
+  tv_backdrop: true, // 电视剧背景图
+  tv_banner: true, // 电视剧横幅图
+  tv_logo: true, // 电视剧Logo
+  tv_thumb: true, // 电视剧缩略图
+  season_poster: true, // 季海报
+  season_banner: true, // 季横幅图
+  season_thumb: true, // 季缩略图
+  episode_nfo: true, // 集NFO
+  episode_thumb: true, // 集缩略图
+})
+
 // 是否发送请求的总开关
 const isRequest = ref(true)
 
@@ -233,7 +255,11 @@ async function saveBasicSettings() {
 async function saveAdvancedSettings() {
   cleanEmptyFields(SystemSettings.value.Advanced, ['LOG_FILE_FORMAT'])
 
-  if (await saveSystemSetting(SystemSettings.value.Advanced)) {
+  // 同时保存高级设置和刮削开关设置
+  const advancedResult = await saveSystemSetting(SystemSettings.value.Advanced)
+  const scrapingResult = await saveScrapingSwitchs()
+
+  if (advancedResult && scrapingResult) {
     advancedDialog.value = false
     $toast.success(t('setting.system.advancedSaveSuccess'))
   }
@@ -380,11 +406,41 @@ const moviePilotAutoUpdate = computed({
   },
 })
 
+// 加载刮削开关设置
+async function loadScrapingSwitchs() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/ScrapingSwitchs')
+    if (result.success && result.data?.value) {
+      ScrapingSwitchs.value = { ...ScrapingSwitchs.value, ...result.data.value }
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// 保存刮削开关设置
+async function saveScrapingSwitchs() {
+  try {
+    const result: { [key: string]: any } = await api.post('system/setting/ScrapingSwitchs', ScrapingSwitchs.value)
+    if (result.success) {
+      return true
+    } else {
+      $toast.error(t('setting.system.scrapingSwitchSaveFailed', { message: result?.message }))
+      return false
+    }
+  } catch (error) {
+    console.log(error)
+    $toast.error(t('setting.system.scrapingSwitchSaveError'))
+    return false
+  }
+}
+
 // 加载数据
 onMounted(() => {
   loadDownloaderSetting()
   loadMediaServerSetting()
   loadSystemSettings()
+  loadScrapingSwitchs()
 })
 
 onActivated(async () => {
@@ -655,11 +711,14 @@ onDeactivated(() => {
     :fullscreen="!display.mdAndUp.value"
   >
     <VCard>
-      <VCardItem>
-        <VDialogCloseBtn @click="advancedDialog = false" />
+      <VCardItem class="py-2">
+        <template #prepend>
+          <VIcon icon="mdi-cog" class="me-2" />
+        </template>
         <VCardTitle>{{ t('setting.system.advancedSettings') }}</VCardTitle>
         <VCardSubtitle>{{ t('setting.system.advancedSettingsDesc') }}</VCardSubtitle>
       </VCardItem>
+      <VDialogCloseBtn @click="advancedDialog = false" />
       <VCardText>
         <VTabs v-model="activeTab" show-arrows>
           <VTab value="system">
@@ -686,64 +745,42 @@ onDeactivated(() => {
                   <VSwitch
                     v-model="SystemSettings.Advanced.AUXILIARY_AUTH_ENABLE"
                     :label="t('setting.system.auxAuthEnable')"
-                    :hint="t('setting.system.auxAuthEnableHint')"
-                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.GLOBAL_IMAGE_CACHE"
                     :label="t('setting.system.globalImageCache')"
-                    :hint="t('setting.system.globalImageCacheHint')"
-                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.SUBSCRIBE_STATISTIC_SHARE"
                     :label="t('setting.system.subscribeStatisticShare')"
-                    :hint="t('setting.system.subscribeStatisticShareHint')"
-                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.PLUGIN_STATISTIC_SHARE"
                     :label="t('setting.system.pluginStatisticShare')"
-                    :hint="t('setting.system.pluginStatisticShareHint')"
-                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.BIG_MEMORY_MODE"
                     :label="t('setting.system.bigMemoryMode')"
-                    :hint="t('setting.system.bigMemoryModeHint')"
-                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
-                  <VSwitch
-                    v-model="SystemSettings.Advanced.DB_WAL_ENABLE"
-                    :label="t('setting.system.dbWalEnable')"
-                    :hint="t('setting.system.dbWalEnableHint')"
-                    persistent-hint
-                  />
+                  <VSwitch v-model="SystemSettings.Advanced.DB_WAL_ENABLE" :label="t('setting.system.dbWalEnable')" />
                 </VCol>
                 <VCol cols="12" md="6">
-                  <VSwitch
-                    v-model="moviePilotAutoUpdate"
-                    :label="t('setting.system.moviePilotAutoUpdate')"
-                    :hint="t('setting.system.moviePilotAutoUpdateHint')"
-                    persistent-hint
-                  />
+                  <VSwitch v-model="moviePilotAutoUpdate" :label="t('setting.system.moviePilotAutoUpdate')" />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.AUTO_UPDATE_RESOURCE"
                     :label="t('setting.system.autoUpdateResource')"
-                    :hint="t('setting.system.autoUpdateResourceHint')"
-                    persistent-hint
                   />
                 </VCol>
               </VRow>
@@ -757,8 +794,6 @@ onDeactivated(() => {
                     v-model="SystemSettings.Advanced.TMDB_API_DOMAIN"
                     :label="t('setting.system.tmdbApiDomain')"
                     :placeholder="t('setting.system.tmdbApiDomainPlaceholder')"
-                    :hint="t('setting.system.tmdbApiDomainHint')"
-                    persistent-hint
                     :items="['api.themoviedb.org', 'api.tmdb.org']"
                     :rules="[(v: string) => !!v || t('setting.system.tmdbApiDomainRequired')]"
                     prepend-inner-icon="mdi-api"
@@ -769,8 +804,6 @@ onDeactivated(() => {
                     v-model="SystemSettings.Advanced.TMDB_IMAGE_DOMAIN"
                     :label="t('setting.system.tmdbImageDomain')"
                     :placeholder="t('setting.system.tmdbImageDomainPlaceholder')"
-                    :hint="t('setting.system.tmdbImageDomainHint')"
-                    persistent-hint
                     :items="['image.tmdb.org', 'static-mdb.v.geilijiasu.com']"
                     :rules="[(v: string) => !!v || t('setting.system.tmdbImageDomainRequired')]"
                     prepend-inner-icon="mdi-image"
@@ -781,8 +814,6 @@ onDeactivated(() => {
                     v-model="SystemSettings.Advanced.TMDB_LOCALE"
                     :label="t('setting.system.tmdbLocale')"
                     :placeholder="t('setting.system.tmdbLocalePlaceholder')"
-                    :hint="t('setting.system.tmdbLocaleHint')"
-                    persistent-hint
                     :items="tmdbLanguageItems"
                     prepend-inner-icon="mdi-translate"
                   />
@@ -791,8 +822,6 @@ onDeactivated(() => {
                   <VTextField
                     v-model="SystemSettings.Advanced.META_CACHE_EXPIRE"
                     :label="t('setting.system.metaCacheExpire')"
-                    :hint="t('setting.system.metaCacheExpireHint')"
-                    persistent-hint
                     min="0"
                     type="number"
                     :suffix="t('setting.system.hour')"
@@ -809,25 +838,129 @@ onDeactivated(() => {
                   <VSwitch
                     v-model="SystemSettings.Advanced.SCRAP_FOLLOW_TMDB"
                     :label="t('setting.system.scrapFollowTmdb')"
-                    :hint="t('setting.system.scrapFollowTmdbHint')"
-                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.TMDB_SCRAP_ORIGINAL_IMAGE"
                     :label="t('setting.system.scrapOriginalImage')"
-                    :hint="t('setting.system.scrapOriginalImageHint')"
-                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
-                  <VSwitch
-                    v-model="SystemSettings.Advanced.FANART_ENABLE"
-                    :label="t('setting.system.fanartEnable')"
-                    :hint="t('setting.system.fanartEnableHint')"
-                    persistent-hint
-                  />
+                  <VSwitch v-model="SystemSettings.Advanced.FANART_ENABLE" :label="t('setting.system.fanartEnable')" />
+                </VCol>
+              </VRow>
+
+              <!-- 刮削开关设置 -->
+              <VRow class="mt-4">
+                <VCol cols="12">
+                  <VExpansionPanels>
+                    <VExpansionPanel>
+                      <VExpansionPanelTitle>
+                        <template #default>
+                          <VIcon icon="mdi-cog-outline" class="me-2" />
+                          {{ t('setting.system.scrapingSwitchSettings') }}
+                        </template>
+                      </VExpansionPanelTitle>
+                      <VExpansionPanelText>
+                        <VRow>
+                          <VCol cols="12" class="pb-2">
+                            <VCardTitle class="text-lg pa-0">{{ t('setting.system.movie') }}</VCardTitle>
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.movie_nfo" :label="t('setting.system.movieNfo')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.movie_poster" :label="t('setting.system.moviePoster')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch
+                              v-model="ScrapingSwitchs.movie_backdrop"
+                              :label="t('setting.system.movieBackdrop')"
+                            />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.movie_logo" :label="t('setting.system.movieLogo')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.movie_disc" :label="t('setting.system.movieDisc')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.movie_banner" :label="t('setting.system.movieBanner')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.movie_thumb" :label="t('setting.system.movieThumb')" />
+                          </VCol>
+                        </VRow>
+
+                        <VDivider class="my-4" />
+
+                        <VRow>
+                          <VCol cols="12" class="pb-2">
+                            <VCardTitle class="text-lg pa-0">{{ t('setting.system.tv') }}</VCardTitle>
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.tv_nfo" :label="t('setting.system.tvNfo')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.tv_poster" :label="t('setting.system.tvPoster')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.tv_backdrop" :label="t('setting.system.tvBackdrop')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.tv_banner" :label="t('setting.system.tvBanner')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.tv_logo" :label="t('setting.system.tvLogo')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.tv_thumb" :label="t('setting.system.tvThumb')" />
+                          </VCol>
+                        </VRow>
+
+                        <VDivider class="my-4" />
+
+                        <VRow>
+                          <VCol cols="12" class="pb-2">
+                            <VCardTitle class="text-lg pa-0">{{ t('setting.system.season') }}</VCardTitle>
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch
+                              v-model="ScrapingSwitchs.season_poster"
+                              :label="t('setting.system.seasonPoster')"
+                            />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch
+                              v-model="ScrapingSwitchs.season_banner"
+                              :label="t('setting.system.seasonBanner')"
+                            />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.season_thumb" :label="t('setting.system.seasonThumb')" />
+                          </VCol>
+                        </VRow>
+
+                        <VDivider class="my-4" />
+
+                        <VRow>
+                          <VCol cols="12" class="pb-2">
+                            <VCardTitle class="text-lg pa-0">{{ t('setting.system.episode') }}</VCardTitle>
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch v-model="ScrapingSwitchs.episode_nfo" :label="t('setting.system.episodeNfo')" />
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VSwitch
+                              v-model="ScrapingSwitchs.episode_thumb"
+                              :label="t('setting.system.episodeThumb')"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VExpansionPanelText>
+                    </VExpansionPanel>
+                  </VExpansionPanels>
                 </VCol>
               </VRow>
             </div>
@@ -902,43 +1035,46 @@ onDeactivated(() => {
               </VRow>
               <VRow>
                 <VCol cols="12">
-                  <!-- 安全域名 -->
-                  <VCard>
-                    <VCardItem>
-                      <VCardTitle>{{ t('setting.system.securityImageDomains') }}</VCardTitle>
-                      <VCardSubtitle>{{ t('setting.system.securityImageDomainsHint') }}</VCardSubtitle>
-                    </VCardItem>
-                    <VCardText>
-                      <div class="d-flex flex-wrap gap-2 mb-3">
-                        <VChip
-                          v-for="(domain, index) in SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS"
-                          :key="index"
-                          closable
-                          @click:close="SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS.splice(index, 1)"
-                        >
-                          {{ domain }}
-                        </VChip>
-                        <VChip v-if="SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS.length === 0" color="warning">
-                          {{ t('setting.system.noSecurityImageDomains') }}
-                        </VChip>
-                      </div>
-                      <div class="d-flex align-center gap-2">
-                        <VTextField
-                          v-model="newSecurityDomain"
-                          :placeholder="t('setting.system.securityImageDomainAdd')"
-                          hide-details
-                          density="compact"
-                          prepend-inner-icon="mdi-shield-check"
-                        >
-                          <template #append>
-                            <VBtn icon color="primary" @click="addSecurityDomain" :disabled="!newSecurityDomain">
-                              <VIcon icon="mdi-plus" />
-                            </VBtn>
-                          </template>
-                        </VTextField>
-                      </div>
-                    </VCardText>
-                  </VCard>
+                  <VExpansionPanels>
+                    <VExpansionPanel>
+                      <VExpansionPanelTitle>
+                        <template #default>
+                          <VIcon icon="mdi-shield-check" class="me-2" />
+                          {{ t('setting.system.securityImageDomains') }}
+                        </template>
+                      </VExpansionPanelTitle>
+                      <VExpansionPanelText>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                          <VChip
+                            v-for="(domain, index) in SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS"
+                            :key="index"
+                            closable
+                            @click:close="SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS.splice(index, 1)"
+                          >
+                            {{ domain }}
+                          </VChip>
+                          <VChip v-if="SystemSettings.Advanced.SECURITY_IMAGE_DOMAINS.length === 0" color="warning">
+                            {{ t('setting.system.noSecurityImageDomains') }}
+                          </VChip>
+                        </div>
+                        <div class="d-flex align-center gap-2">
+                          <VTextField
+                            v-model="newSecurityDomain"
+                            :placeholder="t('setting.system.securityImageDomainAdd')"
+                            hide-details
+                            density="compact"
+                            prepend-inner-icon="mdi-shield-check"
+                          >
+                            <template #append>
+                              <VBtn icon color="primary" @click="addSecurityDomain" :disabled="!newSecurityDomain">
+                                <VIcon icon="mdi-plus" />
+                              </VBtn>
+                            </template>
+                          </VTextField>
+                        </div>
+                      </VExpansionPanelText>
+                    </VExpansionPanel>
+                  </VExpansionPanels>
                 </VCol>
               </VRow>
             </div>
