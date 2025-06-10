@@ -183,6 +183,21 @@ onMounted(() => {
             </VChip>
             <VChip v-if="user.is_otp" size="x-small" color="info" variant="tonal" label>2FA</VChip>
           </div>
+          <!-- 权限显示 -->
+          <div v-if="!user.is_superuser && user.permissions" class="d-flex flex-wrap gap-1 mt-1">
+            <VChip v-if="user.permissions.discovery" size="x-small" color="purple" variant="outlined" label>
+              {{ t('dialog.userAddEdit.permissions.discovery') }}
+            </VChip>
+            <VChip v-if="user.permissions.search" size="x-small" color="blue" variant="outlined" label>
+              {{ t('dialog.userAddEdit.permissions.search') }}
+            </VChip>
+            <VChip v-if="user.permissions.subscribe" size="x-small" color="green" variant="outlined" label>
+              {{ t('dialog.userAddEdit.permissions.subscribe') }}
+            </VChip>
+            <VChip v-if="user.permissions.manage" size="x-small" color="orange" variant="outlined" label>
+              {{ t('dialog.userAddEdit.permissions.manage') }}
+            </VChip>
+          </div>
         </div>
 
         <!-- 移动端订阅数据信息 -->
@@ -294,9 +309,10 @@ onMounted(() => {
   z-index: 1;
   display: flex;
   align-items: center;
-  width: 100%;
-  top: 0;
-  padding: 8px 12px;
+  inline-size: 100%;
+  inset-block-start: 0;
+  padding-block: 8px;
+  padding-inline: 12px;
 }
 
 .admin-header {
@@ -326,10 +342,12 @@ onMounted(() => {
     opacity: 0.6;
     transform: scale(0.95);
   }
+
   70% {
     opacity: 0.2;
     transform: scale(1.05);
   }
+
   100% {
     opacity: 0.6;
     transform: scale(0.95);
@@ -340,19 +358,21 @@ onMounted(() => {
   position: absolute;
   z-index: 5;
   animation: float 3s ease-in-out infinite;
-  top: -10px;
-  left: -6px;
-  transform: rotate(-25deg);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 40%));
+  inset-block-start: -10px;
+  inset-inline-start: -6px;
+  transform: rotate(-25deg);
 }
 
 @keyframes float {
   0% {
     transform: rotate(-25deg) translateY(0);
   }
+
   50% {
     transform: rotate(-25deg) translateY(-3px);
   }
+
   100% {
     transform: rotate(-25deg) translateY(0);
   }
@@ -368,6 +388,7 @@ onMounted(() => {
     opacity: 0.9;
     transform: scale(1);
   }
+
   50% {
     opacity: 1;
     transform: scale(1.2);

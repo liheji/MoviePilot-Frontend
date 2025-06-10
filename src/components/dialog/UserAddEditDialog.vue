@@ -65,6 +65,14 @@ interface ExtendedUser extends User {
   nickname?: string
 }
 
+// 权限类型定义
+interface UserPermissions {
+  discovery: boolean // 发现权限
+  search: boolean // 搜索权限
+  subscribe: boolean // 订阅权限
+  manage: boolean // 管理权限
+}
+
 // 用户编辑表单数据
 const userForm = ref<ExtendedUser>({
   id: 0,
@@ -75,7 +83,12 @@ const userForm = ref<ExtendedUser>({
   is_superuser: false,
   avatar: avatar1,
   is_otp: false,
-  permissions: {},
+  permissions: {
+    discovery: true,
+    search: true,
+    subscribe: true,
+    manage: false,
+  },
   settings: {
     wechat_userid: null,
     telegram_userid: null,
@@ -85,6 +98,59 @@ const userForm = ref<ExtendedUser>({
   },
   nickname: '', // 昵称字段
 })
+
+// 权限选项
+const permissionOptions = [
+  {
+    key: 'discovery',
+    title: t('dialog.userAddEdit.permissions.discovery'),
+    description: t('dialog.userAddEdit.permissions.discoveryDesc'),
+    icon: 'mdi-star-outline',
+  },
+  {
+    key: 'search',
+    title: t('dialog.userAddEdit.permissions.search'),
+    description: t('dialog.userAddEdit.permissions.searchDesc'),
+    icon: 'mdi-magnify',
+  },
+  {
+    key: 'subscribe',
+    title: t('dialog.userAddEdit.permissions.subscribe'),
+    description: t('dialog.userAddEdit.permissions.subscribeDesc'),
+    icon: 'mdi-rss',
+  },
+  {
+    key: 'manage',
+    title: t('dialog.userAddEdit.permissions.manage'),
+    description: t('dialog.userAddEdit.permissions.manageDesc'),
+    icon: 'mdi-cog-outline',
+  },
+]
+
+// 权限状态计算属性
+const userPermissions = computed({
+  get: () => {
+    const permissions = userForm.value.permissions as UserPermissions
+    return {
+      discovery: permissions?.discovery ?? true,
+      search: permissions?.search ?? true,
+      subscribe: permissions?.subscribe ?? true,
+      manage: permissions?.manage ?? false,
+    }
+  },
+  set: (value: UserPermissions) => {
+    userForm.value.permissions = value
+  },
+})
+
+// 切换权限状态
+function togglePermission(key: keyof UserPermissions) {
+  const currentPermissions = userPermissions.value
+  userPermissions.value = {
+    ...currentPermissions,
+    [key]: !currentPermissions[key],
+  }
+}
 
 // 更新头像
 function changeAvatar(file: Event) {
@@ -164,6 +230,10 @@ async function addUser() {
     }
     userForm.value.password = newPassword.value
   }
+
+  // 设置权限数据
+  userForm.value.permissions = userPermissions.value
+
   isAdding.value = true
   startNProgress()
   try {
@@ -216,8 +286,10 @@ async function updateUser() {
   isUpdating.value = true
   startNProgress()
   try {
-    // 确保昵称保存，使用一个临时变量存储完整数据
+    // 确保昵称和权限保存，使用一个临时变量存储完整数据
     const userData = { ...userForm.value }
+    // 确保权限数据正确传递
+    userData.permissions = userPermissions.value
 
     const result: { [key: string]: any } = await api.put('user/', userData)
 
@@ -234,6 +306,10 @@ async function updateUser() {
       // 更新本地头像显示
       if (oldAvatar !== currentAvatar.value && isCurrentUser.value) {
         userStore.setAvatar(currentAvatar.value)
+      }
+      // 如果是当前登录用户，更新权限信息
+      if (isCurrentUser.value) {
+        userStore.setPermissions(userPermissions.value)
       }
       emit('save')
     } else {
@@ -473,6 +549,67 @@ onMounted(() => {
               />
             </VCol>
           </VRow>
+          <VDivider class="my-10" v-if="canControl">
+            <span>{{ t('dialog.userAddEdit.permissions.title') }}</span>
+          </VDivider>
+          <!-- 权限设置 -->
+          <div v-if="canControl" class="mt-4">
+            <div class="mb-4">
+              <VBtn
+                variant="outlined"
+                color="primary"
+                size="small"
+                @click="userPermissions = { discovery: true, search: true, subscribe: true, manage: false }"
+                class="me-2"
+              >
+                {{ t('dialog.userAddEdit.permissions.presetNormal') }}
+              </VBtn>
+              <VBtn
+                variant="outlined"
+                color="warning"
+                size="small"
+                @click="userPermissions = { discovery: true, search: true, subscribe: true, manage: true }"
+              >
+                {{ t('dialog.userAddEdit.permissions.presetAdmin') }}
+              </VBtn>
+            </div>
+            <VRow>
+              <VCol v-for="option in permissionOptions" :key="option.key" cols="12" md="6">
+                <VCard
+                  :color="userPermissions[option.key as keyof UserPermissions] ? 'primary' : 'surface'"
+                  :variant="userPermissions[option.key as keyof UserPermissions] ? 'tonal' : 'outlined'"
+                  class="cursor-pointer transition-all"
+                  @click="togglePermission(option.key as keyof UserPermissions)"
+                  hover
+                >
+                  <VCardText class="d-flex align-center pa-4">
+                    <VAvatar
+                      :color="userPermissions[option.key as keyof UserPermissions] ? 'primary' : 'surface-variant'"
+                      size="40"
+                      class="me-3"
+                    >
+                      <VIcon :icon="option.icon" />
+                    </VAvatar>
+                    <div class="flex-grow-1">
+                      <div class="text-subtitle-1 font-weight-medium d-flex align-center">
+                        {{ option.title }}
+                        <VIcon
+                          v-if="userPermissions[option.key as keyof UserPermissions]"
+                          icon="mdi-check-circle"
+                          color="primary"
+                          size="small"
+                          class="ms-2"
+                        />
+                      </div>
+                      <div class="text-caption text-medium-emphasis">
+                        {{ option.description }}
+                      </div>
+                    </div>
+                  </VCardText>
+                </VCard>
+              </VCol>
+            </VRow>
+          </div>
         </VForm>
       </VCardText>
       <VCardActions class="pt-3">

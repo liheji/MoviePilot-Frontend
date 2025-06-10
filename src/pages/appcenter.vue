@@ -3,20 +3,30 @@ import { NavMenu } from '@/@layouts/types'
 import { getNavMenus } from '@/router/i18n-menu'
 import { useUserStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
+import { filterMenusByPermission } from '@/utils/permission'
 
 // 国际化
 const { t } = useI18n()
 
-// 从 Store 中获取superuser信息
-const superUser = useUserStore().superUser
+// 从 Store 中获取用户信息
+const userStore = useUserStore()
+const superUser = userStore.superUser
+
+// 获取用户权限信息
+const userPermissions = computed(() => ({
+  is_superuser: userStore.superUser,
+  ...userStore.permissions,
+}))
 
 // 应用分组（以header分组）
 const appGroups = ref<Record<string, NavMenu[]>>({})
 
 // 根据header属性对应用进行分类
 function categorizeApps() {
-  // 获取可见的菜单项
-  const menus = getNavMenus().filter((item: NavMenu) => (!item.admin || superUser) && !item.footer)
+  // 获取所有菜单并根据权限过滤
+  const allMenus = getNavMenus()
+  const filteredMenus = filterMenusByPermission(allMenus, userPermissions.value, t)
+  const menus = filteredMenus.filter((item: NavMenu) => !item.footer)
 
   // 按header属性分组
   const groupedMenus: Record<string, NavMenu[]> = {}

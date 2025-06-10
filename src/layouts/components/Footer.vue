@@ -3,6 +3,8 @@ import { getNavMenus } from '@/router/i18n-menu'
 import { useDisplay } from 'vuetify'
 import { NavMenu } from '@/@layouts/types'
 import { useI18n } from 'vue-i18n'
+import { useUserStore } from '@/stores'
+import { filterMenusByPermission } from '@/utils/permission'
 
 const display = useDisplay()
 const appMode = inject('pwaMode') && display.mdAndDown.value
@@ -13,8 +15,20 @@ const isEnglish = computed(() => locale.value === 'en-US')
 
 const route = useRoute()
 
+// 用户Store
+const userStore = useUserStore()
+
+// 获取用户权限信息
+const userPermissions = computed(() => ({
+  is_superuser: userStore.superUser,
+  ...userStore.permissions,
+}))
+
 // 获取导航菜单
-const navMenus = computed(() => getNavMenus())
+const navMenus = computed(() => {
+  const allMenus = getNavMenus()
+  return filterMenusByPermission(allMenus, userPermissions.value, t)
+})
 
 // 根据当前路径获取匹配的菜单路径
 function getMenuPathFromRoute(path: string): string {

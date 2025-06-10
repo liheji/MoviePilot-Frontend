@@ -12,6 +12,7 @@ import { getNavMenus } from '@/router/i18n-menu'
 import { NavMenu } from '@/@layouts/types'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
+import { filterMenusByPermission } from '@/utils/permission'
 
 const display = useDisplay()
 const appMode = inject('pwaMode')
@@ -22,6 +23,12 @@ const userStore = useUserStore()
 
 // 是否超级用户
 let superUser = userStore.superUser
+
+// 获取用户权限信息
+const userPermissions = computed(() => ({
+  is_superuser: userStore.superUser,
+  ...userStore.permissions,
+}))
 
 // 开始菜单项
 const startMenus = ref<NavMenu[]>([])
@@ -42,7 +49,8 @@ const systemMenus = ref<NavMenu[]>([])
 const getMenuList = (header: string) => {
   // 使用国际化菜单
   const menus = getNavMenus()
-  return menus.filter((item: NavMenu) => item.header === header && (superUser || !item.admin))
+  const filteredMenus = filterMenusByPermission(menus, userPermissions.value, t)
+  return filteredMenus.filter((item: NavMenu) => item.header === header)
 }
 
 // 返回上一页

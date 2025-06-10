@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { userState } from '@/stores/types'
+import { DEFAULT_PERMISSIONS } from '@/utils/permission'
 
 export const useUserStore = defineStore('user', {
   state: (): userState => ({
@@ -8,7 +9,7 @@ export const useUserStore = defineStore('user', {
     userName: '',
     avatar: '',
     level: 1,
-    permissions: {},
+    permissions: DEFAULT_PERMISSIONS,
   }),
 
   // 全局持久化
@@ -31,7 +32,7 @@ export const useUserStore = defineStore('user', {
       this.level = level
     },
     setPermissions(permissions: object) {
-      this.permissions = permissions
+      this.permissions = { ...DEFAULT_PERMISSIONS, ...permissions }
     },
     loginUser(payload: userState) {
       this.setSuperUser(payload.superUser)
@@ -47,7 +48,7 @@ export const useUserStore = defineStore('user', {
       this.setUserName('')
       this.setAvatar('')
       this.setLevel(1)
-      this.setPermissions({})
+      this.setPermissions(DEFAULT_PERMISSIONS)
     },
   },
 

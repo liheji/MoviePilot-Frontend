@@ -3,11 +3,27 @@ import * as Mousetrap from 'mousetrap'
 import SearchBarDialog from '@/components/dialog/SearchBarDialog.vue'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
+import { useUserStore } from '@/stores'
+import { hasPermission } from '@/utils/permission'
 
 const display = useDisplay()
 const { t } = useI18n()
 
+// 用户Store
+const userStore = useUserStore()
+
 const searchDialog = ref(false)
+
+// 检查是否有搜索权限
+const hasSearchPermission = computed(() => {
+  return hasPermission(
+    {
+      is_superuser: userStore.superUser,
+      ...userStore.permissions,
+    },
+    'search',
+  )
+})
 
 // 注册快捷键
 Mousetrap.bind(['command+k', 'ctrl+k'], openSearchDialog)
@@ -28,7 +44,7 @@ const metaKey = computed(() => (isMac() ? '⌘+K' : 'Ctrl+K'))
 
 <template>
   <!-- 👉 Search Icon -->
-  <div class="d-flex align-center cursor-pointer ms-lg-n2" style="user-select: none">
+  <div v-if="hasSearchPermission" class="d-flex align-center cursor-pointer ms-lg-n2" style="user-select: none">
     <IconBtn @click="openSearchDialog">
       <VIcon icon="ri-search-line" />
     </IconBtn>
@@ -38,7 +54,7 @@ const metaKey = computed(() => (isMac() ? '⌘+K' : 'Ctrl+K'))
     </span>
   </div>
   <!-- 搜索弹窗 -->
-  <SearchBarDialog v-model="searchDialog" v-if="searchDialog" @close="searchDialog = false" />
+  <SearchBarDialog v-model="searchDialog" v-if="searchDialog && hasSearchPermission" @close="searchDialog = false" />
 </template>
 <style type="scss" scoped>
 .meta-key {
