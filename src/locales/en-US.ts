@@ -1549,7 +1549,7 @@ export default {
         subscribe: 'Subscribe',
         subscribeDesc: 'Manage movie and TV show subscriptions',
         manage: 'Manage',
-        manageDesc: 'Access system management and settings',
+        manageDesc: 'Access download management and site management etc.',
       },
     },
     searchBar: {

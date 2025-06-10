@@ -1531,7 +1531,7 @@ export default {
         subscribe: '訂閱',
         subscribeDesc: '管理電影和電視劇訂閱',
         manage: '管理',
-        manageDesc: '存取系統管理和設置功能',
+        manageDesc: '存取下載管理和站點管理等功能',
       },
     },
     searchBar: {

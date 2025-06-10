@@ -1529,7 +1529,7 @@ export default {
         subscribe: '订阅',
         subscribeDesc: '管理电影和电视剧订阅',
         manage: '管理',
-        manageDesc: '访问系统管理和设置功能',
+        manageDesc: '访问下载管理和站点管理等功能',
       },
     },
     searchBar: {
