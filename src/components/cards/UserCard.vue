@@ -183,21 +183,6 @@ onMounted(() => {
             </VChip>
             <VChip v-if="user.is_otp" size="x-small" color="info" variant="tonal" label>2FA</VChip>
           </div>
-          <!-- 权限显示 -->
-          <div v-if="!user.is_superuser && user.permissions" class="d-flex flex-wrap gap-1 mt-1">
-            <VChip v-if="user.permissions.discovery" size="x-small" color="purple" variant="outlined" label>
-              {{ t('dialog.userAddEdit.permissions.discovery') }}
-            </VChip>
-            <VChip v-if="user.permissions.search" size="x-small" color="blue" variant="outlined" label>
-              {{ t('dialog.userAddEdit.permissions.search') }}
-            </VChip>
-            <VChip v-if="user.permissions.subscribe" size="x-small" color="green" variant="outlined" label>
-              {{ t('dialog.userAddEdit.permissions.subscribe') }}
-            </VChip>
-            <VChip v-if="user.permissions.manage" size="x-small" color="orange" variant="outlined" label>
-              {{ t('dialog.userAddEdit.permissions.manage') }}
-            </VChip>
-          </div>
         </div>
 
         <!-- 移动端订阅数据信息 -->
@@ -242,6 +227,22 @@ onMounted(() => {
       </template>
     </VCardItem>
 
+    <!-- 权限显示 -->
+    <div v-if="!user.is_superuser && user.permissions" class="d-flex flex-wrap gap-1 px-7 pb-3">
+      <VChip v-if="user.permissions.discovery" size="x-small" color="purple" variant="outlined" label>
+        {{ t('dialog.userAddEdit.permissions.discovery') }}
+      </VChip>
+      <VChip v-if="user.permissions.search" size="x-small" color="blue" variant="outlined" label>
+        {{ t('dialog.userAddEdit.permissions.search') }}
+      </VChip>
+      <VChip v-if="user.permissions.subscribe" size="x-small" color="green" variant="outlined" label>
+        {{ t('dialog.userAddEdit.permissions.subscribe') }}
+      </VChip>
+      <VChip v-if="user.permissions.manage" size="x-small" color="orange" variant="outlined" label>
+        {{ t('dialog.userAddEdit.permissions.manage') }}
+      </VChip>
+    </div>
+
     <!-- 独立的邮箱显示 -->
     <VDivider class="mx-4" />
 
@@ -252,7 +253,7 @@ onMounted(() => {
 
     <!-- PC端显示订阅统计信息 -->
     <VCardText v-if="!isMobile" class="px-4 pt-0 pb-4">
-      <div rounded="lg" class="d-flex justify-space-around pa-3">
+      <div rounded="lg" class="d-flex justify-space-around">
         <div class="d-flex align-center gap-3">
           <VAvatar
             tile

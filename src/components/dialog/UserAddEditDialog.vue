@@ -554,27 +554,8 @@ onMounted(() => {
           </VDivider>
           <!-- 权限设置 -->
           <div v-if="canControl">
-            <div class="mb-4">
-              <VBtn
-                variant="outlined"
-                color="primary"
-                size="small"
-                @click="userPermissions = { discovery: true, search: true, subscribe: true, manage: false }"
-                class="me-2"
-              >
-                {{ t('dialog.userAddEdit.permissions.presetNormal') }}
-              </VBtn>
-              <VBtn
-                variant="outlined"
-                color="warning"
-                size="small"
-                @click="userPermissions = { discovery: true, search: true, subscribe: true, manage: true }"
-              >
-                {{ t('dialog.userAddEdit.permissions.presetAdmin') }}
-              </VBtn>
-            </div>
             <VRow>
-              <VCol v-for="option in permissionOptions" :key="option.key" cols="12" md="6">
+              <VCol v-for="option in permissionOptions" :key="option.key" cols="6">
                 <VCard
                   :color="userPermissions[option.key as keyof UserPermissions] ? 'primary' : 'surface'"
                   :variant="userPermissions[option.key as keyof UserPermissions] ? 'tonal' : 'outlined'"
