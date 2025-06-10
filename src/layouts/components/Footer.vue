@@ -117,7 +117,7 @@ const showDynamicButton = computed(() => {
               :value="menu.to"
             >
               <div class="btn-content">
-                <VIcon :icon="menu.icon" :size="isEnglish ? 32 : 24"></VIcon>
+                <VIcon :icon="menu.icon" size="32"></VIcon>
                 <span v-if="!isEnglish" class="text-xs">{{ menu.title }}</span>
               </div>
             </VBtn>
@@ -134,8 +134,8 @@ const showDynamicButton = computed(() => {
               value="/apps"
             >
               <div class="btn-content">
-                <VIcon icon="mdi-dots-horizontal" :size="isEnglish ? 32 : 24"></VIcon>
-                <span v-if="!isEnglish" class="btn-text">{{ t('nav.more') }}</span>
+                <VIcon icon="mdi-dots-horizontal" size="32"></VIcon>
+                <span v-if="!isEnglish" class="text-xs">{{ t('nav.more') }}</span>
               </div>
             </VBtn>
           </VBtnToggle>
@@ -153,7 +153,7 @@ const showDynamicButton = computed(() => {
               rounded="pill"
               class="footer-nav-btn"
             >
-              <VIcon color="secondary" :icon="dynamicButton?.icon || 'mdi-plus'" size="24"></VIcon>
+              <VIcon color="secondary" :icon="dynamicButton?.icon || 'mdi-plus'" size="28"></VIcon>
             </VBtn>
           </VCardText>
         </VCard>
@@ -229,12 +229,8 @@ const showDynamicButton = computed(() => {
 
     span {
       overflow: hidden;
-      font-size: 0.75rem;
-      max-inline-size: 100%;
-      scale: var(--text-scale, 1);
       text-overflow: ellipsis;
       transform-origin: center;
-      transition: scale 0.2s ease;
       white-space: nowrap;
     }
   }
@@ -252,9 +248,9 @@ const showDynamicButton = computed(() => {
 
   .footer-nav-btn {
     padding: 0;
-    block-size: 36px;
-    inline-size: 36px;
-    min-inline-size: 36px;
+    block-size: 40px;
+    inline-size: 40px;
+    min-inline-size: 40px;
 
     .btn-content {
       margin: 0;
