@@ -67,7 +67,6 @@ const SystemSettings = ref<any>({
     // 实验室
     PLUGIN_AUTO_RELOAD: false,
     ENCODING_DETECTION_PERFORMANCE_MODE: true,
-    TOKENIZED_SEARCH: false,
   },
 })
 
@@ -1214,14 +1213,6 @@ onDeactivated(() => {
                     v-model="SystemSettings.Advanced.ENCODING_DETECTION_PERFORMANCE_MODE"
                     :label="t('setting.system.encodingDetectionPerformanceMode')"
                     :hint="t('setting.system.encodingDetectionPerformanceModeHint')"
-                    persistent-hint
-                  />
-                </VCol>
-                <VCol cols="12" md="6">
-                  <VSwitch
-                    v-model="SystemSettings.Advanced.TOKENIZED_SEARCH"
-                    :label="t('setting.system.tokenizedSearch')"
-                    :hint="t('setting.system.tokenizedSearchHint')"
                     persistent-hint
                   />
                 </VCol>
