@@ -12,6 +12,7 @@ export function getNavMenus() {
       header: t('menu.start'),
       admin: false,
       footer: true,
+      permission: 'manage',
     },
     {
       title: t('navItems.searchResult'),
@@ -19,6 +20,7 @@ export function getNavMenus() {
       to: '/resource',
       header: t('menu.start'),
       admin: false,
+      permission: 'search',
     },
     {
       title: t('navItems.recommend'),
@@ -27,6 +29,7 @@ export function getNavMenus() {
       header: t('menu.discovery'),
       admin: false,
       footer: true,
+      permission: 'discovery',
     },
     {
       title: t('navItems.explore'),
@@ -35,6 +38,7 @@ export function getNavMenus() {
       header: t('menu.discovery'),
       admin: false,
       footer: true,
+      permission: 'discovery',
     },
     {
       title: t('navItems.movie'),
@@ -44,6 +48,7 @@ export function getNavMenus() {
       header: t('menu.subscribe'),
       admin: false,
       footer: false,
+      permission: 'subscribe',
     },
     {
       title: t('navItems.tv'),
@@ -53,6 +58,7 @@ export function getNavMenus() {
       header: t('menu.subscribe'),
       admin: false,
       footer: false,
+      permission: 'subscribe',
     },
     {
       title: t('navItems.workflow'),
@@ -62,6 +68,7 @@ export function getNavMenus() {
       header: t('menu.subscribe'),
       admin: true,
       footer: false,
+      permission: 'manage',
     },
     {
       title: t('navItems.calendar'),
@@ -70,6 +77,7 @@ export function getNavMenus() {
       to: '/calendar',
       header: t('menu.subscribe'),
       admin: false,
+      permission: 'subscribe',
     },
     {
       title: t('navItems.downloadManager'),
@@ -77,6 +85,7 @@ export function getNavMenus() {
       to: '/downloading',
       header: t('menu.organize'),
       admin: false,
+      permission: 'manage',
     },
     {
       title: t('navItems.mediaOrganize'),
@@ -84,6 +93,7 @@ export function getNavMenus() {
       to: '/history',
       header: t('menu.organize'),
       admin: true,
+      permission: 'manage',
     },
     {
       title: t('navItems.fileManager'),
@@ -91,6 +101,7 @@ export function getNavMenus() {
       to: '/filemanager',
       header: t('menu.organize'),
       admin: true,
+      permission: 'manage',
     },
     {
       title: t('navItems.pluginManager'),
@@ -98,6 +109,7 @@ export function getNavMenus() {
       to: '/plugins',
       header: t('menu.system'),
       admin: true,
+      permission: 'manage',
     },
     {
       title: t('navItems.siteManager'),
@@ -105,6 +117,7 @@ export function getNavMenus() {
       to: '/site',
       header: t('menu.system'),
       admin: true,
+      permission: 'manage',
     },
     {
       title: t('navItems.userManager'),
@@ -112,6 +125,7 @@ export function getNavMenus() {
       to: '/user',
       header: t('menu.system'),
       admin: true,
+      permission: 'admin',
     },
     {
       title: t('navItems.settings'),
@@ -119,6 +133,7 @@ export function getNavMenus() {
       to: '/setting',
       header: t('menu.system'),
       admin: true,
+      permission: 'admin',
     },
   ]
 }

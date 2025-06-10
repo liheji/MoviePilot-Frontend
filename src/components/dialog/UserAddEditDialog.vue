@@ -553,7 +553,7 @@ onMounted(() => {
             <span>{{ t('dialog.userAddEdit.permissions.title') }}</span>
           </VDivider>
           <!-- 权限设置 -->
-          <div v-if="canControl" class="mt-4">
+          <div v-if="canControl">
             <div class="mb-4">
               <VBtn
                 variant="outlined"

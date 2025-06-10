@@ -49,7 +49,7 @@ const systemMenus = ref<NavMenu[]>([])
 const getMenuList = (header: string) => {
   // 使用国际化菜单
   const menus = getNavMenus()
-  const filteredMenus = filterMenusByPermission(menus, userPermissions.value, t)
+  const filteredMenus = filterMenusByPermission(menus, userPermissions.value)
   return filteredMenus.filter((item: NavMenu) => item.header === header)
 }
 

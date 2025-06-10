@@ -45,53 +45,19 @@ export function hasAllPermissions(userPermissions: any, permissionList: (keyof U
 }
 
 // 根据权限过滤菜单项
-export function filterMenusByPermission(menus: any[], userPermissions: any, t?: any): any[] {
+export function filterMenusByPermission(menus: any[], userPermissions: any): any[] {
   return menus.filter(menu => {
-    // 如果是超级用户且菜单需要管理员权限，允许访问
-    if (menu.admin && userPermissions?.is_superuser) {
+    // 如果是超级用户，拥有所有权限
+    if (userPermissions?.is_superuser) {
       return true
     }
 
-    // 如果菜单不需要管理员权限，检查具体权限
-    if (!menu.admin) {
-      // 根据菜单的header判断需要的权限
-      const header = menu.header
-
-      // 使用国际化键名进行匹配
-      if (header === 'menu.discovery' || (t && header === t('menu.discovery'))) {
-        return hasPermission(userPermissions, 'discovery')
-      }
-      if (header === 'menu.start' || (t && header === t('menu.start'))) {
-        return hasPermission(userPermissions, 'search')
-      }
-      if (header === 'menu.subscribe' || (t && header === t('menu.subscribe'))) {
-        return hasPermission(userPermissions, 'subscribe')
-      }
-      if (
-        header === 'menu.system' ||
-        header === 'menu.organize' ||
-        (t && (header === t('menu.system') || header === t('menu.organize')))
-      ) {
-        return hasPermission(userPermissions, 'manage')
-      }
-
-      // 兼容中文菜单头
-      switch (header) {
-        case '发现':
-          return hasPermission(userPermissions, 'discovery')
-        case '开始':
-          return hasPermission(userPermissions, 'search')
-        case '订阅':
-          return hasPermission(userPermissions, 'subscribe')
-        case '系统':
-        case '整理':
-          return hasPermission(userPermissions, 'manage')
-        default:
-          return true
-      }
+    // 如果菜单没有权限要求，默认显示
+    if (!menu.permission) {
+      return true
     }
 
-    // 需要管理员权限但用户不是超级用户
-    return false
+    // 检查用户是否拥有所需权限
+    return hasPermission(userPermissions, menu.permission)
   })
 }

@@ -27,7 +27,7 @@ const userPermissions = computed(() => ({
 // 获取导航菜单
 const navMenus = computed(() => {
   const allMenus = getNavMenus()
-  return filterMenusByPermission(allMenus, userPermissions.value, t)
+  return filterMenusByPermission(allMenus, userPermissions.value)
 })
 
 // 根据当前路径获取匹配的菜单路径

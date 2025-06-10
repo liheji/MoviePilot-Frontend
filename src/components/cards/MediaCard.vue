@@ -15,6 +15,7 @@ import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import SubscribeSeasonDialog from '../dialog/SubscribeSeasonDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { mediaTypeDict } from '@/api/constants'
+import { hasPermission } from '@/utils/permission'
 
 // 国际化
 const { t } = useI18n()
@@ -481,7 +482,13 @@ onBeforeUnmount(() => {
             </p>
             <div v-if="props.media?.collection_id" class="mb-3" @click.stop=""></div>
             <div v-else class="flex align-center justify-between">
-              <IconBtn icon="mdi-magnify" color="white" @click.stop="clickSearch" />
+              <IconBtn
+                v-if="hasPermission({ is_superuser: userStore.superUser, ...userStore.permissions }, 'search')"
+                icon="mdi-magnify"
+                color="white"
+                @click.stop="clickSearch"
+              />
+              <VSpacer />
               <IconBtn icon="mdi-heart" :color="isSubscribed ? 'error' : 'white'" @click.stop="handleSubscribe" />
             </div>
           </VCardText>

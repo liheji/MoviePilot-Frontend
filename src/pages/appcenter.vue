@@ -25,7 +25,7 @@ const appGroups = ref<Record<string, NavMenu[]>>({})
 function categorizeApps() {
   // 获取所有菜单并根据权限过滤
   const allMenus = getNavMenus()
-  const filteredMenus = filterMenusByPermission(allMenus, userPermissions.value, t)
+  const filteredMenus = filterMenusByPermission(allMenus, userPermissions.value)
   const menus = filteredMenus.filter((item: NavMenu) => !item.footer)
 
   // 按header属性分组

@@ -14,6 +14,7 @@ import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import { useTheme } from 'vuetify'
 import { useI18n } from 'vue-i18n'
+import { hasPermission } from '@/utils/permission'
 
 // 国际化
 const { t } = useI18n()
@@ -587,7 +588,10 @@ onBeforeMount(() => {
         </div>
         <div class="media-actions">
           <VBtn
-            v-if="mediaDetail.tmdb_id || mediaDetail.douban_id || mediaDetail.bangumi_id"
+            v-if="
+              (mediaDetail.tmdb_id || mediaDetail.douban_id || mediaDetail.bangumi_id) &&
+              hasPermission({ is_superuser: userStore.superUser, ...userStore.permissions }, 'search')
+            "
             variant="tonal"
             color="info"
             class="mb-2"
