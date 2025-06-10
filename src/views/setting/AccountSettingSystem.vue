@@ -856,40 +856,65 @@ onDeactivated(() => {
                 <VCol cols="12">
                   <VExpansionPanels>
                     <VExpansionPanel>
-                      <VExpansionPanelTitle>
+                      <VExpansionPanelTitle class="text-lg">
                         <template #default>
-                          <VIcon icon="mdi-cog-outline" class="me-2" />
+                          <VIcon icon="mdi-checkbox-multiple-outline" class="me-2" />
                           {{ t('setting.system.scrapingSwitchSettings') }}
                         </template>
                       </VExpansionPanelTitle>
                       <VExpansionPanelText>
                         <VRow>
                           <VCol cols="12" class="pb-2">
-                            <VCardTitle class="text-lg pa-0">{{ t('setting.system.movie') }}</VCardTitle>
+                            <VListSubheader class="text-lg">{{ t('setting.system.movie') }}</VListSubheader>
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.movie_nfo" :label="t('setting.system.movieNfo')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.movie_nfo"
+                              :label="t('setting.system.movieNfo')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.movie_poster" :label="t('setting.system.moviePoster')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.movie_poster"
+                              :label="t('setting.system.moviePoster')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch
+                            <VCheckbox
                               v-model="ScrapingSwitchs.movie_backdrop"
                               :label="t('setting.system.movieBackdrop')"
+                              density="compact"
                             />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.movie_logo" :label="t('setting.system.movieLogo')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.movie_logo"
+                              :label="t('setting.system.movieLogo')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.movie_disc" :label="t('setting.system.movieDisc')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.movie_disc"
+                              :label="t('setting.system.movieDisc')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.movie_banner" :label="t('setting.system.movieBanner')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.movie_banner"
+                              :label="t('setting.system.movieBanner')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.movie_thumb" :label="t('setting.system.movieThumb')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.movie_thumb"
+                              :label="t('setting.system.movieThumb')"
+                              density="compact"
+                            />
                           </VCol>
                         </VRow>
 
@@ -897,25 +922,49 @@ onDeactivated(() => {
 
                         <VRow>
                           <VCol cols="12" class="pb-2">
-                            <VCardTitle class="text-lg pa-0">{{ t('setting.system.tv') }}</VCardTitle>
+                            <VListSubheader class="text-lg">{{ t('setting.system.tv') }}</VListSubheader>
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.tv_nfo" :label="t('setting.system.tvNfo')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.tv_nfo"
+                              :label="t('setting.system.tvNfo')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.tv_poster" :label="t('setting.system.tvPoster')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.tv_poster"
+                              :label="t('setting.system.tvPoster')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.tv_backdrop" :label="t('setting.system.tvBackdrop')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.tv_backdrop"
+                              :label="t('setting.system.tvBackdrop')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.tv_banner" :label="t('setting.system.tvBanner')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.tv_banner"
+                              :label="t('setting.system.tvBanner')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.tv_logo" :label="t('setting.system.tvLogo')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.tv_logo"
+                              :label="t('setting.system.tvLogo')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.tv_thumb" :label="t('setting.system.tvThumb')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.tv_thumb"
+                              :label="t('setting.system.tvThumb')"
+                              density="compact"
+                            />
                           </VCol>
                         </VRow>
 
@@ -923,22 +972,28 @@ onDeactivated(() => {
 
                         <VRow>
                           <VCol cols="12" class="pb-2">
-                            <VCardTitle class="text-lg pa-0">{{ t('setting.system.season') }}</VCardTitle>
+                            <VListSubheader class="text-lg">{{ t('setting.system.season') }}</VListSubheader>
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch
+                            <VCheckbox
                               v-model="ScrapingSwitchs.season_poster"
                               :label="t('setting.system.seasonPoster')"
+                              density="compact"
                             />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch
+                            <VCheckbox
                               v-model="ScrapingSwitchs.season_banner"
                               :label="t('setting.system.seasonBanner')"
+                              density="compact"
                             />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.season_thumb" :label="t('setting.system.seasonThumb')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.season_thumb"
+                              :label="t('setting.system.seasonThumb')"
+                              density="compact"
+                            />
                           </VCol>
                         </VRow>
 
@@ -946,15 +1001,20 @@ onDeactivated(() => {
 
                         <VRow>
                           <VCol cols="12" class="pb-2">
-                            <VCardTitle class="text-lg pa-0">{{ t('setting.system.episode') }}</VCardTitle>
+                            <VListSubheader class="text-lg">{{ t('setting.system.episode') }}</VListSubheader>
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch v-model="ScrapingSwitchs.episode_nfo" :label="t('setting.system.episodeNfo')" />
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.episode_nfo"
+                              :label="t('setting.system.episodeNfo')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
-                            <VSwitch
+                            <VCheckbox
                               v-model="ScrapingSwitchs.episode_thumb"
                               :label="t('setting.system.episodeThumb')"
+                              density="compact"
                             />
                           </VCol>
                         </VRow>
@@ -1037,7 +1097,7 @@ onDeactivated(() => {
                 <VCol cols="12">
                   <VExpansionPanels>
                     <VExpansionPanel>
-                      <VExpansionPanelTitle>
+                      <VExpansionPanelTitle class="text-lg">
                         <template #default>
                           <VIcon icon="mdi-shield-check" class="me-2" />
                           {{ t('setting.system.securityImageDomains') }}
