@@ -63,6 +63,7 @@ function logout() {
 
   // 清除登录状态信息
   authStore.logout()
+  userStore.reset()
   // 重定向到登录页面或其他适当的页面
   router.push('/login')
 }

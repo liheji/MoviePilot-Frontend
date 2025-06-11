@@ -19,10 +19,23 @@ const route = useRoute()
 const userStore = useUserStore()
 
 // 获取用户权限信息
-const userPermissions = computed(() => ({
-  is_superuser: userStore.superUser,
-  ...userStore.permissions,
-}))
+const userPermissions = computed(() => {
+  // 确保用户已认证且信息已加载
+  if (!userStore || userStore.userID === -1) {
+    return {
+      is_superuser: false,
+      discovery: false,
+      search: false,
+      subscribe: false,
+      manage: false,
+    }
+  }
+
+  return {
+    is_superuser: userStore.superUser,
+    ...userStore.permissions,
+  }
+})
 
 // 获取导航菜单
 const navMenus = computed(() => {
@@ -41,7 +54,42 @@ const currentMenu = ref<string>(getMenuPathFromRoute(route.path))
 
 // 过滤出底部菜单项
 const footerMenus = computed(() => {
-  return navMenus.value.filter((menu: NavMenu) => menu.footer === true)
+  // 获取所有有权限的菜单
+  const allAuthorizedMenus = navMenus.value
+
+  // 优先获取有 footer: true 属性的菜单
+  const footerMenusWithProperty = allAuthorizedMenus.filter((menu: NavMenu) => menu.footer === true)
+
+  // 设置期望的底部菜单数量（不包括"更多"按钮）
+  // 一般来说，底部导航栏显示 3-4 个主要功能比较合适
+  const expectedFooterMenuCount = 3
+
+  // 如果有 footer 属性的菜单已经足够，优先显示它们
+  if (footerMenusWithProperty.length >= expectedFooterMenuCount) {
+    return footerMenusWithProperty.slice(0, expectedFooterMenuCount)
+  }
+
+  // 如果不够，从没有 footer 属性或 footer 为 false 的菜单中补充
+  // 优先选择一些常用的功能菜单
+  const nonFooterMenus = allAuthorizedMenus.filter(
+    (menu: NavMenu) =>
+      menu.footer !== true &&
+      // 排除已经在 footerMenusWithProperty 中的菜单
+      !footerMenusWithProperty.some(footerMenu => footerMenu.to === menu.to),
+  )
+
+  // 计算还需要多少个菜单
+  const needCount = expectedFooterMenuCount - footerMenusWithProperty.length
+
+  // 合并菜单：优先显示有 footer 属性的，然后按菜单定义顺序添加其他菜单
+  let finalMenus = [...footerMenusWithProperty, ...nonFooterMenus.slice(0, needCount)]
+
+  // 确保至少有一个菜单显示，如果都没有权限，则显示第一个有权限的菜单
+  if (finalMenus.length === 0 && allAuthorizedMenus.length > 0) {
+    finalMenus = [allAuthorizedMenus[0]]
+  }
+
+  return finalMenus
 })
 
 // 监听路由变化来更新currentMenu
@@ -209,8 +257,8 @@ const showDynamicButton = computed(() => {
 
 .footer-card-content {
   position: relative;
-  padding-block: 6px;
-  padding-inline: 8px;
+  padding-block: 4px;
+  padding-inline: 6px;
 }
 
 .footer-btn-group {

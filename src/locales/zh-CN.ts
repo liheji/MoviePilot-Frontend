@@ -137,6 +137,7 @@ export default {
     networkError: '登录失败，请检查网络连接！',
     authFailure: '登录失败，请检查用户名、密码或双重验证是否正确！',
     permissionDenied: '登录失败，您没有权限访问！',
+    noPermission: '登录失败，您没有任何功能权限，请联系管理员！',
     serverError: '登录失败，服务器错误！',
     loginFailed: '登录失败',
     checkCredentials: '请检查用户名、密码或双重验证码是否正确！',

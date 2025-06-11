@@ -11,6 +11,8 @@ import { urlBase64ToUint8Array } from '@/@core/utils/navigator'
 import { SUPPORTED_LOCALES, SupportedLocale } from '@/types/i18n'
 import { getCurrentLocale, setI18nLanguage } from '@/plugins/i18n'
 import { useTheme } from 'vuetify'
+import { getNavMenus } from '@/router/i18n-menu'
+import { filterMenusByPermission } from '@/utils/permission'
 
 // 国际化
 const { t } = useI18n()
@@ -18,6 +20,9 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 //用户 Store
 const userStore = useUserStore()
+
+// 获取有权限的菜单
+const navMenus = getNavMenus()
 
 // 表单
 const form = ref({
@@ -111,9 +116,15 @@ async function subscribeForPushNotifications() {
 }
 
 // 登录后处理
-async function afterLogin(superuser: boolean) {
-  // 跳转到首页或回原始页面
-  router.push(authStore.originalPath ?? '/')
+async function afterLogin(superuser: boolean, userPayload: userState, filteredMenus: any[]) {
+  // 如果有原始路径，优先跳转到原始路径
+  if (authStore.originalPath && authStore.originalPath !== '/') {
+    router.push(authStore.originalPath)
+  } else {
+    // 跳转到第一个有权限的菜单
+    router.push(filteredMenus[0].to)
+  }
+
   // 订阅推送通知
   if (superuser) await subscribeForPushNotifications()
   // 登录按钮 loading
@@ -147,11 +158,6 @@ function login() {
       },
     })
     .then((response: any) => {
-      const authPayLoad: authState = {
-        token: response.access_token,
-        remember: form.value.remember,
-      }
-
       const userPayload: userState = {
         superUser: response.super_user,
         userID: response.user_id,
@@ -161,11 +167,32 @@ function login() {
         permissions: response.permissions,
       }
 
+      // 在保存用户信息之前检查权限
+      const userPermissions = {
+        is_superuser: userPayload.superUser,
+        ...userPayload.permissions,
+      }
+
+      const filteredMenus = filterMenusByPermission(navMenus, userPermissions)
+      // 如果用户没有任何可用菜单，拒绝登录
+      if (filteredMenus.length === 0) {
+        // 显示错误信息
+        errorMessage.value = t('login.noPermission')
+        loading.value = false
+        return
+      }
+
+      // 权限检查通过，保存用户信息
+      const authPayLoad: authState = {
+        token: response.access_token,
+        remember: form.value.remember,
+      }
+
       authStore.login(authPayLoad)
       userStore.loginUser(userPayload)
 
       // 登录后处理
-      afterLogin(userPayload.superUser)
+      afterLogin(userPayload.superUser, userPayload, filteredMenus)
     })
     .catch((error: any) => {
       // 登录失败，显示错误提示

@@ -123,173 +123,176 @@ onMounted(() => {
       'transition-transform duration-300 hover:-translate-y-1',
       !props.user.is_active ? 'opacity-85 bg-surface-lighten-1' : '',
     ]"
+    class="flex flex-column"
     @click="userEditDialog = true"
   >
-    <!-- 用户头像和基本信息 -->
-    <VCardItem :class="[user.is_superuser ? 'admin-header' : '']">
-      <template v-slot:prepend>
-        <div class="position-relative mr-4">
-          <VAvatar
-            size="72"
-            rounded="lg"
-            :class="[
-              user.is_superuser ? 'admin-avatar' : 'border-4 bg-surface',
-              !user.is_active ? 'grayscale-50 opacity-90' : '',
-            ]"
-            :style="user.is_superuser ? 'border: 4px solid rgba(var(--v-theme-warning), 0.3);' : ''"
-          >
-            <VImg :src="user.avatar || avatar1" :alt="user.name" />
-            <div
-              v-if="!user.is_active"
-              class="position-absolute d-flex align-center justify-center rounded-lg bg-surface-variant opacity-20"
-              style="inset: 0"
-            >
-              <VIcon icon="mdi-account-lock" color="white" />
-            </div>
-          </VAvatar>
-          <div v-if="user.is_superuser" class="admin-crown">
-            <VIcon icon="mdi-crown" color="warning" />
-          </div>
-        </div>
-      </template>
-
-      <VCardTitle class="pa-0 d-flex flex-column">
-        <div class="d-flex flex-column mb-1">
-          <div class="d-flex align-center">
-            <span
+    <div class="flex-grow">
+      <!-- 用户头像和基本信息 -->
+      <VCardItem :class="[user.is_superuser ? 'admin-header' : '']">
+        <template v-slot:prepend>
+          <div class="position-relative mr-4">
+            <VAvatar
+              size="72"
+              rounded="lg"
               :class="[
-                'text-h6 font-weight-bold truncate',
-                user.is_superuser ? 'text-warning' : '',
-                !user.is_active ? 'text-medium-emphasis' : '',
+                user.is_superuser ? 'admin-avatar' : 'border-4 bg-surface',
+                !user.is_active ? 'grayscale-50 opacity-90' : '',
               ]"
+              :style="user.is_superuser ? 'border: 4px solid rgba(var(--v-theme-warning), 0.3);' : ''"
             >
-              {{ displayName }}
-              <VIcon
-                v-if="user.nickname || user.settings?.nickname"
-                icon="mdi-format-quote-close"
-                size="x-small"
-                color="info"
-                class="animate-pulse"
-              />
-            </span>
+              <VImg :src="user.avatar || avatar1" :alt="user.name" />
+              <div
+                v-if="!user.is_active"
+                class="position-absolute d-flex align-center justify-center rounded-lg bg-surface-variant opacity-20"
+                style="inset: 0"
+              >
+                <VIcon icon="mdi-account-lock" color="white" />
+              </div>
+            </VAvatar>
+            <div v-if="user.is_superuser" class="admin-crown">
+              <VIcon icon="mdi-crown" color="warning" />
+            </div>
           </div>
-          <div class="d-flex flex-wrap gap-1 overflow-auto">
-            <VChip v-if="user.is_superuser" size="x-small" color="error" variant="outlined" label>{{
-              t('user.admin')
-            }}</VChip>
-            <VChip v-else size="x-small" label>{{ t('user.normal') }}</VChip>
-            <VChip size="x-small" :color="user.is_active ? 'success' : 'grey'" variant="tonal" label>
-              {{ user.is_active ? t('user.active') : t('user.inactive') }}
-            </VChip>
-            <VChip v-if="user.is_otp" size="x-small" color="info" variant="tonal" label>2FA</VChip>
+        </template>
+
+        <VCardTitle class="pa-0 d-flex flex-column">
+          <div class="d-flex flex-column mb-1">
+            <div class="d-flex align-center">
+              <span
+                :class="[
+                  'text-h6 font-weight-bold truncate',
+                  user.is_superuser ? 'text-warning' : '',
+                  !user.is_active ? 'text-medium-emphasis' : '',
+                ]"
+              >
+                {{ displayName }}
+                <VIcon
+                  v-if="user.nickname || user.settings?.nickname"
+                  icon="mdi-format-quote-close"
+                  size="x-small"
+                  color="info"
+                  class="animate-pulse"
+                />
+              </span>
+            </div>
+            <div class="d-flex flex-wrap gap-1 overflow-auto">
+              <VChip v-if="user.is_superuser" size="x-small" color="error" variant="outlined" label>{{
+                t('user.admin')
+              }}</VChip>
+              <VChip v-else size="x-small" label>{{ t('user.normal') }}</VChip>
+              <VChip size="x-small" :color="user.is_active ? 'success' : 'grey'" variant="tonal" label>
+                {{ user.is_active ? t('user.active') : t('user.inactive') }}
+              </VChip>
+              <VChip v-if="user.is_otp" size="x-small" color="info" variant="tonal" label>2FA</VChip>
+            </div>
           </div>
-        </div>
 
-        <!-- 移动端订阅数据信息 -->
-        <div v-if="isMobile" class="d-flex gap-5 mt-2">
-          <div class="d-flex align-center">
-            <VIcon size="x-small" icon="mdi-movie-outline" color="primary" class="mr-1" />
-            <span class="text-body-2">{{ movieSubscriptions }}</span>
+          <!-- 移动端订阅数据信息 -->
+          <div v-if="isMobile" class="d-flex gap-5 mt-2">
+            <div class="d-flex align-center">
+              <VIcon size="x-small" icon="mdi-movie-outline" color="primary" class="mr-1" />
+              <span class="text-body-2">{{ movieSubscriptions }}</span>
+            </div>
+            <div class="d-flex align-center">
+              <VIcon size="x-small" icon="mdi-television-classic" color="primary" class="mr-1" />
+              <span class="text-body-2">{{ tvShowSubscriptions }}</span>
+            </div>
           </div>
-          <div class="d-flex align-center">
-            <VIcon size="x-small" icon="mdi-television-classic" color="primary" class="mr-1" />
-            <span class="text-body-2">{{ tvShowSubscriptions }}</span>
+        </VCardTitle>
+
+        <!-- 头部操作按钮 -->
+        <template v-slot:append>
+          <div :class="['d-flex', isMobile ? 'position-absolute top-2 right-2' : '']">
+            <VBtn
+              icon
+              size="small"
+              :color="user.is_superuser ? 'warning' : 'primary'"
+              variant="text"
+              class="opacity-70 hover:opacity-100 transition-opacity"
+              @click.stop="editUser"
+            >
+              <VIcon icon="mdi-pencil" />
+            </VBtn>
+
+            <VBtn
+              v-if="props.user.id != currentLoginUserId && currentUserIsSuperuser"
+              icon
+              size="small"
+              color="error"
+              variant="text"
+              class="opacity-70 hover:opacity-100 transition-opacity"
+              @click.stop="removeUser"
+            >
+              <VIcon icon="mdi-delete" />
+            </VBtn>
           </div>
-        </div>
-      </VCardTitle>
+        </template>
+      </VCardItem>
 
-      <!-- 头部操作按钮 -->
-      <template v-slot:append>
-        <div :class="['d-flex', isMobile ? 'position-absolute top-2 right-2' : '']">
-          <VBtn
-            icon
-            size="small"
-            :color="user.is_superuser ? 'warning' : 'primary'"
-            variant="text"
-            class="opacity-70 hover:opacity-100 transition-opacity"
-            @click.stop="editUser"
-          >
-            <VIcon icon="mdi-pencil" />
-          </VBtn>
-
-          <VBtn
-            v-if="props.user.id != currentLoginUserId && currentUserIsSuperuser"
-            icon
-            size="small"
-            color="error"
-            variant="text"
-            class="opacity-70 hover:opacity-100 transition-opacity"
-            @click.stop="removeUser"
-          >
-            <VIcon icon="mdi-delete" />
-          </VBtn>
-        </div>
-      </template>
-    </VCardItem>
-
-    <!-- 权限显示 -->
-    <div v-if="!user.is_superuser && user.permissions" class="d-flex flex-wrap gap-1 px-7 pb-3">
-      <VChip v-if="user.permissions.discovery" size="x-small" color="purple" variant="outlined" label>
-        {{ t('dialog.userAddEdit.permissions.discovery') }}
-      </VChip>
-      <VChip v-if="user.permissions.search" size="x-small" color="blue" variant="outlined" label>
-        {{ t('dialog.userAddEdit.permissions.search') }}
-      </VChip>
-      <VChip v-if="user.permissions.subscribe" size="x-small" color="green" variant="outlined" label>
-        {{ t('dialog.userAddEdit.permissions.subscribe') }}
-      </VChip>
-      <VChip v-if="user.permissions.manage" size="x-small" color="orange" variant="outlined" label>
-        {{ t('dialog.userAddEdit.permissions.manage') }}
-      </VChip>
+      <!-- 权限显示 -->
+      <div v-if="!user.is_superuser && user.permissions" class="d-flex flex-wrap gap-1 px-7 pb-3">
+        <VChip v-if="user.permissions.discovery" size="x-small" color="purple" variant="outlined" label>
+          {{ t('dialog.userAddEdit.permissions.discovery') }}
+        </VChip>
+        <VChip v-if="user.permissions.search" size="x-small" color="blue" variant="outlined" label>
+          {{ t('dialog.userAddEdit.permissions.search') }}
+        </VChip>
+        <VChip v-if="user.permissions.subscribe" size="x-small" color="green" variant="outlined" label>
+          {{ t('dialog.userAddEdit.permissions.subscribe') }}
+        </VChip>
+        <VChip v-if="user.permissions.manage" size="x-small" color="orange" variant="outlined" label>
+          {{ t('dialog.userAddEdit.permissions.manage') }}
+        </VChip>
+      </div>
     </div>
-
     <!-- 独立的邮箱显示 -->
     <VDivider class="mx-4" />
+    <div>
+      <VCardText class="d-flex align-center py-2 px-4 text-medium-emphasis">
+        <VIcon icon="mdi-email-outline" size="small" color="primary" class="mr-2 opacity-70" />
+        <span class="text-body-2 truncate">{{ user.email || t('user.noEmail') }}</span>
+      </VCardText>
 
-    <VCardText class="d-flex align-center py-2 px-4 text-medium-emphasis">
-      <VIcon icon="mdi-email-outline" size="small" color="primary" class="mr-2 opacity-70" />
-      <span class="text-body-2 truncate">{{ user.email || t('user.noEmail') }}</span>
-    </VCardText>
-
-    <!-- PC端显示订阅统计信息 -->
-    <VCardText v-if="!isMobile" class="px-4 pt-0 pb-4">
-      <div rounded="lg" class="d-flex justify-space-around">
-        <div class="d-flex align-center gap-3">
-          <VAvatar
-            tile
-            rounded="lg"
-            size="large"
-            class="mr-1"
-            :class="user.is_superuser ? 'admin-stats-container' : 'user-stats-container'"
-          >
-            <div :class="['d-flex align-center justify-center rounded-lg w-10 h-10']">
-              <VIcon :color="user.is_superuser ? 'warning' : 'primary'" icon="mdi-movie-outline" size="20" />
+      <!-- PC端显示订阅统计信息 -->
+      <VCardText v-if="!isMobile" class="px-4 pt-0 pb-4">
+        <div rounded="lg" class="d-flex justify-space-around">
+          <div class="d-flex align-center gap-3">
+            <VAvatar
+              tile
+              rounded="lg"
+              size="large"
+              class="mr-1"
+              :class="user.is_superuser ? 'admin-stats-container' : 'user-stats-container'"
+            >
+              <div :class="['d-flex align-center justify-center rounded-lg w-10 h-10']">
+                <VIcon :color="user.is_superuser ? 'warning' : 'primary'" icon="mdi-movie-outline" size="20" />
+              </div>
+            </VAvatar>
+            <div class="d-flex flex-column">
+              <span class="text-lg text-medium-emphasis font-weight-bold">{{ movieSubscriptions }}</span>
+              <span class="text-caption text-medium-emphasis">{{ t('user.movieSubscriptions') }}</span>
             </div>
-          </VAvatar>
-          <div class="d-flex flex-column">
-            <span class="text-lg text-medium-emphasis font-weight-bold">{{ movieSubscriptions }}</span>
-            <span class="text-caption text-medium-emphasis">{{ t('user.movieSubscriptions') }}</span>
+          </div>
+          <div class="d-flex align-center gap-3">
+            <VAvatar
+              tile
+              rounded="lg"
+              size="large"
+              class="mr-1"
+              :class="user.is_superuser ? 'admin-stats-container' : 'user-stats-container'"
+            >
+              <div :class="['d-flex align-center justify-center rounded-lg w-10 h-10']">
+                <VIcon :color="user.is_superuser ? 'warning' : 'primary'" icon="mdi-television-classic" />
+              </div>
+            </VAvatar>
+            <div class="d-flex flex-column">
+              <span class="text-lg text-medium-emphasis">{{ tvShowSubscriptions }}</span>
+              <span class="text-caption text-medium-emphasis">{{ t('user.tvSubscriptions') }}</span>
+            </div>
           </div>
         </div>
-        <div class="d-flex align-center gap-3">
-          <VAvatar
-            tile
-            rounded="lg"
-            size="large"
-            class="mr-1"
-            :class="user.is_superuser ? 'admin-stats-container' : 'user-stats-container'"
-          >
-            <div :class="['d-flex align-center justify-center rounded-lg w-10 h-10']">
-              <VIcon :color="user.is_superuser ? 'warning' : 'primary'" icon="mdi-television-classic" />
-            </div>
-          </VAvatar>
-          <div class="d-flex flex-column">
-            <span class="text-lg text-medium-emphasis">{{ tvShowSubscriptions }}</span>
-            <span class="text-caption text-medium-emphasis">{{ t('user.tvSubscriptions') }}</span>
-          </div>
-        </div>
-      </div>
-    </VCardText>
+      </VCardText>
+    </div>
   </VCard>
 
   <!-- 用户编辑弹窗 -->

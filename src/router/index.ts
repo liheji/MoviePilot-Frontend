@@ -224,15 +224,18 @@ function abortAllControllers() {
 }
 
 // 路由导航守卫
-router.beforeEach((to: any, from: any, next: any) => {
+router.beforeEach(async (to: any, from: any, next: any) => {
   // 认证 Store
   const authStore = useAuthStore()
   // 总是记录非login路由
   if (to.fullPath != '/login') authStore.originalPath = to.fullPath
   const isAuthenticated = authStore.token !== null
+
   if (to.meta.requiresAuth && !isAuthenticated) {
+    // 用户未登录，重定向到登录页
     next('/login')
   } else {
+    // 清理所有中止控制器
     abortAllControllers()
     next()
   }

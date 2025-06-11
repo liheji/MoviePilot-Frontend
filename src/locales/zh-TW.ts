@@ -139,6 +139,7 @@ export default {
     authFailure: '登錄失敗，請檢查用戶名、密碼或雙重驗證是否正確！',
     permissionDenied: '登錄失敗，您沒有權限訪問！',
     serverError: '登錄失敗，服務器錯誤！',
+    noPermission: '登錄失敗，您沒有任何功能權限，請聯繫管理員！',
     loginFailed: '登錄失敗',
     checkCredentials: '請檢查用戶名、密碼或雙重驗證碼是否正確！',
   },

@@ -137,6 +137,7 @@ export default {
     networkError: 'Login failed, please check your network connection!',
     authFailure: 'Login failed, please check your username, password or two-factor authentication!',
     permissionDenied: 'Login failed, you do not have permission to access!',
+    noPermission: 'Login failed, you have no functional permissions, please contact the administrator!',
     serverError: 'Login failed, server error!',
     loginFailed: 'Login Failed',
     checkCredentials: 'Please check your username, password or two-factor authentication code!',
