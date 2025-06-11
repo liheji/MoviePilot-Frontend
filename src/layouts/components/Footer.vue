@@ -256,7 +256,7 @@ const showDynamicButton = computed(() => {
 
   .v-btn-toggle {
     block-size: auto;
-    min-block-size: 64px;
+    min-block-size: 60px;
   }
 }
 
