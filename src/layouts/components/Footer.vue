@@ -253,6 +253,11 @@ const showDynamicButton = computed(() => {
   &.shift-left {
     transform: translateX(0);
   }
+
+  .v-btn-toggle {
+    block-size: auto;
+    min-block-size: 64px;
+  }
 }
 
 .footer-card-content {
@@ -274,8 +279,11 @@ const showDynamicButton = computed(() => {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex-grow: 0;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
   background-color: transparent;
+  block-size: 56px;
 
   &.v-btn--active {
     background-color: transparent;

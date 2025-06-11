@@ -214,7 +214,7 @@ const TransferDict: { [key: string]: string } = {
 
 const tableStyle = computed(() => {
   return appMode
-    ? 'height: calc(100vh - 15rem - env(safe-area-inset-bottom) - 6.5rem)'
+    ? 'height: calc(100vh - 15rem - env(safe-area-inset-bottom) - 7rem)'
     : 'height: calc(100vh - 15rem - env(safe-area-inset-bottom)'
 })
 
