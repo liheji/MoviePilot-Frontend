@@ -85,6 +85,7 @@ const ScrapingSwitchs = ref<any>({
   tv_banner: true, // 电视剧横幅图
   tv_logo: true, // 电视剧Logo
   tv_thumb: true, // 电视剧缩略图
+  season_nfo: true, // 季NFO
   season_poster: true, // 季海报
   season_banner: true, // 季横幅图
   season_thumb: true, // 季缩略图
@@ -972,6 +973,13 @@ onDeactivated(() => {
                         <VRow>
                           <VCol cols="12" class="pb-2">
                             <VListSubheader class="text-lg">{{ t('setting.system.season') }}</VListSubheader>
+                          </VCol>
+                          <VCol cols="6" md="3">
+                            <VCheckbox
+                              v-model="ScrapingSwitchs.season_nfo"
+                              :label="t('setting.system.seasonNfo')"
+                              density="compact"
+                            />
                           </VCol>
                           <VCol cols="6" md="3">
                             <VCheckbox

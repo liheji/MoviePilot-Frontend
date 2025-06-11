@@ -1121,6 +1121,7 @@ export default {
       season: 'Season',
       episode: 'Episode',
       movieNfo: 'NFO',
+      seasonNfo: 'NFO',
       moviePoster: 'Poster',
       movieBackdrop: 'Backdrop',
       movieLogo: 'Logo',

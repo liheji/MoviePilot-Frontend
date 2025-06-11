@@ -1118,6 +1118,7 @@ export default {
       movieBanner: '横幅图',
       movieThumb: '缩略图',
       tvNfo: 'NFO',
+      seasonNfo: 'NFO',
       tvPoster: '海报',
       tvBackdrop: '背景图',
       tvBanner: '横幅图',
