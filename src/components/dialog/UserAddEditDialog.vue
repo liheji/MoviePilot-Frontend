@@ -559,7 +559,7 @@ onMounted(() => {
                 <VCard
                   :color="userPermissions[option.key as keyof UserPermissions] ? 'primary' : 'surface'"
                   :variant="userPermissions[option.key as keyof UserPermissions] ? 'tonal' : 'outlined'"
-                  class="cursor-pointer transition-all"
+                  class="cursor-pointer transition-all h-full"
                   @click="togglePermission(option.key as keyof UserPermissions)"
                   hover
                 >
