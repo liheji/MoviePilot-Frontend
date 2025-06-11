@@ -256,7 +256,7 @@ const showDynamicButton = computed(() => {
 
   .v-btn-toggle {
     block-size: auto;
-    min-block-size: 60px;
+    min-block-size: 56px;
   }
 }
 
@@ -283,7 +283,7 @@ const showDynamicButton = computed(() => {
   align-items: center;
   justify-content: center;
   background-color: transparent;
-  block-size: 56px;
+  block-size: 48px;
 
   &.v-btn--active {
     background-color: transparent;
