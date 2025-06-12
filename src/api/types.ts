@@ -1008,6 +1008,8 @@ export interface SystemNotification {
   text: string
   // 通知时间
   date: string
+  // 是否已读
+  read?: boolean
 }
 
 // 下载器配置
