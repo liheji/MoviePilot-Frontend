@@ -10,7 +10,6 @@ const { t } = useI18n()
 
 // 从 Store 中获取用户信息
 const userStore = useUserStore()
-const superUser = userStore.superUser
 
 // 获取用户权限信息
 const userPermissions = computed(() => ({

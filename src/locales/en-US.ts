@@ -1547,7 +1547,7 @@ export default {
         discovery: 'Discovery',
         discoveryDesc: 'Access recommendation and exploration features',
         search: 'Search',
-        searchDesc: 'Use search functionality and view search results',
+        searchDesc: 'Search site resources and add downloads',
         subscribe: 'Subscribe',
         subscribeDesc: 'Manage movie and TV show subscriptions',
         manage: 'Manage',

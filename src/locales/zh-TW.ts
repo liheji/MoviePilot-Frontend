@@ -1529,7 +1529,7 @@ export default {
         discovery: '發現',
         discoveryDesc: '存取推薦和探索功能',
         search: '搜索',
-        searchDesc: '使用搜索功能和查看搜索結果',
+        searchDesc: '搜索站點資源和添加下載',
         subscribe: '訂閱',
         subscribeDesc: '管理電影和電視劇訂閱',
         manage: '管理',

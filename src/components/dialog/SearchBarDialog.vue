@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
+import { hasPermission, filterMenusByPermission } from '@/utils/permission'
 
 // 显示器宽度
 const display = useDisplay()
@@ -30,6 +31,37 @@ const superUser = userStore.superUser
 
 // 当前用户名
 const userName = userStore.userName
+
+// 权限检查
+const hasSearchPermission = computed(() => {
+  return hasPermission(
+    {
+      is_superuser: userStore.superUser,
+      ...userStore.permissions,
+    },
+    'search',
+  )
+})
+
+const hasSubscribePermission = computed(() => {
+  return hasPermission(
+    {
+      is_superuser: userStore.superUser,
+      ...userStore.permissions,
+    },
+    'subscribe',
+  )
+})
+
+const hasManagePermission = computed(() => {
+  return hasPermission(
+    {
+      is_superuser: userStore.superUser,
+      ...userStore.permissions,
+    },
+    'manage',
+  )
+})
 
 // 所有订阅数据
 const SubscribeItems = ref<Subscribe[]>([])
@@ -109,18 +141,27 @@ function getMenus(): NavMenu[] {
   return menus
 }
 
+// 获取用户权限信息
+const userPermissions = computed(() => ({
+  is_superuser: userStore.superUser,
+  ...userStore.permissions,
+}))
+
 // 匹配的菜单列表
 const matchedMenuItems = computed(() => {
   if (!searchWord.value) return []
-  if (!superUser) return []
   const lowerWord = (searchWord.value as string).toLowerCase()
   const menuItems = getMenus()
-  if (menuItems)
-    return menuItems.filter(
+  if (menuItems) {
+    // 先根据用户权限过滤菜单
+    const filteredMenus = filterMenusByPermission(menuItems, userPermissions.value)
+    // 再根据搜索词过滤
+    return filteredMenus.filter(
       item =>
         item.title.toLowerCase().includes(lowerWord) ||
         (item.description && item.description.toLowerCase().includes(lowerWord)),
     )
+  }
   return []
 })
 
@@ -140,10 +181,10 @@ async function fetchInstalledPlugins() {
   }
 }
 
-// 区配的插件列表
+// 匹配的插件列表
 const matchedPluginItems = computed(() => {
   if (!searchWord.value) return []
-  if (!superUser) return []
+  if (!hasManagePermission.value) return []
   const lowerWord = (searchWord.value as string).toLowerCase()
   return pluginItems.value.filter((item: Plugin) => {
     if (!item.plugin_name && !item.plugin_desc) return false
@@ -196,6 +237,7 @@ const openSiteDialog = () => {
 // 匹配的订阅列表
 const matchedSubscribeItems = computed(() => {
   if (!searchWord.value) return []
+  if (!hasSubscribePermission.value) return []
   const lowerWord = (searchWord.value as string).toLowerCase()
   return SubscribeItems.value.filter((item: Subscribe) => {
     return (item.name.toLowerCase().includes(lowerWord) && (superUser || userName === item.username)) || false
@@ -298,11 +340,20 @@ onMounted(() => {
   setTimeout(() => {
     searchWordInput.value?.focus()
   }, 500)
-  fetchInstalledPlugins()
-  fetchSubscribes()
+  // 根据权限加载不同的数据
+  if (hasManagePermission.value) {
+    fetchInstalledPlugins()
+  }
+  if (hasSubscribePermission.value) {
+    fetchSubscribes()
+  }
   loadRecentSearches()
-  loadUserSitePreferences()
-  if (superUser) queryAllSites()
+  if (hasSearchPermission.value) {
+    loadUserSitePreferences()
+    if (hasManagePermission.value) {
+      queryAllSites()
+    }
+  }
 })
 </script>
 <template>
@@ -433,7 +484,7 @@ onMounted(() => {
             </template>
           </VHover>
 
-          <VHover v-if="superUser">
+          <VHover v-if="hasManagePermission">
             <template #default="hover">
               <VListItem
                 density="comfortable"
@@ -578,7 +629,7 @@ onMounted(() => {
           </template>
 
           <!-- 将站点资源搜索移到最底部 -->
-          <template v-if="searchWord">
+          <template v-if="searchWord && hasSearchPermission">
             <VDivider class="mx-4 mx-sm-6 my-2 search-divider" />
             <VListSubheader class="font-weight-medium text-uppercase py-2 px-4 px-sm-6">{{
               t('dialog.searchBar.siteResources')
@@ -611,7 +662,7 @@ onMounted(() => {
                   </div>
 
                   <div
-                    v-if="superUser"
+                    v-if="hasManagePermission"
                     class="d-flex align-center flex-wrap site-chips-container mt-4 py-2 px-2 px-sm-3"
                   >
                     <div class="d-flex align-center flex-wrap flex-grow-1">

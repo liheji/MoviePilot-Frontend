@@ -1527,7 +1527,7 @@ export default {
         discovery: '发现',
         discoveryDesc: '访问推荐和探索功能',
         search: '搜索',
-        searchDesc: '使用搜索功能和查看搜索结果',
+        searchDesc: '搜索站点资源和添加下载',
         subscribe: '订阅',
         subscribeDesc: '管理电影和电视剧订阅',
         manage: '管理',
