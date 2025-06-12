@@ -304,7 +304,7 @@ const githubMirrorsItems: string[] = [
 
 // 预设部分PIP镜像站
 const pipMirrorsItems = [
-  'https://pypi.tuna.tsinghua.edu.cn/simple', // 清华大学
+  'https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple', // 清华大学
   'https://pypi.mirrors.ustc.edu.cn/simple', // 中国科技大学
   'https://mirrors.pku.edu.cn/pypi/web/simple', // 北京大学
   'https://mirrors.aliyun.com/pypi/simple', // 阿里云
