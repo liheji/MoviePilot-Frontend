@@ -325,6 +325,9 @@ export default {
       adminsHint: '可使用管理菜单及命令的用户ID列表，多个ID使用,分隔',
       adminsPlaceholder: '用户ID列表，多个ID使用,分隔',
       usersPlaceholder: '用户ID列表，多个ID使用,分隔',
+      apiUrl: '代理API地址',
+      apiUrlHint: '自定义代理API地址，格式：https://api.telegram.org',
+      apiUrlPlaceholder: 'https://api.telegram.org',
     },
     slack: {
       name: 'Slack',

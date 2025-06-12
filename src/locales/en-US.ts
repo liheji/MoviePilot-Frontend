@@ -327,6 +327,9 @@ export default {
       adminsHint: 'User IDs that can use admin menu and commands, separated by commas',
       adminsPlaceholder: 'User IDs list, separated by commas',
       usersPlaceholder: 'User IDs list, separated by commas',
+      apiUrl: 'Proxy Api Url',
+      apiUrlHint: 'Custom proxy Api Url, format: https://api.telegram.org',
+      apiUrlPlaceholder: 'https://api.telegram.org',
     },
     slack: {
       name: 'Slack',

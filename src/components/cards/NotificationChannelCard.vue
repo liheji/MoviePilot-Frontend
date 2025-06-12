@@ -303,6 +303,16 @@ function onClose() {
                   prepend-inner-icon="mdi-account-supervisor"
                 />
               </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="notificationInfo.config.API_URL"
+                  :label="t('notification.telegram.apiUrl')"
+                  :placeholder="t('notification.telegram.apiUrlPlaceholder')"
+                  :hint="t('notification.telegram.apiUrlHint')"
+                  persistent-hint
+                  prepend-inner-icon="mdi-web"
+                />
+              </VCol>
             </VRow>
             <VRow v-else-if="notificationInfo.type == 'slack'">
               <VCol cols="12" md="6">
