@@ -6,6 +6,7 @@ import { formatFileSize } from '@/@core/utils/formatters'
 // 输入参数
 const props = defineProps({
   info: Object as PropType<DownloadingInfo>,
+  downloaderName: String,
 })
 
 // 是否显示卡片
@@ -51,7 +52,11 @@ function getTextClass() {
 async function toggleDownload() {
   const operation = isDownloading.value ? 'stop' : 'start'
   try {
-    const result: { [key: string]: any } = await api.get(`download/${operation}/${props.info?.hash}`)
+    const result: { [key: string]: any } = await api.get(`download/${operation}/${props.info?.hash}`, {
+      params: {
+        name: props.downloaderName
+      }
+    })
 
     if (result.success) isDownloading.value = !isDownloading.value
   } catch (error) {
@@ -62,7 +67,7 @@ async function toggleDownload() {
 // 删除下截
 async function deleteDownload() {
   try {
-    await api.delete(`download/${props.info?.hash}`)
+    await api.delete(`download/${props.info?.hash}`, {params: {name: props.downloaderName}})
     cardState.value = false
   } catch (error) {
     console.error(error)
