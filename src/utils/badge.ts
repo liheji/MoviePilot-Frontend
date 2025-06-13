@@ -2,6 +2,55 @@
  * PWA 徽章管理工具
  */
 
+// 等待Service Worker准备就绪
+export async function waitForServiceWorker(): Promise<ServiceWorker | null> {
+  if (!('serviceWorker' in navigator)) {
+    return null
+  }
+
+  // 如果已经有激活的Service Worker，直接返回
+  if (navigator.serviceWorker.controller) {
+    return navigator.serviceWorker.controller
+  }
+
+  // 等待Service Worker注册和激活
+  return new Promise(resolve => {
+    const checkServiceWorker = () => {
+      if (navigator.serviceWorker.controller) {
+        resolve(navigator.serviceWorker.controller)
+      } else {
+        setTimeout(checkServiceWorker, 100)
+      }
+    }
+
+    // 监听Service Worker变化
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      resolve(navigator.serviceWorker.controller)
+    })
+
+    checkServiceWorker()
+  })
+}
+
+// 应用启动时检查未读消息数量
+export async function checkUnreadOnStartup(): Promise<number> {
+  try {
+    // 等待Service Worker准备就绪
+    const sw = await waitForServiceWorker()
+    if (!sw) {
+      return 0
+    }
+
+    // 延迟500ms确保Service Worker完全准备好
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    const unreadCount = await getUnreadCount()
+    return unreadCount
+  } catch (error) {
+    return 0
+  }
+}
+
 // 清除桌面图标徽章
 export async function clearAppBadge(): Promise<boolean> {
   try {
@@ -59,6 +108,28 @@ export async function updateAppBadge(count: number): Promise<boolean> {
   } catch (error) {
     console.error('Failed to update app badge:', error)
     return false
+  }
+}
+
+// 获取Service Worker中的未读消息数量
+export async function getUnreadCount(): Promise<number> {
+  try {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      const messageChannel = new MessageChannel()
+
+      return new Promise(resolve => {
+        messageChannel.port1.onmessage = event => {
+          resolve(event.data.count || 0)
+        }
+
+        navigator.serviceWorker.controller?.postMessage({ type: 'GET_UNREAD_COUNT' }, [messageChannel.port2])
+      })
+    }
+
+    return 0
+  } catch (error) {
+    console.error('Failed to get unread count:', error)
+    return 0
   }
 }
 

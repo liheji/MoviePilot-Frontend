@@ -2,7 +2,6 @@
 import { formatDateDifference } from '@core/utils/formatters'
 import { SystemNotification } from '@/api/types'
 import { useI18n } from 'vue-i18n'
-import { updateAppBadge, clearAppBadge } from '@/utils/badge'
 
 const { t } = useI18n()
 
@@ -18,22 +17,6 @@ let eventSource: EventSource | null = null
 // 弹窗
 const appsMenu = ref(false)
 
-// 未读消息数量
-const unreadCount = computed(() => {
-  return notificationList.value.filter(item => !item.read).length
-})
-
-// 更新桌面图标徽章
-async function updateBadge() {
-  const count = unreadCount.value
-  await updateAppBadge(count)
-}
-
-// 清除桌面图标徽章
-async function clearBadge() {
-  await clearAppBadge()
-}
-
 // 标记所有消息为已读
 function markAllAsRead() {
   hasNewMessage.value = false
@@ -41,8 +24,6 @@ function markAllAsRead() {
   notificationList.value.forEach(item => {
     item.read = true
   })
-  // 清除桌面图标徽章
-  clearBadge()
   appsMenu.value = false
 }
 
@@ -56,8 +37,6 @@ function startSSEMessager() {
         const noti: SystemNotification = JSON.parse(event.data)
         notificationList.value.unshift(noti)
         hasNewMessage.value = true
-        // 更新桌面图标徽章
-        updateBadge()
       }
     })
   }, 3000)

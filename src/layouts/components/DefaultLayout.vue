@@ -13,6 +13,7 @@ import { NavMenu } from '@/@layouts/types'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { filterMenusByPermission } from '@/utils/permission'
+import { checkUnreadOnStartup } from '@/utils/badge'
 
 const display = useDisplay()
 const appMode = inject('pwaMode')
@@ -23,6 +24,9 @@ const userStore = useUserStore()
 
 // 是否超级用户
 let superUser = userStore.superUser
+
+// ShortcutBar 引用
+const shortcutBarRef = ref<InstanceType<typeof ShortcutBar> | null>(null)
 
 // 获取用户权限信息
 const userPermissions = computed(() => ({
@@ -58,6 +62,26 @@ function goBack() {
   history.back()
 }
 
+// 检查未读消息并自动打开消息弹窗
+async function checkUnreadMessages() {
+  if (!superUser) {
+    return // 只有超级用户才能看到消息
+  }
+
+  try {
+    const unreadCount = await checkUnreadOnStartup()
+
+    if (unreadCount > 0) {
+      // 延迟2秒打开消息弹窗，确保页面和组件都已完全加载
+      setTimeout(() => {
+        shortcutBarRef.value?.openMessageDialog()
+      }, 2000)
+    }
+  } catch (error) {
+    // 静默处理错误
+  }
+}
+
 onMounted(() => {
   // 获取菜单列表
   startMenus.value = getMenuList(t('menu.start'))
@@ -65,6 +89,9 @@ onMounted(() => {
   subscribeMenus.value = getMenuList(t('menu.subscribe'))
   organizeMenus.value = getMenuList(t('menu.organize'))
   systemMenus.value = getMenuList(t('menu.system'))
+
+  // 检查未读消息
+  checkUnreadMessages()
 })
 </script>
 
@@ -86,7 +113,7 @@ onMounted(() => {
         <!-- 👉 Spacer -->
         <VSpacer />
         <!-- 👉 Shortcuts -->
-        <ShortcutBar v-if="superUser" />
+        <ShortcutBar v-if="superUser" ref="shortcutBarRef" />
         <!-- 👉 Notification -->
         <UserNofification />
         <!-- 👉 UserProfile -->

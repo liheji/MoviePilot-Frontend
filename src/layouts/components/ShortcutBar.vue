@@ -9,6 +9,7 @@ import api from '@/api'
 import { useDisplay } from 'vuetify'
 import { getQueryValue } from '@/@core/utils'
 import { useI18n } from 'vue-i18n'
+import { clearAppBadge } from '@/utils/badge'
 
 // 国际化
 const { t } = useI18n()
@@ -103,6 +104,15 @@ function openDialog(dialogRef: any) {
   dialogRef.value = true
 }
 
+// 打开消息弹窗并清除徽章
+async function openMessageDialog() {
+  messageDialog.value = true
+  // 延迟清除徽章，确保对话框已经打开
+  setTimeout(async () => {
+    await clearAppBadge()
+  }, 500)
+}
+
 // 滚动到底部
 function scrollMessageToEnd() {
   // 使用更长的延迟确保DOM已更新
@@ -137,6 +147,16 @@ async function sendMessage() {
     }
   }
 }
+
+// 供外部调用的打开消息弹窗方法
+function openMessageDialogFromExternal() {
+  openMessageDialog()
+}
+
+// 暴露方法给父组件
+defineExpose({
+  openMessageDialog: openMessageDialogFromExternal,
+})
 
 onMounted(() => {
   scrollMessageToEnd()
@@ -187,7 +207,7 @@ onMounted(() => {
               flat
               class="pa-2 d-flex align-center cursor-pointer transition-transform duration-300 hover:-translate-y-1 border h-full"
               hover
-              @click="openDialog(item.dialogRef)"
+              @click="item.dialog === 'message' ? openMessageDialog() : openDialog(item.dialogRef)"
             >
               <VAvatar variant="text" size="48" rounded="lg">
                 <VIcon color="primary" :icon="item.icon" size="24" />
