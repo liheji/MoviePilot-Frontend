@@ -8,6 +8,7 @@ import tmdb from '@images/logos/tmdb.png'
 import wechat from '@images/logos/wechat.png'
 import fanart from '@images/logos/fanart.webp'
 import tvdb from '@images/logos/thetvdb.jpeg'
+import plugin from '@images/logos/plugin.png'
 import { useI18n } from 'vue-i18n'
 
 // 国际化
@@ -29,6 +30,7 @@ interface Address {
   time: string
   message: string
   btndisable: boolean
+  include?: string
 }
 
 // 测试集
@@ -46,7 +48,7 @@ const targets = ref<Address[]>([
   {
     image: tmdb,
     name: 'api.tmdb.org',
-    url: 'https://api.tmdb.org',
+    url: 'https://api.tmdb.org/3/movie/550?api_key={TMDBAPIKEY}',
     proxy: true,
     status: 'Normal',
     time: '',
@@ -124,9 +126,31 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
+    image: plugin,
+    name: 'pip',
+    url: '{PIP_PROXY}rsa/',
+    proxy: true,
+    status: 'Normal',
+    time: '',
+    message: t('netTest.notTested'),
+    btndisable: false,
+    include: 'pypi:repository-version',
+  },
+  {
     image: github,
     name: 'github.com',
-    url: 'https://github.com',
+    url: '{GITHUB_PROXY}https://github.com/jxxghp/MoviePilot/blob/v2/README.md',
+    proxy: true,
+    status: 'Normal',
+    time: '',
+    message: t('netTest.notTested'),
+    btndisable: false,
+    include: 'MoviePilot',
+  },
+  {
+    image: github,
+    name: 'codeload.github.com',
+    url: 'https://codeload.github.com',
     proxy: true,
     status: 'Normal',
     time: '',
@@ -146,12 +170,13 @@ const targets = ref<Address[]>([
   {
     image: github,
     name: 'raw.githubusercontent.com',
-    url: 'https://raw.githubusercontent.com',
+    url: '{GITHUB_PROXY}https://raw.githubusercontent.com/jxxghp/MoviePilot/v2/README.md',
     proxy: true,
     status: 'Normal',
     time: '',
     message: t('netTest.notTested'),
     btndisable: false,
+    include: 'MoviePilot',
   },
 ])
 
@@ -162,9 +187,15 @@ const resolveStatusColor: Status = {
   Doing: 'warning',
 }
 
+const abortControllers = new Set<AbortController>()
+const isUnmounting = ref(false);
+
 // 调用API测试网络连接
 async function netTest(index: number) {
   try {
+    const abortController = new AbortController()
+    abortControllers.add(abortController)
+    const { signal } = abortController
     const target = targets.value[index]
 
     target.btndisable = true
@@ -175,8 +206,12 @@ async function netTest(index: number) {
       params: {
         url: target.url,
         proxy: target.proxy,
+        include: target.include,
       },
+      signal,
     })
+
+    abortControllers.delete(abortController)
 
     if (result.success) {
       target.status = 'OK'
@@ -194,8 +229,17 @@ async function netTest(index: number) {
 
 // 加载时测试所有连接
 onMounted(async () => {
-  for (let i = 0; i < targets.value.length; i++) await netTest(i)
+  isUnmounting.value = false;
+  for (let i = 0; !isUnmounting.value && i < targets.value.length; i++)
+    await netTest(i)
 })
+onBeforeUnmount(() => {
+  isUnmounting.value = true;
+  for (const controller of abortControllers) {
+    controller.abort()
+  }
+  abortControllers.clear()
+});
 </script>
 
 <template>
