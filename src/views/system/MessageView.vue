@@ -97,6 +97,11 @@ function compareTime(time1: string, time2: string) {
   return new Date(time1.replaceAll(/-/g, '/')).getTime() - new Date(time2.replaceAll(/-/g, '/')).getTime()
 }
 
+// 图片加载完成
+function handleImageLoad() {
+  emit('scroll')
+}
+
 onMounted(() => {
   // 组件挂载后触发一次滚动事件
   nextTick(() => {
@@ -130,7 +135,7 @@ onBeforeUnmount(() => {
         :class="msg.action == 1 ? 'flex-row align-start' : 'flex-row-reverse align-end'"
       >
         <div class="d-inline-flex flex-column" :class="msg.action == 1 ? 'align-start' : 'align-end'">
-          <MessageCard :message="msg" />
+          <MessageCard :message="msg" @imageload="handleImageLoad" />
         </div>
       </div>
     </div>

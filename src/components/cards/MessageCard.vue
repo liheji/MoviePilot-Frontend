@@ -10,6 +10,9 @@ const props = defineProps({
   height: String,
 })
 
+// 定义事件
+const emit = defineEmits(['imageload'])
+
 // 图片是否加载完成
 const isImageLoaded = ref(false)
 
@@ -19,6 +22,7 @@ const imageLoadError = ref(false)
 // 图片加载完成
 async function imageLoaded() {
   isImageLoaded.value = true
+  emit('imageload')
 }
 
 // 链接打开新窗口
