@@ -22,11 +22,14 @@ const { t } = useI18n()
 // 用户 Store
 const userStore = useUserStore()
 
-// 是否超级用户
-let superUser = userStore.superUser
+// 响应式的超级用户状态
+const superUser = computed(() => userStore.superUser)
 
 // ShortcutBar 引用
 const shortcutBarRef = ref<InstanceType<typeof ShortcutBar> | null>(null)
+
+// 未读消息检查状态
+const hasCheckedUnread = ref(false)
 
 // 获取用户权限信息
 const userPermissions = computed(() => ({
@@ -64,9 +67,11 @@ function goBack() {
 
 // 检查未读消息并自动打开消息弹窗
 async function checkUnreadMessages() {
-  if (!superUser) {
-    return // 只有超级用户才能看到消息
+  if (!superUser.value || hasCheckedUnread.value) {
+    return // 只有超级用户才能看到消息，且每次会话只检查一次
   }
+
+  hasCheckedUnread.value = true
 
   try {
     const unreadCount = await checkUnreadOnStartup()
@@ -97,6 +102,20 @@ async function waitAndOpenMessageDialog() {
   }
 }
 
+// 监听用户状态变化
+watch(
+  superUser,
+  newValue => {
+    if (newValue && !hasCheckedUnread.value) {
+      // 用户状态变为超级用户且还没检查过未读消息时，延迟检查
+      setTimeout(() => {
+        checkUnreadMessages()
+      }, 1000)
+    }
+  },
+  { immediate: true },
+)
+
 onMounted(() => {
   // 获取菜单列表
   startMenus.value = getMenuList(t('menu.start'))
@@ -109,7 +128,7 @@ onMounted(() => {
   nextTick(() => {
     setTimeout(() => {
       checkUnreadMessages()
-    }, 500)
+    }, 2000) // 增加延迟时间到2秒
   })
 })
 </script>

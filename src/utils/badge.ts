@@ -50,23 +50,34 @@ export async function waitForServiceWorker(): Promise<ServiceWorker | null> {
 // 应用启动时检查未读消息数量
 export async function checkUnreadOnStartup(): Promise<number> {
   try {
+    // 对于PWA应用，冷启动时需要更长的等待时间
+    const isPWAColdStart = !navigator.serviceWorker.controller
+    const initialDelay = isPWAColdStart ? 3000 : 1000
+
+    // 初始延迟，等待应用完全启动
+    await new Promise(resolve => setTimeout(resolve, initialDelay))
+
     // 等待Service Worker准备就绪
     const sw = await waitForServiceWorker()
     if (!sw) {
       return 0
     }
 
-    // 延迟1秒确保Service Worker完全准备好
+    // 额外延迟确保Service Worker完全准备好
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     // 重试机制获取未读消息数量
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 5; i++) {
+      // 增加重试次数
       try {
         const unreadCount = await getUnreadCount()
-        return unreadCount
+        if (unreadCount >= 0) {
+          // 确保返回有效数字
+          return unreadCount
+        }
       } catch (error) {
-        if (i === 2) throw error // 最后一次重试失败则抛出错误
-        await new Promise(resolve => setTimeout(resolve, 500)) // 等待500ms后重试
+        if (i === 4) throw error // 最后一次重试失败则抛出错误
+        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))) // 递增等待时间
       }
     }
 
