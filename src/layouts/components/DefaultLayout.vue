@@ -72,13 +72,28 @@ async function checkUnreadMessages() {
     const unreadCount = await checkUnreadOnStartup()
 
     if (unreadCount > 0) {
-      // 延迟2秒打开消息弹窗，确保页面和组件都已完全加载
-      setTimeout(() => {
-        shortcutBarRef.value?.openMessageDialog()
-      }, 2000)
+      // 等待组件完全加载并重试打开消息弹窗
+      await waitAndOpenMessageDialog()
     }
   } catch (error) {
     // 静默处理错误
+  }
+}
+
+// 等待组件准备好并打开消息弹窗
+async function waitAndOpenMessageDialog() {
+  const maxRetries = 5
+  const retryDelay = 1000 // 1秒
+
+  for (let i = 0; i < maxRetries; i++) {
+    // 等待一段时间确保组件加载完成
+    await new Promise(resolve => setTimeout(resolve, retryDelay * (i + 1)))
+
+    // 检查ShortcutBar组件是否已经准备好
+    if (shortcutBarRef.value && typeof shortcutBarRef.value.openMessageDialog === 'function') {
+      shortcutBarRef.value.openMessageDialog()
+      return // 成功打开，退出重试循环
+    }
   }
 }
 
@@ -90,8 +105,12 @@ onMounted(() => {
   organizeMenus.value = getMenuList(t('menu.organize'))
   systemMenus.value = getMenuList(t('menu.system'))
 
-  // 检查未读消息
-  checkUnreadMessages()
+  // 延迟检查未读消息，确保所有组件都已加载完成
+  nextTick(() => {
+    setTimeout(() => {
+      checkUnreadMessages()
+    }, 500)
+  })
 })
 </script>
 

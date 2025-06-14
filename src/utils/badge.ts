@@ -13,20 +13,35 @@ export async function waitForServiceWorker(): Promise<ServiceWorker | null> {
     return navigator.serviceWorker.controller
   }
 
-  // 等待Service Worker注册和激活
+  // 等待Service Worker注册和激活，最多等待10秒
   return new Promise(resolve => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    let resolved = false
+
+    const resolveOnce = (sw: ServiceWorker | null) => {
+      if (resolved) return
+      resolved = true
+      if (timeoutId) clearTimeout(timeoutId)
+      resolve(sw)
+    }
+
     const checkServiceWorker = () => {
       if (navigator.serviceWorker.controller) {
-        resolve(navigator.serviceWorker.controller)
+        resolveOnce(navigator.serviceWorker.controller)
       } else {
-        setTimeout(checkServiceWorker, 100)
+        setTimeout(checkServiceWorker, 200)
       }
     }
 
     // 监听Service Worker变化
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      resolve(navigator.serviceWorker.controller)
+      resolveOnce(navigator.serviceWorker.controller)
     })
+
+    // 设置超时，10秒后返回null
+    timeoutId = setTimeout(() => {
+      resolveOnce(null)
+    }, 10000)
 
     checkServiceWorker()
   })
@@ -41,11 +56,21 @@ export async function checkUnreadOnStartup(): Promise<number> {
       return 0
     }
 
-    // 延迟500ms确保Service Worker完全准备好
-    await new Promise(resolve => setTimeout(resolve, 500))
+    // 延迟1秒确保Service Worker完全准备好
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
-    const unreadCount = await getUnreadCount()
-    return unreadCount
+    // 重试机制获取未读消息数量
+    for (let i = 0; i < 3; i++) {
+      try {
+        const unreadCount = await getUnreadCount()
+        return unreadCount
+      } catch (error) {
+        if (i === 2) throw error // 最后一次重试失败则抛出错误
+        await new Promise(resolve => setTimeout(resolve, 500)) // 等待500ms后重试
+      }
+    }
+
+    return 0
   } catch (error) {
     return 0
   }
