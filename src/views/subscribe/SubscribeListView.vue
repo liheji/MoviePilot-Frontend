@@ -49,8 +49,7 @@ const orderConfig = ref<{ id: number }[]>([])
 // 显示的订阅列表
 const displayList = ref<Subscribe[]>([])
 
-// 顺序存储键值（计算属性）
-const localOrderKey = computed(() => (props.type === '电影' ? 'MP_SUBSCRIBE_MOVIE_ORDER' : 'MP_SUBSCRIBE_TV_ORDER'))
+// API请求键值（计算属性）
 const orderRequestKey = computed(() => (props.type === '电影' ? 'SubscribeMovieOrder' : 'SubscribeTvOrder'))
 
 // 监听dataList变化，同步更新displayList
@@ -73,16 +72,14 @@ watch([dataList, () => props.keyword], () => {
 
 // 加载顺序
 async function loadSubscribeOrderConfig() {
-  // 顺序配置
-  const local_order = localStorage.getItem(localOrderKey.value)
-  if (local_order) {
-    orderConfig.value = JSON.parse(local_order)
-  } else {
-    const response = await api.get(`/user/config/${orderRequestKey}`)
+  try {
+    const response = await api.get(`/user/config/${orderRequestKey.value}`)
     if (response && response.data && response.data.value) {
       orderConfig.value = response.data.value
-      localStorage.setItem(localOrderKey.value, JSON.stringify(orderConfig.value))
     }
+  } catch (error) {
+    console.error('Failed to load subscribe order config:', error)
+    orderConfig.value = []
   }
 }
 
@@ -107,12 +104,10 @@ async function saveSubscribeOrder() {
   // 顺序配置
   const orderObj = displayList.value.map(item => ({ id: item.id }))
   orderConfig.value = orderObj
-  const orderString = JSON.stringify(orderObj)
-  localStorage.setItem(localOrderKey.value, orderString)
 
   // 保存到服务端
   try {
-    await api.post(`/user/config/${orderRequestKey}`, orderObj)
+    await api.post(`/user/config/${orderRequestKey.value}`, orderObj)
   } catch (error) {
     console.error(error)
   }

@@ -364,25 +364,10 @@ watch(currentFolder, () => {
 
 // 加载插件顺序
 async function loadPluginOrderConfig() {
-  // 顺序配置
-  const local_order = localStorage.getItem('MP_PLUGIN_ORDER')
-  if (local_order) {
-    const parsed = JSON.parse(local_order)
-    // 兼容旧格式（只有id）和新格式（包含type和order）
-    if (parsed.length > 0 && typeof parsed[0] === 'object' && 'type' in parsed[0]) {
-      orderConfig.value = parsed
-    } else {
-      // 旧格式，转换为新格式
-      orderConfig.value = parsed.map((item: any, index: number) => ({
-        id: typeof item === 'string' ? item : item.id,
-        type: 'plugin',
-        order: index,
-      }))
-    }
-  } else {
-    const response2 = await api.get('/user/config/PluginOrder')
-    if (response2 && response2.data && response2.data.value) {
-      const serverData = response2.data.value
+  try {
+    const response = await api.get('/user/config/PluginOrder')
+    if (response && response.data && response.data.value) {
+      const serverData = response.data.value
       // 兼容服务端的旧格式和新格式
       if (serverData.length > 0 && typeof serverData[0] === 'object' && 'type' in serverData[0]) {
         orderConfig.value = serverData
@@ -394,8 +379,10 @@ async function loadPluginOrderConfig() {
           order: index,
         }))
       }
-      localStorage.setItem('MP_PLUGIN_ORDER', JSON.stringify(orderConfig.value))
     }
+  } catch (error) {
+    console.error('Failed to load plugin order config:', error)
+    orderConfig.value = []
   }
 }
 
@@ -467,8 +454,6 @@ async function saveMixedSortOrder() {
       order: item.order,
     }))
     orderConfig.value = orderObj
-    const orderString = JSON.stringify(orderObj)
-    localStorage.setItem('MP_PLUGIN_ORDER', orderString)
 
     // 保存到服务端
     await api.post('/user/config/PluginOrder', orderObj)
@@ -525,8 +510,6 @@ async function saveFolderPluginOrder() {
       })
 
       // 保存全局排序配置
-      const orderString = JSON.stringify(orderConfig.value)
-      localStorage.setItem('MP_PLUGIN_ORDER', orderString)
       await api.post('/user/config/PluginOrder', orderConfig.value)
 
       // 保存到后端
