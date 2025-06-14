@@ -8,7 +8,7 @@ import tmdb from '@images/logos/tmdb.png'
 import wechat from '@images/logos/wechat.png'
 import fanart from '@images/logos/fanart.webp'
 import tvdb from '@images/logos/thetvdb.jpeg'
-import plugin from '@images/logos/plugin.png'
+import python from '@images/logos/python.png'
 import { useI18n } from 'vue-i18n'
 
 // 国际化
@@ -126,8 +126,8 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: plugin,
-    name: 'pip',
+    image: python,
+    name: 'pypi.org',
     url: '{PIP_PROXY}rsa/',
     proxy: true,
     status: 'Normal',
