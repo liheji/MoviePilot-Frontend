@@ -6,6 +6,7 @@ import api from '@/api'
 import { useAuthStore } from '@/stores/auth'
 import { getBrowserLocale, setI18nLanguage } from './plugins/i18n'
 import { SupportedLocale } from '@/types/i18n'
+import { checkAndEmitUnreadMessages } from '@/utils/badge'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -172,6 +173,11 @@ onMounted(async () => {
       setTimeout(() => {
         // 移除加载动画，显示页面
         animateAndRemoveLoader()
+
+        // 页面完全显示后，检查未读消息
+        setTimeout(() => {
+          checkAndEmitUnreadMessages()
+        }, 1000)
       }, 1500)
     })
   })
@@ -180,6 +186,10 @@ onMounted(async () => {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       loadBackgroundImages()
+      // 页面恢复可见时检查未读消息
+      setTimeout(() => {
+        checkAndEmitUnreadMessages()
+      }, 500)
     }
   })
 
@@ -188,6 +198,10 @@ onMounted(async () => {
     // persisted属性为true表示页面是从bfcache中恢复的
     if (event.persisted) {
       loadBackgroundImages()
+      // PWA恢复时检查未读消息
+      setTimeout(() => {
+        checkAndEmitUnreadMessages()
+      }, 500)
     }
   })
 })

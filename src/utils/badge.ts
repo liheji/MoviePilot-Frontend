@@ -2,6 +2,27 @@
  * PWA 徽章管理工具
  */
 
+// 全局事件类型
+interface UnreadMessageEvent extends CustomEvent {
+  detail: { count: number }
+}
+
+// 发送全局未读消息事件
+export function emitUnreadMessageEvent(count: number) {
+  const event = new CustomEvent('unreadMessage', { detail: { count } }) as UnreadMessageEvent
+  window.dispatchEvent(event)
+}
+
+// 监听全局未读消息事件
+export function onUnreadMessage(callback: (count: number) => void) {
+  const handler = (event: Event) => {
+    const unreadEvent = event as UnreadMessageEvent
+    callback(unreadEvent.detail.count)
+  }
+  window.addEventListener('unreadMessage', handler)
+  return () => window.removeEventListener('unreadMessage', handler)
+}
+
 // 等待Service Worker准备就绪
 export async function waitForServiceWorker(): Promise<ServiceWorker | null> {
   if (!('serviceWorker' in navigator)) {
@@ -50,40 +71,28 @@ export async function waitForServiceWorker(): Promise<ServiceWorker | null> {
 // 应用启动时检查未读消息数量
 export async function checkUnreadOnStartup(): Promise<number> {
   try {
-    // 对于PWA应用，冷启动时需要更长的等待时间
-    const isPWAColdStart = !navigator.serviceWorker.controller
-    const initialDelay = isPWAColdStart ? 3000 : 1000
-
-    // 初始延迟，等待应用完全启动
-    await new Promise(resolve => setTimeout(resolve, initialDelay))
-
-    // 等待Service Worker准备就绪
-    const sw = await waitForServiceWorker()
-    if (!sw) {
+    // 检查Service Worker是否可用
+    if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
       return 0
     }
 
-    // 额外延迟确保Service Worker完全准备好
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // 重试机制获取未读消息数量
-    for (let i = 0; i < 5; i++) {
-      // 增加重试次数
-      try {
-        const unreadCount = await getUnreadCount()
-        if (unreadCount >= 0) {
-          // 确保返回有效数字
-          return unreadCount
-        }
-      } catch (error) {
-        if (i === 4) throw error // 最后一次重试失败则抛出错误
-        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))) // 递增等待时间
-      }
-    }
-
-    return 0
+    // 获取未读消息数量
+    const unreadCount = await getUnreadCount()
+    return unreadCount
   } catch (error) {
     return 0
+  }
+}
+
+// 应用启动检查并触发事件
+export async function checkAndEmitUnreadMessages() {
+  try {
+    const count = await checkUnreadOnStartup()
+    if (count > 0) {
+      emitUnreadMessageEvent(count)
+    }
+  } catch (error) {
+    // 静默处理错误
   }
 }
 
