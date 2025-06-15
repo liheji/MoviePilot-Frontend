@@ -113,9 +113,29 @@ async function openMessageDialog() {
   }, 500)
 }
 
-// 滚动到底部
+// 智能滚动到底部（只有用户在底部附近时才滚动）
 function scrollMessageToEnd() {
   // 使用更长的延迟确保DOM已更新
+  setTimeout(() => {
+    try {
+      const cardText = document.querySelector('.v-dialog .v-card-text')
+      if (cardText) {
+        const { scrollTop, scrollHeight, clientHeight } = cardText
+        // 计算距离底部的距离
+        const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+        // 如果用户距离底部小于100px，认为用户在底部附近，执行自动滚动
+        if (distanceFromBottom <= 100) {
+          cardText.scrollTop = cardText.scrollHeight
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }, 500) // 增加延迟时间
+}
+
+// 强制滚动到底部（用于发送消息后）
+function forceScrollToEnd() {
   setTimeout(() => {
     try {
       const cardText = document.querySelector('.v-dialog .v-card-text')
@@ -125,7 +145,7 @@ function scrollMessageToEnd() {
     } catch (error) {
       console.error(error)
     }
-  }, 500) // 增加延迟时间
+  }, 500)
 }
 
 // 拼接全部日志url
@@ -141,7 +161,7 @@ async function sendMessage() {
       await api.post(`message/web?text=${user_message.value}`)
       user_message.value = ''
       sendButtonDisabled.value = false
-      scrollMessageToEnd()
+      forceScrollToEnd() // 发送消息后强制滚动到底部
     } catch (error) {
       console.error(error)
     }
@@ -159,7 +179,7 @@ defineExpose({
 })
 
 onMounted(() => {
-  scrollMessageToEnd()
+  forceScrollToEnd() // 初始化时强制滚动到底部
   const shortcut = getQueryValue('shortcut')
   if (shortcut) {
     const found = shortcuts.find(item => item.dialog === shortcut)

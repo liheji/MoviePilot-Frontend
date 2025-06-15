@@ -40,7 +40,7 @@ function startSSEMessager() {
       if (compareTime(object.date, lastTime.value) <= 0) return
       messages.value.push(object)
       nextTick(() => {
-        emit('scroll')
+        emit('scroll') // 新消息到达时触发智能滚动
       })
     }
   })
@@ -70,7 +70,7 @@ async function loadMessages({ done }: { done: any }) {
       // 合并数据
       messages.value = [...currData.value, ...messages.value]
       if (page.value === 1) {
-        // 滚动到底部
+        // 首次加载时滚动到底部
         emit('scroll')
       }
       // 页码+1
@@ -97,7 +97,7 @@ function compareTime(time1: string, time2: string) {
   return new Date(time1.replaceAll(/-/g, '/')).getTime() - new Date(time2.replaceAll(/-/g, '/')).getTime()
 }
 
-// 图片加载完成
+// 图片加载完成时触发智能滚动
 function handleImageLoad() {
   emit('scroll')
 }
