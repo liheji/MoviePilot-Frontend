@@ -123,8 +123,8 @@ function scrollMessageToEnd() {
         const { scrollTop, scrollHeight, clientHeight } = cardText
         // 计算距离底部的距离
         const distanceFromBottom = scrollHeight - scrollTop - clientHeight
-        // 如果用户距离底部小于100px，认为用户在底部附近，执行自动滚动
-        if (distanceFromBottom <= 100) {
+        // 如果用户距离底部小于1/3屏幕高度，认为用户在底部附近，执行自动滚动
+        if (distanceFromBottom <= clientHeight / 3) {
           cardText.scrollTop = cardText.scrollHeight
         }
       }
