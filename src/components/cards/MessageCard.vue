@@ -59,7 +59,13 @@ function replaceNewLine(value: string) {
         position="top"
         @load="imageLoaded"
         @error="imageLoadError = true"
-      />
+      >
+        <template #placeholder>
+          <div class="w-full h-full">
+            <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
+          </div>
+        </template>
+      </VImg>
     </div>
     <div
       v-if="
