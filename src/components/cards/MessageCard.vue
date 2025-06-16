@@ -59,6 +59,7 @@ function replaceNewLine(value: string) {
         position="top"
         @load="imageLoaded"
         @error="imageLoadError = true"
+        min-height="10rem"
       >
         <template #placeholder>
           <div class="w-full h-full">
