@@ -391,7 +391,7 @@ onUnmounted(() => {
             <VListItemTitle>{{ t('user.profile') }}</VListItemTitle>
           </VListItem>
 
-          <VListItem link @click="router.push('/setting')" class="mb-1 rounded-lg" hover>
+          <VListItem v-if="superUser" link @click="router.push('/setting')" class="mb-1 rounded-lg" hover>
             <template #prepend>
               <VIcon icon="mdi-cog-outline" />
             </template>
