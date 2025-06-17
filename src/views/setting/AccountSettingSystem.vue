@@ -49,6 +49,7 @@ const SystemSettings = ref<any>({
     META_CACHE_EXPIRE: 0,
     SCRAP_FOLLOW_TMDB: true,
     FANART_ENABLE: false,
+    FANART_LANG: 'zh,en',
     TMDB_SCRAP_ORIGINAL_IMAGE: null,
     // 网络
     PROXY_HOST: null,
@@ -118,6 +119,20 @@ const tmdbLanguageItems = [
   { title: t('setting.system.tmdbLanguage.zhCN'), value: 'zh' },
   { title: t('setting.system.tmdbLanguage.zhTW'), value: 'zh-TW' },
   { title: t('setting.system.tmdbLanguage.en'), value: 'en' },
+]
+
+// Fanart语言选项
+const fanartLanguageItems = [
+  { title: t('setting.system.fanartLanguage.zh'), value: 'zh' },
+  { title: t('setting.system.fanartLanguage.en'), value: 'en' },
+  { title: t('setting.system.fanartLanguage.ja'), value: 'ja' },
+  { title: t('setting.system.fanartLanguage.ko'), value: 'ko' },
+  { title: t('setting.system.fanartLanguage.de'), value: 'de' },
+  { title: t('setting.system.fanartLanguage.fr'), value: 'fr' },
+  { title: t('setting.system.fanartLanguage.es'), value: 'es' },
+  { title: t('setting.system.fanartLanguage.it'), value: 'it' },
+  { title: t('setting.system.fanartLanguage.pt'), value: 'pt' },
+  { title: t('setting.system.fanartLanguage.ru'), value: 'ru' },
 ]
 
 // 日志等级
@@ -403,6 +418,19 @@ const moviePilotAutoUpdate = computed({
   },
   set: val => {
     SystemSettings.value.Advanced.MOVIEPILOT_AUTO_UPDATE = val ? 'release' : 'false'
+  },
+})
+
+// Fanart语言多选处理
+const fanartLanguageSelection = computed({
+  get: () => {
+    if (!SystemSettings.value.Advanced.FANART_LANG) return []
+    return SystemSettings.value.Advanced.FANART_LANG.split(',')
+      .filter(Boolean)
+      .map((lang: any) => lang.trim())
+  },
+  set: (val: string[]) => {
+    SystemSettings.value.Advanced.FANART_LANG = val.join(',')
   },
 })
 
@@ -745,42 +773,64 @@ onDeactivated(() => {
                   <VSwitch
                     v-model="SystemSettings.Advanced.AUXILIARY_AUTH_ENABLE"
                     :label="t('setting.system.auxAuthEnable')"
+                    :hint="t('setting.system.auxAuthEnableHint')"
+                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.GLOBAL_IMAGE_CACHE"
                     :label="t('setting.system.globalImageCache')"
+                    :hint="t('setting.system.globalImageCacheHint')"
+                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.SUBSCRIBE_STATISTIC_SHARE"
                     :label="t('setting.system.subscribeStatisticShare')"
+                    :hint="t('setting.system.subscribeStatisticShareHint')"
+                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.PLUGIN_STATISTIC_SHARE"
                     :label="t('setting.system.pluginStatisticShare')"
+                    :hint="t('setting.system.pluginStatisticShareHint')"
+                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.BIG_MEMORY_MODE"
                     :label="t('setting.system.bigMemoryMode')"
+                    :hint="t('setting.system.bigMemoryModeHint')"
+                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
-                  <VSwitch v-model="SystemSettings.Advanced.DB_WAL_ENABLE" :label="t('setting.system.dbWalEnable')" />
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.DB_WAL_ENABLE"
+                    :label="t('setting.system.dbWalEnable')"
+                    :hint="t('setting.system.dbWalEnableHint')"
+                    persistent-hint
+                  />
                 </VCol>
                 <VCol cols="12" md="6">
-                  <VSwitch v-model="moviePilotAutoUpdate" :label="t('setting.system.moviePilotAutoUpdate')" />
+                  <VSwitch
+                    v-model="moviePilotAutoUpdate"
+                    :label="t('setting.system.moviePilotAutoUpdate')"
+                    :hint="t('setting.system.moviePilotAutoUpdateHint')"
+                    persistent-hint
+                  />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.AUTO_UPDATE_RESOURCE"
                     :label="t('setting.system.autoUpdateResource')"
+                    :hint="t('setting.system.autoUpdateResourceHint')"
+                    persistent-hint
                   />
                 </VCol>
               </VRow>
@@ -793,6 +843,8 @@ onDeactivated(() => {
                   <VCombobox
                     v-model="SystemSettings.Advanced.TMDB_API_DOMAIN"
                     :label="t('setting.system.tmdbApiDomain')"
+                    :hint="t('setting.system.tmdbApiDomainHint')"
+                    persistent-hint
                     :placeholder="t('setting.system.tmdbApiDomainPlaceholder')"
                     :items="['api.themoviedb.org', 'api.tmdb.org']"
                     :rules="[(v: string) => !!v || t('setting.system.tmdbApiDomainRequired')]"
@@ -803,6 +855,8 @@ onDeactivated(() => {
                   <VCombobox
                     v-model="SystemSettings.Advanced.TMDB_IMAGE_DOMAIN"
                     :label="t('setting.system.tmdbImageDomain')"
+                    :hint="t('setting.system.tmdbImageDomainHint')"
+                    persistent-hint
                     :placeholder="t('setting.system.tmdbImageDomainPlaceholder')"
                     :items="['image.tmdb.org', 'static-mdb.v.geilijiasu.com']"
                     :rules="[(v: string) => !!v || t('setting.system.tmdbImageDomainRequired')]"
@@ -813,6 +867,8 @@ onDeactivated(() => {
                   <VSelect
                     v-model="SystemSettings.Advanced.TMDB_LOCALE"
                     :label="t('setting.system.tmdbLocale')"
+                    :hint="t('setting.system.tmdbLocaleHint')"
+                    persistent-hint
                     :placeholder="t('setting.system.tmdbLocalePlaceholder')"
                     :items="tmdbLanguageItems"
                     prepend-inner-icon="mdi-translate"
@@ -822,6 +878,8 @@ onDeactivated(() => {
                   <VTextField
                     v-model="SystemSettings.Advanced.META_CACHE_EXPIRE"
                     :label="t('setting.system.metaCacheExpire')"
+                    :hint="t('setting.system.metaCacheExpireHint')"
+                    persistent-hint
                     min="0"
                     type="number"
                     :suffix="t('setting.system.hour')"
@@ -838,16 +896,38 @@ onDeactivated(() => {
                   <VSwitch
                     v-model="SystemSettings.Advanced.SCRAP_FOLLOW_TMDB"
                     :label="t('setting.system.scrapFollowTmdb')"
+                    :hint="t('setting.system.scrapFollowTmdbHint')"
+                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.TMDB_SCRAP_ORIGINAL_IMAGE"
                     :label="t('setting.system.scrapOriginalImage')"
+                    :hint="t('setting.system.scrapOriginalImageHint')"
+                    persistent-hint
                   />
                 </VCol>
                 <VCol cols="12" md="6">
-                  <VSwitch v-model="SystemSettings.Advanced.FANART_ENABLE" :label="t('setting.system.fanartEnable')" />
+                  <VSwitch
+                    v-model="SystemSettings.Advanced.FANART_ENABLE"
+                    :label="t('setting.system.fanartEnable')"
+                    :hint="t('setting.system.fanartEnableHint')"
+                    persistent-hint
+                  />
+                </VCol>
+                <VCol v-if="SystemSettings.Advanced.FANART_ENABLE" cols="12" md="6">
+                  <VSelect
+                    v-model="fanartLanguageSelection"
+                    :label="t('setting.system.fanartLang')"
+                    :hint="t('setting.system.fanartLangHint')"
+                    persistent-hint
+                    :items="fanartLanguageItems"
+                    multiple
+                    chips
+                    closable-chips
+                    prepend-inner-icon="mdi-translate"
+                  />
                 </VCol>
               </VRow>
 
