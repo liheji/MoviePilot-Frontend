@@ -124,5 +124,6 @@ onBeforeUnmount(() => {
 .notification-list-container {
   max-block-size: 50vh;
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 </style>
