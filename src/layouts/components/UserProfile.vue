@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import router from '@/router'
 import avatar1 from '@images/avatars/avatar-1.png'
 import api from '@/api'

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import type { DownloaderConf, Site } from '@/api/types'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { numberValidator, requiredValidator } from '@/@validators'

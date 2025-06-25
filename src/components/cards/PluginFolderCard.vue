@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import { useConfirm } from '@/composables/useConfirm'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'

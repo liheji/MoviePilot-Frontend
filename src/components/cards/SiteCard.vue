@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
 import noImage from '@images/logos/site.webp'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import SiteAddEditDialog from '../dialog/SiteAddEditDialog.vue'
 import SiteUserDataDialog from '../dialog/SiteUserDataDialog.vue'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { debounce } from 'lodash-es'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import api from '@/api'
 import type { StorageConf, TransferHistory } from '@/api/types'
 import ReorganizeDialog from '@/components/dialog/ReorganizeDialog.vue'

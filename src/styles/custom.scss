@@ -48,14 +48,9 @@ html.v-overlay-scroll-blocked {
   }
 }
 
-.v-toast--bottom {
+.Vue-Toastification__container {
   z-index: 2500;
-  margin-block-end: env(safe-area-inset-bottom);
-}
-
-.v-toast--top {
-  z-index: 2500;
-  margin-block-start: env(safe-area-inset-top);
+  margin-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
 }
 
 .v-dialog > .v-overlay__content > .v-card > .v-card-item {
@@ -161,10 +156,6 @@ html.v-overlay-scroll-blocked {
 .v-toolbar{
   background: rgb(var(--v-table-header-background));
 }
-
-.v-toast {
-  z-index: 2500 !important;
- }
 
  .v-divider {
   border-color: rgba(var(--v-theme-on-background), var(--v-selected-opacity));

@@ -3,7 +3,7 @@ import api from '@/api'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { SubscribeShare } from '@/api/types'
 import router from '@/router'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import { VBtn } from 'vuetify/lib/components/index.mjs'
 import { useI18n } from 'vue-i18n'
 

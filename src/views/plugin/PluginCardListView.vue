@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import api from '@/api'
 import type { Plugin } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'

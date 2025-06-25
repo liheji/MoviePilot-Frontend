@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import { requiredValidator } from '@/@validators'
 import api from '@/api'
 import type { Subscribe, SubscribeShare } from '@/api/types'

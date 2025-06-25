@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { MediaServerConf, MediaServerLibrary, MediaStatistic } from '@/api/types'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import emby_image from '@images/logos/emby.png'
 import jellyfin_image from '@images/logos/jellyfin.png'
 import plex_image from '@images/logos/plex.png'

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import api from '@/api'
 import type { ScheduleInfo } from '@/api/types'
 import { useI18n } from 'vue-i18n'

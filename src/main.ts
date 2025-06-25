@@ -23,7 +23,7 @@ import { loadRemoteComponents } from './utils/federationLoader'
 import { fetchGlobalSettings } from './utils/globalSetting'
 
 // 5. 其他插件和功能模块
-import ToastPlugin from 'vue-toast-notification'
+import Toast from 'vue-toastification'
 import ConfirmDialog from '@/composables/useConfirm'
 import VueApexCharts from 'vue3-apexcharts'
 
@@ -99,7 +99,7 @@ initializeApp().then(() => {
   // 5. 注册其他插件
   app
     .use(PerfectScrollbarPlugin)
-    .use(ToastPlugin, {
+    .use(Toast, {
       position: 'bottom-right',
     })
     .use(ConfirmDialog)

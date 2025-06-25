@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import type { Workflow } from '@/api/types'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import { requiredValidator } from '@/@validators'

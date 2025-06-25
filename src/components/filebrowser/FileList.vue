@@ -2,7 +2,7 @@
 import type { AxiosRequestConfig } from 'axios'
 import type { PropType } from 'vue'
 import { useConfirm } from '@/composables/useConfirm'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import ReorganizeDialog from '../dialog/ReorganizeDialog.vue'
 import { formatBytes } from '@core/utils/formatters'
 import type { Context, EndPoints, FileItem } from '@/api/types'

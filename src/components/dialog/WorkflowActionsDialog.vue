@@ -4,7 +4,7 @@ import { VueFlow, useVueFlow, type Connection, type GraphNode } from '@vue-flow/
 import { MiniMap } from '@vue-flow/minimap'
 import useDragAndDrop from '@core/utils/workflow'
 import { Workflow } from '@/api/types'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import api from '@/api'
 import WorkflowSidebar from '@/layouts/components/WorkflowSidebar.vue'
 import DropzoneBackground from '@/layouts/components/DropzoneBackground.vue'

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import api from '@/api'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'

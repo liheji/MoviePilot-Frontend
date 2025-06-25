@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import api from '@/api'
 import type { FilterRuleGroup, Site } from '@/api/types'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'

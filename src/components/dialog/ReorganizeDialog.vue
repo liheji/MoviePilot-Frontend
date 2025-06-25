@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import MediaIdSelector from '../misc/MediaIdSelector.vue'
 import api from '@/api'
 import { transferTypeOptions } from '@/api/constants'

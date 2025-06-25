@@ -1,6 +1,6 @@
 <!-- eslint-disable sonarjs/no-duplicate-string -->
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import { VRow } from 'vuetify/lib/components/index.mjs'
 import draggable from 'vuedraggable'
 import api from '@/api'

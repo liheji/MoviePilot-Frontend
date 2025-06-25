@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import QrcodeVue from 'qrcode.vue'
 import { VForm } from 'vuetify/lib/components/index.mjs'
 import api from '@/api'

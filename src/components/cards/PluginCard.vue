@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import { useConfirm } from '@/composables/useConfirm'
 import api from '@/api'
 import type { Plugin } from '@/api/types'

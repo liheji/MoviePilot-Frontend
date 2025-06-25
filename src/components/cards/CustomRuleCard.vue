@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { CustomRule } from '@/api/types'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import filter_svg from '@images/svg/filter.svg'
 import { cloneDeep } from 'lodash-es'
 import { innerFilterRules } from '@/api/constants'

@@ -2,7 +2,7 @@
 import api from '@/api'
 import { Site } from '@/api/types'
 import { requiredValidator } from '@/@validators'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
 

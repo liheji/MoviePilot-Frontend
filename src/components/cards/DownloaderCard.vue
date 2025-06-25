@@ -2,7 +2,7 @@
 import api from '@/api'
 import { formatFileSize } from '@/@core/utils/formatters'
 import { DownloaderConf } from '@/api/types'
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import type { DownloaderInfo } from '@/api/types'
 import qbittorrent_image from '@images/logos/qbittorrent.png'
 import transmission_image from '@images/logos/transmission.png'

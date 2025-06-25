@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useToast } from 'vue-toast-notification'
+import { useToast } from 'vue-toastification'
 import PersonCardSlideView from './PersonCardSlideView.vue'
 import MediaCardSlideView from './MediaCardSlideView.vue'
 import api from '@/api'
