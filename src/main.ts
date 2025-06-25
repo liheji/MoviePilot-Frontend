@@ -101,6 +101,7 @@ initializeApp().then(() => {
     .use(PerfectScrollbarPlugin)
     .use(Toast, {
       position: 'bottom-right',
+      hideProgressBar: true,
     })
     .use(ConfirmDialog)
     .use(i18n)
