@@ -21,6 +21,59 @@ app.use(
     // 路径加上 /api 前缀
     proxyReqPathResolver: (req) => {
       return `/api${req.url}`
+    },
+    // 动态设置超时时间：SSE无超时，普通请求600秒超时
+    timeout: (req) => {
+      const isSSE = req.headers.accept && req.headers.accept.includes('text/event-stream');
+      return isSSE ? 0 : 600000;
+    },
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      proxyReqOpts.headers = proxyReqOpts.headers || {};
+      
+      // 检测是否为SSE请求
+      const isSSE = srcReq.headers.accept && srcReq.headers.accept.includes('text/event-stream');
+      
+      if (isSSE) {
+        // SSE请求的特殊头部设置
+        proxyReqOpts.headers['Cache-Control'] = 'no-cache';
+        proxyReqOpts.headers['Connection'] = 'keep-alive';
+        proxyReqOpts.headers['Accept'] = 'text/event-stream';
+      }
+      
+      return proxyReqOpts;
+    },
+    userResDecorator: (proxyRes, proxyResData, userReq, userRes) => {
+      // 检测响应是否为SSE类型
+      const isSSEResponse = proxyRes.headers['content-type'] && 
+                           proxyRes.headers['content-type'].includes('text/event-stream');
+      
+      if (isSSEResponse) {
+        // SSE响应：设置流式传输头部并禁用缓冲
+        userRes.writeHead(proxyRes.statusCode, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Cache-Control'
+        });
+        return false; // 禁用默认响应处理，让数据直接流向客户端
+      } else {
+        // 普通响应：正常处理
+        return proxyResData;
+      }
+    },
+    // 统一错误处理
+    proxyErrorHandler: (err, res, next) => {
+      // 客户端断开连接的正常情况（常见于SSE）
+      if (err.code === 'ECONNRESET' || err.code === 'EPIPE') {
+        console.log('Client disconnected:', err.code);
+        res.end(); // 优雅结束响应
+        return;
+      }
+      
+      // 其他错误正常处理
+      console.error('Proxy error:', err);
+      next(err);
     }
   })
 );
