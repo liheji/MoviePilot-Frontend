@@ -197,7 +197,7 @@ onMounted(() => {
         </div>
 
         <!-- 发布时间 -->
-        <div v-if="torrent?.pubdate" class="d-flex align-start justify-start mb-2">
+        <div v-if="torrent?.pubdate" class="d-flex align-center justify-start mb-2">
           <VIcon size="small" color="grey" icon="mdi-clock-outline" class="me-1"></VIcon>
           <span class="text-sm text-medium-emphasis">{{ formatDateDifference(torrent.pubdate) }}</span>
         </div>
