@@ -67,6 +67,8 @@ async function loadMessages({ done }: { done: any }) {
     if (currData.value.length > 0) {
       // 取最后一条时间为存量消息最新时间
       lastTime.value = currData.value[currData.value.length - 1].reg_time ?? ''
+      // 倒序
+      currData.value.reverse()
       // 合并数据
       messages.value = [...currData.value, ...messages.value]
       if (page.value === 1) {
