@@ -49,6 +49,7 @@ const sortTitles: Record<string, string> = {
   site: t('torrent.sortSite'),
   size: t('torrent.sortSize'),
   seeder: t('torrent.sortSeeder'),
+  publishTime: t('torrent.sortPublishTime'),
 }
 
 // 过滤项映射
@@ -275,6 +276,9 @@ function filterData() {
         } else if (sortField.value === 'seeder') {
           // 按做种数排序（降序）
           return (Number(b.torrent_info.seeders) || 0) - (Number(a.torrent_info.seeders) || 0)
+        } else if (sortField.value === 'publishTime') {
+          // 按发布时间排序（降序，最新的在前）
+          return new Date(b.torrent_info.pubdate || 0).getTime() - new Date(a.torrent_info.pubdate || 0).getTime()
         }
       } else {
         if (sortField.value === 'site') {
@@ -286,6 +290,9 @@ function filterData() {
         } else if (sortField.value === 'seeder') {
           // 按做种数排序（降序）
           return (Number(a.torrent_info.seeders) || 0) - (Number(b.torrent_info.seeders) || 0)
+        } else if (sortField.value === 'publishTime') {
+          // 按发布时间排序（升序，最旧的在前）
+          return new Date(a.torrent_info.pubdate || 0).getTime() - new Date(b.torrent_info.pubdate || 0).getTime()
         }
       }
 

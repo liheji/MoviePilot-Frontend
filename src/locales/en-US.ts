@@ -748,6 +748,7 @@ export default {
     sortSite: 'Site',
     sortSize: 'Size',
     sortSeeder: 'Seeder',
+    sortPublishTime: 'Publish Time',
     filterSite: 'Site',
     filterSeason: 'Season',
     filterFreeState: 'Free State',

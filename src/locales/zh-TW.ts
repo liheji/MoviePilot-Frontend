@@ -743,6 +743,7 @@ export default {
     sortSite: '站點',
     sortSize: '大小',
     sortSeeder: '做種數',
+    sortPublishTime: '發布時間',
     filterSite: '站點',
     filterSeason: '季',
     filterFreeState: '促銷狀態',

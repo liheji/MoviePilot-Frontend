@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
-import { formatFileSize } from '@/@core/utils/formatters'
+import { formatFileSize, formatDateDifference } from '@/@core/utils/formatters'
 import api from '@/api'
 import type { Context } from '@/api/types'
 import AddDownloadDialog from '../dialog/AddDownloadDialog.vue'
@@ -152,6 +152,12 @@ onMounted(() => {
           :title="meta?.subtitle || torrent?.description || '暂无描述'"
         >
           {{ meta?.subtitle || torrent?.description || '暂无描述' }}
+        </div>
+
+        <!-- 发布时间 -->
+        <div v-if="torrent?.pubdate" class="d-flex align-center mb-2">
+          <VIcon size="small" color="grey" icon="mdi-clock-outline" class="me-1"></VIcon>
+          <span class="text-sm text-medium-emphasis">{{ formatDateDifference(torrent.pubdate) }}</span>
         </div>
 
         <div class="d-flex flex-wrap gap-1 mb-2">

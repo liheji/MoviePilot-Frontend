@@ -745,6 +745,7 @@ export default {
     sortSite: '站点',
     sortSize: '大小',
     sortSeeder: '做种数',
+    sortPublishTime: '发布时间',
     filterSite: '站点',
     filterSeason: '季',
     filterFreeState: '促销状态',
