@@ -53,6 +53,18 @@ html.v-overlay-scroll-blocked {
   margin-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
 }
 
+@media only screen and (width <= 600px){
+  .Vue-Toastification__container {
+    inline-size: 100vw;
+    padding-block: 4.5rem;
+    padding-inline: 1rem;
+  }
+
+  .Vue-Toastification__toast {
+    border-radius: 8px;
+  }
+}
+
 .v-dialog > .v-overlay__content > .v-card > .v-card-item {
   padding: 16px;
 }
