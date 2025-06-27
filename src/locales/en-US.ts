@@ -733,7 +733,7 @@ export default {
     others: 'Others',
   },
   notFound: {
-    title: 'Page Not Found ⚠️',
+    title: '⚠️ Page Not Found',
     description: 'The page you tried to access does not exist. Please check if the address is correct.',
     backButton: 'Go Back',
   },

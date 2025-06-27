@@ -276,7 +276,9 @@ onUnmounted(() => {
     <!-- 无数据显示 -->
     <div v-else-if="isRefreshed && !isViewChanging" class="d-flex flex-column align-center justify-center py-8">
       <NoDataFound :errorTitle="errorTitle" :errorDescription="errorDescription" />
-      <VBtn class="mt-4" color="primary" prepend-icon="mdi-magnify" to="/">{{ t('resource.backToHome') }}</VBtn>
+      <VBtn rounded="pill" class="mt-4" color="primary" prepend-icon="mdi-home" to="/">
+        {{ t('resource.backToHome') }}
+      </VBtn>
     </div>
 
     <!-- 初始加载状态 -->

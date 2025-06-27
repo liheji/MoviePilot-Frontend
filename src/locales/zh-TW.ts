@@ -728,7 +728,7 @@ export default {
     others: '其他',
   },
   notFound: {
-    title: '頁面不存在 ⚠️',
+    title: '⚠️ 頁面不存在',
     description: '您想要訪問的頁面不存在，請檢查地址是否正確。',
     backButton: '返回',
   },

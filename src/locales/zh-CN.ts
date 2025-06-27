@@ -730,7 +730,7 @@ export default {
     others: '其他',
   },
   notFound: {
-    title: '页面不存在 ⚠️',
+    title: '⚠️ 页面不存在',
     description: '您想要访问的页面不存在，请检查地址是否正确。',
     backButton: '返回',
   },
