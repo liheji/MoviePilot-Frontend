@@ -22,16 +22,14 @@ app.use(
     proxyReqPathResolver: (req) => {
       return `/api${req.url}`
     },
-    // 动态设置超时时间：SSE无超时，普通请求600秒超时
-    timeout: (req) => {
-      const isSSE = req.headers.accept && req.headers.accept.includes('text/event-stream');
-      return isSSE ? 0 : 600000;
-    },
     proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
       proxyReqOpts.headers = proxyReqOpts.headers || {};
       
       // 检测是否为SSE请求
       const isSSE = srcReq.headers.accept && srcReq.headers.accept.includes('text/event-stream');
+      
+      // 动态设置超时时间：SSE无超时，普通请求600秒超时
+      proxyReqOpts.timeout = isSSE ? 0 : 600000;
       
       if (isSSE) {
         // SSE请求的特殊头部设置
