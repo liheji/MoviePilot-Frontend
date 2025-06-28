@@ -769,7 +769,7 @@ export default {
     alipan: '阿里雲盤',
     u115: '115網盤',
     rclone: 'RClone',
-    alist: 'AList',
+    alist: 'OpenList',
     custom: '自定義',
   },
 
@@ -1632,8 +1632,8 @@ export default {
       reset: '重置',
     },
     alistConfig: {
-      title: 'Alist配置',
-      serverUrl: 'Alist服務地址',
+      title: 'OpenList配置',
+      serverUrl: 'OpenList服務地址',
       username: '用戶名',
       password: '密碼',
       tokenUrl: '獲取Token地址',

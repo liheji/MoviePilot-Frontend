@@ -774,7 +774,7 @@ export default {
     alipan: 'Aliyun Drive',
     u115: '115 Cloud',
     rclone: 'RClone',
-    alist: 'AList',
+    alist: 'OpenList',
     custom: 'Custom',
   },
   filterRules: {
@@ -1655,8 +1655,8 @@ export default {
       reset: 'Reset',
     },
     alistConfig: {
-      title: 'Alist Configuration',
-      serverUrl: 'Alist server address',
+      title: 'OpenList Configuration',
+      serverUrl: 'OpenList server address',
       username: 'Username',
       password: 'Password',
       tokenUrl: 'Token acquisition address',
