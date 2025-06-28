@@ -60,12 +60,21 @@ app.use(
         return proxyResData;
       }
     },
-    // 统一错误处理
+    // 统一错误处理（添加超时错误处理）
     proxyErrorHandler: (err, res, next) => {
       // 客户端断开连接的正常情况（常见于SSE）
       if (err.code === 'ECONNRESET' || err.code === 'EPIPE') {
         console.log('Client disconnected:', err.code);
         res.end(); // 优雅结束响应
+        return;
+      }
+      
+      // 添加超时错误处理
+      if (err.code === 'ETIMEDOUT') {
+        console.log('Proxy request timed out:', err.code);
+        if (!res.headersSent) {
+          res.status(504).send('Gateway Timeout');
+        }
         return;
       }
       
