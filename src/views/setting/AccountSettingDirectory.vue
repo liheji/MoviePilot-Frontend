@@ -159,7 +159,7 @@ async function loadMediaCategories() {
 function addStorage() {
   storages.value.push({
     name: `${t('storage.custom')} ${storages.value.length + 1}`,
-    type: 'custom',
+    type: `custom${storages.value.length + 1}`,
     config: {},
   })
 }
