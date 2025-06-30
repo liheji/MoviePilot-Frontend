@@ -24,7 +24,7 @@ const inProps = defineProps({
   storage: String,
   endpoints: Object as PropType<EndPoints>,
   axios: {
-    type: Object as PropType<any>,
+    type: Function,
     required: true,
   },
   refreshpending: Boolean,
@@ -554,196 +554,202 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard class="d-flex flex-column w-full h-full rounded-t-0" :class="{ 'rounded-s-0': showTree }">
-    <div v-if="!loading" class="flex">
-      <IconBtn v-if="display.mdAndUp.value">
-        <VIcon v-if="showTree" icon="mdi-file-tree" @click="switchFileTree(false)" />
-        <VIcon v-else icon="mdi-file-tree-outline" @click="switchFileTree(true)" />
-      </IconBtn>
-      <VTextField
-        v-if="!isFile"
-        v-model="filter"
-        hide-details
-        flat
-        density="compact"
-        variant="plain"
-        :placeholder="t('common.search')"
-        prepend-inner-icon="mdi-filter-outline"
-        class="mx-2"
-        rounded
-      />
-      <VSpacer v-if="isFile" />
-      <IconBtn v-if="!isFile" @click="changeSelectMode">
-        <VIcon color="primary" v-if="selectMode"> mdi-selection-remove </VIcon>
-        <VIcon color="primary" v-else>mdi-select</VIcon>
-      </IconBtn>
-      <IconBtn v-if="isFile" @click="recognize(inProps.item.path || '')">
-        <VIcon color="primary"> mdi-text-recognition </VIcon>
-      </IconBtn>
-      <IconBtn v-if="isFile && items.length > 0" @click="download(items[0])">
-        <VIcon color="primary"> mdi-download </VIcon>
-      </IconBtn>
-      <IconBtn v-if="!isFile" @click="list_files">
-        <VIcon color="primary"> mdi-refresh </VIcon>
-      </IconBtn>
-      <!-- 批量操作按钮 -->
-      <span v-if="selected.length > 0">
-        <IconBtn @click.stop="batchScrape">
-          <VIcon color="primary" icon="mdi-auto-fix" />
+  <div>
+    <VCard class="d-flex flex-column w-full h-full rounded-t-0" :class="{ 'rounded-s-0': showTree }">
+      <div v-if="!loading" class="flex">
+        <IconBtn v-if="display.mdAndUp.value">
+          <VIcon v-if="showTree" icon="mdi-file-tree" @click="switchFileTree(false)" />
+          <VIcon v-else icon="mdi-file-tree-outline" @click="switchFileTree(true)" />
         </IconBtn>
-        <IconBtn @click.stop="showBatchTransfer">
-          <VIcon color="primary" icon="mdi-folder-arrow-right" />
+        <VTextField
+          v-if="!isFile"
+          v-model="filter"
+          hide-details
+          flat
+          density="compact"
+          variant="plain"
+          :placeholder="t('common.search')"
+          prepend-inner-icon="mdi-filter-outline"
+          class="mx-2"
+          rounded
+        />
+        <VSpacer v-if="isFile" />
+        <IconBtn v-if="!isFile" @click="changeSelectMode">
+          <VIcon color="primary" v-if="selectMode"> mdi-selection-remove </VIcon>
+          <VIcon color="primary" v-else>mdi-select</VIcon>
         </IconBtn>
-        <IconBtn @click.stop="batchDelete">
-          <VIcon icon="mdi-delete-outline" color="error" />
+        <IconBtn v-if="isFile" @click="recognize(inProps.item.path || '')">
+          <VIcon color="primary"> mdi-text-recognition </VIcon>
         </IconBtn>
-      </span>
-    </div>
-    <LoadingBanner v-if="loading" />
-    <!-- 文件详情 -->
-    <VCardText v-else-if="isFile && !isImage && items.length > 0" class="text-center break-all">
-      <div v-if="items[0]?.thumbnail" class="flex justify-center">
-        <VImg max-width="15rem" cover :src="items[0]?.thumbnail" class="rounded border">
-          <template #placeholder>
-            <VSkeletonLoader class="object-cover w-full h-full" />
-          </template>
-        </VImg>
+        <IconBtn v-if="isFile && items.length > 0" @click="download(items[0])">
+          <VIcon color="primary"> mdi-download </VIcon>
+        </IconBtn>
+        <IconBtn v-if="!isFile" @click="list_files">
+          <VIcon color="primary"> mdi-refresh </VIcon>
+        </IconBtn>
+        <!-- 批量操作按钮 -->
+        <span v-if="selected.length > 0">
+          <IconBtn @click.stop="batchScrape">
+            <VIcon color="primary" icon="mdi-auto-fix" />
+          </IconBtn>
+          <IconBtn @click.stop="showBatchTransfer">
+            <VIcon color="primary" icon="mdi-folder-arrow-right" />
+          </IconBtn>
+          <IconBtn @click.stop="batchDelete">
+            <VIcon icon="mdi-delete-outline" color="error" />
+          </IconBtn>
+        </span>
       </div>
-      <div class="text-xl text-high-emphasis mt-3">{{ items[0]?.name }}</div>
-      <p class="mt-2" v-if="items[0]?.size && items[0].modify_time">
-        {{ t('file.size') }}：{{ formatBytes(items[0]?.size || 0) }}<br />
-        {{ t('file.modifyTime') }}：{{ formatTime(items[0]?.modify_time || 0) }}
-      </p>
-    </VCardText>
-    <!-- 图片 -->
-    <VCardText v-else-if="isFile && isImage && items.length > 0" class="grow d-flex justify-center align-center">
-      <VImg :src="currentImgLink" max-width="100%" max-height="100%" />
-    </VCardText>
-    <!-- 目录和文件列表 -->
-    <VCardText v-else-if="dirs.length || files.length" class="p-0">
-      <VList class="text-high-emphasis">
-        <VVirtualScroll :items="[...dirs, ...files]" :style="listStyle">
-          <template #default="{ item }">
-            <VHover>
-              <template #default="hover">
-                <VListItem v-bind="hover.props" class="px-3 pe-1" @click="listItemClick(item)">
-                  <template #prepend>
-                    <VListItemAction v-if="selectMode">
-                      <VCheckbox v-model="selected" :value="item" />
-                    </VListItemAction>
-                    <template v-else>
-                      <VIcon
-                        v-if="inProps.icons && item.extension"
-                        :icon="inProps.icons[item.extension.toLowerCase()] || inProps.icons?.other"
-                      />
-                      <VIcon v-else-if="item.type == 'dir'" icon="mdi-folder" />
-                      <VIcon v-else icon="mdi-file-outline" />
-                    </template>
-                  </template>
-                  <VListItemTitle v-text="item.name" />
-                  <VListItemSubtitle v-if="item.size">
-                    {{ formatBytes(item.size) }}
-                  </VListItemSubtitle>
-                  <template #append>
-                    <IconBtn v-if="display.smAndDown.value && !selectMode">
-                      <VIcon icon="mdi-dots-vertical" />
-                      <VMenu activator="parent" close-on-content-click>
-                        <VList>
-                          <template v-for="(menu, i) in dropdownItems" :key="i">
-                            <VListItem v-if="menu.show" :base-color="menu.props.color" @click="menu.props.click(item)">
-                              <template #prepend>
-                                <VIcon :icon="menu.props.prependIcon" />
-                              </template>
-                              <VListItemTitle v-text="menu.title" />
-                            </VListItem>
-                          </template>
-                        </VList>
-                      </VMenu>
-                    </IconBtn>
-                    <span v-if="hover.isHovering && display.mdAndUp.value && !selectMode" class="flex">
-                      <IconBtn @click.stop="recognize(item.path)">
-                        <VIcon icon="mdi-text-recognition" />
-                      </IconBtn>
-                      <IconBtn @click.stop="scrape(item)">
-                        <VIcon icon="mdi-auto-fix" />
-                      </IconBtn>
-                      <IconBtn @click.stop="showRenmae(item)">
-                        <VIcon icon="mdi-rename" />
-                      </IconBtn>
-                      <IconBtn @click.stop="showTransfer(item)">
-                        <VIcon icon="mdi-folder-arrow-right" />
-                      </IconBtn>
-                      <IconBtn @click.stop="deleteItem(item)">
-                        <VIcon icon="mdi-delete-outline" color="error" />
-                      </IconBtn>
-                    </span>
-                  </template>
-                </VListItem>
-              </template>
-            </VHover>
-          </template>
-        </VVirtualScroll>
-      </VList>
-    </VCardText>
-    <VCardText v-else-if="filter" class="grow d-flex justify-center align-center grey--text py-5">
-      {{ t('file.noFiles') }}
-    </VCardText>
-    <VCardText v-else-if="!loading" class="grow d-flex justify-center align-center grey--text py-5">
-      {{ t('file.emptyDirectory') }}
-    </VCardText>
-  </VCard>
-  <!-- 重命名弹窗 -->
-  <VDialog v-if="renamePopper" v-model="renamePopper" max-width="35rem">
-    <VCard>
-      <VCardItem>
-        <template #prepend>
-          <VIcon icon="mdi-pencil" class="me-2" />
-        </template>
-        <VCardTitle>{{ t('file.rename') }}</VCardTitle>
-      </VCardItem>
-      <VDialogCloseBtn @click="renamePopper = false" />
-      <VDivider />
-      <VCardText>
-        <VRow>
-          <VCol cols="12">
-            <VTextField
-              v-model="newName"
-              :label="t('file.newName')"
-              :loading="renameLoading"
-              prepend-inner-icon="mdi-format-text"
-            />
-          </VCol>
-          <VCol cols="12" v-if="currentItem && currentItem.type == 'dir'">
-            <VSwitch v-model="renameAll" :label="t('file.includeSubfolders')" />
-          </VCol>
-        </VRow>
+      <LoadingBanner v-if="loading" />
+      <!-- 文件详情 -->
+      <VCardText v-else-if="isFile && !isImage && items.length > 0" class="text-center break-all">
+        <div v-if="items[0]?.thumbnail" class="flex justify-center">
+          <VImg max-width="15rem" cover :src="items[0]?.thumbnail" class="rounded border">
+            <template #placeholder>
+              <VSkeletonLoader class="object-cover w-full h-full" />
+            </template>
+          </VImg>
+        </div>
+        <div class="text-xl text-high-emphasis mt-3">{{ items[0]?.name }}</div>
+        <p class="mt-2" v-if="items[0]?.size && items[0].modify_time">
+          {{ t('file.size') }}：{{ formatBytes(items[0]?.size || 0) }}<br />
+          {{ t('file.modifyTime') }}：{{ formatTime(items[0]?.modify_time || 0) }}
+        </p>
       </VCardText>
-      <VCardActions>
-        <VBtn color="success" @click="get_recommend_name" prepend-icon="mdi-magic" class="px-5 me-3">
-          {{ t('file.autoRecognizeName') }}
-        </VBtn>
-        <VBtn :disabled="!newName" @click="rename" prepend-icon="mdi-check" class="px-5 me-3">
-          {{ t('common.confirm') }}
-        </VBtn>
-      </VCardActions>
+      <!-- 图片 -->
+      <VCardText v-else-if="isFile && isImage && items.length > 0" class="grow d-flex justify-center align-center">
+        <VImg :src="currentImgLink" max-width="100%" max-height="100%" />
+      </VCardText>
+      <!-- 目录和文件列表 -->
+      <VCardText v-else-if="dirs.length || files.length" class="p-0">
+        <VList class="text-high-emphasis">
+          <VVirtualScroll :items="[...dirs, ...files]" :style="listStyle">
+            <template #default="{ item }">
+              <VHover>
+                <template #default="hover">
+                  <VListItem v-bind="hover.props" class="px-3 pe-1" @click="listItemClick(item)">
+                    <template #prepend>
+                      <VListItemAction v-if="selectMode">
+                        <VCheckbox v-model="selected" :value="item" />
+                      </VListItemAction>
+                      <template v-else>
+                        <VIcon
+                          v-if="inProps.icons && item.extension"
+                          :icon="inProps.icons[item.extension.toLowerCase()] || inProps.icons?.other"
+                        />
+                        <VIcon v-else-if="item.type == 'dir'" icon="mdi-folder" />
+                        <VIcon v-else icon="mdi-file-outline" />
+                      </template>
+                    </template>
+                    <VListItemTitle v-text="item.name" />
+                    <VListItemSubtitle v-if="item.size">
+                      {{ formatBytes(item.size) }}
+                    </VListItemSubtitle>
+                    <template #append>
+                      <IconBtn v-if="display.smAndDown.value && !selectMode">
+                        <VIcon icon="mdi-dots-vertical" />
+                        <VMenu activator="parent" close-on-content-click>
+                          <VList>
+                            <template v-for="(menu, i) in dropdownItems" :key="i">
+                              <VListItem
+                                v-if="menu.show"
+                                :base-color="menu.props.color"
+                                @click="menu.props.click(item)"
+                              >
+                                <template #prepend>
+                                  <VIcon :icon="menu.props.prependIcon" />
+                                </template>
+                                <VListItemTitle v-text="menu.title" />
+                              </VListItem>
+                            </template>
+                          </VList>
+                        </VMenu>
+                      </IconBtn>
+                      <span v-if="hover.isHovering && display.mdAndUp.value && !selectMode" class="flex">
+                        <IconBtn @click.stop="recognize(item.path)">
+                          <VIcon icon="mdi-text-recognition" />
+                        </IconBtn>
+                        <IconBtn @click.stop="scrape(item)">
+                          <VIcon icon="mdi-auto-fix" />
+                        </IconBtn>
+                        <IconBtn @click.stop="showRenmae(item)">
+                          <VIcon icon="mdi-rename" />
+                        </IconBtn>
+                        <IconBtn @click.stop="showTransfer(item)">
+                          <VIcon icon="mdi-folder-arrow-right" />
+                        </IconBtn>
+                        <IconBtn @click.stop="deleteItem(item)">
+                          <VIcon icon="mdi-delete-outline" color="error" />
+                        </IconBtn>
+                      </span>
+                    </template>
+                  </VListItem>
+                </template>
+              </VHover>
+            </template>
+          </VVirtualScroll>
+        </VList>
+      </VCardText>
+      <VCardText v-else-if="filter" class="grow d-flex justify-center align-center grey--text py-5">
+        {{ t('file.noFiles') }}
+      </VCardText>
+      <VCardText v-else-if="!loading" class="grow d-flex justify-center align-center grey--text py-5">
+        {{ t('file.emptyDirectory') }}
+      </VCardText>
     </VCard>
-  </VDialog>
-  <!-- 文件整理弹窗 -->
-  <ReorganizeDialog
-    v-if="transferPopper"
-    v-model="transferPopper"
-    :items="transferItems"
-    :target_storage="inProps.storage"
-    @done="transferDone"
-    @close="transferPopper = false"
-  />
-  <!-- 进度框 -->
-  <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" :value="progressValue" />
-  <!-- 识别结果对话框 -->
-  <MediaInfoDialog
-    v-if="nameTestDialog"
-    v-model="nameTestDialog"
-    :context="nameTestResult"
-    @close="nameTestDialog = false"
-  />
+    <!-- 重命名弹窗 -->
+    <VDialog v-if="renamePopper" v-model="renamePopper" max-width="35rem">
+      <VCard>
+        <VCardItem>
+          <template #prepend>
+            <VIcon icon="mdi-pencil" class="me-2" />
+          </template>
+          <VCardTitle>{{ t('file.rename') }}</VCardTitle>
+        </VCardItem>
+        <VDialogCloseBtn @click="renamePopper = false" />
+        <VDivider />
+        <VCardText>
+          <VRow>
+            <VCol cols="12">
+              <VTextField
+                v-model="newName"
+                :label="t('file.newName')"
+                :loading="renameLoading"
+                prepend-inner-icon="mdi-format-text"
+              />
+            </VCol>
+            <VCol cols="12" v-if="currentItem && currentItem.type == 'dir'">
+              <VSwitch v-model="renameAll" :label="t('file.includeSubfolders')" />
+            </VCol>
+          </VRow>
+        </VCardText>
+        <VCardActions>
+          <VBtn color="success" @click="get_recommend_name" prepend-icon="mdi-magic" class="px-5 me-3">
+            {{ t('file.autoRecognizeName') }}
+          </VBtn>
+          <VBtn :disabled="!newName" @click="rename" prepend-icon="mdi-check" class="px-5 me-3">
+            {{ t('common.confirm') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+    <!-- 文件整理弹窗 -->
+    <ReorganizeDialog
+      v-if="transferPopper"
+      v-model="transferPopper"
+      :items="transferItems"
+      :target_storage="inProps.storage"
+      @done="transferDone"
+      @close="transferPopper = false"
+    />
+    <!-- 进度框 -->
+    <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" :value="progressValue" />
+    <!-- 识别结果对话框 -->
+    <MediaInfoDialog
+      v-if="nameTestDialog"
+      v-model="nameTestDialog"
+      :context="nameTestResult"
+      @close="nameTestDialog = false"
+    />
+  </div>
 </template>

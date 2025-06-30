@@ -27,7 +27,7 @@ const props = defineProps({
   },
   endpoints: Object,
   axios: {
-    type: Object as PropType<any>,
+    type: Function,
     required: true,
   },
 })
