@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { configureNProgress } from '@/api/nprogress'
 import { useAuthStore } from '@/stores'
-import { setNavigatingState as setImageNavigatingState } from '@/utils/imageOptimizer'
 import { setNavigatingState as setRequestNavigatingState } from '@/utils/requestOptimizer'
 
 // Nprogress
@@ -212,8 +211,7 @@ const router = createRouter({
 
 // 路由导航守卫
 router.beforeEach(async (to: any, from: any, next: any) => {
-  // 设置导航状态 - 同时暂停图片加载和中断API请求
-  setImageNavigatingState(true)
+  // 设置导航状态 - 同时中断API请求
   setRequestNavigatingState(true)
 
   // 认证 Store
@@ -224,7 +222,6 @@ router.beforeEach(async (to: any, from: any, next: any) => {
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     // 用户未登录，重定向到登录页
-    setImageNavigatingState(false)
     setRequestNavigatingState(false)
     next('/login')
   } else {
@@ -235,11 +232,9 @@ router.beforeEach(async (to: any, from: any, next: any) => {
 // 路由导航完成后
 router.afterEach(() => {
   setTimeout(() => {
-    setImageNavigatingState(false)
     setRequestNavigatingState(false)
   }, 100)
 })
 
 // 导出默认对象
 export default router
-// 延迟恢复图片加载，给页面一些初始化时间
