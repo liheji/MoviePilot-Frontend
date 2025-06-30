@@ -118,6 +118,8 @@ async function getMemorgUsage() {
   try {
     // 请求数据
     ;[usedMemory.value, memoryUsage.value] = await api.get('dashboard/memory')
+    // 使用nextTick确保DOM更新完成后再更新图表数据
+    await nextTick()
     series.value[0].data.push(memoryUsage.value)
     // 序列超过30条记录时，清掉前面的
     if (series.value[0].data.length > 30) series.value[0].data.shift()
@@ -127,11 +129,14 @@ async function getMemorgUsage() {
 }
 
 onMounted(() => {
-  getMemorgUsage()
-  // 启动定时器
-  refreshTimer = setInterval(() => {
+  // 延迟启动，确保组件完全挂载
+  nextTick(() => {
     getMemorgUsage()
-  }, 3000)
+    // 启动定时器
+    refreshTimer = setInterval(() => {
+      getMemorgUsage()
+    }, 3000)
+  })
 })
 
 // 组件卸载时停止定时器
@@ -143,7 +148,10 @@ onUnmounted(() => {
 })
 
 onActivated(() => {
-  chartKey.value += 1
+  // 使用nextTick确保DOM准备完成后再更新chartKey
+  nextTick(() => {
+    chartKey.value += 1
+  })
 })
 </script>
 

@@ -253,6 +253,8 @@ async function fetchSiteUserData() {
   try {
     const result: { [key: string]: any } = await api.get(`site/userdata/${props.site?.id}`)
     if (result.success) {
+      // 使用nextTick确保DOM更新完成后再更新图表数据
+      await nextTick()
       siteDatas.value = result.data.sort((a: { updated_day: any }, b: { updated_day: any }) =>
         (a.updated_day || '').localeCompare(b.updated_day || ''),
       )
@@ -276,8 +278,11 @@ async function refreshSiteData() {
   progressDialog.value = false
 }
 
-onBeforeMount(async () => {
-  await fetchSiteUserData()
+onBeforeMount(() => {
+  // 延迟加载，确保组件完全挂载
+  nextTick(() => {
+    fetchSiteUserData()
+  })
 })
 </script>
 

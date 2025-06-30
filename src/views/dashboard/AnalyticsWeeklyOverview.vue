@@ -107,7 +107,8 @@ const totalCount = computed(() => series.value[0].data.reduce((a, b) => a + b, 0
 async function getWeeklyData() {
   try {
     const res: number[] = await api.get('dashboard/transfer')
-
+    // 使用nextTick确保DOM更新完成后再更新图表数据
+    await nextTick()
     series.value = [{ data: res }]
   } catch (e) {
     console.log(e)
@@ -115,11 +116,17 @@ async function getWeeklyData() {
 }
 
 onMounted(() => {
-  getWeeklyData()
+  // 延迟启动，确保组件完全挂载
+  nextTick(() => {
+    getWeeklyData()
+  })
 })
 
 onActivated(() => {
-  getWeeklyData()
+  // 使用nextTick确保DOM准备完成后再获取数据
+  nextTick(() => {
+    getWeeklyData()
+  })
 })
 </script>
 

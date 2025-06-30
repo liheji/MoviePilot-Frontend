@@ -112,6 +112,8 @@ async function getCpuUsage() {
   try {
     // 请求数据
     current.value = (await api.get('dashboard/cpu')) ?? 0
+    // 使用nextTick确保DOM更新完成后再更新图表数据
+    await nextTick()
     // 添加到序列
     series.value[0].data.push(current.value)
     // 序列超过30条记录时，清掉前面的
@@ -122,10 +124,13 @@ async function getCpuUsage() {
 }
 
 onMounted(() => {
-  getCpuUsage() // 启动定时器
-  refreshTimer = setInterval(() => {
+  // 延迟启动，确保组件完全挂载
+  nextTick(() => {
     getCpuUsage()
-  }, 2000)
+    refreshTimer = setInterval(() => {
+      getCpuUsage()
+    }, 2000)
+  })
 })
 
 // 组件卸载时停止定时器
@@ -137,7 +142,9 @@ onUnmounted(() => {
 })
 
 onActivated(() => {
-  chartKey.value += 1
+  nextTick(() => {
+    chartKey.value += 1
+  })
 })
 </script>
 

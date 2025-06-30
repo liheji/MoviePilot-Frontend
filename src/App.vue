@@ -41,26 +41,33 @@ declare global {
   }
 }
 
-if (window.Apex) {
-  // 数据标签
-  window.Apex.dataLabels = {
-    formatter: function (_: number, { seriesIndex, w }: { seriesIndex: number; w: any }) {
-      // 如果有小数点，保留两位小数，否则保留整数
-      const data = w.config.series[seriesIndex]
-      return data.toFixed(data % 1 === 0 ? 0 : 1)
-    },
-  }
-  // 图例
-  window.Apex.legend = {
-    labels: {
-      useSeriesColors: true,
-    },
-  }
-  // 标题
-  window.Apex.title = {
-    style: {
-      color: 'rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))',
-    },
+// 配置 ApexCharts 全局选项
+function configureApexCharts() {
+  if (typeof window !== 'undefined' && window.Apex) {
+    try {
+      // 数据标签
+      window.Apex.dataLabels = {
+        formatter: function (_: number, { seriesIndex, w }: { seriesIndex: number; w: any }) {
+          // 如果有小数点，保留两位小数，否则保留整数
+          const data = w.config.series[seriesIndex]
+          return data.toFixed(data % 1 === 0 ? 0 : 1)
+        },
+      }
+      // 图例
+      window.Apex.legend = {
+        labels: {
+          useSeriesColors: true,
+        },
+      }
+      // 标题
+      window.Apex.title = {
+        style: {
+          color: 'rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))',
+        },
+      }
+    } catch (error) {
+      console.warn('ApexCharts 全局配置失败:', error)
+    }
   }
 }
 
@@ -74,10 +81,13 @@ function updateHtmlThemeAttribute(themeName: string) {
 // 获取背景图片
 async function fetchBackgroundImages() {
   try {
-    backgroundImages.value = await api.get(`/login/wallpapers`)
+    const controller = new AbortController()
+    backgroundImages.value = await api.get(`/login/wallpapers`, {
+      signal: controller.signal,
+    })
     activeImageIndex.value = 0
   } catch (e) {
-    console.error(e)
+    throw e
   }
 }
 
@@ -85,7 +95,6 @@ async function fetchBackgroundImages() {
 function startBackgroundRotation() {
   // 清除轮换定时器
   if (backgroundRotationTimer) clearInterval(backgroundRotationTimer)
-
   if (backgroundImages.value.length > 1) {
     backgroundRotationTimer = setInterval(() => {
       // 计算下一个图片索引
@@ -131,7 +140,6 @@ function animateAndRemoveLoader() {
   if (loadingBg) {
     // 先添加完成动画类
     loadingBg.classList.add('loading-complete')
-
     // 等待动画完成后再移除元素
     setTimeout(() => {
       removeEl('#loading-bg')
@@ -144,20 +152,27 @@ function animateAndRemoveLoader() {
 }
 
 // 加载背景图片
-async function loadBackgroundImages() {
-  await fetchBackgroundImages()
-    .then(() => {
-      startBackgroundRotation()
-    })
-    .catch(() => {
-      // 3秒后重试
+async function loadBackgroundImages(retryCount = 0) {
+  const maxRetries = 3
+  try {
+    await fetchBackgroundImages()
+    startBackgroundRotation()
+  } catch (error: any) {
+    const isAbortError = error.name === 'AbortError' || error.code === 'ERR_CANCELED'
+    if (retryCount < maxRetries) {
+      const baseDelay = isAbortError ? 1000 : 3000
+      const retryDelay = Math.min(baseDelay * Math.pow(2, retryCount), 10000)
       setTimeout(() => {
-        loadBackgroundImages()
-      }, 3000)
-    })
+        loadBackgroundImages(retryCount + 1)
+      }, retryDelay)
+    }
+  }
 }
 
 onMounted(async () => {
+  // 配置 ApexCharts
+  configureApexCharts()
+
   // 初始化data-theme属性
   updateHtmlThemeAttribute(globalTheme.name.value)
 
@@ -165,7 +180,7 @@ onMounted(async () => {
   show.value = false
 
   // 加载背景图片
-  await loadBackgroundImages()
+  loadBackgroundImages()
 
   // 移除加载动画
   ensureRenderComplete(() => {
@@ -173,7 +188,6 @@ onMounted(async () => {
       setTimeout(() => {
         // 移除加载动画，显示页面
         animateAndRemoveLoader()
-
         // 页面完全显示后，检查未读消息
         setTimeout(() => {
           checkAndEmitUnreadMessages()
@@ -185,11 +199,14 @@ onMounted(async () => {
   // 添加页面可见性变化监听
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-      loadBackgroundImages()
-      // 页面恢复可见时检查未读消息
+      // 页面恢复可见时，稍作延迟以确保状态稳定
       setTimeout(() => {
-        checkAndEmitUnreadMessages()
-      }, 500)
+        loadBackgroundImages()
+        // 检查未读消息
+        setTimeout(() => {
+          checkAndEmitUnreadMessages()
+        }, 300)
+      }, 100)
     }
   })
 
@@ -197,11 +214,14 @@ onMounted(async () => {
   window.addEventListener('pageshow', event => {
     // persisted属性为true表示页面是从bfcache中恢复的
     if (event.persisted) {
-      loadBackgroundImages()
-      // PWA恢复时检查未读消息
+      // PWA恢复时，稍作延迟以确保状态稳定
       setTimeout(() => {
-        checkAndEmitUnreadMessages()
-      }, 500)
+        loadBackgroundImages()
+        // 检查未读消息
+        setTimeout(() => {
+          checkAndEmitUnreadMessages()
+        }, 300)
+      }, 100)
     }
   })
 })
@@ -211,7 +231,6 @@ onUnmounted(() => {
   document.removeEventListener('visibilitychange', () => {})
   // 移除PWA的页面恢复事件监听
   window.removeEventListener('pageshow', () => {})
-
   // 清除轮换定时器
   if (backgroundRotationTimer) {
     clearInterval(backgroundRotationTimer)
