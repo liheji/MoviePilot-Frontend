@@ -237,9 +237,9 @@ router.afterEach(() => {
   setTimeout(() => {
     setImageNavigatingState(false)
     setRequestNavigatingState(false)
-  }, 200)
+  }, 100)
 })
 
 // 导出默认对象
 export default router
-  // 延迟恢复图片加载，给页面一些初始化时间
+// 延迟恢复图片加载，给页面一些初始化时间
