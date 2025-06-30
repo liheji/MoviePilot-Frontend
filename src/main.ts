@@ -21,6 +21,7 @@ import { CronVuetify } from '@vue-js-cron/vuetify'
 import { isPWA } from './@core/utils/navigator'
 import { loadRemoteComponents } from './utils/federationLoader'
 import { fetchGlobalSettings } from './utils/globalSetting'
+import { initializeImageOptimizer } from '@/utils/imageOptimizer'
 
 // 5. 其他插件和功能模块
 import Toast from 'vue-toastification'
@@ -105,5 +106,9 @@ initializeApp().then(() => {
     })
     .use(ConfirmDialog)
     .use(i18n)
-    .mount('#app')
+
+  // 初始化全局图片优化器
+  initializeImageOptimizer()
+
+  app.mount('#app')
 })

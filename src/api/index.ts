@@ -1,6 +1,7 @@
 import axios from 'axios'
 import router from '@/router'
 import { useAuthStore } from '@/stores'
+import { initializeRequestOptimizer } from '@/utils/requestOptimizer'
 
 // 创建axios实例
 const api = axios.create({
@@ -16,6 +17,9 @@ declare global {
 
 // 将 API 实例暴露到全局，供插件使用
 window.MoviePilotAPI = api
+
+// 初始化请求优化器（必须在其他拦截器之前）
+initializeRequestOptimizer(api)
 
 // 添加请求拦截器
 api.interceptors.request.use(config => {

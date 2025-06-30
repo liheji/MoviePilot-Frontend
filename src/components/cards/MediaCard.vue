@@ -8,7 +8,7 @@ import { useToast } from 'vue-toastification'
 import { formatSeason, formatRating } from '@/@core/utils/formatters'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import type { MediaInfo, Subscribe, MediaSeason, Site } from '@/api/types'
-import router, { registerAbortController } from '@/router'
+import router from '@/router'
 import { useUserStore } from '@/stores'
 import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
@@ -232,9 +232,6 @@ async function handleCheckSubscribe() {
 // 查询当前媒体是否已入库
 async function handleCheckExists() {
   try {
-    const abortController = new AbortController()
-    registerAbortController(abortController)
-    const { signal } = abortController
     const result: { [key: string]: any } = await api.get('mediaserver/exists', {
       params: {
         tmdbid: props.media?.tmdb_id,
@@ -243,7 +240,6 @@ async function handleCheckExists() {
         season: props.media?.season,
         mtype: props.media?.type,
       },
-      signal,
     })
 
     if (result.success) isExists.value = true
@@ -255,16 +251,13 @@ async function handleCheckExists() {
 // 调用API检查是否已订阅，电视剧需要指定季
 async function checkSubscribe(season = 0) {
   try {
-    const abortController = new AbortController()
-    registerAbortController(abortController)
-    const { signal } = abortController
+    // AbortController 现在由全局请求优化器自动管理
     const mediaid = getMediaId()
     const result: Subscribe = await api.get(`subscribe/media/${mediaid}`, {
       params: {
         season,
         title: props.media?.title,
       },
-      signal,
     })
 
     return result.id || null
