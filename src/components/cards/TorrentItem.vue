@@ -266,7 +266,7 @@ onMounted(() => {
 }
 
 .chip-web-source {
-  background-color: #ff2d00;
+  background-color: #8000ff;
   color: white;
 }
 
