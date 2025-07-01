@@ -356,7 +356,11 @@ html.v-overlay-scroll-blocked {
   // 表格
   .v-table {
     border-radius: 0;
-    background-color: rgba(var(--v-theme-surface), 0.3);
+    background-color: rgba(var(--v-theme-surface), 0);
+
+    .v-table__wrapper > table > thead {
+      background-color: rgba(var(--v-theme-surface), 0.3);
+    }
   }
   
   // 页脚
@@ -396,11 +400,17 @@ html.v-overlay-scroll-blocked {
   .v-skeleton-loader {
     background-color: rgba(var(--v-theme-surface), 0.3);
   }
+
+  // 输入框和搜索框
+  .v-field {
+    background-color: rgba(var(--v-theme-surface), 0);
+  }
+  
 }
 
 // 透明主题下的弹出窗口样式
 html[data-theme="transparent"] {
-  .v-overlay__content {    
+  .v-overlay__content {
     border-radius: 12px !important;
     backdrop-filter: blur(10px) !important;
 
@@ -414,8 +424,8 @@ html[data-theme="transparent"] {
       background-color: rgb(var(--v-theme-surface), 0.5) !important;
     }
 
-    .v-table thead {
-      background-color: rgb(var(--v-theme-surface), 0.5) !important;
+    .v-table__wrapper table thead {
+      background-color: rgba(var(--v-theme-surface), 0.3);
     }
   }
 }
