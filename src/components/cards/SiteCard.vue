@@ -24,10 +24,11 @@ const { t } = useI18n()
 const cardProps = defineProps({
   site: Object as PropType<Site>,
   data: Object as PropType<SiteUserData>,
+  stats: Object as PropType<SiteStatistic>,
 })
 
 // 定义触发的自定义事件
-const emit = defineEmits(['update', 'remove'])
+const emit = defineEmits(['update', 'remove', 'refresh-stats'])
 
 // 确认框
 const createConfirm = useConfirm()
@@ -56,9 +57,6 @@ const resourceDialog = ref(false)
 // 用户数据弹窗
 const siteUserDataDialog = ref(false)
 
-// 站点使用统计
-const siteStats = ref<SiteStatistic>({})
-
 // 查询站点图标
 async function getSiteIcon() {
   try {
@@ -84,16 +82,8 @@ async function testSite() {
     testButtonText.value = t('site.testConnectivity')
     testButtonDisable.value = false
 
-    getSiteStats()
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-// 查询站点使用统计
-async function getSiteStats() {
-  try {
-    siteStats.value = await api.get(`site/statistic/${cardProps.site?.domain}`)
+    // 测试完成后刷新统计数据
+    emit('refresh-stats', cardProps.site?.domain)
   } catch (error) {
     console.error(error)
   }
@@ -140,16 +130,17 @@ async function deleteSiteInfo() {
 
 // 根据站点状态显示不同的状态图标
 const statColor = computed(() => {
-  if (isNullOrEmptyObject(siteStats.value)) {
+  if (!cardProps.stats || isNullOrEmptyObject(cardProps.stats)) {
     return 'secondary'
   }
-  if (siteStats.value?.lst_state == 1) {
+  if (cardProps.stats?.lst_state === 1) {
     return 'error'
-  } else if (siteStats.value?.lst_state == 0) {
-    if (!siteStats.value?.seconds) return 'secondary'
-    if (siteStats.value?.seconds >= 5) return 'warning'
+  } else if (cardProps.stats?.lst_state === 0) {
+    if (!cardProps.stats?.seconds) return 'secondary'
+    if (cardProps.stats?.seconds >= 5) return 'warning'
     return 'success'
   }
+  return 'secondary'
 })
 
 // 数据百分比计算
@@ -185,19 +176,20 @@ function saveSite() {
 // 更新站点Cookie UA后的回调
 function onSiteCookieUpdated() {
   siteCookieDialog.value = false
-  getSiteStats()
+  // Cookie更新后刷新统计数据
+  emit('refresh-stats', cardProps.site?.domain)
 }
 
 // 资源浏览弹窗关闭后的回调
 function onSiteResourceDone() {
   resourceDialog.value = false
-  getSiteStats()
+  // 资源操作完成后刷新统计数据
+  emit('refresh-stats', cardProps.site?.domain)
 }
 
 // 装载时查询站点图标
 onMounted(() => {
   getSiteIcon()
-  getSiteStats()
 })
 </script>
 
