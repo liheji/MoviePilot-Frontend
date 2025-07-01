@@ -168,7 +168,7 @@ const theme: VuetifyOptions['theme'] = {
         'on-primary': '#FFFFFF',
         'on-success': '#FFFFFF',
         'on-warning': '#FFFFFF',
-        'background': '#000000',
+        'background': '#1C1C1C',
         'on-background': '#E7E3FC',
         'surface': 'rgba(30, 30, 30, 0.3)',
         'on-surface': '#E7E3FC',
