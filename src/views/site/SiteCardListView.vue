@@ -237,7 +237,7 @@ useDynamicButton({
 
         <!-- 筛选菜单 -->
         <VCard min-width="200">
-          <VList>
+          <VList class="px-2">
             <VListSubheader>{{ t('common.filter') }}</VListSubheader>
             <VListItem
               v-for="option in filterOptions"
