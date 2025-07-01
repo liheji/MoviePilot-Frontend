@@ -769,6 +769,8 @@ export interface MetaInfo {
   audio_term: string
   // 资源类型+特效
   edition: string
+  // 流媒体平台
+  web_source: string
   // 应用的自定义识别词
   apply_words: string[]
 }

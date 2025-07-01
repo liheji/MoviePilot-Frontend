@@ -204,6 +204,11 @@ onMounted(() => {
 
         <!-- 资源标签区 -->
         <div class="d-flex flex-wrap gap-1 mb-2">
+          <!-- 流媒体平台 -->
+          <VChip v-if="meta?.web_source" class="chip-web-source rounded-sm" size="x-small" variant="elevated">
+            {{ meta?.web_source }}
+          </VChip>
+
           <!-- 版本标签 -->
           <VChip v-if="meta?.edition" class="chip-edition rounded-sm" size="x-small" variant="elevated">
             {{ meta?.edition }}
@@ -409,6 +414,11 @@ onMounted(() => {
 
 .chip-season {
   background-color: #3f51b5;
+  color: white;
+}
+
+.chip-web-source {
+  background-color: #ff2d00;
   color: white;
 }
 
