@@ -39,6 +39,9 @@ const recentPlugins = ref<Plugin[]>([])
 // 是否加载中
 const loading = ref(false)
 
+// 各插件的图标加载状态
+const pluginIconLoading = ref<Record<string, boolean>>({})
+
 // 上滑关闭相关状态
 const isDraggingToClose = ref(false)
 const dragOffset = ref(0)
@@ -51,6 +54,11 @@ const currentPlugin = ref<Plugin | null>(null)
 const isVisible = computed(() => {
   return props.visible // 只基于visible属性显示，不考虑pullDistance
 })
+
+// 处理插件图标加载错误
+function handleIconError(plugin: Plugin) {
+  pluginIconLoading.value[plugin.id] = false
+}
 
 // 计算整个组件的transform（包含拖动偏移）
 const componentTransform = computed(() => {
@@ -85,6 +93,7 @@ const componentOpacity = computed(() => {
 // 计算插件图标路径
 function getPluginIcon(plugin: Plugin): string {
   if (!plugin.plugin_icon) return noImage
+  if (!pluginIconLoading.value[plugin.id]) return noImage
 
   // 如果是网络图片则使用代理后返回
   if (plugin?.plugin_icon?.startsWith('http'))
@@ -155,9 +164,7 @@ watch(
   () => isVisible.value,
   visible => {
     if (visible) {
-      if (pluginsWithPage.value.length === 0) {
-        fetchPluginsWithPage()
-      }
+      fetchPluginsWithPage()
       loadRecentPlugins()
     }
   },
@@ -230,7 +237,7 @@ function handleBackdropClick(event: MouseEvent) {
           >
             <div class="plugin-icon">
               <VAvatar size="48" class="plugin-avatar">
-                <VImg :src="getPluginIcon(plugin)" :alt="plugin.plugin_name" cover>
+                <VImg :src="getPluginIcon(plugin)" :alt="plugin.plugin_name" cover @error="handleIconError(plugin)">
                   <template #error>
                     <VIcon icon="mdi-puzzle" size="24" />
                   </template>
@@ -306,6 +313,7 @@ function handleBackdropClick(event: MouseEvent) {
   position: fixed;
   z-index: 9999;
   display: flex;
+  overflow: hidden; /* 防止整个容器溢出 */
   flex-direction: column;
   backdrop-filter: blur(20px);
   background: rgba(var(--v-theme-surface), 0.95);

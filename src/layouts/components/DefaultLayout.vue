@@ -391,7 +391,7 @@ onMounted(() => {
   border-radius: 50%;
   backdrop-filter: blur(20px);
   background: rgba(var(--v-theme-surface), 0.3);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 10%), 0 1px 4px rgba(0, 0, 0, 6%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 10%), 0 1px 3px rgba(0, 0, 0, 6%);
   inset-block-start: 80px;
   inset-inline-start: 50%;
   pointer-events: none;
