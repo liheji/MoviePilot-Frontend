@@ -288,17 +288,19 @@ useDynamicButton({
     :error-description="filterOption === 'all' ? t('site.sitesWillBeShownHere') : t('common.tryChangingFilters')"
   />
   <!-- 新增站点按钮 -->
-  <VFab
-    v-if="isRefreshed && !appMode"
-    icon="mdi-web-plus"
-    location="bottom"
-    size="x-large"
-    fixed
-    app
-    appear
-    @click="siteAddDialog = true"
-    :class="{ 'mb-12': appMode }"
-  />
+  <Teleport to="body">
+    <VFab
+      v-if="isRefreshed && !appMode"
+      icon="mdi-web-plus"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="siteAddDialog = true"
+      :class="{ 'mb-12': appMode }"
+    />
+  </Teleport>
   <!-- 新增站点弹窗 -->
   <SiteAddEditDialog
     v-if="siteAddDialog"

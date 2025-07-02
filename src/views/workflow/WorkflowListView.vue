@@ -72,17 +72,19 @@ useDynamicButton({
   </div>
 
   <!-- 新增按钮 -->
-  <VFab
-    v-if="isRefreshed && !appMode"
-    icon="mdi-plus"
-    location="bottom"
-    size="x-large"
-    fixed
-    app
-    appear
-    :class="{ 'mb-12': appMode }"
-    @click="addDialog = true"
-  />
+  <Teleport to="body">
+    <VFab
+      v-if="isRefreshed && !appMode"
+      icon="mdi-plus"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      :class="{ 'mb-12': appMode }"
+      @click="addDialog = true"
+    />
+  </Teleport>
   <!-- 新增对话框 -->
   <WorkflowAddEditDialog v-if="addDialog" v-model="addDialog" @close="addDialog = false" @save="addDone" />
 </template>

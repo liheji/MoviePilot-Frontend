@@ -342,16 +342,18 @@ onDeactivated(() => {
   </draggable>
 
   <!-- 底部操作按钮（只在非移动设备上显示） -->
-  <VFab
-    v-if="!appMode"
-    icon="mdi-view-dashboard-edit"
-    location="bottom"
-    size="x-large"
-    fixed
-    app
-    appear
-    @click="dialog = true"
-  />
+  <Teleport to="body">
+    <VFab
+      v-if="!appMode"
+      icon="mdi-view-dashboard-edit"
+      location="bottom"
+      size="x-large"
+      fixed
+      app
+      appear
+      @click="dialog = true"
+    />
+  </Teleport>
 
   <!-- 弹窗，根据配置生成选项 -->
   <VDialog v-if="dialog" v-model="dialog" max-width="35rem" :fullscreen="!display.mdAndUp.value" scrollable>

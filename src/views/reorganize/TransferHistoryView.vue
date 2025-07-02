@@ -698,29 +698,31 @@ onMounted(() => {
   </VCard>
 
   <!-- 底部操作按钮 -->
-  <div v-if="isRefreshed && selected.length > 0">
-    <VFab
-      icon="mdi-trash-can-outline"
-      color="error"
-      location="bottom"
-      size="x-large"
-      fixed
-      app
-      appear
-      @click="removeHistoryBatch"
-      :class="appMode ? 'mb-28' : 'mb-16'"
-    />
-    <VFab
-      :class="appMode ? 'mb-44' : 'mb-32'"
-      icon="mdi-redo-variant"
-      location="bottom"
-      size="x-large"
-      fixed
-      app
-      appear
-      @click="retransferBatch"
-    />
-  </div>
+  <Teleport to="body">
+    <div v-if="isRefreshed && selected.length > 0">
+      <VFab
+        icon="mdi-trash-can-outline"
+        color="error"
+        location="bottom"
+        size="x-large"
+        fixed
+        app
+        appear
+        @click="removeHistoryBatch"
+        :class="appMode ? 'mb-28' : 'mb-16'"
+      />
+      <VFab
+        :class="appMode ? 'mb-44' : 'mb-32'"
+        icon="mdi-redo-variant"
+        location="bottom"
+        size="x-large"
+        fixed
+        app
+        appear
+        @click="retransferBatch"
+      />
+    </div>
+  </Teleport>
   <!-- 底部弹窗 -->
   <VBottomSheet v-model="deleteConfirmDialog" inset>
     <VCard class="text-center">

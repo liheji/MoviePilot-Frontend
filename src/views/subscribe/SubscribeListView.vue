@@ -181,20 +181,22 @@ useDynamicButton({
     :error-description="keyword ? t('subscribe.noFilterData') : t('subscribe.noSubscribeData')"
   />
   <!-- 底部操作按钮 -->
-  <div v-if="isRefreshed">
-    <VFab
-      v-if="userStore.superUser && !appMode"
-      icon="mdi-history"
-      color="info"
-      location="bottom"
-      :class="{ 'mb-12': appMode }"
-      size="x-large"
-      fixed
-      app
-      appear
-      @click="historyDialog = true"
-    />
-  </div>
+  <Teleport to="body">
+    <div v-if="isRefreshed">
+      <VFab
+        v-if="userStore.superUser && !appMode"
+        icon="mdi-history"
+        color="info"
+        location="bottom"
+        :class="{ 'mb-12': appMode }"
+        size="x-large"
+        fixed
+        app
+        appear
+        @click="historyDialog = true"
+      />
+    </div>
+  </Teleport>
   <!-- 历史记录弹窗 -->
   <SubscribeHistoryDialog
     v-if="historyDialog"
