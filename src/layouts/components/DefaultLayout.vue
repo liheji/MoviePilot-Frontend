@@ -7,7 +7,7 @@ import UserNofification from '@/layouts/components/UserNotification.vue'
 import SearchBar from '@/layouts/components/SearchBar.vue'
 import ShortcutBar from '@/layouts/components/ShortcutBar.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
-import PluginQuickAccess from '@/layouts/components/PluginQuickAccess.vue'
+import QuickAccess from '@/layouts/components/QuickAccess.vue'
 import { useUserStore } from '@/stores'
 import { getNavMenus } from '@/router/i18n-menu'
 import { NavMenu } from '@/@layouts/types'
@@ -364,7 +364,7 @@ onMounted(() => {
   </VerticalNavLayout>
 
   <!-- 👉 Plugin Quick Access -->
-  <PluginQuickAccess
+  <QuickAccess
     v-if="appMode"
     :visible="showPluginQuickAccess"
     :pull-distance="pullDistance"
