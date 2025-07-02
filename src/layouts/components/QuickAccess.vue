@@ -562,10 +562,18 @@ function handleBackdropClick(event: MouseEvent) {
   gap: 16px;
   min-block-size: 0;
   -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none; // IE/Edge
   overscroll-behavior: contain;
   padding-block: 24px;
   padding-inline: 20px;
+
+  // 隐藏滚动条
+  scrollbar-width: none; // Firefox
   touch-action: pan-y;
+
+  &::-webkit-scrollbar {
+    display: none; // WebKit 浏览器
+  }
 }
 
 .section-header {
@@ -574,10 +582,6 @@ function handleBackdropClick(event: MouseEvent) {
   gap: 12px;
   margin-block: 0 16px;
   margin-inline: 0;
-
-  &.with-margin {
-    margin-block-start: 24px;
-  }
 
   .section-title {
     color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
@@ -598,13 +602,13 @@ function handleBackdropClick(event: MouseEvent) {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  padding-block: 0 8px;
+  padding-block: 0;
   padding-inline: 0;
 }
 
 .all-plugins-grid {
   display: grid;
-  gap: 20px;
+  gap: 8px;
   grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
 }
 
@@ -613,11 +617,10 @@ function handleBackdropClick(event: MouseEvent) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px;
   border-radius: 12px;
   block-size: 120px;
   cursor: pointer;
-  gap: 8px;
+  gap: 4px;
   transition: all 0.2s ease;
 
   &:hover {
