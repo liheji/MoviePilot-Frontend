@@ -41,7 +41,7 @@ import MediaIdSelector from './components/misc/MediaIdSelector.vue'
 import CronField from './components/field/CronField.vue'
 import PathField from './components/field/PathField.vue'
 import HeaderTab from './layouts/components/HeaderTab.vue'
-import QuickAccess from './layouts/components/PluginQuickAccess.vue'
+import QuickAccess from './layouts/components/QuickAccess.vue'
 
 // 7. 样式文件 - 合并为单一导入
 import '@/styles/main.scss'
