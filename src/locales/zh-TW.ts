@@ -2159,8 +2159,6 @@ export default {
     quickAccess: '快速訪問',
     noPluginsWithPage: '暫無可展示的插件',
     tapToOpen: '點擊返回主界面',
-    pullToOpen: '下拉打開快速訪問',
-    releaseToOpen: '松手打開快速訪問',
     recentlyUsed: '最近使用',
     allPlugins: '所有插件',
     noRecentPlugins: '無',

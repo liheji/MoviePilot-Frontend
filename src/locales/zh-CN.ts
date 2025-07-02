@@ -2158,12 +2158,10 @@ export default {
     cloneFailedGeneral: '插件分身创建失败',
     logTitle: '插件日志',
     quickAccess: '快速访问',
-    tapToOpen: '点击顶部可回到主界面',
-    pullToOpen: '下拉打开快速访问',
+    tapToOpen: '点击返回主界面',
     noPluginsWithPage: '暂无可用插件',
     recentlyUsed: '最近使用',
     allPlugins: '所有插件',
-    releaseToOpen: '松手打开插件',
     noRecentPlugins: '无',
   },
   profile: {

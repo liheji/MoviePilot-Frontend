@@ -2185,8 +2185,6 @@ export default {
     quickAccess: 'Quick Access',
     noPluginsWithPage: 'No plugins with detail pages available',
     tapToOpen: 'Tap to Return',
-    pullToOpen: 'Pull to Open Quick Access',
-    releaseToOpen: 'Release to Open Quick Access',
     recentlyUsed: 'Recently Used',
     allPlugins: 'All Plugins',
     noRecentPlugins: 'None',

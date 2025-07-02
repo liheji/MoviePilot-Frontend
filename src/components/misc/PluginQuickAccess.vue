@@ -42,8 +42,10 @@ const recentPlugins = ref<Plugin[]>([])
 // 是否加载中
 const loading = ref(false)
 
+// 图片是否加载失败
+const imageLoadError = ref(false)
+
 // 上滑关闭相关状态
-const swipeStartY = ref(0)
 const isDraggingToClose = ref(false)
 const dragOffset = ref(0)
 
@@ -85,6 +87,7 @@ const componentOpacity = computed(() => {
 // 计算插件图标路径
 function getPluginIcon(plugin: Plugin): string {
   if (!plugin.plugin_icon) return noImage
+  if (imageLoadError.value) return noImage
 
   // 如果是网络图片则使用代理后返回
   if (plugin?.plugin_icon?.startsWith('http'))
@@ -260,10 +263,7 @@ function handleBackdropClick(event: MouseEvent) {
           >
             <div class="plugin-icon">
               <VAvatar size="48" class="plugin-avatar">
-                <VImg :src="getPluginIcon(plugin)" :alt="plugin.plugin_name" cover>
-                  <template #error>
-                    <VIcon icon="mdi-puzzle" size="24" />
-                  </template>
+                <VImg :src="getPluginIcon(plugin)" :alt="plugin.plugin_name" cover @error="imageLoadError = true">
                 </VImg>
               </VAvatar>
               <!-- 运行状态指示 -->
@@ -294,25 +294,25 @@ function handleBackdropClick(event: MouseEvent) {
 <style lang="scss" scoped>
 .plugin-quick-access {
   position: fixed;
-  z-index: 9999; /* 提高z-index确保在最上层 */
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(20px);
   background: rgba(var(--v-theme-surface), 0.95);
   block-size: 100vh;
-  block-size: 100dvh; /* 使用动态视口高度，支持移动端 */
+  block-size: 100dvh;
   inset-block-start: 0;
   inset-inline: 0;
   opacity: 0;
   padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
   padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
-  pointer-events: none; /* 隐藏时不阻挡点击 */
+  pointer-events: none;
   transform: translateY(-100%);
   transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.visible {
     opacity: 1;
-    pointer-events: auto; /* 显示时恢复点击 */
+    pointer-events: auto;
     transform: translateY(0);
   }
 }
@@ -360,13 +360,31 @@ function handleBackdropClick(event: MouseEvent) {
   flex: 1;
   flex-direction: column;
   gap: 16px;
-
-  /* 优化滚动体验 */
+  min-block-size: 0;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
   padding-block: 24px;
   padding-inline: 20px;
   scroll-behavior: smooth;
+  scrollbar-color: rgba(var(--v-theme-on-surface), 0.2) transparent;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    inline-size: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: rgba(var(--v-theme-on-surface), 0.2);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--v-theme-on-surface), 0.3);
+  }
 }
 
 .loading-container {
@@ -417,26 +435,41 @@ function handleBackdropClick(event: MouseEvent) {
 }
 
 .recent-plugins-row {
-  display: flex;
+  display: grid;
   gap: 16px;
+  grid-auto-rows: 100px;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  max-block-size: 220px;
   -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: none;
-  overflow-x: auto;
+  overflow-y: auto;
   padding-block: 0 8px;
   padding-inline: 0;
   scroll-behavior: smooth;
-
-  /* 隐藏滚动条但保持功能 */
-  scrollbar-width: none;
+  scrollbar-color: rgba(var(--v-theme-on-surface), 0.2) transparent;
+  scrollbar-width: thin;
 
   &::-webkit-scrollbar {
-    display: none;
+    inline-size: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    background: rgba(var(--v-theme-on-surface), 0.2);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--v-theme-on-surface), 0.3);
   }
 }
 
 .all-plugins-grid {
   display: grid;
   gap: 20px;
+  grid-auto-rows: 100px;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
 }
 
@@ -444,10 +477,12 @@ function handleBackdropClick(event: MouseEvent) {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   border-radius: 12px;
+  block-size: 100px;
   cursor: pointer;
-  gap: 8px;
-  padding-block: 12px;
+  gap: 6px;
+  padding-block: 8px;
   padding-inline: 8px;
   transition: all 0.2s ease;
 
@@ -462,20 +497,19 @@ function handleBackdropClick(event: MouseEvent) {
   }
 }
 
-.recent-plugins-row .plugin-item {
-  flex-shrink: 0;
-  min-inline-size: 80px;
-}
-
 .plugin-icon {
   position: relative;
+  display: flex;
+  flex-shrink: 0; /* 防止图标被压缩 */
+  align-items: center;
+  justify-content: center;
 
   .plugin-avatar {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 10%);
     transition: box-shadow 0.2s ease;
 
     .plugin-item:hover & {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 15%);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 15%);
     }
   }
 
@@ -498,10 +532,16 @@ function handleBackdropClick(event: MouseEvent) {
 }
 
 .plugin-name {
+  display: -webkit-box;
+  overflow: hidden;
+  flex-shrink: 0;
+  -webkit-box-orient: vertical;
   color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
   font-size: 12px;
   font-weight: 500;
+  -webkit-line-clamp: 2;
   line-height: 1.2;
+  max-block-size: 2.4em;
   text-align: center;
   word-break: break-all;
 }
@@ -536,8 +576,6 @@ function handleBackdropClick(event: MouseEvent) {
   display: flex;
   justify-content: center;
   inline-size: 100%;
-
-  /* 增加可触摸区域 */
   padding-block: 12px;
   padding-inline: 0;
 }
@@ -568,7 +606,6 @@ function handleBackdropClick(event: MouseEvent) {
   }
 }
 
-/* 优化触摸体验 */
 @media (hover: none) and (pointer: coarse) {
   .plugin-item:hover {
     background: transparent;

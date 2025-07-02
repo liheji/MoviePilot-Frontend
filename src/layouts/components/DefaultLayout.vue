@@ -57,12 +57,13 @@ const showPluginQuickAccess = ref(false)
 const isPulling = ref(false)
 const startY = ref(0)
 const pullDistance = ref(0)
+const initialScrollTop = ref(0)
 
 // 计算页面内容的transform
 const contentTransform = computed(() => {
   if (!isPulling.value || pullDistance.value <= 0) return 'translateY(0)'
-  // 页面内容的移动距离是下拉距离的30%，提供更自然的阻尼感
-  const moveDistance = pullDistance.value * 0.3
+  // 页面内容的移动距离是下拉距离的35%，与新的下拉距离相匹配
+  const moveDistance = pullDistance.value * 0.35
   return `translateY(${moveDistance}px)`
 })
 
@@ -74,7 +75,7 @@ const contentTransition = computed(() => {
 
 // 计算下拉指示器的显示状态
 const showPullIndicator = computed(() => {
-  return isPulling.value && pullDistance.value > 20
+  return isPulling.value && pullDistance.value > 30
 })
 
 // 计算下拉指示器的旋转角度
@@ -87,7 +88,7 @@ const indicatorRotation = computed(() => {
 // 计算下拉指示器的透明度
 const indicatorOpacity = computed(() => {
   if (!isPulling.value) return 0
-  return Math.min(pullDistance.value / 60, 1)
+  return Math.min(pullDistance.value / 80, 1)
 })
 
 // 根据分类获取菜单列表
@@ -115,35 +116,56 @@ function handleUnreadMessage(count: number) {
   }
 }
 
-// 检查是否在页面顶部
-function isAtTop(): boolean {
-  return window.scrollY <= 5
-}
-
 // 处理触摸开始
 function handleTouchStart(event: TouchEvent) {
-  if (!appMode || !display.mdAndDown.value || !isAtTop()) return
+  if (!appMode || !display.mdAndDown.value) return
 
   const touch = event.touches[0]
   startY.value = touch.clientY
+
+  // 重置下拉状态，但不立即阻止滚动
   isPulling.value = false
   pullDistance.value = 0
+
+  // 记录开始时的滚动位置，用于更准确的判断
+  initialScrollTop.value = window.scrollY || document.documentElement.scrollTop || 0
 }
 
 // 处理触摸移动
 function handleTouchMove(event: TouchEvent) {
-  if (!appMode || !display.mdAndDown.value || !isAtTop()) return
+  if (!appMode || !display.mdAndDown.value) return
 
   const touch = event.touches[0]
   const deltaY = touch.clientY - startY.value
 
-  if (deltaY > 0 && isAtTop()) {
-    // 向下拖拽且在页面顶部
-    isPulling.value = true
-    pullDistance.value = Math.min(deltaY * 0.6, 150) // 增加最大距离到150px
+  // 如果已经开始下拉，继续保持下拉状态，避免中途中断
+  if (isPulling.value) {
+    // 继续下拉，但要确保是向下移动
+    if (deltaY > -5) {
+      // 允许轻微的向上偏移（-5px），避免手指抖动导致中断
+      pullDistance.value = Math.max(0, Math.min(deltaY * 0.7, 250))
+      // 阻止默认滚动行为
+      event.preventDefault()
+    } else {
+      // 如果向上移动超过阈值，停止下拉
+      isPulling.value = false
+      pullDistance.value = 0
+    }
+  } else {
+    // 还没开始下拉，检查是否应该开始
+    if (deltaY > 5) {
+      // 检查当前的滚动位置
+      const currentScrollTop = window.scrollY || document.documentElement.scrollTop || 0
 
-    // 阻止默认滚动
-    event.preventDefault()
+      // 必须同时满足：1. 向下拖拽超过5px  2. 当前在页面顶部  3. 从顶部开始拖拽
+      if (currentScrollTop <= 100 && initialScrollTop.value <= 100) {
+        // 向下拖拽且在页面顶部附近，开始下拉
+        isPulling.value = true
+        pullDistance.value = Math.min(deltaY * 0.7, 250)
+        // 阻止默认滚动
+        event.preventDefault()
+      }
+    }
   }
 }
 
@@ -249,19 +271,16 @@ onMounted(() => {
     class="pull-indicator"
     :style="{
       opacity: indicatorOpacity,
-      transform: `translate(-50%, ${Math.min(pullDistance * 0.5, 50)}px)`,
+      transform: `translate(-50%, ${Math.min(pullDistance * 0.3, 30)}px)`,
     }"
   >
     <div
       class="indicator-icon"
       :style="{
-        transform: `rotate(${indicatorRotation}deg)`,
+        transform: `scale(${Math.min(1 + pullDistance / 400, 1.15)}) rotate(${indicatorRotation}deg)`,
       }"
     >
-      <VIcon icon="mdi-chevron-down" size="large" :color="pullDistance > 120 ? 'success' : 'primary'" />
-    </div>
-    <div class="indicator-text">
-      {{ pullDistance > 120 ? t('plugin.releaseToOpen') : t('plugin.pullToOpen') }}
+      <VIcon icon="mdi-gesture-swipe-down" size="24" :color="pullDistance > 120 ? 'success' : 'primary'" />
     </div>
   </div>
   <VerticalNavLayout>
@@ -327,7 +346,7 @@ onMounted(() => {
 
     <template #after-vertical-nav-items />
 
-    <!-- 👉 Pages - 添加下拉跟随动画 -->
+    <!-- 👉 下拉跟随动画 -->
     <div
       class="main-content-wrapper"
       :style="{
@@ -355,39 +374,29 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-/* 主内容包装器样式 */
 .main-content-wrapper {
-  /* 在下拉状态下优化渲染性能 */
   backface-visibility: hidden;
   block-size: 100%;
-
-  /* 确保包装器不影响原有布局 */
   inline-size: 100%;
-
-  /* 使用GPU加速来优化动画性能 */
   transform: translateZ(0);
   will-change: transform;
 }
 
-/* 下拉指示器样式 */
 .pull-indicator {
   position: fixed;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 0;
-  border-radius: 0;
-  backdrop-filter: none;
-
-  /* 完全透明，无背景装饰 */
-  background: none;
-  box-shadow: none;
-  gap: 4px;
-  inset-block-start: 64px; /* 紧贴导航栏下方 */
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  backdrop-filter: blur(20px);
+  background: rgba(var(--v-theme-surface), 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 10%), 0 1px 4px rgba(0, 0, 0, 6%);
+  inset-block-start: 80px;
   inset-inline-start: 50%;
   pointer-events: none;
   transform: translateX(-50%);
-  transition: opacity 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .indicator-icon {
@@ -395,18 +404,38 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: none;
-  block-size: 28px;
-  inline-size: 28px;
-  transition: transform 0.2s ease;
+  background: rgba(var(--v-theme-primary), 0.08);
+  block-size: 40px;
+  inline-size: 40px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.indicator-text {
-  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 30%);
-  white-space: nowrap;
+/* 透明主题适配 */
+html[class*='transparent'] .pull-indicator,
+html[class*='mica'] .pull-indicator,
+html[class*='acrylic'] .pull-indicator {
+  border: 1px solid rgba(255, 255, 255, 20%);
+  background: rgba(255, 255, 255, 95%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 12%), 0 4px 16px rgba(0, 0, 0, 8%);
+}
+
+html[class*='transparent'] .indicator-icon,
+html[class*='mica'] .indicator-icon,
+html[class*='acrylic'] .indicator-icon {
+  background: rgba(var(--v-theme-primary), 0.12);
+}
+
+html[data-theme='dark'][class*='transparent'] .pull-indicator,
+html[data-theme='dark'][class*='mica'] .pull-indicator,
+html[data-theme='dark'][class*='acrylic'] .pull-indicator {
+  border: 1px solid rgba(255, 255, 255, 10%);
+  background: rgba(18, 18, 18, 95%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 30%), 0 4px 16px rgba(0, 0, 0, 20%);
+}
+
+html[data-theme='dark'][class*='transparent'] .indicator-icon,
+html[data-theme='dark'][class*='mica'] .indicator-icon,
+html[data-theme='dark'][class*='acrylic'] .indicator-icon {
+  background: rgba(var(--v-theme-primary), 0.15);
 }
 </style>
