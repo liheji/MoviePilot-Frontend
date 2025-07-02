@@ -7,11 +7,13 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <NoDataFound error-code="404" :error-title="t('notFound.title')" :error-description="t('notFound.description')">
-    <template #button>
-      <VBtn to="/" class="mt-10" prepend-icon="mdi-home">
-        {{ t('notFound.backButton') }}
-      </VBtn>
-    </template>
-  </NoDataFound>
+  <div class="pt-10">
+    <NoDataFound error-code="404" :error-title="t('notFound.title')" :error-description="t('notFound.description')">
+      <template #button>
+        <VBtn to="/" class="mt-10" prepend-icon="mdi-home">
+          {{ t('notFound.backButton') }}
+        </VBtn>
+      </template>
+    </NoDataFound>
+  </div>
 </template>

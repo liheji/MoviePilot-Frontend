@@ -191,6 +191,7 @@ onUnmounted(() => {
 .header-tab-icon {
   color: rgba(var(--v-theme-on-background), 0.6);
   margin-inline-end: 6px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 10%);
   transition: color 0.2s ease;
 }
 
@@ -206,6 +207,7 @@ onUnmounted(() => {
   font-weight: 600;
   padding-block: 6px;
   padding-inline: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 10%);
   transition: all 0.2s ease;
   white-space: nowrap;
 
@@ -224,6 +226,7 @@ onUnmounted(() => {
 
   &.active {
     color: rgb(var(--v-theme-primary));
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 15%);
 
     &::after {
       transform: translateX(-50%) scaleX(1);
@@ -231,6 +234,7 @@ onUnmounted(() => {
 
     .header-tab-icon {
       color: rgb(var(--v-theme-primary));
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 15%);
     }
   }
 
