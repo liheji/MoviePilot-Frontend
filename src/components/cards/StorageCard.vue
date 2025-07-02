@@ -15,7 +15,6 @@ import AlistConfigDialog from '../dialog/AlistConfigDialog.vue'
 import { useToast } from 'vue-toastification'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { useI18n } from 'vue-i18n'
-import { storageIconDict } from '@/api/constants'
 import { useDisplay } from 'vuetify'
 
 // 显示器宽度
@@ -163,7 +162,7 @@ function onClose() {
 <template>
   <div>
     <VCard variant="tonal" @click="openStorageDialog">
-      <VDialogCloseBtn v-if="!storageIconDict[storage.type]" @click="onClose" />
+      <VDialogCloseBtn @click="onClose" class="absolute top-0 right-0" />
       <VCardText class="flex justify-space-between align-center gap-3">
         <div class="align-self-start flex-1">
           <h5 class="text-h6 mb-1">{{ storage.name }}</h5>
