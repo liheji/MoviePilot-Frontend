@@ -339,7 +339,7 @@ function handleBackdropClick(event: MouseEvent) {
     :style="{
       opacity: componentOpacity,
       transform: componentTransform,
-      transition: isDraggingToClose ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      transition: isDraggingToClose ? 'none' : 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
     }"
     @click="handleBackdropClick"
     @touchstart="handleTouchStart"
