@@ -100,7 +100,7 @@ function getPluginIcon(plugin: Plugin): string {
   if (plugin?.plugin_icon?.startsWith('http'))
     return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(plugin?.plugin_icon)}`
 
-  return `${import.meta.env.VITE_API_BASE_URL}plugin_icon/${plugin?.plugin_icon}`
+  return `./plugin_icon/${plugin?.plugin_icon}`
 }
 
 // 获取有详情页面的插件
