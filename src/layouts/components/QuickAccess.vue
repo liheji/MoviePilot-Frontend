@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n'
 import { useRecentPlugins } from '@/composables/useRecentPlugins'
 import PluginDataDialog from '@/components/dialog/PluginDataDialog.vue'
 import { VCard } from 'vuetify/components'
+import { getDominantColor } from '@/@core/utils/image'
 
 // 国际化
 const { t } = useI18n()
@@ -41,11 +42,27 @@ const recentPlugins = ref<Plugin[]>([])
 const loading = ref(false)
 
 // 各插件的图标加载状态
-const pluginIconLoading = ref<Record<string, boolean>>({})
+const pluginIconLoadError = ref<Record<string, boolean>>({})
+
+// 各插件的背景颜色
+const pluginBackgroundColors = ref<Record<string, string>>({})
+
+// 上滑关闭配置常量
+const SWIPE_CONFIG = {
+  START_THRESHOLD: 10, // 开始检测上滑的最小距离
+  CLOSE_THRESHOLD: 100, // 触发关闭的距离
+  MAX_DRAG_DISTANCE: 1000, // 最大拖拽距离
+  VELOCITY_THRESHOLD: 0.8, // 快速滑动速度阈值 (px/ms)
+}
 
 // 上滑关闭相关状态
 const isDraggingToClose = ref(false)
 const dragOffset = ref(0)
+const startY = ref(0)
+const lastY = ref(0)
+const lastTime = ref(0)
+const velocity = ref(0)
+const startedFromBottomArea = ref(false)
 
 // 插件弹窗相关状态
 const showPluginDataDialog = ref(false)
@@ -58,7 +75,41 @@ const isVisible = computed(() => {
 
 // 处理插件图标加载错误
 function handleIconError(plugin: Plugin) {
-  pluginIconLoading.value[plugin.id] = false
+  pluginIconLoadError.value[plugin.id] = true
+}
+
+// 处理插件图标加载完成
+async function handleIconLoaded(src: string | undefined, plugin: Plugin) {
+  if (!src) return
+
+  try {
+    // 创建一个临时的img元素来获取图片数据
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = async () => {
+      try {
+        // 从图片中提取背景色
+        const backgroundColor = await getDominantColor(img)
+        pluginBackgroundColors.value[plugin.id] = backgroundColor
+      } catch (error) {
+        // 如果提取失败，使用默认颜色
+        pluginBackgroundColors.value[plugin.id] = '#28A9E1'
+      }
+    }
+    img.onerror = () => {
+      // 如果加载失败，使用默认颜色
+      pluginBackgroundColors.value[plugin.id] = '#28A9E1'
+    }
+    img.src = src
+  } catch (error) {
+    // 如果提取失败，使用默认颜色
+    pluginBackgroundColors.value[plugin.id] = '#28A9E1'
+  }
+}
+
+// 获取插件背景颜色
+function getPluginBackgroundColor(plugin: Plugin): string {
+  return pluginBackgroundColors.value[plugin.id] || '#28A9E1'
 }
 
 // 计算整个组件的transform（包含拖动偏移）
@@ -70,31 +121,23 @@ const componentTransform = computed(() => {
     baseTransform = 'translateY(-100%)'
   }
 
-  // 如果正在拖动关闭，添加拖动偏移
+  // 如果正在拖动关闭，添加拖动偏移（向上拖拽为负值，让面板向上移动）
   if (isDraggingToClose.value) {
-    return `${baseTransform} translateY(${dragOffset.value}px)`
+    return `${baseTransform} translateY(-${dragOffset.value}px)`
   }
 
   return baseTransform
 })
 
-// 计算组件透明度（包含拖动透明度变化）
+// 计算组件透明度
 const componentOpacity = computed(() => {
-  let baseOpacity = props.visible ? 1 : 0
-
-  // 如果正在拖动关闭，根据拖动距离调整透明度
-  if (isDraggingToClose.value) {
-    const dragProgress = Math.min(dragOffset.value / 200, 1)
-    return baseOpacity * (1 - dragProgress * 0.3)
-  }
-
-  return baseOpacity
+  return props.visible ? 1 : 0
 })
 
 // 计算插件图标路径
 function getPluginIcon(plugin: Plugin): string {
   if (!plugin.plugin_icon) return noImage
-  if (!pluginIconLoading.value[plugin.id]) return noImage
+  if (pluginIconLoadError.value[plugin.id]) return noImage
 
   // 如果是网络图片则使用代理后返回
   if (plugin?.plugin_icon?.startsWith('http'))
@@ -117,7 +160,7 @@ async function fetchPluginsWithPage() {
 
     // 只保留有详情页面且已启用的插件
     pluginsWithPage.value = allPlugins
-      .filter(plugin => plugin.has_page && plugin.state)
+      .filter(plugin => plugin.has_page)
       .sort((a, b) => {
         // 按插件名称排序
         return (a.plugin_name || '').localeCompare(b.plugin_name || '')
@@ -179,6 +222,100 @@ onMounted(() => {
   }
 })
 
+// 处理触摸开始
+function handleTouchStart(event: TouchEvent) {
+  if (!props.visible) return
+
+  const touch = event.touches[0]
+  if (!touch) return
+
+  // 检查是否从 bottom-drag-area 开始触摸
+  const target = event.target as HTMLElement
+  startedFromBottomArea.value = !!target.closest('.bottom-drag-area')
+
+  startY.value = touch.clientY
+  lastY.value = touch.clientY
+  lastTime.value = Date.now()
+  velocity.value = 0
+
+  // 重置拖拽状态
+  isDraggingToClose.value = false
+  dragOffset.value = 0
+}
+
+// 处理触摸移动
+function handleTouchMove(event: TouchEvent) {
+  if (!props.visible) return
+
+  const touch = event.touches[0]
+  if (!touch) return
+
+  // 只有从 bottom-drag-area 开始的触摸才处理上滑关闭
+  if (!startedFromBottomArea.value) return
+
+  const currentY = touch.clientY
+  const currentTime = Date.now()
+  const deltaY = startY.value - currentY // 向上为正值
+  const timeDelta = currentTime - lastTime.value
+
+  // 计算速度
+  if (timeDelta > 0) {
+    const moveDistance = lastY.value - currentY
+    velocity.value = moveDistance / timeDelta
+  }
+
+  // 如果已经开始拖拽，继续拖拽
+  if (isDraggingToClose.value) {
+    if (deltaY >= 0) {
+      // 向上拖拽，更新偏移量
+      dragOffset.value = Math.min(deltaY, SWIPE_CONFIG.MAX_DRAG_DISTANCE)
+      event.preventDefault()
+    } else {
+      // 向下拖拽，停止拖拽
+      isDraggingToClose.value = false
+      dragOffset.value = 0
+    }
+  } else {
+    // 还没开始拖拽，检查是否应该开始
+    if (deltaY > SWIPE_CONFIG.START_THRESHOLD) {
+      isDraggingToClose.value = true
+      dragOffset.value = Math.min(deltaY, SWIPE_CONFIG.MAX_DRAG_DISTANCE)
+      event.preventDefault()
+    }
+  }
+
+  lastY.value = currentY
+  lastTime.value = currentTime
+}
+
+// 处理触摸结束
+function handleTouchEnd() {
+  if (!props.visible) return
+
+  // 只有从 bottom-drag-area 开始的触摸才处理上滑关闭
+  if (!startedFromBottomArea.value) return
+
+  if (isDraggingToClose.value) {
+    // 判断是否应该关闭：距离超过阈值或者快速上滑
+    const shouldClose =
+      dragOffset.value >= SWIPE_CONFIG.CLOSE_THRESHOLD || velocity.value >= SWIPE_CONFIG.VELOCITY_THRESHOLD
+
+    if (shouldClose) {
+      emit('close')
+    }
+
+    // 重置拖拽状态
+    isDraggingToClose.value = false
+    dragOffset.value = 0
+  }
+
+  // 重置所有状态
+  startY.value = 0
+  lastY.value = 0
+  velocity.value = 0
+  startedFromBottomArea.value = false
+}
+
 // 点击底部空白区域关闭
 function handleBackdropClick(event: MouseEvent) {
   const target = event.target as HTMLElement
@@ -205,16 +342,17 @@ function handleBackdropClick(event: MouseEvent) {
       transition: isDraggingToClose ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     }"
     @click="handleBackdropClick"
+    @touchstart="handleTouchStart"
+    @touchmove="handleTouchMove"
+    @touchend="handleTouchEnd"
   >
     <!-- 顶部指示器 -->
-    <div class="top-indicator">
-      <div class="indicator-bar"></div>
-    </div>
+    <div class="top-indicator"></div>
 
     <!-- 标题栏 -->
     <div class="header">
       <div class="header-title">{{ t('plugin.quickAccess') }}</div>
-      <VBtn icon variant="text" size="small" @click="handleClose" class="close-btn">
+      <VBtn icon variant="text" @click="handleClose" class="close-btn">
         <VIcon icon="mdi-close" />
       </VBtn>
     </div>
@@ -237,24 +375,30 @@ function handleBackdropClick(event: MouseEvent) {
             class="plugin-item"
             @click="handlePluginClick(plugin)"
           >
-            <div class="plugin-icon">
-              <VAvatar size="48" class="plugin-avatar">
-                <VImg :src="getPluginIcon(plugin)" :alt="plugin.plugin_name" cover @error="handleIconError(plugin)">
-                  <template #error>
-                    <VIcon icon="mdi-puzzle" size="24" />
-                  </template>
-                </VImg>
-              </VAvatar>
-              <!-- 运行状态指示 -->
-              <div class="status-dot" :class="{ 'active': plugin.state }"></div>
-            </div>
+            <VBadge dot :color="plugin.state ? 'success' : 'secondary'" location="top end">
+              <div
+                class="plugin-icon"
+                :style="{
+                  background: `${getPluginBackgroundColor(plugin)}`,
+                }"
+              >
+                <VImg
+                  :src="getPluginIcon(plugin)"
+                  :alt="plugin.plugin_name"
+                  cover
+                  @error="handleIconError(plugin)"
+                  @load="src => handleIconLoaded(src, plugin)"
+                  class="rounded-lg"
+                />
+              </div>
+            </VBadge>
             <div class="plugin-name">{{ plugin.plugin_name }}</div>
           </div>
         </div>
 
         <!-- 没有最近访问时显示"无" -->
         <div v-else class="no-recent-plugins">
-          <div class="no-recent-text">{{ t('plugin.noRecentPlugins') }}</div>
+          <VIcon icon="mdi-puzzle-outline" size="24" color="grey" />
         </div>
 
         <!-- 所有插件 -->
@@ -269,17 +413,29 @@ function handleBackdropClick(event: MouseEvent) {
             class="plugin-item"
             @click="handlePluginClick(plugin)"
           >
-            <div class="plugin-icon">
-              <VAvatar size="48" class="plugin-avatar">
-                <VImg :src="getPluginIcon(plugin)" :alt="plugin.plugin_name" cover>
-                  <template #error>
-                    <VIcon icon="mdi-puzzle" size="24" />
-                  </template>
-                </VImg>
-              </VAvatar>
-              <!-- 运行状态指示 -->
-              <div class="status-dot" :class="{ 'active': plugin.state }"></div>
-            </div>
+            <VBadge
+              dot
+              :color="plugin.state ? 'success' : 'secondary'"
+              location="top end"
+              :offset-x="-1"
+              :offset-y="-1"
+            >
+              <div
+                class="plugin-icon"
+                :style="{
+                  background: `${getPluginBackgroundColor(plugin)}`,
+                }"
+              >
+                <VImg
+                  :src="getPluginIcon(plugin)"
+                  :alt="plugin.plugin_name"
+                  cover
+                  @load="src => handleIconLoaded(src, plugin)"
+                  @error="handleIconError(plugin)"
+                  class="rounded-lg"
+                />
+              </div>
+            </VBadge>
             <div class="plugin-name">{{ plugin.plugin_name }}</div>
           </div>
         </div>
@@ -294,9 +450,22 @@ function handleBackdropClick(event: MouseEvent) {
 
     <!-- 底部拖动区域 -->
     <div class="bottom-drag-area" @click="handleBackdropClick">
-      <!-- 底部提示 -->
-      <div class="footer-hint">
-        <div class="hint-text">{{ t('plugin.tapToOpen') }}</div>
+      <!-- 底部指示器 -->
+      <div class="bottom-indicator">
+        <div
+          class="indicator-bar bottom"
+          :class="{ 'dragging': isDraggingToClose }"
+          :style="{
+            transform: isDraggingToClose
+              ? `scaleX(${Math.min(dragOffset / SWIPE_CONFIG.CLOSE_THRESHOLD, 1.5)})`
+              : 'scaleX(1)',
+            background: isDraggingToClose
+              ? dragOffset >= SWIPE_CONFIG.CLOSE_THRESHOLD
+                ? 'rgba(var(--v-theme-success), 0.8)'
+                : 'rgba(var(--v-theme-primary), 0.8)'
+              : 'rgba(var(--v-theme-on-surface), 0.12)',
+          }"
+        ></div>
       </div>
     </div>
   </VCard>
@@ -342,12 +511,22 @@ function handleBackdropClick(event: MouseEvent) {
   justify-content: center;
   padding-block: 12px 8px;
   padding-inline: 0;
+}
 
-  .indicator-bar {
+// 底部相关样式
+.bottom-indicator {
+  display: flex;
+  justify-content: center;
+  padding-block: 8px 12px;
+  padding-inline: 0;
+
+  .indicator-bar.bottom {
     border-radius: 2px;
     background: rgba(var(--v-theme-on-surface), 0.12);
     block-size: 4px;
-    inline-size: 36px;
+    inline-size: 30vw;
+    transform-origin: center;
+    transition: all 0.2s ease;
   }
 }
 
@@ -389,21 +568,6 @@ function handleBackdropClick(event: MouseEvent) {
   touch-action: pan-y;
 }
 
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  grid-column: 1 / -1;
-  padding-block: 40px;
-  padding-inline: 0;
-
-  .loading-text {
-    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-    font-size: 14px;
-  }
-}
-
 .section-header {
   display: flex;
   align-items: center;
@@ -427,19 +591,13 @@ function handleBackdropClick(event: MouseEvent) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-block: 16px;
   padding-inline: 0;
-
-  .no-recent-text {
-    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-    font-size: 14px;
-  }
 }
 
 .recent-plugins-row {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   padding-block: 0 8px;
   padding-inline: 0;
 }
@@ -447,7 +605,7 @@ function handleBackdropClick(event: MouseEvent) {
 .all-plugins-grid {
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
 }
 
 .plugin-item {
@@ -455,12 +613,11 @@ function handleBackdropClick(event: MouseEvent) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 8px;
   border-radius: 12px;
-  block-size: 100px;
+  block-size: 120px;
   cursor: pointer;
-  gap: 6px;
-  padding-block: 8px;
-  padding-inline: 8px;
+  gap: 8px;
   transition: all 0.2s ease;
 
   &:hover {
@@ -477,34 +634,18 @@ function handleBackdropClick(event: MouseEvent) {
 .plugin-icon {
   position: relative;
   display: flex;
-  flex-shrink: 0; /* 防止图标被压缩 */
+  overflow: hidden;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  padding: 4px;
+  border-radius: 16px;
+  block-size: 64px;
+  inline-size: 64px;
+  transition: all 0.2s ease;
 
-  .plugin-avatar {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 10%);
-    transition: box-shadow 0.2s ease;
-
-    .plugin-item:hover & {
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 15%);
-    }
-  }
-
-  .status-dot {
-    position: absolute;
-    z-index: 1;
-    border: 2px solid rgba(var(--v-theme-surface), 1);
-    border-radius: 50%;
-    background: rgba(var(--v-theme-on-surface), 0.3);
-    block-size: 12px;
-    inline-size: 12px;
-    inset-block-start: -2px;
-    inset-inline-end: -2px;
-    transition: background-color 0.2s ease;
-
-    &.active {
-      background: #4caf50;
-    }
+  .plugin-item:hover & {
+    transform: scale(1.02);
   }
 }
 
@@ -547,40 +688,6 @@ function handleBackdropClick(event: MouseEvent) {
   padding-inline: 20px;
 }
 
-.drag-handle {
-  display: flex;
-  justify-content: center;
-  inline-size: 100%;
-  padding-block: 12px;
-  padding-inline: 0;
-}
-
-.drag-bar {
-  border-radius: 3px;
-  background: rgba(var(--v-theme-on-surface), 0.3);
-  block-size: 5px;
-  inline-size: 36px;
-  transition: all 0.2s ease;
-}
-
-.bottom-drag-area:active .drag-bar {
-  background: rgba(var(--v-theme-on-surface), 0.5);
-  transform: scaleY(1.2);
-}
-
-.footer-hint {
-  border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  inline-size: 100%;
-  padding-block: 16px;
-  padding-inline: 0;
-
-  .hint-text {
-    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-    font-size: 14px;
-    text-align: center;
-  }
-}
-
 @media (hover: none) and (pointer: coarse) {
   .plugin-item:hover {
     background: transparent;
@@ -595,9 +702,5 @@ function handleBackdropClick(event: MouseEvent) {
 // 深色模式适配
 html[data-theme='dark'] .plugin-quick-access {
   background: rgba(var(--v-theme-surface), 0.9);
-
-  .plugin-icon .plugin-avatar {
-    border-color: rgba(var(--v-theme-on-surface), 0.2);
-  }
 }
 </style>
