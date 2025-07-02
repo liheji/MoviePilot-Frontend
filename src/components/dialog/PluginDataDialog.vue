@@ -151,6 +151,7 @@ onMounted(() => {
         <component
           :is="dynamicComponent"
           :api="api"
+          :show_switch="show_switch"
           @action="handleAction"
           @switch="emit('switch')"
           @close="emit('close')"
