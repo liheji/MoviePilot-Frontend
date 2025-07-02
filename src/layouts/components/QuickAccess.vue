@@ -5,6 +5,7 @@ import noImage from '@images/logos/plugin.png'
 import { useI18n } from 'vue-i18n'
 import { useRecentPlugins } from '@/composables/useRecentPlugins'
 import PluginDataDialog from '@/components/dialog/PluginDataDialog.vue'
+import { VCard } from 'vuetify/components'
 
 // 国际化
 const { t } = useI18n()
@@ -52,7 +53,7 @@ const currentPlugin = ref<Plugin | null>(null)
 
 // 计算显示状态
 const isVisible = computed(() => {
-  return props.visible // 只基于visible属性显示，不考虑pullDistance
+  return props.visible
 })
 
 // 处理插件图标加载错误
@@ -66,7 +67,7 @@ const componentTransform = computed(() => {
   if (props.visible) {
     baseTransform = 'translateY(0)'
   } else {
-    baseTransform = 'translateY(-100%)' // 完全隐藏在顶部
+    baseTransform = 'translateY(-100%)'
   }
 
   // 如果正在拖动关闭，添加拖动偏移
@@ -79,7 +80,7 @@ const componentTransform = computed(() => {
 
 // 计算组件透明度（包含拖动透明度变化）
 const componentOpacity = computed(() => {
-  let baseOpacity = props.visible ? 1 : 0 // 只基于visible属性决定透明度
+  let baseOpacity = props.visible ? 1 : 0
 
   // 如果正在拖动关闭，根据拖动距离调整透明度
   if (isDraggingToClose.value) {
@@ -194,7 +195,8 @@ function handleBackdropClick(event: MouseEvent) {
 </script>
 
 <template>
-  <div
+  <VCard
+    :ripple="false"
     class="plugin-quick-access"
     :class="{ 'visible': isVisible }"
     :style="{
@@ -297,7 +299,7 @@ function handleBackdropClick(event: MouseEvent) {
         <div class="hint-text">{{ t('plugin.tapToOpen') }}</div>
       </div>
     </div>
-  </div>
+  </VCard>
 
   <!-- 插件数据弹窗 -->
   <PluginDataDialog
@@ -313,9 +315,9 @@ function handleBackdropClick(event: MouseEvent) {
   position: fixed;
   z-index: 9999;
   display: flex;
-  overflow: hidden; /* 防止整个容器溢出 */
+  overflow: hidden;
   flex-direction: column;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(32px);
   background: rgba(var(--v-theme-surface), 0.95);
   block-size: 100vh;
   block-size: 100dvh;
@@ -354,7 +356,7 @@ function handleBackdropClick(event: MouseEvent) {
   align-items: center;
   justify-content: space-between;
   border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  padding-block: 0 20px;
+  padding-block: 0 16px;
   padding-inline: 20px;
 
   .header-title {
@@ -375,34 +377,16 @@ function handleBackdropClick(event: MouseEvent) {
 
 .plugin-grid {
   display: flex;
+  overflow: hidden auto;
   flex: 1;
   flex-direction: column;
   gap: 16px;
   min-block-size: 0;
   -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
+  overscroll-behavior: contain;
   padding-block: 24px;
   padding-inline: 20px;
-  scroll-behavior: smooth;
-  scrollbar-color: rgba(var(--v-theme-on-surface), 0.2) transparent;
-  scrollbar-width: thin;
-
-  &::-webkit-scrollbar {
-    inline-size: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 3px;
-    background: rgba(var(--v-theme-on-surface), 0.2);
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(var(--v-theme-on-surface), 0.3);
-  }
+  touch-action: pan-y;
 }
 
 .loading-container {
@@ -455,39 +439,14 @@ function handleBackdropClick(event: MouseEvent) {
 .recent-plugins-row {
   display: grid;
   gap: 16px;
-  grid-auto-rows: 100px;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  max-block-size: 220px;
-  -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
   padding-block: 0 8px;
   padding-inline: 0;
-  scroll-behavior: smooth;
-  scrollbar-color: rgba(var(--v-theme-on-surface), 0.2) transparent;
-  scrollbar-width: thin;
-
-  &::-webkit-scrollbar {
-    inline-size: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 2px;
-    background: rgba(var(--v-theme-on-surface), 0.2);
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(var(--v-theme-on-surface), 0.3);
-  }
 }
 
 .all-plugins-grid {
   display: grid;
   gap: 20px;
-  grid-auto-rows: 100px;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
 }
 
@@ -584,8 +543,6 @@ function handleBackdropClick(event: MouseEvent) {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-
-  /* 增加触摸区域 */
   padding-block: 8px 0;
   padding-inline: 20px;
 }

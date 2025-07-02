@@ -1,7 +1,7 @@
 import type { Plugin } from '@/api/types'
 
 const RECENT_PLUGINS_KEY = 'moviepilot_recent_plugins'
-const MAX_RECENT_PLUGINS = 5
+const MAX_RECENT_PLUGINS = 3
 
 interface RecentPlugin {
   id: string
@@ -21,7 +21,7 @@ function pluginToRecentPlugin(plugin: Plugin): RecentPlugin {
     plugin_icon: plugin.plugin_icon,
     has_page: plugin.has_page || false,
     state: plugin.state || false,
-    plugin_id: plugin.plugin_id || '',
+    plugin_id: plugin.id || '',
     access_time: Date.now(),
   }
 }

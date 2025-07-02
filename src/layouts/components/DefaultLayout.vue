@@ -120,6 +120,9 @@ function handleUnreadMessage(count: number) {
 function handleTouchStart(event: TouchEvent) {
   if (!appMode || !display.mdAndDown.value) return
 
+  // 如果插件快速访问面板已显示，不处理下拉手势
+  if (showPluginQuickAccess.value) return
+
   const touch = event.touches[0]
   startY.value = touch.clientY
 
@@ -134,6 +137,9 @@ function handleTouchStart(event: TouchEvent) {
 // 处理触摸移动
 function handleTouchMove(event: TouchEvent) {
   if (!appMode || !display.mdAndDown.value) return
+
+  // 如果插件快速访问面板已显示，不处理下拉手势
+  if (showPluginQuickAccess.value) return
 
   const touch = event.touches[0]
   const deltaY = touch.clientY - startY.value
@@ -173,6 +179,9 @@ function handleTouchMove(event: TouchEvent) {
 function handleTouchEnd() {
   if (!appMode || !display.mdAndDown.value) return
 
+  // 如果插件快速访问面板已显示，不处理下拉手势
+  if (showPluginQuickAccess.value) return
+
   if (isPulling.value && pullDistance.value > 120) {
     // 增加触发阈值到120px
     // 触发插件快速访问
@@ -199,31 +208,31 @@ function handlePluginClick() {
   showPluginQuickAccess.value = false
 }
 
-// 阻止滚动的函数
-function preventScroll(e: TouchEvent) {
-  e.preventDefault()
-}
+// 保存页面滚动位置
+let scrollPosition = 0
 
 // 监听插件快速访问的显示状态，控制背景滚动
 watch(showPluginQuickAccess, visible => {
   if (visible) {
-    // 显示时锁定背景滚动 - 使用更强的锁定方式
+    // 保存当前滚动位置
+    scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
+
+    // 显示时锁定背景滚动
     document.body.style.overflow = 'hidden'
     document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollPosition}px`
     document.body.style.width = '100%'
-    document.body.style.height = '100%'
     document.documentElement.style.overflow = 'hidden'
-    // 禁用触摸滚动
-    document.addEventListener('touchmove', preventScroll, { passive: false })
   } else {
     // 隐藏时恢复滚动
     document.body.style.overflow = ''
     document.body.style.position = ''
+    document.body.style.top = ''
     document.body.style.width = ''
-    document.body.style.height = ''
     document.documentElement.style.overflow = ''
-    // 恢复触摸滚动
-    document.removeEventListener('touchmove', preventScroll)
+
+    // 恢复滚动位置
+    window.scrollTo(0, scrollPosition)
   }
 })
 
@@ -251,10 +260,9 @@ onMounted(() => {
     // 恢复body滚动样式
     document.body.style.overflow = ''
     document.body.style.position = ''
+    document.body.style.top = ''
     document.body.style.width = ''
-    document.body.style.height = ''
     document.documentElement.style.overflow = ''
-    document.removeEventListener('touchmove', preventScroll)
     if (appMode && display.mdAndDown.value) {
       document.removeEventListener('touchstart', handleTouchStart)
       document.removeEventListener('touchmove', handleTouchMove)
