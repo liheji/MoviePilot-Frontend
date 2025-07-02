@@ -10,6 +10,10 @@ const props = defineProps({
   plugin: {
     type: Object as PropType<Plugin>,
   },
+  show_switch: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 // 定义事件
@@ -130,6 +134,7 @@ onMounted(() => {
         </div>
       </VCardText>
       <VFab
+        v-if="show_switch"
         icon="mdi-cog"
         location="bottom"
         size="x-large"

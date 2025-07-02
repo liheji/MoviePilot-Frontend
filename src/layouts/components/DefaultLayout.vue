@@ -381,7 +381,7 @@ onMounted(() => {
     class="pull-indicator"
     :style="{
       opacity: indicatorOpacity,
-      transform: `translate(-50%, ${Math.min((pullDistance - PULL_CONFIG.SHOW_INDICATOR) * 0.5, 40)}px)`,
+      transform: `translate(-50%, ${Math.min(20 + pullDistance - PULL_CONFIG.SHOW_INDICATOR, 50)}px)`,
     }"
   >
     <div

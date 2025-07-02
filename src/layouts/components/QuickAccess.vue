@@ -475,6 +475,7 @@ function handleBackdropClick(event: MouseEvent) {
     v-if="showPluginDataDialog && currentPlugin"
     v-model="showPluginDataDialog"
     :plugin="currentPlugin"
+    :show_switch="false"
     @close="handleClosePluginDataDialog"
   />
 </template>
@@ -580,7 +581,6 @@ function handleBackdropClick(event: MouseEvent) {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-block: 0 16px;
   margin-inline: 0;
 
   .section-title {
@@ -608,7 +608,7 @@ function handleBackdropClick(event: MouseEvent) {
 
 .all-plugins-grid {
   display: grid;
-  gap: 8px;
+  gap: 4px;
   grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
 }
 
