@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import api from '@/api'
 import type { Plugin } from '@/api/types'
 import noImage from '@images/logos/plugin.png'
 import { useI18n } from 'vue-i18n'
 import { useRecentPlugins } from '@/composables/useRecentPlugins'
+import PluginDataDialog from '@/components/dialog/PluginDataDialog.vue'
 
 // 国际化
 const { t } = useI18n()
-
-// 路由
-const router = useRouter()
 
 // 最近访问插件管理
 const { getRecentPlugins, addRecentPlugin } = useRecentPlugins()
@@ -42,12 +39,13 @@ const recentPlugins = ref<Plugin[]>([])
 // 是否加载中
 const loading = ref(false)
 
-// 图片是否加载失败
-const imageLoadError = ref(false)
-
 // 上滑关闭相关状态
 const isDraggingToClose = ref(false)
 const dragOffset = ref(0)
+
+// 插件弹窗相关状态
+const showPluginDataDialog = ref(false)
+const currentPlugin = ref<Plugin | null>(null)
 
 // 计算显示状态
 const isVisible = computed(() => {
@@ -87,7 +85,6 @@ const componentOpacity = computed(() => {
 // 计算插件图标路径
 function getPluginIcon(plugin: Plugin): string {
   if (!plugin.plugin_icon) return noImage
-  if (imageLoadError.value) return noImage
 
   // 如果是网络图片则使用代理后返回
   if (plugin?.plugin_icon?.startsWith('http'))
@@ -136,19 +133,21 @@ function handlePluginClick(plugin: Plugin) {
   loadRecentPlugins()
 
   emit('plugin-click', plugin)
-  // 跳转到插件页面并自动打开详情
-  router.push({
-    path: '/plugins',
-    query: {
-      tab: 'installed',
-      id: plugin.id,
-    },
-  })
+
+  // 设置当前插件并显示数据弹窗
+  currentPlugin.value = plugin
+  showPluginDataDialog.value = true
 }
 
 // 关闭面板
 function handleClose() {
   emit('close')
+}
+
+// 关闭插件数据弹窗
+function handleClosePluginDataDialog() {
+  showPluginDataDialog.value = false
+  currentPlugin.value = null
 }
 
 // 监听可见性变化，加载数据
@@ -263,7 +262,10 @@ function handleBackdropClick(event: MouseEvent) {
           >
             <div class="plugin-icon">
               <VAvatar size="48" class="plugin-avatar">
-                <VImg :src="getPluginIcon(plugin)" :alt="plugin.plugin_name" cover @error="imageLoadError = true">
+                <VImg :src="getPluginIcon(plugin)" :alt="plugin.plugin_name" cover>
+                  <template #error>
+                    <VIcon icon="mdi-puzzle" size="24" />
+                  </template>
                 </VImg>
               </VAvatar>
               <!-- 运行状态指示 -->
@@ -289,6 +291,14 @@ function handleBackdropClick(event: MouseEvent) {
       </div>
     </div>
   </div>
+
+  <!-- 插件数据弹窗 -->
+  <PluginDataDialog
+    v-if="showPluginDataDialog && currentPlugin"
+    v-model="showPluginDataDialog"
+    :plugin="currentPlugin"
+    @close="handleClosePluginDataDialog"
+  />
 </template>
 
 <style lang="scss" scoped>
