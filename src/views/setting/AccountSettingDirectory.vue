@@ -201,14 +201,6 @@ function removeStorage(storage: StorageConf) {
   }
 }
 
-// 更新存储
-async function updatedStorage(storage: StorageConf) {
-  const index = storages.value.indexOf(storage)
-  if (index > -1) {
-    storages.value[index] = storage
-  }
-}
-
 // 保存设置
 async function saveSystemSettings(value: any) {
   try {
@@ -247,7 +239,7 @@ onMounted(() => {
             :component-data="{ 'class': 'grid gap-3 grid-app-card' }"
           >
             <template #item="{ element }">
-              <StorageCard :storage="element" @close="removeStorage(element)" @done="updatedStorage" />
+              <StorageCard :storage="element" @close="removeStorage(element)" @done="loadStorages" />
             </template>
           </draggable>
         </VCardText>
