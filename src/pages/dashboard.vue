@@ -46,6 +46,7 @@ const enableConfig = ref<{ [key: string]: boolean }>({
   weeklyOverview: false,
   cpu: false,
   memory: false,
+  network: false,
   library: true,
   playing: true,
   latest: true,
@@ -107,6 +108,14 @@ const dashboardConfigs = ref<DashboardItem[]>([
   {
     id: 'memory',
     name: t('dashboard.memory'),
+    key: '',
+    attrs: {},
+    cols: { cols: 12, md: 6 },
+    elements: [],
+  },
+  {
+    id: 'network',
+    name: t('dashboard.network'),
     key: '',
     attrs: {},
     cols: { cols: 12, md: 6 },
