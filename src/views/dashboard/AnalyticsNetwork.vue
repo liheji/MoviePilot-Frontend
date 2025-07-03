@@ -203,11 +203,11 @@ onActivated(() => {
           <VApexChart :key="chartKey" type="line" :options="chartOptions" :series="series" :height="150" />
           <div class="d-flex justify-space-between">
             <p class="text-center font-weight-medium mb-0">
-              <span class="text-primary">{{ t('dashboard.upload') }}</span
+              <span class="text-warning">{{ t('dashboard.upload') }}</span
               >：{{ formatBytes(currentUpload) }}
             </p>
             <p class="text-center font-weight-medium mb-0">
-              <span class="text-success">{{ t('dashboard.download') }}</span
+              <span class="text-info">{{ t('dashboard.download') }}</span
               >：{{ formatBytes(currentDownload) }}
             </p>
           </div>
