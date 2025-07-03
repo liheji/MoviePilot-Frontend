@@ -7,11 +7,13 @@ import u115_png from '@images/misc/u115.png'
 import rclone_png from '@images/misc/rclone.png'
 import alist_png from '@images/misc/openlist.svg'
 import custom_png from '@images/misc/database.png'
+import smb_png from '@images/misc/smb.png'
 import api from '@/api'
 import AliyunAuthDialog from '../dialog/AliyunAuthDialog.vue'
 import U115AuthDialog from '../dialog/U115AuthDialog.vue'
 import RcloneConfigDialog from '../dialog/RcloneConfigDialog.vue'
 import AlistConfigDialog from '../dialog/AlistConfigDialog.vue'
+import SmbConfigDialog from '../dialog/SmbConfigDialog.vue'
 import { useToast } from 'vue-toastification'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { useI18n } from 'vue-i18n'
@@ -65,6 +67,8 @@ const u115AuthDialog = ref(false)
 const rcloneConfigDialog = ref(false)
 // AList配置对话框
 const aListConfigDialog = ref(false)
+// SMB配置对话框
+const smbConfigDialog = ref(false)
 // 自定义存储配置对话框
 const customConfigDialog = ref(false)
 
@@ -82,6 +86,9 @@ function openStorageDialog() {
       break
     case 'alist':
       aListConfigDialog.value = true
+      break
+    case 'smb':
+      smbConfigDialog.value = true
       break
     case 'local':
       $toast.info(t('storage.noConfigNeeded'))
@@ -105,6 +112,8 @@ const getIcon = computed(() => {
       return rclone_png
     case 'alist':
       return alist_png
+    case 'smb':
+      return smb_png
     default:
       return custom_png
   }
@@ -143,6 +152,7 @@ function handleDone() {
   u115AuthDialog.value = false
   rcloneConfigDialog.value = false
   aListConfigDialog.value = false
+  smbConfigDialog.value = false
   customConfigDialog.value = false
   // 更新存储
   storage_ref.value.name = customName.value
@@ -201,6 +211,13 @@ function onClose() {
       v-model="aListConfigDialog"
       :conf="props.storage.config || {}"
       @close="aListConfigDialog = false"
+      @done="handleDone"
+    />
+    <SmbConfigDialog
+      v-if="smbConfigDialog"
+      v-model="smbConfigDialog"
+      :conf="props.storage.config || {}"
+      @close="smbConfigDialog = false"
       @done="handleDone"
     />
     <VDialog

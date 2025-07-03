@@ -26,6 +26,11 @@ export const storageAttributes = [
     icon: 'mdi-server-network-outline',
     remote: true,
   },
+  {
+    type: 'smb',
+    icon: 'mdi-folder-network-outline',
+    remote: true,
+  },
 ]
 
 export const storageIconDict = storageAttributes.reduce((dict, item) => {
