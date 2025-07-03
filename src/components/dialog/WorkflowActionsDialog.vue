@@ -207,7 +207,6 @@ const isMacOS = computed(() => {
           </VBtn>
         </VToolbarItems>
         <VToolbarTitle> {{ t('dialog.workflowActions.title') }} - {{ workflow?.name }} </VToolbarTitle>
-        <VSpacer></VSpacer>
         <VToolbarItems>
           <VBtn icon variant="text" @click="importCodeDialog = true" class="ms-2">
             <VIcon size="24" color="white" icon="mdi-import" />
