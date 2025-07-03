@@ -141,7 +141,7 @@ function getPluginIcon(plugin: Plugin): string {
 
   // 如果是网络图片则使用代理后返回
   if (plugin?.plugin_icon?.startsWith('http'))
-    return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(plugin?.plugin_icon)}`
+    return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(plugin?.plugin_icon)}&cache=true`
 
   return `./plugin_icon/${plugin?.plugin_icon}`
 }
