@@ -87,6 +87,9 @@ function openTmdbPage(type: string, tmdbId: number) {
               {{ context?.media_info?.tmdb_id }}
             </VChip>
             <!-- meta_info -->
+            <VChip v-if="context?.meta_info?.web_source" variant="elevated" class="me-1 mb-1 text-white bg-purple-500">
+              {{ context?.meta_info?.web_source }}
+            </VChip>
             <VChip v-if="context?.meta_info?.edition" variant="elevated" class="me-1 mb-1 text-white bg-red-500">
               {{ context?.meta_info?.edition }}
             </VChip>
