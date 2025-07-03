@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
     :mode="!isLoaded ? 'intersect' : 'manual'"
     side="start"
     :items="messages"
-    class="overflow-visible message-scroll h-full"
+    class="overflow-auto h-full"
     @load="loadMessages"
     :load-more-text="t('message.loadMore') + ' ...'"
   >
@@ -143,9 +143,3 @@ onBeforeUnmount(() => {
     </div>
   </VInfiniteScroll>
 </template>
-
-<style scoped>
-.message-scroll {
-  overflow-y: auto !important;
-}
-</style>
