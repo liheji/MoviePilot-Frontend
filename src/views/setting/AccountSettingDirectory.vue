@@ -191,6 +191,9 @@ function addStorage(storageType = 'custom') {
     type: type,
     config: {},
   })
+
+  // 保存存储
+  saveStorages()
 }
 
 // 移除存储
