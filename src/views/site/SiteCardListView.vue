@@ -67,6 +67,18 @@ const filteredSiteList = computed(() => {
   })
 })
 
+// 用于拖拽排序的列表
+const draggableSiteList = computed({
+  get() {
+    return filterOption.value === 'all' ? siteList.value : filteredSiteList.value
+  },
+  set(value) {
+    if (filterOption.value === 'all') {
+      siteList.value = value
+    }
+  },
+})
+
 // 当前筛选选项的显示信息
 const currentFilter = computed(() => {
   return filterOptions.value.find(option => option.value === filterOption.value)
@@ -142,10 +154,10 @@ async function savaSitesPriority() {
   }
 
   // 重新排序
-  const priorities = filteredSiteList.value.map((site, index) => ({ id: site.id, pri: index + 1 }))
+  const priorities = draggableSiteList.value.map((site, index) => ({ id: site.id, pri: index + 1 }))
   try {
     const result: { [key: string]: any } = await api.post('site/priorities', priorities)
-    if (result.success) {
+    if (!result.success) {
       fetchData()
     }
   } catch (error) {
@@ -260,8 +272,8 @@ useDynamicButton({
 
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <draggable
-      v-if="filteredSiteList.length > 0"
-      v-model="filteredSiteList"
+      v-if="draggableSiteList.length > 0"
+      v-model="draggableSiteList"
       @end="savaSitesPriority"
       handle=".cursor-move"
       item-key="id"
@@ -282,7 +294,7 @@ useDynamicButton({
     </draggable>
   </div>
   <NoDataFound
-    v-if="filteredSiteList.length === 0 && isRefreshed"
+    v-if="draggableSiteList.length === 0 && isRefreshed"
     error-code="404"
     :error-title="filterOption === 'all' ? t('site.noSites') : t('common.noMatchingData')"
     :error-description="filterOption === 'all' ? t('site.sitesWillBeShownHere') : t('common.tryChangingFilters')"
