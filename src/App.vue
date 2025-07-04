@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/auth'
 import { getBrowserLocale, setI18nLanguage } from './plugins/i18n'
 import { SupportedLocale } from '@/types/i18n'
 import { checkAndEmitUnreadMessages } from '@/utils/badge'
+import { preloadImage } from './@core/utils/image'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -82,7 +83,6 @@ function configureApexCharts() {
 // 更新data-theme属性以便CSS选择器能正确匹配
 function updateHtmlThemeAttribute(themeName: string) {
   document.documentElement.setAttribute('data-theme', themeName)
-  // 确保body元素也有相同的主题属性，以便更好地选择弹出窗口
   document.body.setAttribute('data-theme', themeName)
 }
 
@@ -104,6 +104,7 @@ function startBackgroundRotation() {
   // 清除轮换定时器
   if (backgroundRotationTimer) clearInterval(backgroundRotationTimer)
   if (backgroundImages.value.length > 1) {
+    // 每10秒切换一次
     backgroundRotationTimer = setInterval(() => {
       // 计算下一个图片索引
       const nextIndex = (activeImageIndex.value + 1) % backgroundImages.value.length
@@ -114,32 +115,8 @@ function startBackgroundRotation() {
           activeImageIndex.value = nextIndex
         }
       })
-    }, 10000) // 每10秒切换一次
+    }, 10000)
   }
-}
-
-// 预加载图片
-function preloadImage(url: string): Promise<boolean> {
-  return new Promise(resolve => {
-    const img = new Image()
-
-    img.onload = () => resolve(true)
-    img.onerror = () => resolve(false)
-
-    // 设置超时，防止图片长时间加载
-    const timeout = setTimeout(() => {
-      img.src = ''
-      resolve(false)
-    }, 5000) // 5秒超时
-
-    img.src = url
-
-    // 如果图片已经缓存，onload可能不会触发
-    if (img.complete) {
-      clearTimeout(timeout)
-      resolve(true)
-    }
-  })
 }
 
 // 添加logo动画效果并延迟移除加载界面
@@ -204,52 +181,15 @@ onMounted(async () => {
   // 移除加载动画
   ensureRenderComplete(() => {
     nextTick(() => {
-      setTimeout(() => {
-        // 移除加载动画，显示页面
-        animateAndRemoveLoader()
-        // 页面完全显示后，检查未读消息
-        setTimeout(() => {
-          checkAndEmitUnreadMessages()
-        }, 1000)
-      }, 1500)
+      // 移除加载动画，显示页面
+      animateAndRemoveLoader()
+      // 页面完全显示后，检查未读消息
+      checkAndEmitUnreadMessages()
     })
-  })
-
-  // 添加页面可见性变化监听
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      // 页面恢复可见时，稍作延迟以确保状态稳定
-      setTimeout(() => {
-        loadBackgroundImages()
-        // 检查未读消息
-        setTimeout(() => {
-          checkAndEmitUnreadMessages()
-        }, 300)
-      }, 100)
-    }
-  })
-
-  // 添加PWA的页面恢复事件监听
-  window.addEventListener('pageshow', event => {
-    // persisted属性为true表示页面是从bfcache中恢复的
-    if (event.persisted) {
-      // PWA恢复时，稍作延迟以确保状态稳定
-      setTimeout(() => {
-        loadBackgroundImages()
-        // 检查未读消息
-        setTimeout(() => {
-          checkAndEmitUnreadMessages()
-        }, 300)
-      }, 100)
-    }
   })
 })
 
 onUnmounted(() => {
-  // 移除页面可见性监听
-  document.removeEventListener('visibilitychange', () => {})
-  // 移除PWA的页面恢复事件监听
-  window.removeEventListener('pageshow', () => {})
   // 清除轮换定时器
   if (backgroundRotationTimer) {
     clearInterval(backgroundRotationTimer)
