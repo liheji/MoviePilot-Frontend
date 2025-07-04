@@ -3,13 +3,6 @@
     overflow: hidden auto;
     min-block-size: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));
     background: var(--initial-loader-bg, #fff);
-    touch-action: manipulation;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
   ">
 
 <head>
@@ -132,59 +125,6 @@
       <!-- Logo -->
       <svg width="160px" height="160px" viewBox="0 0 192 192" version="1.1" xmlns="http://www.w3.org/2000/svg"
         style="fill-rule: evenodd; clip-rule: evenodd; stroke-linejoin: round; stroke-miterlimit: 2">
-        <style>
-          /* 添加SVG内部的动画样式 */
-          @keyframes pulse {
-
-            0%,
-            100% {
-              opacity: 0.8;
-            }
-
-            50% {
-              opacity: 1;
-            }
-          }
-
-          @keyframes glow {
-
-            0%,
-            100% {
-              filter: drop-shadow(0 0 3px rgba(141, 81, 249, 0.3));
-            }
-
-            50% {
-              filter: drop-shadow(0 0 6px rgba(141, 81, 249, 0.6));
-            }
-          }
-
-          /* 为各个元素添加动画 */
-          #a2-c {
-            filter: drop-shadow(0 0 5px rgba(141, 81, 249, 0.3));
-            animation: glow 3s ease-in-out infinite;
-          }
-
-          path {
-            animation: pulse 2s ease-in-out infinite;
-          }
-
-          /* 错开不同元素的动画开始时间 */
-          g:nth-child(2) path {
-            animation-delay: 0.3s;
-          }
-
-          g:nth-child(3) path {
-            animation-delay: 0.6s;
-          }
-
-          g:nth-child(4) path {
-            animation-delay: 0.9s;
-          }
-
-          g:nth-child(5) path {
-            animation-delay: 1.2s;
-          }
-        </style>
         <g transform="matrix(1,0,0,1,-2606,-236)">
           <g id="a2-c" transform="matrix(1,0,0,1,2606,236)">
             <rect x="0" y="0" width="192" height="192" style="fill: none" />
