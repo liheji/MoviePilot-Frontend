@@ -67,10 +67,7 @@ const chartOptions = controlledComputed(
         animations: { enabled: false },
       },
       tooltip: {
-        enabled: true,
-        y: {
-          formatter: (value: number) => formatBytes(value),
-        },
+        enabled: false,
       },
       grid: {
         borderColor: `rgba(${hexToRgb(String(variableTheme.value['border-color']))},${

@@ -45,6 +45,10 @@ declare global {
 function configureApexCharts() {
   if (typeof window !== 'undefined' && window.Apex) {
     try {
+      // 获取当前主题
+      const currentTheme = globalTheme.name.value
+      const isDark = currentTheme === 'dark' || currentTheme === 'transparent'
+
       // 数据标签
       window.Apex.dataLabels = {
         formatter: function (_: number, { seriesIndex, w }: { seriesIndex: number; w: any }) {
@@ -64,6 +68,10 @@ function configureApexCharts() {
         style: {
           color: 'rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))',
         },
+      }
+      // 鼠标悬浮提示
+      window.Apex.tooltip = {
+        theme: isDark ? 'dark' : 'light',
       }
     } catch (error) {
       console.warn('ApexCharts 全局配置失败:', error)
@@ -176,6 +184,17 @@ onMounted(async () => {
   // 初始化data-theme属性
   updateHtmlThemeAttribute(globalTheme.name.value)
 
+  // 监听主题变化
+  watch(
+    () => globalTheme.name.value,
+    newTheme => {
+      // 更新HTML主题属性
+      updateHtmlThemeAttribute(newTheme)
+      // 重新配置ApexCharts以适应新主题
+      configureApexCharts()
+    },
+  )
+
   // 默认隐藏页面
   show.value = false
 
@@ -249,7 +268,7 @@ onUnmounted(() => {
         class="background-image"
         :class="{ 'active': index === activeImageIndex }"
         :style="{ 'backgroundImage': `url(${imageUrl})` }"
-      ></div>
+      />
       <!-- 全局磨砂层 -->
       <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
     </div>
