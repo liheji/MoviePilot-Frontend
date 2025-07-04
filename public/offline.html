@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoviePilot - 离线模式</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .offline-container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #6c757d;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 16px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .message {
+            color: #718096;
+            margin-bottom: 32px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .retry-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+            min-width: 120px;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .retry-button:active {
+            transform: translateY(0);
+        }
+
+        .tips {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .tips h3 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .tips ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips li {
+            color: #718096;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .tips li::before {
+            content: "•";
+            color: #667eea;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 16px;
+            text-align: left;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .info-box p {
+            color: #4a5568;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 8px;
+        }
+
+        .feature-list li {
+            color: #4a5568;
+            margin-bottom: 6px;
+            padding-left: 0;
+            font-size: 14px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            background: url('/icon.png') no-repeat center;
+            background-size: contain;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #dc3545;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .online .status-indicator {
+            background: #28a745;
+            animation: none;
+        }
+
+        @media (max-width: 480px) {
+            .offline-container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .message {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="offline-container">
+        <div class="logo"></div>
+        <div class="offline-icon">📡</div>
+        <h1>网络连接已断开</h1>
+        <p class="message">
+            <span class="status-indicator"></span>
+            MoviePilot 需要网络连接才能正常工作。请检查您的网络连接后重试。
+        </p>
+
+        <button class="retry-button" onclick="checkConnection()">
+            重新连接
+        </button>
+
+        <div class="tips">
+            <h3>🔍 可能的解决方案</h3>
+            <ul>
+                <li>检查WiFi或移动数据连接是否正常</li>
+                <li>尝试刷新页面或重启浏览器</li>
+                <li>检查路由器或网络设备是否工作正常</li>
+                <li>联系网络服务提供商确认网络状态</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>📱 关于MoviePilot</h3>
+            <p>MoviePilot是一个智能媒体管理平台，需要稳定的网络连接来获取最新的电影、剧集信息以及执行各种管理操作。</p>
+            <p>感谢您的耐心等待，网络恢复后您将能够：</p>
+            <ul class="feature-list">
+                <li>🎬 浏览最新的电影和剧集</li>
+                <li>📥 管理下载任务</li>
+                <li>🔍 搜索和发现新内容</li>
+                <li>⚙️ 配置系统设置</li>
+                <li>📊 查看系统状态</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let isOnline = false;
+
+        function updateStatus() {
+            const container = document.querySelector('.offline-container');
+            const message = document.querySelector('.message');
+            const button = document.querySelector('.retry-button');
+
+            if (navigator.onLine) {
+                container.classList.add('online');
+                message.innerHTML = '<span class="status-indicator"></span>网络连接已恢复！正在为您重新加载...';
+                button.textContent = '返回应用';
+                button.onclick = () => window.location.reload();
+
+                // 延迟2秒后自动重新加载
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                container.classList.remove('online');
+                message.innerHTML = '<span class="status-indicator"></span>当前网络连接不可用，您正在使用离线模式。部分功能可能受限，请检查您的网络连接。';
+                button.textContent = '重新连接';
+                button.onclick = checkConnection;
+            }
+        }
+
+        function checkConnection() {
+            const button = document.querySelector('.retry-button');
+            button.textContent = '检查中...';
+            button.disabled = true;
+
+            // 尝试获取一个小的资源来检测网络
+            fetch('/favicon.ico?' + new Date().getTime(), {
+                method: 'HEAD',
+                cache: 'no-cache'
+            })
+                .then(() => {
+                    updateStatus();
+                })
+                .catch(() => {
+                    button.textContent = '重新连接';
+                    button.disabled = false;
+                });
+        }
+
+        // 监听网络状态变化
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+
+        // 初始化状态
+        updateStatus();
+
+        // 每30秒检查一次网络状态
+        setInterval(() => {
+            if (!navigator.onLine) {
+                checkConnection();
+            }
+        }, 30000);
+    </script>
+</body>
+
+</html>

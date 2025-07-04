@@ -174,7 +174,7 @@ onMounted(async () => {
   )
 
   // 加载背景图片
-  await loadBackgroundImages()
+  loadBackgroundImages()
 
   // 移除加载动画
   ensureRenderComplete(() => {

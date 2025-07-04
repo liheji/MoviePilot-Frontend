@@ -53,6 +53,13 @@ export default defineConfig({
       filename: 'service-worker.ts',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2,ttf,otf,eot}'],
+        // 确保offline.html被预缓存
+        additionalManifestEntries: [
+          {
+            url: '/offline.html',
+            revision: null,
+          },
+        ],
         runtimeCaching: [
           {
             urlPattern: /\.(?:js|css|html)$/,
@@ -115,8 +122,8 @@ export default defineConfig({
             },
           },
         ],
-        navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/.*\/api\/v\d+\/system\/logging.*/],
+        navigateFallback: null,
+        navigateFallbackDenylist: [/.*\/api\/v\d+\/system\/logging.*/, /\/offline\.html$/],
         skipWaiting: true,
         clientsClaim: true,
       },

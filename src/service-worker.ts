@@ -1,4 +1,4 @@
-import { createHandlerBoundToURL, cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
+import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
 
 declare let self: ServiceWorkerGlobalScope
@@ -8,8 +8,43 @@ cleanupOutdatedCaches()
 // self.__WB_MANIFEST is default injection point
 precacheAndRoute(self.__WB_MANIFEST)
 
-// to allow work offline
-registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html'), { denylist: [/^(\/[\w-]+)*\/api/] }))
+// 预缓存离线页面
+const OFFLINE_PAGE = '/offline.html'
+const CACHE_NAME = 'mp-offline-cache-v1'
+
+// 安装时缓存离线页面
+self.addEventListener('install', event => {
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(CACHE_NAME)
+      await cache.add(OFFLINE_PAGE)
+    })(),
+  )
+})
+
+// 处理导航请求的离线回退
+const navigationHandler = async (params: any) => {
+  try {
+    // 尝试从网络获取页面
+    const response = await fetch(params.request)
+    return response
+  } catch (error) {
+    // 如果网络失败，返回离线页面
+    const cache = await caches.open(CACHE_NAME)
+    const offlineResponse = await cache.match(OFFLINE_PAGE)
+    return offlineResponse || new Response('离线页面不可用', { status: 503 })
+  }
+}
+
+// 注册导航路由，排除API请求
+registerRoute(
+  new NavigationRoute(navigationHandler, {
+    denylist: [/^(\/[\w-]+)*\/api/, /\/offline\.html$/],
+  }),
+)
+
+// 注意：静态资源和API的缓存策略已在vite.config.ts中的workbox配置中定义
+// 这里只处理离线页面的特殊逻辑
 
 // 通知选项
 const options = {
