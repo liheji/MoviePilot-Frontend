@@ -87,8 +87,15 @@ export default defineConfig({
       manifest: {
         'name': 'MoviePilot',
         'short_name': 'MoviePilot',
+        'description': 'MoviePilot - 智能影视媒体库管理工具',
         'start_url': './',
+        'scope': './',
         'display': 'standalone',
+        'display_override': ['window-controls-overlay', 'standalone'],
+        'orientation': 'portrait-primary',
+        'lang': 'zh-CN',
+        'dir': 'ltr',
+        'categories': ['entertainment', 'multimedia', 'utilities'],
         'icons': [
           {
             'src': './android-chrome-192x192.png',
@@ -117,9 +124,18 @@ export default defineConfig({
         ],
         'theme_color': '#0E1116',
         'background_color': '#0E1116',
+        'edge_side_panel': {
+          'preferred_width': 320,
+        },
+        'launch_handler': {
+          'client_mode': 'navigate-existing',
+        },
+        'handle_links': 'preferred',
         'shortcuts': [
           {
             'name': '推荐',
+            'short_name': '推荐',
+            'description': '查看推荐内容',
             'url': './recommend',
             'icons': [
               {
@@ -131,6 +147,8 @@ export default defineConfig({
           },
           {
             'name': '探索',
+            'short_name': '探索',
+            'description': '探索新内容',
             'url': './discover',
             'icons': [
               {
@@ -142,6 +160,8 @@ export default defineConfig({
           },
           {
             'name': '更多',
+            'short_name': '更多',
+            'description': '更多功能',
             'url': './apps',
             'icons': [
               {
@@ -152,6 +172,30 @@ export default defineConfig({
             ],
           },
         ],
+        'screenshots': [
+          {
+            'src': './android-chrome-512x512.png',
+            'sizes': '512x512',
+            'type': 'image/png',
+            'form_factor': 'wide',
+            'label': 'MoviePilot 主界面',
+          },
+          {
+            'src': './android-chrome-192x192.png',
+            'sizes': '192x192',
+            'type': 'image/png',
+            'form_factor': 'narrow',
+            'label': 'MoviePilot 移动端',
+          },
+        ],
+        'protocol_handlers': [
+          {
+            'protocol': 'web+moviepilot',
+            'url': './?handler=%s',
+          },
+        ],
+        'prefer_related_applications': false,
+        'related_applications': [],
       },
     }),
   ],
