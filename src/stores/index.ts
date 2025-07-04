@@ -12,6 +12,6 @@ export default pinia
 // 所有的 store
 import { useAuthStore } from './auth'
 import { useUserStore } from './user'
-import { useGlobalSettingsStore } from './globalSettings'
+import { useGlobalSettingsStore } from './global'
 
 export { useAuthStore, useUserStore, useGlobalSettingsStore }
