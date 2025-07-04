@@ -4,6 +4,7 @@ import useDragAndDrop from '@core/utils/workflow'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { actionStepDict } from '@/api/constants'
+import { usePWA } from '@/composables/usePWA'
 
 interface ActionItem {
   name: string
@@ -13,7 +14,8 @@ interface ActionItem {
 
 const display = useDisplay()
 // APP
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 const { t } = useI18n()
 
 const { onDragStart } = useDragAndDrop()

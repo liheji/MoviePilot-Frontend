@@ -5,9 +5,11 @@ import { NavMenu } from '@/@layouts/types'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores'
 import { filterMenusByPermission } from '@/utils/permission'
+import { usePWA } from '@/composables/usePWA'
 
 const display = useDisplay()
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 const { t, locale } = useI18n()
 
 // 判断当前是否为英文环境

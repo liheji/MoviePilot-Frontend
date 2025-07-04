@@ -10,6 +10,7 @@ import type { Subscribe } from '@/api/types'
 import router from '@/router'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
+import { useGlobalSettingsStore } from '@/stores'
 
 // 显示器宽度
 const display = useDisplay()
@@ -23,7 +24,9 @@ const props = defineProps({
 })
 
 // 从 provide 中获取全局设置
-const globalSettings: any = inject('globalSettings')
+// 全局设置
+const globalSettingsStore = useGlobalSettingsStore()
+const globalSettings = globalSettingsStore.globalSettings
 
 // 定义触发的自定义事件
 const emit = defineEmits(['remove', 'save'])

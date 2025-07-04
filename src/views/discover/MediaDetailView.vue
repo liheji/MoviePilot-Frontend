@@ -15,6 +15,7 @@ import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import { useTheme } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { hasPermission } from '@/utils/permission'
+import { useGlobalSettingsStore } from '@/stores'
 
 // 国际化
 const { t } = useI18n()
@@ -28,7 +29,9 @@ const mediaProps = defineProps({
 })
 
 // 从 provide 中获取全局设置
-const globalSettings: any = inject('globalSettings')
+// 全局设置
+const globalSettingsStore = useGlobalSettingsStore()
+const globalSettings = globalSettingsStore.globalSettings
 
 // 用户 Store
 const userStore = useUserStore()

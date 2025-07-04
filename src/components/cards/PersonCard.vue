@@ -2,6 +2,7 @@
 import personIcon from '@images/misc/person-icon.png'
 import type { Person } from '@/api/types'
 import router from '@/router'
+import { useGlobalSettingsStore } from '@/stores'
 
 const personProps = defineProps({
   person: Object as PropType<Person>,
@@ -10,7 +11,9 @@ const personProps = defineProps({
 })
 
 // 从 provide 中获取全局设置
-const globalSettings: any = inject('globalSettings')
+// 全局设置
+const globalSettingsStore = useGlobalSettingsStore()
+const globalSettings = globalSettingsStore.globalSettings
 
 // 当前人物
 const personInfo = ref(personProps.person)

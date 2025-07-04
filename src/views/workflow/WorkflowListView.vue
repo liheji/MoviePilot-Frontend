@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import api from '@/api'
 import { Workflow } from '@/api/types'
-import { useDisplay } from 'vuetify'
 import WorkflowAddEditDialog from '@/components/dialog/WorkflowAddEditDialog.vue'
 import WorkflowTaskCard from '@/components/cards/WorkflowTaskCard.vue'
 import NoDataFound from '@/components/NoDataFound.vue'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
+import { usePWA } from '@/composables/usePWA'
 
 // 国际化
 const { t } = useI18n()
 
 // APP
-const display = useDisplay()
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 
 // 是否刷新
 const isRefreshed = ref(false)

@@ -11,13 +11,15 @@ import router from '@/router'
 import { useDisplay } from 'vuetify'
 import { formatFileSize } from '@/@core/utils/formatters'
 import { useI18n } from 'vue-i18n'
+import { usePWA } from '@/composables/usePWA'
 
 // i18n
 const { t } = useI18n()
 
 // APP
 const display = useDisplay()
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 
 // 提示框
 const $toast = useToast()

@@ -3,7 +3,7 @@ import { useTheme } from 'vuetify'
 import { checkPrefersColorSchemeIsDark } from '@/@core/utils'
 import { ensureRenderComplete, removeEl } from './@core/utils/dom'
 import api from '@/api'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore, useGlobalSettingsStore } from '@/stores'
 import { getBrowserLocale, setI18nLanguage } from './plugins/i18n'
 import { SupportedLocale } from '@/types/i18n'
 import { checkAndEmitUnreadMessages } from '@/utils/badge'
@@ -19,12 +19,12 @@ globalTheme.name.value = themeValue === 'auto' ? autoTheme : themeValue
 const localeValue = getBrowserLocale()
 setI18nLanguage(localeValue as SupportedLocale)
 
-// 显示状态
-const show = ref(false)
-
 // 检查是否登录
 const authStore = useAuthStore()
 const isLogin = computed(() => authStore.token)
+
+// 全局设置store
+const globalSettingsStore = useGlobalSettingsStore()
 
 // 生成背景图片key
 const loginStateKey = computed(() => (isLogin.value ? 'logged-in' : 'logged-out'))
@@ -130,9 +130,7 @@ function animateAndRemoveLoader() {
       removeEl('#loading-bg')
       // 将background属性从html的style中移除
       document.documentElement.style.removeProperty('background')
-      // 显示页面
-      show.value = true
-    }, 500) // 与CSS动画持续时间匹配
+    }, 500)
   }
 }
 
@@ -155,6 +153,9 @@ async function loadBackgroundImages(retryCount = 0) {
 }
 
 onMounted(async () => {
+  // 初始化全局设置
+  await globalSettingsStore.initialize()
+
   // 配置 ApexCharts
   configureApexCharts()
 
@@ -172,11 +173,8 @@ onMounted(async () => {
     },
   )
 
-  // 默认隐藏页面
-  show.value = false
-
   // 加载背景图片
-  loadBackgroundImages()
+  await loadBackgroundImages()
 
   // 移除加载动画
   ensureRenderComplete(() => {
@@ -213,7 +211,7 @@ onUnmounted(() => {
       <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
     </div>
     <!-- 页面内容 -->
-    <VApp v-show="show" :class="{ 'transparent-app': isTransparentTheme }">
+    <VApp :class="{ 'transparent-app': isTransparentTheme }">
       <RouterView />
     </VApp>
   </div>

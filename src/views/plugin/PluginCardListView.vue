@@ -13,6 +13,7 @@ import PluginMarketSettingDialog from '@/components/dialog/PluginMarketSettingDi
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 import PluginMixedSortCard from '@/components/cards/PluginMixedSortCard.vue'
+import { usePWA } from '@/composables/usePWA'
 
 // 国际化
 const { t } = useI18n()
@@ -23,7 +24,8 @@ const route = useRoute()
 const display = useDisplay()
 
 // APP
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 
 // 当前标签
 const activeTab = ref('installed')

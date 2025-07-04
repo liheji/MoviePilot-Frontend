@@ -8,6 +8,7 @@ import { useDisplay } from 'vuetify'
 import ProgressDialog from './ProgressDialog.vue'
 import { FileItem, StorageConf, TransferDirectoryConf, TransferForm } from '@/api/types'
 import { useI18n } from 'vue-i18n'
+import { useGlobalSettingsStore } from '@/stores'
 
 // 国际化
 const { t } = useI18n()
@@ -24,10 +25,12 @@ const props = defineProps({
 })
 
 // 从 provide 中获取全局设置
-const globalSettings: any = inject('globalSettings')
+// 全局设置
+const globalSettingsStore = useGlobalSettingsStore()
+const globalSettings = globalSettingsStore.globalSettings
 
 // 当前识别类型
-const mediaSource = ref(globalSettings.data?.RECOGNIZE_SOURCE || 'themoviedb')
+const mediaSource = ref(globalSettings.RECOGNIZE_SOURCE || 'themoviedb')
 
 // 定义事件
 const emit = defineEmits(['done', 'close'])

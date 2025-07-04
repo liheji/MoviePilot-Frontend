@@ -5,6 +5,7 @@ import personIcon from '@images/misc/person.png'
 import type { Person } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import { useI18n } from 'vue-i18n'
+import { useGlobalSettingsStore } from '@/stores'
 
 // 国际化
 const { t } = useI18n()
@@ -17,7 +18,9 @@ const personProps = defineProps({
 })
 
 // 从 provide 中获取全局设置
-const globalSettings: any = inject('globalSettings')
+// 全局设置
+const globalSettingsStore = useGlobalSettingsStore()
+const globalSettings = globalSettingsStore.globalSettings
 
 // 媒体详情
 const personDetail = ref<Person>({} as Person)

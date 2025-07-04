@@ -18,9 +18,11 @@ import { filterMenusByPermission } from '@/utils/permission'
 import { onUnreadMessage } from '@/utils/badge'
 import { usePullDownGesture } from '@/composables/usePullDownGesture'
 import { useScrollLockWithWatch } from '@/composables/useScrollLock'
+import { usePWA } from '@/composables/usePWA'
 
 const display = useDisplay()
-const appMode = inject('pwaMode')
+// PWA模式检测
+const { appMode } = usePWA()
 const { t } = useI18n()
 const route = useRoute()
 

@@ -5,6 +5,7 @@ import FileNavigator from './filebrowser/FileNavigator.vue'
 import type { EndPoints, FileItem, StorageConf } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import { storageIconDict } from '@/api/constants'
+import { usePWA } from '@/composables/usePWA'
 
 // 输入参数
 const props = defineProps({
@@ -33,7 +34,8 @@ const emit = defineEmits(['pathchanged'])
 const display = useDisplay()
 
 // APP
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 
 const fileIcons = {
   // 压缩包

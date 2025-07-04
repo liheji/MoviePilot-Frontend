@@ -8,13 +8,15 @@ import SiteAddEditDialog from '@/components/dialog/SiteAddEditDialog.vue'
 import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
+import { usePWA } from '@/composables/usePWA'
 
 // 国际化
 const { t } = useI18n()
 
 // APP
 const display = useDisplay()
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 
 // 站点列表
 const siteList = ref<Site[]>([])

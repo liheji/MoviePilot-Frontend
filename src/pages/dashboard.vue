@@ -9,13 +9,15 @@ import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 import { VCardActions } from 'vuetify/components'
+import { usePWA } from '@/composables/usePWA'
 
 // 国际化
 const { t } = useI18n()
 
 // APP
 const display = useDisplay()
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 
 // 从用户 Store 中获取superuser信息
 const superUser = useUserStore().superUser

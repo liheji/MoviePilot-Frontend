@@ -4,6 +4,7 @@ import type { Plugin } from '@/api/types'
 import PageRender from '@/components/render/PageRender.vue'
 import api from '@/api'
 import { loadRemoteComponent } from '@/utils/federationLoader'
+import { usePWA } from '@/composables/usePWA'
 
 // 输入参数
 const props = defineProps({
@@ -22,7 +23,8 @@ const emit = defineEmits(['close', 'save', 'switch'])
 // 显示器宽度
 const display = useDisplay()
 // APP
-const appMode = inject('pwaMode') && display.mdAndDown.value
+// PWA模式检测
+const { appMode } = usePWA()
 
 // 是否刷新
 const isRefreshed = ref(false)

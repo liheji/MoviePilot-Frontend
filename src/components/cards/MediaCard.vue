@@ -9,7 +9,7 @@ import { formatSeason, formatRating } from '@/@core/utils/formatters'
 import { doneNProgress, startNProgress } from '@/api/nprogress'
 import type { MediaInfo, Subscribe, MediaSeason, Site } from '@/api/types'
 import router from '@/router'
-import { useUserStore } from '@/stores'
+import { useUserStore, useGlobalSettingsStore } from '@/stores'
 import SubscribeEditDialog from '../dialog/SubscribeEditDialog.vue'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import SubscribeSeasonDialog from '../dialog/SubscribeSeasonDialog.vue'
@@ -28,7 +28,9 @@ const props = defineProps({
 })
 
 // 从 provide 中获取全局设置
-const globalSettings: any = inject('globalSettings')
+// 全局设置
+const globalSettingsStore = useGlobalSettingsStore()
+const globalSettings = globalSettingsStore.globalSettings
 
 // 用户 Store
 const userStore = useUserStore()

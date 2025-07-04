@@ -1,6 +1,7 @@
-import { ref, computed, onMounted, onBeforeUnmount, inject, readonly } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, readonly, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useRoute } from 'vue-router'
+import { usePWA } from './usePWA'
 
 // 下拉手势配置类型
 export interface PullDownConfig {
@@ -37,8 +38,7 @@ const DEFAULT_CONFIG: PullDownConfig = {
 
 export function usePullDownGesture(options: PullDownOptions = {}) {
   const display = useDisplay()
-  const route = useRoute()
-  const appMode = inject('pwaMode')
+  const { appMode } = usePWA()
 
   // 合并配置
   const config = { ...DEFAULT_CONFIG, ...options.config }
@@ -126,7 +126,7 @@ export function usePullDownGesture(options: PullDownOptions = {}) {
 
   // 事件处理函数
   const handleTouchStart = (event: TouchEvent) => {
-    if (!appMode || !display.mdAndDown.value || !options.enabled) return
+    if (!appMode.value || !display.mdAndDown.value || !options.enabled) return
 
     // 检查是否可以使用下拉手势
     if (options.canUsePullGesture && !options.canUsePullGesture()) return
@@ -149,7 +149,7 @@ export function usePullDownGesture(options: PullDownOptions = {}) {
   }
 
   const handleTouchMove = (event: TouchEvent) => {
-    if (!appMode || !display.mdAndDown.value || !options.enabled) return
+    if (!appMode.value || !display.mdAndDown.value || !options.enabled) return
 
     // 检查是否可以使用下拉手势
     if (options.canUsePullGesture && !options.canUsePullGesture()) return
@@ -192,7 +192,7 @@ export function usePullDownGesture(options: PullDownOptions = {}) {
   }
 
   const handleTouchEnd = () => {
-    if (!appMode || !display.mdAndDown.value || !options.enabled) return
+    if (!appMode.value || !display.mdAndDown.value || !options.enabled) return
 
     // 检查是否可以使用下拉手势
     if (options.canUsePullGesture && !options.canUsePullGesture()) return
@@ -217,20 +217,49 @@ export function usePullDownGesture(options: PullDownOptions = {}) {
   }
 
   // 生命周期管理
-  onMounted(() => {
-    if (appMode && display.mdAndDown.value) {
+  let eventsAdded = false
+
+  const addEventListeners = () => {
+    if (!eventsAdded && appMode.value && display.mdAndDown.value) {
       document.addEventListener('touchstart', handleTouchStart, { passive: false })
       document.addEventListener('touchmove', handleTouchMove, { passive: false })
       document.addEventListener('touchend', handleTouchEnd, { passive: true })
+      eventsAdded = true
+    }
+  }
+
+  const removeEventListeners = () => {
+    if (eventsAdded) {
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchmove', handleTouchMove)
+      document.removeEventListener('touchend', handleTouchEnd)
+      eventsAdded = false
+    }
+  }
+
+  // PWA状态确定后，一次性决定是否添加事件监听器
+  onMounted(() => {
+    // 如果PWA已经检测完成，直接添加事件监听器
+    if (appMode.value !== null) {
+      addEventListeners()
+    } else {
+      // 等待PWA检测完成（从null变为boolean）
+      const stopWatcher = watch(
+        appMode,
+        newValue => {
+          if (newValue !== null) {
+            addEventListeners()
+            // PWA状态确定后停止监听
+            stopWatcher()
+          }
+        },
+        { immediate: true },
+      )
     }
   })
 
   onBeforeUnmount(() => {
-    if (appMode && display.mdAndDown.value) {
-      document.removeEventListener('touchstart', handleTouchStart)
-      document.removeEventListener('touchmove', handleTouchMove)
-      document.removeEventListener('touchend', handleTouchEnd)
-    }
+    removeEventListeners()
   })
 
   return {

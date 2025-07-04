@@ -21,3 +21,12 @@ export interface userState {
   // 权限
   permissions: { [key: string]: any }
 }
+
+export interface globalSettingsState {
+  // 全局设置数据
+  data: { [key: string]: any }
+  // 是否已初始化
+  initialized: boolean
+  // 是否正在加载
+  loading: boolean
+}
