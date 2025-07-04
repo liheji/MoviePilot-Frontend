@@ -67,14 +67,24 @@ export default defineConfig({
             options: {
               cacheName: 'image-cache',
               expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 缓存 30 天
+                maxEntries: 100,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
               },
             },
           },
+          {
+            urlPattern: ({ request }) => request.destination === 'document',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages-cache',
+              networkTimeoutSeconds: 10,
+            },
+          },
         ],
-        navigateFallback: '/index.html', // 确保页面路由正确加载
+        navigateFallback: '/index.html',
         navigateFallbackDenylist: [/.*\/api\/v\d+\/system\/logging.*/],
+        skipWaiting: true,
+        clientsClaim: true,
       },
       injectManifest: {
         rollupFormat: 'iife',
@@ -131,6 +141,7 @@ export default defineConfig({
           'client_mode': 'navigate-existing',
         },
         'handle_links': 'preferred',
+        'id': 'moviepilot-app',
         'shortcuts': [
           {
             'name': '推荐',
