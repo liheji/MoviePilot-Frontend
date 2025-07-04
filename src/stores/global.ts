@@ -45,7 +45,6 @@ export const useGlobalSettingsStore = defineStore('globalSettings', {
     isInitialized: state => state.initialized,
     isLoading: state => state.loading,
     getData: state => state.data,
-    // 直接返回data对象，避免使用.value
     globalSettings: state => state.data,
   },
 })

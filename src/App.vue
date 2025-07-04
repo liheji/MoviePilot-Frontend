@@ -123,14 +123,8 @@ function startBackgroundRotation() {
 function animateAndRemoveLoader() {
   const loadingBg = document.querySelector('#loading-bg') as HTMLElement
   if (loadingBg) {
-    // 先添加完成动画类
-    loadingBg.classList.add('loading-complete')
-    // 等待动画完成后再移除元素
-    setTimeout(() => {
-      removeEl('#loading-bg')
-      // 将background属性从html的style中移除
-      document.documentElement.style.removeProperty('background')
-    }, 500)
+    removeEl('#loading-bg')
+    document.documentElement.style.removeProperty('background')
   }
 }
 
