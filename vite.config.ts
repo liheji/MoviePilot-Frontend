@@ -52,7 +52,7 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'service-worker.ts',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2,ttf,otf,eot}'],
         runtimeCaching: [
           {
             urlPattern: /\.(?:js|css|html)$/,
@@ -62,13 +62,47 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /\.(?:png|jpg|jpeg|svg|ico)$/,
+            urlPattern: /\.(?:png|jpg|jpeg|svg|ico|webp|avif|gif|bmp|tiff)$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'image-cache',
               expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 30 * 24 * 60 * 60,
+                maxEntries: 200,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30天
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:woff|woff2|ttf|otf|eot)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'font-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 365 * 24 * 60 * 60, // 1年
+              },
+            },
+          },
+          {
+            urlPattern: /\/api\/v1\/.*$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              networkTimeoutSeconds: 10,
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 24 * 60 * 60, // 24小时
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/image\.tmdb\.org\/.*$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'tmdb-image-cache',
+              expiration: {
+                maxEntries: 300,
+                maxAgeSeconds: 7 * 24 * 60 * 60, // 7天
               },
             },
           },
