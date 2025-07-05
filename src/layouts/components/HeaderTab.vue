@@ -107,7 +107,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div class="tab-header rounded-lg" :class="{ 'blur-background': showBlurBackground }">
+  <div class="tab-header" :class="{ 'blur-background': showBlurBackground }">
     <VBtn v-if="showLeftButton" class="scroll-button left-button" @click="scrollTabs('left')" variant="text" icon>
       <VIcon icon="tabler-chevron-left" size="small" color="secondary" />
     </VBtn>
@@ -141,38 +141,27 @@ onUnmounted(() => {
   justify-content: space-between;
   padding-inline: 16px;
   transition: all 0.3s ease;
-  
+
   // 透明模糊背景样式
   &.blur-background {
     &::before {
       position: absolute;
       z-index: -1;
-      backdrop-filter: blur(20px);
-      border-radius: 8px;
-      content: "";
+      border-radius: 16px;
+      backdrop-filter: blur(3px);
+      background: linear-gradient(
+        to bottom,
+        rgba(var(--v-theme-background), 0) 0%,
+        rgba(var(--v-theme-background), 0.05) 25%,
+        rgba(var(--v-theme-background), 0.1) 50%,
+        rgba(var(--v-theme-background), 0.05) 75%,
+        rgba(var(--v-theme-background), 0) 100%
+      );
+      content: '';
       inset: 0;
+      margin-block: -8px;
       pointer-events: none;
       transition: all 0.3s ease;
-      
-      .v-theme--light & {
-        background: rgba(var(--v-theme-surface), 0.8);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-      }
-      
-      .v-theme--dark & {
-        background: rgba(var(--v-theme-background), 0.7);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
-      }
-
-      .v-theme--purple & {
-        background: rgba(var(--v-theme-background), 0.7);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
-      }
-
-      .v-theme--transparent & {
-        background: rgba(var(--v-theme-background), 0.4);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.08);
-      }
     }
   }
 }
@@ -288,25 +277,6 @@ onUnmounted(() => {
   &:hover:not(.active) {
     background-color: rgba(var(--v-theme-primary), 0.05);
     color: rgba(var(--v-theme-on-background), 1);
-  }
-}
-
-// 在模糊背景激活时，增强标签文字和图标的可见性
-.tab-header.blur-background {
-  .header-tab {
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 20%);
-    
-    &.active {
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 25%);
-    }
-  }
-  
-  .header-tab-icon {
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 20%);
-    
-    &.active {
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 25%);
-    }
   }
 }
 </style>
