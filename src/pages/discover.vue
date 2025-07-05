@@ -128,16 +128,16 @@ onBeforeMount(async () => {
   await loadOrderConfig()
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
+})
+
+onMounted(() => {
   // 选中第一个标签页
   if (discoverTabs.value.length > 0) {
     activeTab.value = discoverTabs.value[0].mediaid_prefix
   }
-})
-
-onMounted(() => {
   // 注册动态标签页
   registerHeaderTab({
-    items: discoverTabItems.value,
+    items: discoverTabItems, // 传递computed值，而不是.value
     modelValue: activeTab,
     appendButtons: [
       {

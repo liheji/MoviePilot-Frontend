@@ -124,16 +124,13 @@ provide('unregisterDynamicHeaderTab', unregisterDynamicHeaderTab)
 // 监听路由变化来清除动态标签页
 watch(
   () => route.path,
-  (newPath, oldPath) => {
+  () => {
     // 使用nextTick确保新页面的组件已经挂载完成
     nextTick(() => {
-      // 延迟一小段时间，让新页面有机会注册标签页
-      setTimeout(() => {
-        // 如果当前标签页不属于新路由，则清除
-        if (dynamicHeaderTab.value && dynamicHeaderTab.value.routePath !== route.path) {
-          dynamicHeaderTab.value = null
-        }
-      }, 50) // 减少延迟时间，但仍然给新页面注册机会
+      // 如果当前标签页不属于新路由，则清除
+      if (dynamicHeaderTab.value && dynamicHeaderTab.value.routePath !== route.path) {
+        dynamicHeaderTab.value = null
+      }
     })
   },
   { immediate: false },
@@ -142,10 +139,7 @@ watch(
 // 显示动态标签页
 const showDynamicHeaderTab = computed(() => {
   return (
-    dynamicHeaderTab.value &&
-    dynamicHeaderTab.value.items.length > 0 &&
-    // 确保只在注册的路由路径下显示标签页
-    dynamicHeaderTab.value.routePath === route.path
+    dynamicHeaderTab.value && dynamicHeaderTab.value.items.length > 0 && dynamicHeaderTab.value.routePath === route.path
   )
 })
 

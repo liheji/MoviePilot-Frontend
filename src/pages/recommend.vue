@@ -206,7 +206,7 @@ onMounted(async () => {
 
   // 注册动态标签页
   registerHeaderTab({
-    items: categoryItems.value,
+    items: categoryItems,
     modelValue: currentCategory,
     appendButtons: [
       {
@@ -223,7 +223,7 @@ onMounted(async () => {
 })
 
 onActivated(async () => {
-  loadExtraRecommendSources()
+  await loadExtraRecommendSources()
 })
 </script>
 

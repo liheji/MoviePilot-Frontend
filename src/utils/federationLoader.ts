@@ -6,6 +6,9 @@ import {
   // @ts-ignore
 } from 'virtual:__federation__'
 
+// 创建一个专用的AbortController，用于federationLoader请求
+const federationController = new AbortController()
+
 // 定义远程模块接口
 interface RemoteModule {
   id: string
@@ -62,7 +65,9 @@ export async function loadRemoteComponent(id: string, componentName: string = 'P
  */
 async function fetchRemoteModules(): Promise<RemoteModule[]> {
   try {
-    const response = await api.get('plugin/remotes?token=moviepilot')
+    const response = await api.get('plugin/remotes?token=moviepilot', {
+      signal: federationController.signal,
+    })
     return (response as any) || []
   } catch (error) {
     console.error('获取远程模块列表失败:', error)

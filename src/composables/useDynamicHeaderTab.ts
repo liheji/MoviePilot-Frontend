@@ -1,3 +1,5 @@
+import type { ComputedRef, Ref } from 'vue'
+
 // 动态标签页相关类型
 interface DynamicHeaderTabButton {
   icon: string
@@ -33,12 +35,12 @@ export function useDynamicHeaderTab() {
 
   // 注册动态标签页
   const registerHeaderTab = (config: {
-    items: DynamicHeaderTabItem[]
+    items: DynamicHeaderTabItem[] | ComputedRef<DynamicHeaderTabItem[]> | Ref<DynamicHeaderTabItem[]>
     modelValue: Ref<string>
     appendButtons?: DynamicHeaderTabButton[]
   }) => {
     const tabConfig: DynamicHeaderTabConfig = {
-      items: config.items,
+      items: Array.isArray(config.items) ? config.items : config.items.value,
       modelValue: config.modelValue.value,
       appendButtons: config.appendButtons,
       routePath: route.path,
@@ -62,10 +64,33 @@ export function useDynamicHeaderTab() {
       }
     })
 
+    // 如果items是computed或ref，也需要监听其变化
+    if (!Array.isArray(config.items)) {
+      watch(
+        config.items,
+        newItems => {
+          tabConfig.items = newItems
+          // 重新注册以更新items
+          if (registerDynamicHeaderTab) {
+            registerDynamicHeaderTab(tabConfig)
+          } else if (typeof window !== 'undefined') {
+            // 使用全局方法作为备用
+            const globalRegister = (window as any).__VUE_INJECT_DYNAMIC_HEADER_TAB__
+            if (globalRegister) {
+              globalRegister(tabConfig)
+            }
+          }
+        },
+        { deep: true },
+      )
+    }
+
     // 注册函数
     const doRegister = () => {
       // 确保路由路径是最新的
       tabConfig.routePath = route.path
+      // 确保items是最新的
+      tabConfig.items = Array.isArray(config.items) ? config.items : config.items.value
 
       if (registerDynamicHeaderTab) {
         registerDynamicHeaderTab(tabConfig)
