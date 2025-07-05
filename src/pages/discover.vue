@@ -9,6 +9,7 @@ import { DiscoverSource } from '@/api/types'
 import api from '@/api'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
+import { useDynamicHeaderTab } from '@/composables/useDynamicHeaderTab'
 
 const display = useDisplay()
 
@@ -156,10 +157,6 @@ onActivated(async () => {
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
 })
-
-function useDynamicHeaderTab(): { registerHeaderTab: any } {
-  throw new Error('Function not implemented.')
-}
 </script>
 
 <template>
