@@ -123,9 +123,9 @@ async function saveTabOrder() {
 // 使用动态标签页
 const { registerHeaderTab } = useDynamicHeaderTab()
 
-// 注册动态标签页
+// 注册动态标签页（在setup阶段，但使用computed保证响应性）
 registerHeaderTab({
-  items: discoverTabItems, // 传递computed值，而不是.value
+  items: discoverTabItems, // 传递computed值，会自动响应变化
   modelValue: activeTab,
   appendButtons: [
     {
@@ -145,18 +145,25 @@ onBeforeMount(async () => {
   await loadOrderConfig()
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
-})
-
-onMounted(() => {
   // 选中第一个标签页
   if (discoverTabs.value.length > 0) {
     activeTab.value = discoverTabs.value[0].mediaid_prefix
   }
 })
 
+
+
+
+
 onActivated(async () => {
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
+  // 如果当前没有选中任何标签页，或者当前选中的标签页不存在，则选中第一个标签页
+  if (!activeTab.value || !discoverTabs.value.find(tab => tab.mediaid_prefix === activeTab.value)) {
+    if (discoverTabs.value.length > 0) {
+      activeTab.value = discoverTabs.value[0].mediaid_prefix
+    }
+  }
 })
 </script>
 
