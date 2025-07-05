@@ -1,6 +1,5 @@
 import { ref, computed, onMounted, onBeforeUnmount, readonly, watch } from 'vue'
 import { useDisplay } from 'vuetify'
-import { useRoute } from 'vue-router'
 import { usePWA } from './usePWA'
 
 // 下拉手势配置类型

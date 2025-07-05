@@ -1,16 +1,7 @@
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 
+// Service Worker 类型声明
 declare let self: ServiceWorkerGlobalScope
-
-cleanupOutdatedCaches()
-
-// self.__WB_MANIFEST is default injection point
-precacheAndRoute(self.__WB_MANIFEST)
-
-// 离线版本控制 - 递增此版本号将触发install事件并强制更新缓存资源
-const OFFLINE_VERSION = 1
-const CACHE_NAME = 'mp-offline-cache-v1'
-const OFFLINE_URL = '/offline.html'
 
 // 通知选项
 const options = {
@@ -57,6 +48,7 @@ async function openDB(): Promise<IDBDatabase> {
   })
 }
 
+// 获取IndexedDB中的数据
 async function get(key: string): Promise<any> {
   const db = await openDB()
   return new Promise((resolve, reject) => {
@@ -68,6 +60,7 @@ async function get(key: string): Promise<any> {
   })
 }
 
+// 保存数据到IndexedDB
 async function set(key: string, value: any): Promise<void> {
   const db = await openDB()
   return new Promise((resolve, reject) => {
@@ -106,17 +99,9 @@ async function clearBadge() {
   }
 }
 
-// 安装事件 - 缓存离线页面
+// 安装事件
 self.addEventListener('install', event => {
-  console.log('Service Worker install, version:', OFFLINE_VERSION)
-  event.waitUntil(
-    (async () => {
-      const cache = await caches.open(CACHE_NAME)
-      // 使用 {cache: 'reload'} 确保从网络获取最新的离线页面
-      // 而不是从HTTP缓存中获取
-      await cache.add(new Request(OFFLINE_URL, { cache: 'reload' }))
-    })(),
-  )
+  console.log('Service Worker install')
   // 强制等待中的Service Worker立即成为活动的Service Worker
   self.skipWaiting()
 })
@@ -136,35 +121,47 @@ self.addEventListener('activate', event => {
   self.clients.claim()
 })
 
-// Fetch事件 - 处理网络请求和离线回退
+// 处理API请求，当离线时发送消息到客户端
 self.addEventListener('fetch', event => {
-  // 只处理HTML页面的导航请求
-  if (event.request.mode === 'navigate') {
+  if (event.request.url.includes('/api/v1/') && event.request.method === 'GET') {
     event.respondWith(
       (async () => {
         try {
-          // 首先尝试使用navigationPreload响应（如果支持）
-          const preloadResponse = await event.preloadResponse
-          if (preloadResponse) {
-            return preloadResponse
-          }
-
-          // 总是优先尝试网络请求
+          // 尝试网络请求
           const networkResponse = await fetch(event.request)
           return networkResponse
         } catch (error) {
-          // 只有在抛出异常时才会触发catch，通常是由于网络错误
-          // 如果fetch()返回4xx或5xx响应码，不会触发catch
-          console.log('网络请求失败，返回离线页面:', error)
+          // 网络错误时，通知客户端当前处于离线状态
+          if (self.clients) {
+            self.clients.matchAll().then(clients => {
+              clients.forEach(client => {
+                client.postMessage({
+                  type: 'OFFLINE_STATUS',
+                  offline: true,
+                })
+              })
+            })
+          }
 
-          const cache = await caches.open(CACHE_NAME)
-          const cachedResponse = await cache.match(OFFLINE_URL)
-          return cachedResponse || new Response('离线页面不可用', { status: 503 })
+          // 尝试返回缓存的响应
+          const cache = await caches.open('api-cache')
+          const cachedResponse = await cache.match(event.request)
+          if (cachedResponse) {
+            return cachedResponse
+          }
+
+          // 如果没有缓存，抛出错误
+          throw error
         }
       })(),
     )
+    return
   }
 })
+
+// 初始化 Workbox
+cleanupOutdatedCaches()
+precacheAndRoute(self.__WB_MANIFEST)
 
 // 监听 push 事件，显示通知
 self.addEventListener('push', function (event) {

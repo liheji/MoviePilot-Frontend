@@ -124,6 +124,7 @@ export default defineConfig({
         ],
         navigateFallback: null,
         navigateFallbackDenylist: [/.*\/api\/v\d+\/system\/logging.*/, /\/offline\.html$/],
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^gclid$/],
         skipWaiting: true,
         clientsClaim: true,
       },

@@ -19,6 +19,8 @@ import { onUnreadMessage } from '@/utils/badge'
 import { usePullDownGesture } from '@/composables/usePullDownGesture'
 import { useScrollLockWithWatch } from '@/composables/useScrollLock'
 import { usePWA } from '@/composables/usePWA'
+import OfflinePage from '@/layouts/components/OfflinePage.vue'
+import { useGlobalOfflineStatus } from '@/composables/useOfflineStatus'
 
 const display = useDisplay()
 // PWA模式检测
@@ -59,6 +61,20 @@ const systemMenus = ref<NavMenu[]>([])
 // 插件快速访问相关状态
 const showPluginQuickAccess = ref(false)
 
+// 离线状态管理
+const { setAppOffline, isOffline } = useGlobalOfflineStatus()
+
+// 监听Service Worker消息
+const handleServiceWorkerMessage = (event: MessageEvent) => {
+  if (event.data && event.data.type === 'OFFLINE_STATUS') {
+    if (event.data.offline) {
+      setAppOffline(true, t('common.serverConnectionFailed'))
+    } else {
+      setAppOffline(false)
+    }
+  }
+}
+
 // 使用滚动锁定 composable（自动监听showPluginQuickAccess的变化）
 useScrollLockWithWatch(showPluginQuickAccess)
 
@@ -70,8 +86,10 @@ const canUsePullGesture = () => {
   const isAdmin = superUser.value
   // 检查插件快速访问面板是否已显示
   const quickAccessOpen = showPluginQuickAccess.value
+  // 检查是否离线
+  const offline = isOffline.value
 
-  return isDashboard && isAdmin && !quickAccessOpen
+  return isDashboard && isAdmin && !quickAccessOpen && !offline
 }
 
 // 使用下拉手势 composable
@@ -138,14 +156,25 @@ onMounted(() => {
   // 监听全局未读消息事件
   const unsubscribe = onUnreadMessage(handleUnreadMessage)
 
+  // 监听Service Worker消息
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage)
+  }
+
   // 组件卸载时清理监听
   onBeforeUnmount(() => {
     unsubscribe()
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage)
+    }
   })
 })
 </script>
 
 <template>
+  <!-- 👉 Offline Page -->
+  <OfflinePage />
+
   <!-- 👉 Pull Down Indicator -->
   <div
     v-if="appMode && showPullIndicator"
