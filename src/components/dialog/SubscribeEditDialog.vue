@@ -283,6 +283,7 @@ onMounted(() => {
   <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem class="py-2">
+				<VDialogCloseBtn @click="emit('close')" />
         <template #prepend>
           <VIcon icon="mdi-clipboard-list-outline" class="me-2" />
         </template>
@@ -300,7 +301,6 @@ onMounted(() => {
         </VCardSubtitle>
       </VCardItem>
       <VCardText>
-        <VDialogCloseBtn @click="emit('close')" />
         <VForm @submit.prevent="() => {}">
           <VTabs v-model="activeTab" show-arrows>
             <VTab value="basic">
