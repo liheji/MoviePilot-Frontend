@@ -123,6 +123,23 @@ async function saveTabOrder() {
 // 使用动态标签页
 const { registerHeaderTab } = useDynamicHeaderTab()
 
+// 注册动态标签页
+registerHeaderTab({
+  items: discoverTabItems, // 传递computed值，而不是.value
+  modelValue: activeTab,
+  appendButtons: [
+    {
+      icon: 'mdi-order-alphabetical-ascending',
+      variant: 'text',
+      color: 'grey',
+      class: 'settings-icon-button',
+      action: () => {
+        orderConfigDialog.value = true
+      },
+    },
+  ],
+})
+
 onBeforeMount(async () => {
   initDiscoverTabs()
   await loadOrderConfig()
@@ -135,22 +152,6 @@ onMounted(() => {
   if (discoverTabs.value.length > 0) {
     activeTab.value = discoverTabs.value[0].mediaid_prefix
   }
-  // 注册动态标签页
-  registerHeaderTab({
-    items: discoverTabItems, // 传递computed值，而不是.value
-    modelValue: activeTab,
-    appendButtons: [
-      {
-        icon: 'mdi-order-alphabetical-ascending',
-        variant: 'text',
-        color: 'grey',
-        class: 'settings-icon-button',
-        action: () => {
-          orderConfigDialog.value = true
-        },
-      },
-    ],
-  })
 })
 
 onActivated(async () => {

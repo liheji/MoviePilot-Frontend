@@ -56,49 +56,51 @@ const searchActivator = computed(() => '[data-menu-activator="search-btn"]')
 const { registerHeaderTab } = useDynamicHeaderTab()
 
 // 注册动态标签页
+registerHeaderTab({
+  items: subscribeTabs.value,
+  modelValue: activeTab,
+  appendButtons: [
+    {
+      icon: 'mdi-filter-multiple-outline',
+      variant: 'text',
+      color: computed(() => (subscribeFilter.value ? 'primary' : 'gray')),
+      class: 'settings-icon-button',
+      dataAttr: 'filter-btn',
+      action: () => {
+        filterSubscribeDialog.value = true
+      },
+      show: computed(() => activeTab.value === 'mysub'),
+    },
+    {
+      icon: 'mdi-movie-search-outline',
+      variant: 'text',
+      color: computed(() => (shareKeyword.value ? 'primary' : 'gray')),
+      class: 'settings-icon-button',
+      dataAttr: 'search-btn',
+      action: () => {
+        searchShareDialog.value = true
+      },
+      show: computed(() => activeTab.value === 'share'),
+    },
+    {
+      icon: 'mdi-clipboard-edit-outline',
+      variant: 'text',
+      color: 'gray',
+      class: 'settings-icon-button',
+      action: () => {
+        subscribeEditDialog.value = true
+      },
+      show: computed(() => activeTab.value === 'mysub'),
+    },
+  ],
+})
+
+// 注册动态标签页
 onMounted(() => {
   // 设置初始activeTab值
   if (!activeTab.value && subscribeTabs.value.length > 0) {
     activeTab.value = subscribeTabs.value[0].tab
   }
-  registerHeaderTab({
-    items: subscribeTabs.value,
-    modelValue: activeTab,
-    appendButtons: [
-      {
-        icon: 'mdi-filter-multiple-outline',
-        variant: 'text',
-        color: computed(() => (subscribeFilter.value ? 'primary' : 'gray')),
-        class: 'settings-icon-button',
-        dataAttr: 'filter-btn',
-        action: () => {
-          filterSubscribeDialog.value = true
-        },
-        show: computed(() => activeTab.value === 'mysub'),
-      },
-      {
-        icon: 'mdi-movie-search-outline',
-        variant: 'text',
-        color: computed(() => (shareKeyword.value ? 'primary' : 'gray')),
-        class: 'settings-icon-button',
-        dataAttr: 'search-btn',
-        action: () => {
-          searchShareDialog.value = true
-        },
-        show: computed(() => activeTab.value === 'share'),
-      },
-      {
-        icon: 'mdi-clipboard-edit-outline',
-        variant: 'text',
-        color: 'gray',
-        class: 'settings-icon-button',
-        action: () => {
-          subscribeEditDialog.value = true
-        },
-        show: computed(() => activeTab.value === 'mysub'),
-      },
-    ],
-  })
 })
 </script>
 

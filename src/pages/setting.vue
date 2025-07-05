@@ -24,15 +24,17 @@ const settingTabs = computed(() => getSettingTabs())
 const { registerHeaderTab } = useDynamicHeaderTab()
 
 // 注册动态标签页
+registerHeaderTab({
+  items: settingTabs.value,
+  modelValue: activeTab,
+})
+
+// 注册动态标签页
 onMounted(() => {
   // 设置初始activeTab值
   if (!activeTab.value && settingTabs.value.length > 0) {
     activeTab.value = settingTabs.value[0].tab
   }
-  registerHeaderTab({
-    items: settingTabs.value,
-    modelValue: activeTab,
-  })
 })
 </script>
 

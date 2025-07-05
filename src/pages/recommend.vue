@@ -14,6 +14,9 @@ const { t } = useI18n()
 // 当前选择的分类
 const currentCategory = ref(t('recommend.all'))
 
+// 使用动态标签页
+const { registerHeaderTab } = useDynamicHeaderTab()
+
 const viewList = reactive<{ apipath: string; linkurl: string; title: string; type: string }[]>([
   {
     apipath: 'recommend/tmdb_trending',
@@ -194,8 +197,22 @@ const categoryItems = computed(() => [
   },
 ])
 
-// 使用动态标签页
-const { registerHeaderTab } = useDynamicHeaderTab()
+// 注册动态标签页
+registerHeaderTab({
+  items: categoryItems,
+  modelValue: currentCategory,
+  appendButtons: [
+    {
+      icon: 'mdi-tune',
+      variant: 'text',
+      color: 'grey',
+      class: 'settings-icon-button',
+      action: () => {
+        dialog.value = true
+      },
+    },
+  ],
+})
 
 onBeforeMount(async () => {
   await loadConfig()
@@ -203,23 +220,6 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   await loadExtraRecommendSources()
-
-  // 注册动态标签页
-  registerHeaderTab({
-    items: categoryItems,
-    modelValue: currentCategory,
-    appendButtons: [
-      {
-        icon: 'mdi-tune',
-        variant: 'text',
-        color: 'grey',
-        class: 'settings-icon-button',
-        action: () => {
-          dialog.value = true
-        },
-      },
-    ],
-  })
 })
 
 onActivated(async () => {

@@ -41,7 +41,7 @@ async function loadDownloaderSetting() {
 const registerTabs = () => {
   if (downloaderItems.value.length > 0) {
     registerHeaderTab({
-      items: downloaderItems.value,
+      items: downloaderItems,
       modelValue: activeTab,
     })
   }
