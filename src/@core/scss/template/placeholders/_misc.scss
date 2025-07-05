@@ -9,7 +9,7 @@
       
       // 磨砂渐变效果
       backdrop-filter: blur(20px);
-      block-size: calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 5rem);
+      block-size: calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 6rem);
       content: "";
       inset-block-start: 0;
       inset-inline: 0;
