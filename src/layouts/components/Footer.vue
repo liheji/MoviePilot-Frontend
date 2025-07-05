@@ -247,7 +247,7 @@ const showDynamicButton = computed(() => {
 .footer-nav-card {
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(24px);
   background-color: rgba(var(--v-theme-surface), 0.3);
   pointer-events: auto;
   transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
