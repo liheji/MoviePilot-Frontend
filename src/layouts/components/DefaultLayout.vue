@@ -8,6 +8,7 @@ import SearchBar from '@/layouts/components/SearchBar.vue'
 import ShortcutBar from '@/layouts/components/ShortcutBar.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import QuickAccess from '@/layouts/components/QuickAccess.vue'
+import HeaderTab from '@/layouts/components/HeaderTab.vue'
 import { useUserStore } from '@/stores'
 import { getNavMenus } from '@/router/i18n-menu'
 import { NavMenu } from '@/@layouts/types'
@@ -63,6 +64,92 @@ const showPluginQuickAccess = ref(false)
 
 // 离线状态管理
 const { setAppOffline, isOffline } = useGlobalOfflineStatus()
+
+// 动态标签页相关
+// 定义动态标签页类型
+interface DynamicHeaderTab {
+  items: Array<{ title: string; icon: string; tab: string }>
+  modelValue: string
+  appendButtons?: Array<{
+    icon: string
+    color?: string | ComputedRef<string>
+    variant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain'
+    size?: string
+    class?: string
+    action?: () => void
+    show?: boolean | ComputedRef<boolean>
+    dataAttr?: string
+  }>
+  routePath?: string // 用于标识哪个路由注册的
+  onUpdateModelValue?: (value: string) => void // 用于通知值更新
+}
+
+// 提供动态标签页注册和获取的方法
+const dynamicHeaderTab = ref<DynamicHeaderTab | null>(null)
+
+// 提供一个方法让其他组件注册动态标签页
+const registerDynamicHeaderTab = (tab: DynamicHeaderTab) => {
+  // 保存注册标签页的路由路径
+  tab.routePath = route.path
+  dynamicHeaderTab.value = tab
+}
+
+// 提供一个方法让其他组件取消注册动态标签页
+const unregisterDynamicHeaderTab = () => {
+  dynamicHeaderTab.value = null
+}
+
+// 标签页值更新处理
+const handleTabChange = (newValue: string) => {
+  if (dynamicHeaderTab.value) {
+    dynamicHeaderTab.value.modelValue = newValue
+    // 通知注册的页面更新值
+    if (dynamicHeaderTab.value.onUpdateModelValue) {
+      dynamicHeaderTab.value.onUpdateModelValue(newValue)
+    }
+  }
+}
+
+// 添加全局注册方法，解决注入不可用的问题
+if (typeof window !== 'undefined') {
+  // 确保在浏览器环境中
+  ;(window as any).__VUE_INJECT_DYNAMIC_HEADER_TAB__ = registerDynamicHeaderTab
+}
+
+// 提供给其他组件使用
+provide('registerDynamicHeaderTab', registerDynamicHeaderTab)
+provide('unregisterDynamicHeaderTab', unregisterDynamicHeaderTab)
+
+// 监听路由变化来清除动态标签页
+watch(
+  () => route.path,
+  newPath => {
+    // 当路由变化时，清除动态标签页（如果不是同一个路由注册的）
+    if (dynamicHeaderTab.value && dynamicHeaderTab.value.routePath !== newPath) {
+      dynamicHeaderTab.value = null
+    }
+  },
+  { immediate: false },
+)
+
+// 显示动态标签页
+const showDynamicHeaderTab = computed(() => {
+  return (
+    dynamicHeaderTab.value &&
+    dynamicHeaderTab.value.items.length > 0 &&
+    // 确保只在注册的路由路径下显示标签页
+    (!dynamicHeaderTab.value.routePath || dynamicHeaderTab.value.routePath === route.path)
+  )
+})
+
+// 在组件销毁时清理
+onUnmounted(() => {
+  dynamicHeaderTab.value = null
+  // 清理全局方法
+  if (typeof window !== 'undefined') {
+    delete (window as any).__VUE_INJECT_DYNAMIC_HEADER_TAB__
+  }
+})
 
 // 监听Service Worker消息
 const handleServiceWorkerMessage = (event: MessageEvent) => {
@@ -270,6 +357,30 @@ onMounted(() => {
         transition: contentTransition,
       }"
     >
+      <!-- 👉 Dynamic Header Tab -->
+      <div v-if="showDynamicHeaderTab" class="dynamic-header-tab-container">
+        <HeaderTab
+          :items="dynamicHeaderTab!.items"
+          :model-value="dynamicHeaderTab!.modelValue"
+          @update:model-value="handleTabChange"
+        >
+          <template #append>
+            <template v-for="button in dynamicHeaderTab!.appendButtons" :key="button.icon">
+              <VBtn
+                v-if="typeof button.show === 'boolean' ? button.show !== false : (button.show as any)?.value !== false"
+                :icon="button.icon"
+                :variant="button.variant || 'text'"
+                :color="typeof button.color === 'string' ? button.color : (button.color as any)?.value || 'gray'"
+                :size="button.size || 'default'"
+                :class="button.class || 'settings-icon-button'"
+                :data-menu-activator="button.dataAttr"
+                @click="button.action"
+              />
+            </template>
+          </template>
+        </HeaderTab>
+      </div>
+
       <slot />
     </div>
 

@@ -117,14 +117,11 @@ onUnmounted(() => {
 </template>
 <style scoped lang="scss">
 .tab-header {
-  position: sticky;
+  position: relative;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  backdrop-filter: blur(10px);
-  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.05);
-  inset-block-start: 0;
   margin-block-end: 16px;
   padding-block: 8px;
   padding-inline: 16px;

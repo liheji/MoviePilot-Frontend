@@ -119,6 +119,9 @@ async function saveTabOrder() {
   }
 }
 
+// 使用动态标签页
+const { registerHeaderTab } = useDynamicHeaderTab()
+
 onBeforeMount(async () => {
   initDiscoverTabs()
   await loadOrderConfig()
@@ -130,28 +133,38 @@ onBeforeMount(async () => {
   }
 })
 
+onMounted(() => {
+  // 注册动态标签页
+  registerHeaderTab({
+    items: discoverTabItems.value,
+    modelValue: activeTab,
+    appendButtons: [
+      {
+        icon: 'mdi-order-alphabetical-ascending',
+        variant: 'text',
+        color: 'grey',
+        class: 'settings-icon-button',
+        action: () => {
+          orderConfigDialog.value = true
+        },
+      },
+    ],
+  })
+})
+
 onActivated(async () => {
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
 })
+
+function useDynamicHeaderTab(): { registerHeaderTab: any } {
+  throw new Error('Function not implemented.')
+}
 </script>
 
 <template>
   <div>
-    <VHeaderTab :items="discoverTabItems" v-model="activeTab">
-      <template #append>
-        <VBtn
-          icon="mdi-order-alphabetical-ascending"
-          variant="text"
-          color="grey"
-          size="default"
-          class="settings-icon-button"
-          @click="orderConfigDialog = true"
-        />
-      </template>
-    </VHeaderTab>
-
-    <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
+    <VWindow v-model="activeTab" class="disable-tab-transition" :touch="false">
       <VWindowItem value="themoviedb">
         <transition name="fade-slide" appear>
           <div>
