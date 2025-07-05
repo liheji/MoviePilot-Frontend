@@ -4,12 +4,13 @@ import { DownloaderConf } from '@/api/types'
 import DownloadingListView from '@/views/reorganize/DownloadingListView.vue'
 import NoDataFound from '@/components/NoDataFound.vue'
 import { useI18n } from 'vue-i18n'
+import { useDynamicHeaderTab } from '@/composables/useDynamicHeaderTab'
 
 // 国际化
 const { t } = useI18n()
 
 const route = useRoute()
-const activeTab = ref(route.query.tab)
+const activeTab = ref<string>((route.query.tab as string) || '')
 
 // 下载器
 const downloaders = ref<DownloaderConf[]>([])
@@ -22,6 +23,9 @@ const downloaderItems = computed(() => {
   }))
 })
 
+// 使用动态标签页
+const { registerHeaderTab } = useDynamicHeaderTab()
+
 // 调用API查询下载器设置
 async function loadDownloaderSetting() {
   try {
@@ -33,19 +37,30 @@ async function loadDownloaderSetting() {
   }
 }
 
+// 注册动态标签页
+const registerTabs = () => {
+  if (downloaderItems.value.length > 0) {
+    registerHeaderTab({
+      items: downloaderItems.value,
+      modelValue: activeTab,
+    })
+  }
+}
+
 onMounted(async () => {
   await loadDownloaderSetting()
+  registerTabs()
 })
 
 onActivated(async () => {
-  loadDownloaderSetting()
+  await loadDownloaderSetting()
+  registerTabs()
 })
 </script>
 
 <template>
   <div v-if="downloaders.length > 0">
-    <VHeaderTab :items="downloaderItems" v-model="activeTab" />
-    <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
+    <VWindow v-model="activeTab" class="disable-tab-transition" :touch="false">
       <VWindowItem v-for="item in downloaders" :value="item.name">
         <transition name="fade-slide" appear>
           <div>

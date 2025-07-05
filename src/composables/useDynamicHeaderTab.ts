@@ -62,23 +62,50 @@ export function useDynamicHeaderTab() {
       }
     })
 
-    // 在组件卸载时取消注册
-    onUnmounted(() => {
+    // 注册函数
+    const doRegister = () => {
+      // 确保路由路径是最新的
+      tabConfig.routePath = route.path
+
+      if (registerDynamicHeaderTab) {
+        registerDynamicHeaderTab(tabConfig)
+      } else if (typeof window !== 'undefined') {
+        // 使用全局方法作为备用
+        const globalRegister = (window as any).__VUE_INJECT_DYNAMIC_HEADER_TAB__
+        if (globalRegister) {
+          globalRegister(tabConfig)
+        }
+      }
+    }
+
+    // 取消注册函数
+    const doUnregister = () => {
       if (unregisterDynamicHeaderTab) {
         unregisterDynamicHeaderTab()
       }
+    }
+
+    // 初始注册（延迟到下个tick，确保路由已经完全切换）
+    nextTick(() => {
+      doRegister()
     })
 
-    // 初始注册
-    if (registerDynamicHeaderTab) {
-      registerDynamicHeaderTab(tabConfig)
-    } else if (typeof window !== 'undefined') {
-      // 使用全局方法作为备用
-      const globalRegister = (window as any).__VUE_INJECT_DYNAMIC_HEADER_TAB__
-      if (globalRegister) {
-        globalRegister(tabConfig)
-      }
-    }
+    // 处理页面激活时重新注册（支持keep-alive缓存的页面）
+    onActivated(() => {
+      nextTick(() => {
+        doRegister()
+      })
+    })
+
+    // 处理页面失活时取消注册（支持keep-alive缓存的页面）
+    onDeactivated(() => {
+      doUnregister()
+    })
+
+    // 在组件卸载时取消注册
+    onUnmounted(() => {
+      doUnregister()
+    })
   }
 
   // 取消注册

@@ -13,17 +13,32 @@ import AccountSettingDirectory from '@/views/setting/AccountSettingDirectory.vue
 import AccountSettingRule from '@/views/setting/AccountSettingRule.vue'
 import AccountSettingCache from '@/views/setting/AccountSettingCache.vue'
 import { getSettingTabs } from '@/router/i18n-menu'
+import { useDynamicHeaderTab } from '@/composables/useDynamicHeaderTab'
 
 const route = useRoute()
 
-const activeTab = ref(route.query.tab)
+const activeTab = ref((route.query.tab as string) || '')
 const settingTabs = computed(() => getSettingTabs())
+
+// 使用动态标签页
+const { registerHeaderTab } = useDynamicHeaderTab()
+
+// 注册动态标签页
+onMounted(() => {
+  // 设置初始activeTab值
+  if (!activeTab.value && settingTabs.value.length > 0) {
+    activeTab.value = settingTabs.value[0].tab
+  }
+  registerHeaderTab({
+    items: settingTabs.value,
+    modelValue: activeTab,
+  })
+})
 </script>
 
 <template>
   <div>
-    <VHeaderTab :items="settingTabs" v-model="activeTab" />
-    <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
+    <VWindow v-model="activeTab" class="disable-tab-transition" :touch="false">
       <!-- 系统 -->
       <VWindowItem value="system">
         <transition name="fade-slide" appear>

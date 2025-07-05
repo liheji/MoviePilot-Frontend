@@ -4,6 +4,7 @@ import { RecommendSource } from '@/api/types'
 import MediaCardSlideView from '@/views/discover/MediaCardSlideView.vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
+import { useDynamicHeaderTab } from '@/composables/useDynamicHeaderTab'
 
 const display = useDisplay()
 
@@ -165,7 +166,7 @@ async function saveConfig() {
 }
 
 // 标签图标映射
-const categoryItems: Record<string, string>[] = [
+const categoryItems = computed(() => [
   {
     title: t('recommend.all'),
     icon: 'mdi-filmstrip-box-multiple',
@@ -191,7 +192,10 @@ const categoryItems: Record<string, string>[] = [
     icon: 'mdi-trophy',
     tab: t('recommend.categoryRankings'),
   },
-]
+])
+
+// 使用动态标签页
+const { registerHeaderTab } = useDynamicHeaderTab()
 
 onBeforeMount(async () => {
   await loadConfig()
@@ -199,6 +203,23 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   await loadExtraRecommendSources()
+
+  // 注册动态标签页
+  registerHeaderTab({
+    items: categoryItems.value,
+    modelValue: currentCategory,
+    appendButtons: [
+      {
+        icon: 'mdi-tune',
+        variant: 'text',
+        color: 'grey',
+        class: 'settings-icon-button',
+        action: () => {
+          dialog.value = true
+        },
+      },
+    ],
+  })
 })
 
 onActivated(async () => {
@@ -208,20 +229,6 @@ onActivated(async () => {
 
 <template>
   <div class="mp-recommend">
-    <!-- 页面顶部控制栏 -->
-    <VHeaderTab :items="categoryItems" v-model="currentCategory">
-      <template #append>
-        <VBtn
-          icon="mdi-tune"
-          variant="text"
-          color="grey"
-          size="default"
-          class="settings-icon-button"
-          @click="dialog = true"
-        />
-      </template>
-    </VHeaderTab>
-
     <!-- 滚动内容区域 -->
     <div class="recommend-content">
       <TransitionGroup name="fade">
@@ -362,12 +369,6 @@ onActivated(async () => {
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
-.setting-label {
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  font-size: 0.9rem;
-  transition: color 0.2s ease;
-}
-
 .setting-item {
   position: relative;
   overflow: hidden;
@@ -399,37 +400,47 @@ onActivated(async () => {
   &.动漫::before {
     background-color: #ff9800;
   } // Orange
-  &.榜单::before {
+  &.排行榜::before {
     background-color: #9c27b0;
   } // Purple
 
-  &:hover {
-    border-color: rgba(var(--v-theme-on-surface), 0.15);
-    background-color: rgba(var(--v-theme-surface-variant), 0.6);
+  &.enabled {
+    border-color: rgba(var(--v-theme-primary), 0.3);
+    background-color: rgba(var(--v-theme-primary), 0.1);
   }
 
-  &.enabled {
-    border-color: rgba(var(--v-theme-primary), 0.5);
-    background-color: rgba(var(--v-theme-primary), 0.05);
-
-    .setting-label {
-      color: rgb(var(--v-theme-primary));
-      font-weight: 500;
-    }
+  &:hover {
+    box-shadow: 0 4px 12px rgba(var(--v-theme-on-surface), 0.1);
+    transform: translateY(-2px);
   }
 }
 
 .setting-item-inner {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .setting-check {
-  margin-inline-end: 8px;
+  flex-shrink: 0;
 }
 
-/* Remove old tune button styles if they exist */
-.tune-button {
-  display: none; // Hide the old button definitively
+.setting-label {
+  flex: 1;
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.2;
+  transition: color 0.2s ease;
+}
+
+.enabled .setting-label {
+  color: rgba(var(--v-theme-primary), 0.9);
+}
+
+@media (width <= 600px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

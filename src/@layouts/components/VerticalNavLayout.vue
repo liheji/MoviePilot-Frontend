@@ -38,15 +38,23 @@ export default defineComponent({
       )
 
       // 👉 Navbar
-      const navbar = h('header', { class: ['layout-navbar navbar-blur'] }, [
-        h(
-          'div',
-          { class: 'navbar-content-container' },
-          slots.navbar?.({
-            toggleVerticalOverlayNavActive: toggleIsOverlayNavActive,
-          }),
-        ),
-      ])
+      const navbar = h(
+        'header',
+        { class: ['layout-navbar navbar-blur'] },
+        [
+          h(
+            'div',
+            { class: 'navbar-content-container' },
+            slots.navbar?.({
+              toggleVerticalOverlayNavActive: toggleIsOverlayNavActive,
+            }),
+          ),
+          // 👉 Dynamic Header Tab in NavBar
+          slots['dynamic-header-tab']?.()
+            ? h('div', { class: 'layout-dynamic-header-tab' }, slots['dynamic-header-tab']?.())
+            : null,
+        ].filter(Boolean),
+      )
 
       const main = h(
         'main',

@@ -9,7 +9,7 @@
       
       // 磨砂渐变效果
       backdrop-filter: blur(20px);
-      block-size: calc(env(safe-area-inset-top, 0px) + 5rem);
+      block-size: calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 5rem);
       content: "";
       inset-block-start: 0;
       inset-inline: 0;
@@ -18,10 +18,10 @@
       mask: linear-gradient(
         to bottom,
         rgba(0, 0, 0, 100%) 0%,
-        rgba(0, 0, 0, 90%) calc(env(safe-area-inset-top, 0px) + 1rem),
-        rgba(0, 0, 0, 70%) calc(env(safe-area-inset-top, 0px) + 2rem),
-        rgba(0, 0, 0, 50%) calc(env(safe-area-inset-top, 0px) + 3rem),
-        rgba(0, 0, 0, 20%) calc(env(safe-area-inset-top, 0px) + 4rem),
+        rgba(0, 0, 0, 90%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 1rem),
+        rgba(0, 0, 0, 70%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 2rem),
+        rgba(0, 0, 0, 50%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 3rem),
+        rgba(0, 0, 0, 20%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 4rem),
         rgba(0, 0, 0, 0%) 100%
       );
       pointer-events: none;

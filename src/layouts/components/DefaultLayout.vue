@@ -91,7 +91,8 @@ const dynamicHeaderTab = ref<DynamicHeaderTab | null>(null)
 const registerDynamicHeaderTab = (tab: DynamicHeaderTab) => {
   // 保存注册标签页的路由路径
   tab.routePath = route.path
-  dynamicHeaderTab.value = tab
+  // 强制更新，确保响应式系统能检测到变化
+  dynamicHeaderTab.value = { ...tab }
 }
 
 // 提供一个方法让其他组件取消注册动态标签页
@@ -123,11 +124,17 @@ provide('unregisterDynamicHeaderTab', unregisterDynamicHeaderTab)
 // 监听路由变化来清除动态标签页
 watch(
   () => route.path,
-  newPath => {
-    // 当路由变化时，清除动态标签页（如果不是同一个路由注册的）
-    if (dynamicHeaderTab.value && dynamicHeaderTab.value.routePath !== newPath) {
-      dynamicHeaderTab.value = null
-    }
+  (newPath, oldPath) => {
+    // 使用nextTick确保新页面的组件已经挂载完成
+    nextTick(() => {
+      // 延迟一小段时间，让新页面有机会注册标签页
+      setTimeout(() => {
+        // 如果当前标签页不属于新路由，则清除
+        if (dynamicHeaderTab.value && dynamicHeaderTab.value.routePath !== route.path) {
+          dynamicHeaderTab.value = null
+        }
+      }, 50) // 减少延迟时间，但仍然给新页面注册机会
+    })
   },
   { immediate: false },
 )
@@ -138,7 +145,7 @@ const showDynamicHeaderTab = computed(() => {
     dynamicHeaderTab.value &&
     dynamicHeaderTab.value.items.length > 0 &&
     // 确保只在注册的路由路径下显示标签页
-    (!dynamicHeaderTab.value.routePath || dynamicHeaderTab.value.routePath === route.path)
+    dynamicHeaderTab.value.routePath === route.path
   )
 })
 
@@ -286,7 +293,7 @@ onMounted(() => {
       />
     </div>
   </div>
-  <VerticalNavLayout>
+  <VerticalNavLayout :style="{ '--navbar-height': showDynamicHeaderTab ? '2.5rem' : '0px' }">
     <!-- 👉 Navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center mx-1">
@@ -349,16 +356,9 @@ onMounted(() => {
 
     <template #after-vertical-nav-items />
 
-    <!-- 👉 下拉跟随动画 -->
-    <div
-      class="main-content-wrapper"
-      :style="{
-        transform: contentTransform,
-        transition: contentTransition,
-      }"
-    >
-      <!-- 👉 Dynamic Header Tab -->
-      <div v-if="showDynamicHeaderTab" class="dynamic-header-tab-container">
+    <!-- 👉 Dynamic Header Tab -->
+    <template #dynamic-header-tab>
+      <div v-if="showDynamicHeaderTab">
         <HeaderTab
           :items="dynamicHeaderTab!.items"
           :model-value="dynamicHeaderTab!.modelValue"
@@ -380,7 +380,17 @@ onMounted(() => {
           </template>
         </HeaderTab>
       </div>
+    </template>
 
+    <!-- 👉 下拉跟随动画 -->
+    <div
+      class="main-content-wrapper"
+      :style="{
+        transform: contentTransform,
+        transition: contentTransition,
+        paddingTop: showDynamicHeaderTab ? '3rem' : '0px',
+      }"
+    >
       <slot />
     </div>
 
