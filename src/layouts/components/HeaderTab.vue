@@ -33,16 +33,13 @@ const showTabsScrollIndicator = ref(false)
 const showLeftButton = ref(false)
 const showRightButton = ref(false)
 
-// 滚动检测相关
-const scrollDistance = ref(0)
-const showBlurBackground = ref(false)
-
 // Function to scroll the tabs
 const scrollTabs = (direction: 'left' | 'right') => {
   const el = tabsContainerRef.value
   if (!el) return
 
-  const scrollAmount = 200 // 可以根据需要调整滚动量
+  // 可以根据需要调整滚动量
+  const scrollAmount = 200
   const scrollPosition = direction === 'left' ? el.scrollLeft - scrollAmount : el.scrollLeft + scrollAmount
 
   el.scrollTo({
@@ -66,13 +63,6 @@ const updateTabsIndicator = () => {
   showRightButton.value = hasOverflow && !isScrolledToEnd
 }
 
-// 滚动检测处理函数
-const handleScroll = () => {
-  scrollDistance.value = window.scrollY
-  // 当滚动距离大于10px时显示透明背景
-  showBlurBackground.value = scrollDistance.value > 10
-}
-
 // Debounce resize handler
 let resizeTimeout: ReturnType<typeof setTimeout> | null = null
 const handleResize = () => {
@@ -85,29 +75,20 @@ const handleResize = () => {
 onMounted(async () => {
   // Add resize listener for tabs indicator
   window.addEventListener('resize', handleResize)
-  // Add scroll listener for blur background
-  window.addEventListener('scroll', handleScroll, { passive: true })
   // Initial check for tabs indicator after DOM update
   await nextTick() // Ensure element is rendered
   updateTabsIndicator()
-  // Initial scroll check
-  handleScroll()
-
-  // Listen for scroll events specifically on the tabs container
-  tabsContainerRef.value?.addEventListener('scroll', updateTabsIndicator, { passive: true })
 })
 
 onUnmounted(() => {
   // Remove resize listener
   window.removeEventListener('resize', handleResize)
-  // Remove scroll listener
-  window.removeEventListener('scroll', handleScroll)
   // Remove tabs scroll listener
   tabsContainerRef.value?.removeEventListener('scroll', updateTabsIndicator)
 })
 </script>
 <template>
-  <div class="tab-header" :class="{ 'blur-background': showBlurBackground }">
+  <div class="tab-header">
     <VBtn v-if="showLeftButton" class="scroll-button left-button" @click="scrollTabs('left')" variant="text" icon>
       <VIcon icon="tabler-chevron-left" size="small" color="secondary" />
     </VBtn>
@@ -135,34 +116,10 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .tab-header {
   position: relative;
-  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-inline: 16px;
   transition: all 0.3s ease;
-
-  // 透明模糊背景样式
-  &.blur-background {
-    &::before {
-      position: absolute;
-      z-index: -1;
-      backdrop-filter: blur(3px);
-      background: linear-gradient(
-        to bottom,
-        rgba(var(--v-theme-background), 0) 0%,
-        rgba(var(--v-theme-background), 0.05) 25%,
-        rgba(var(--v-theme-background), 0.1) 50%,
-        rgba(var(--v-theme-background), 0.05) 75%,
-        rgba(var(--v-theme-background), 0) 100%
-      );
-      content: '';
-      inset: 0;
-      margin-block: -8px;
-      pointer-events: none;
-      transition: all 0.3s ease;
-    }
-  }
 }
 
 .scroll-button {

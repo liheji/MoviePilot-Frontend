@@ -248,7 +248,7 @@ const showDynamicButton = computed(() => {
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(16px);
-  background-color: rgba(var(--v-theme-surface), 0.6);
+  background-color: rgba(var(--v-theme-surface), 0.3);
   pointer-events: auto;
   transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 

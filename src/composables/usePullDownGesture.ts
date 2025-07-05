@@ -85,7 +85,7 @@ export function usePullDownGesture(options: PullDownOptions = {}) {
   })
 
   const indicatorTransform = computed(() => {
-    return `translate(-50%, ${Math.min(20 + pullDistance.value - config.SHOW_INDICATOR, 50)}px)`
+    return `translate(-50%, ${Math.min(60 + pullDistance.value - config.SHOW_INDICATOR, 70)}px)`
   })
 
   // 弹窗检测函数
