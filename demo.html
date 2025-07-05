@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeaderTab 滚动透明背景效果演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 200vh; /* 确保页面足够高可以滚动 */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 10px 0;
+        }
+
+        .tab-header {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0 20px;
+        }
+
+        /* 透明模糊背景样式 */
+        .tab-header.blur-background::before {
+            position: absolute;
+            z-index: -1;
+            backdrop-filter: blur(20px);
+            border-radius: 8px;
+            content: "";
+            inset: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+
+        .header-tabs {
+            display: flex;
+            gap: 12px;
+            padding: 4px 0;
+        }
+
+        .header-tab {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border-radius: 20px;
+            background-color: transparent;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .header-tab::after {
+            position: absolute;
+            border-radius: 3px;
+            background-color: #667eea;
+            height: 3px;
+            content: '';
+            width: 70%;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            transition: transform 0.2s ease;
+        }
+
+        .header-tab.active {
+            color: #667eea;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-tab.active::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        .header-tab:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 1);
+        }
+
+        /* 在模糊背景激活时，增强标签文字的可见性 */
+        .tab-header.blur-background .header-tab {
+            color: rgba(51, 51, 51, 0.8);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-header.blur-background .header-tab.active {
+            color: #667eea;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        .tab-header.blur-background .header-tab:hover:not(.active) {
+            color: rgba(51, 51, 51, 1);
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .content {
+            margin-top: 120px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 14px;
+            z-index: 1001;
+        }
+
+        .demo-section {
+            margin-bottom: 40px;
+        }
+
+        .demo-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .demo-section p {
+            margin-bottom: 15px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .highlight {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-indicator">
+        <span id="scrollText">向下滚动查看效果</span>
+    </div>
+    
+    <div class="header">
+        <div class="tab-header" id="tabHeader">
+            <div class="header-tabs">
+                <div class="header-tab active">
+                    <span>首页</span>
+                </div>
+                <div class="header-tab">
+                    <span>发现</span>
+                </div>
+                <div class="header-tab">
+                    <span>订阅</span>
+                </div>
+                <div class="header-tab">
+                    <span>整理</span>
+                </div>
+                <div class="header-tab">
+                    <span>系统</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content">
+            <div class="demo-section">
+                <h2>🎉 HeaderTab 滚动透明背景效果演示</h2>
+                <p>这是一个演示页面，展示了我为 HeaderTab 组件添加的滚动透明背景效果。</p>
+                <p><strong>使用方法：</strong>向下滚动页面，观察顶部标签栏的背景变化。</p>
+            </div>
+
+            <div class="demo-section">
+                <h2>✨ 实现的功能特性</h2>
+                <ul class="feature-list">
+                    <li><span class="highlight">滚动检测</span>：自动监听页面滚动事件，当滚动距离超过 10px 时触发效果</li>
+                    <li><span class="highlight">透明模糊背景</span>：使用 backdrop-filter: blur(20px) 实现磨砂玻璃效果</li>
+                    <li><span class="highlight">主题适配</span>：支持浅色、深色、透明等多种主题模式</li>
+                    <li><span class="highlight">文字增强</span>：在透明背景激活时自动调整文字阴影，提高可读性</li>
+                    <li><span class="highlight">平滑过渡</span>：添加 0.3s 的 CSS 过渡动画，效果自然流畅</li>
+                    <li><span class="highlight">性能优化</span>：使用 passive 事件监听，正确清理事件监听器</li>
+                </ul>
+            </div>
+
+            <div class="demo-section">
+                <h2>🎨 视觉效果说明</h2>
+                <p>当您滚动页面时，您会看到：</p>
+                <ul class="feature-list">
+                    <li>标签栏背景从透明变为<span class="highlight">磨砂透明效果</span></li>
+                    <li>标签文字颜色和阴影自动调整，确保<span class="highlight">清晰可读</span></li>
+                    <li>背景出现轻微的<span class="highlight">阴影效果</span>，增强层次感</li>
+                    <li>整个过渡过程<span class="highlight">平滑自然</span>，不会有突兀感</li>
+                </ul>
+            </div>
+
+            <div class="demo-section">
+                <h2>🔧 技术实现细节</h2>
+                <p>主要的技术实现包括：</p>
+                <ul class="feature-list">
+                    <li><strong>JavaScript 滚动监听</strong>：使用 window.addEventListener('scroll') 监听滚动事件</li>
+                    <li><strong>CSS backdrop-filter</strong>：利用现代浏览器的背景滤镜特性实现模糊效果</li>
+                    <li><strong>响应式设计</strong>：确保在不同设备和屏幕尺寸下都能正常工作</li>
+                    <li><strong>主题变量</strong>：使用 CSS 变量实现多主题支持</li>
+                </ul>
+            </div>
+
+            <div class="demo-section">
+                <h2>📱 兼容性说明</h2>
+                <p>这个效果在现代浏览器中都能很好地工作，包括：</p>
+                <ul class="feature-list">
+                    <li>Chrome 76+</li>
+                    <li>Firefox 103+</li>
+                    <li>Safari 14+</li>
+                    <li>Edge 79+</li>
+                </ul>
+            </div>
+
+            <div class="demo-section">
+                <h2>🎯 使用场景</h2>
+                <p>这个效果特别适用于：</p>
+                <ul class="feature-list">
+                    <li>需要在滚动时保持导航栏可见性的应用</li>
+                    <li>具有复杂背景内容的页面</li>
+                    <li>需要现代化、美观界面的 Web 应用</li>
+                    <li>移动端和桌面端都需要良好体验的应用</li>
+                </ul>
+            </div>
+
+            <div class="demo-section">
+                <h2>📄 继续滚动...</h2>
+                <p>继续向下滚动可以看到更多内容，同时观察顶部标签栏的效果变化。</p>
+                <p>这个演示页面展示了在实际应用中的效果，您可以看到标签栏如何在滚动时变得更加清晰易读。</p>
+            </div>
+
+            <!-- 更多内容让页面可以滚动 -->
+            <div class="demo-section">
+                <h2>🎪 更多演示内容</h2>
+                <p>这里是更多的演示内容，用于让页面足够长以便滚动。</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+            </div>
+
+            <div class="demo-section">
+                <h2>🌈 效果总结</h2>
+                <p>通过这个演示，您可以看到：</p>
+                <ul class="feature-list">
+                    <li>滚动前：标签栏背景完全透明</li>
+                    <li>滚动后：标签栏背景变为磨砂透明效果</li>
+                    <li>文字在任何情况下都保持清晰可读</li>
+                    <li>过渡效果平滑自然</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 滚动检测和背景切换
+        let scrollDistance = 0;
+        let showBlurBackground = false;
+        
+        const tabHeader = document.getElementById('tabHeader');
+        const scrollText = document.getElementById('scrollText');
+        
+        function handleScroll() {
+            scrollDistance = window.scrollY;
+            const newShowBlurBackground = scrollDistance > 10;
+            
+            if (newShowBlurBackground !== showBlurBackground) {
+                showBlurBackground = newShowBlurBackground;
+                
+                if (showBlurBackground) {
+                    tabHeader.classList.add('blur-background');
+                    scrollText.textContent = `已滚动 ${Math.round(scrollDistance)}px - 透明背景已激活`;
+                } else {
+                    tabHeader.classList.remove('blur-background');
+                    scrollText.textContent = '向下滚动查看效果';
+                }
+            } else if (showBlurBackground) {
+                scrollText.textContent = `已滚动 ${Math.round(scrollDistance)}px - 透明背景已激活`;
+            }
+        }
+        
+        // 添加滚动监听
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        
+        // 标签切换效果
+        document.querySelectorAll('.header-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.header-tab').forEach(t => t.classList.remove('active'));
+                // 添加active类到当前标签
+                this.classList.add('active');
+            });
+        });
+        
+        // 初始检查
+        handleScroll();
+    </script>
+</body>
+</html>
