@@ -287,10 +287,10 @@ onMounted(() => {
       />
     </div>
   </div>
-  <VerticalNavLayout :style="{ '--navbar-height': showDynamicHeaderTab ? '2.5rem' : '0px' }">
+  <VerticalNavLayout :style="{ '--navbar-tab-height': showDynamicHeaderTab ? '2.5rem' : '0px' }">
     <!-- 👉 Navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
-      <div class="d-flex h-100 align-center mx-1">
+      <div class="d-flex h-14 align-center mx-1">
         <!-- 👉 Vertical Nav Toggle -->
         <IconBtn v-if="!appMode && display.mdAndDown.value" class="ms-n2" @click="toggleVerticalOverlayNavActive(true)">
           <VIcon icon="mdi-menu" />

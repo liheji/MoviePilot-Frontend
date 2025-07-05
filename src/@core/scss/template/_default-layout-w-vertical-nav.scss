@@ -16,14 +16,14 @@ $header: ".layout-navbar";
   @if variables.$vertical-nav-navbar-style == "elevated" {
     // Add transition
     #{$header} {
-      transition: padding 0.2s ease, background-color 0.18s ease;
+      transition: padding 0.2s ease;
     }
 
     // If navbar is contained => Add border radius to header
     @if variables.$layout-vertical-nav-navbar-is-contained {
-      #{$header} {
-        border-radius: 0 0 variables.$default-layout-with-vertical-nav-navbar-footer-roundness variables.$default-layout-with-vertical-nav-navbar-footer-roundness;
-      }
+      // #{$header} {
+        // border-radius: 0 0 variables.$default-layout-with-vertical-nav-navbar-footer-roundness variables.$default-layout-with-vertical-nav-navbar-footer-roundness;
+      // }
     }
 
     // Scrolled styles for sticky navbar

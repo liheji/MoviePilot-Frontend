@@ -45,14 +45,16 @@ export default defineComponent({
           h(
             'div',
             { class: 'navbar-content-container' },
-            slots.navbar?.({
-              toggleVerticalOverlayNavActive: toggleIsOverlayNavActive,
-            }),
+            [
+              slots.navbar?.({
+                toggleVerticalOverlayNavActive: toggleIsOverlayNavActive,
+              }),
+              // 👉 Dynamic Header Tab in NavBar
+              slots['dynamic-header-tab']?.()
+                ? h('div', { class: 'layout-dynamic-header-tab' }, slots['dynamic-header-tab']?.())
+                : null,
+            ].filter(Boolean),
           ),
-          // 👉 Dynamic Header Tab in NavBar
-          slots['dynamic-header-tab']?.()
-            ? h('div', { class: 'layout-dynamic-header-tab' }, slots['dynamic-header-tab']?.())
-            : null,
         ].filter(Boolean),
       )
 
@@ -135,7 +137,9 @@ export default defineComponent({
     inset-block-start: 0;
 
     .navbar-content-container {
-      block-size: calc(env(safe-area-inset-top) + variables.$layout-vertical-nav-navbar-height);
+      block-size: calc(
+        env(safe-area-inset-top) + variables.$layout-vertical-nav-navbar-height + var(--navbar-tab-height)
+      );
     }
 
     @at-root {
@@ -143,10 +147,6 @@ export default defineComponent({
         .layout-navbar {
           @if variables.$layout-vertical-nav-navbar-is-contained {
             @include mixins.boxed-content;
-          } @else {
-            .navbar-content-container {
-              // @include mixins.boxed-content;
-            }
           }
         }
       }
