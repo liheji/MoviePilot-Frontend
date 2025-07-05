@@ -147,7 +147,6 @@ onUnmounted(() => {
     &::before {
       position: absolute;
       z-index: -1;
-      border-radius: 16px;
       backdrop-filter: blur(3px);
       background: linear-gradient(
         to bottom,
@@ -243,7 +242,7 @@ onUnmounted(() => {
   font-weight: 600;
   padding-block: 6px;
   padding-inline: 14px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 10%);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 10%);
   transition: all 0.2s ease;
   white-space: nowrap;
 
