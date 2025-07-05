@@ -90,7 +90,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div class="tab-header rounded-t-lg">
+  <div class="tab-header rounded-lg">
     <VBtn v-if="showLeftButton" class="scroll-button left-button" @click="scrollTabs('left')" variant="text" icon>
       <VIcon icon="tabler-chevron-left" size="small" color="secondary" />
     </VBtn>

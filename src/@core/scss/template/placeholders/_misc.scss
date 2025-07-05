@@ -21,7 +21,8 @@
         rgba(0, 0, 0, 90%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 1rem),
         rgba(0, 0, 0, 70%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 2rem),
         rgba(0, 0, 0, 50%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 3rem),
-        rgba(0, 0, 0, 20%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 4rem),
+        rgba(0, 0, 0, 30%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 4rem),
+        rgba(0, 0, 0, 10%) calc(env(safe-area-inset-top, 0px) + var(--navbar-height) + 5rem),
         rgba(0, 0, 0, 0%) 100%
       );
       pointer-events: none;
