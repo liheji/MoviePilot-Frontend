@@ -33,6 +33,10 @@ const showTabsScrollIndicator = ref(false)
 const showLeftButton = ref(false)
 const showRightButton = ref(false)
 
+// 滚动检测相关
+const scrollDistance = ref(0)
+const showBlurBackground = ref(false)
+
 // Function to scroll the tabs
 const scrollTabs = (direction: 'left' | 'right') => {
   const el = tabsContainerRef.value
@@ -62,6 +66,13 @@ const updateTabsIndicator = () => {
   showRightButton.value = hasOverflow && !isScrolledToEnd
 }
 
+// 滚动检测处理函数
+const handleScroll = () => {
+  scrollDistance.value = window.scrollY
+  // 当滚动距离大于10px时显示透明背景
+  showBlurBackground.value = scrollDistance.value > 10
+}
+
 // Debounce resize handler
 let resizeTimeout: ReturnType<typeof setTimeout> | null = null
 const handleResize = () => {
@@ -74,9 +85,13 @@ const handleResize = () => {
 onMounted(async () => {
   // Add resize listener for tabs indicator
   window.addEventListener('resize', handleResize)
+  // Add scroll listener for blur background
+  window.addEventListener('scroll', handleScroll, { passive: true })
   // Initial check for tabs indicator after DOM update
   await nextTick() // Ensure element is rendered
   updateTabsIndicator()
+  // Initial scroll check
+  handleScroll()
 
   // Listen for scroll events specifically on the tabs container
   tabsContainerRef.value?.addEventListener('scroll', updateTabsIndicator, { passive: true })
@@ -85,12 +100,14 @@ onMounted(async () => {
 onUnmounted(() => {
   // Remove resize listener
   window.removeEventListener('resize', handleResize)
+  // Remove scroll listener
+  window.removeEventListener('scroll', handleScroll)
   // Remove tabs scroll listener
   tabsContainerRef.value?.removeEventListener('scroll', updateTabsIndicator)
 })
 </script>
 <template>
-  <div class="tab-header rounded-lg">
+  <div class="tab-header rounded-lg" :class="{ 'blur-background': showBlurBackground }">
     <VBtn v-if="showLeftButton" class="scroll-button left-button" @click="scrollTabs('left')" variant="text" icon>
       <VIcon icon="tabler-chevron-left" size="small" color="secondary" />
     </VBtn>
@@ -123,6 +140,41 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding-inline: 16px;
+  transition: all 0.3s ease;
+  
+  // 透明模糊背景样式
+  &.blur-background {
+    &::before {
+      position: absolute;
+      z-index: -1;
+      backdrop-filter: blur(20px);
+      border-radius: 8px;
+      content: "";
+      inset: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      
+      .v-theme--light & {
+        background: rgba(var(--v-theme-surface), 0.8);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+      
+      .v-theme--dark & {
+        background: rgba(var(--v-theme-background), 0.7);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
+      }
+
+      .v-theme--purple & {
+        background: rgba(var(--v-theme-background), 0.7);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
+      }
+
+      .v-theme--transparent & {
+        background: rgba(var(--v-theme-background), 0.4);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+    }
+  }
 }
 
 .scroll-button {
@@ -236,6 +288,25 @@ onUnmounted(() => {
   &:hover:not(.active) {
     background-color: rgba(var(--v-theme-primary), 0.05);
     color: rgba(var(--v-theme-on-background), 1);
+  }
+}
+
+// 在模糊背景激活时，增强标签文字和图标的可见性
+.tab-header.blur-background {
+  .header-tab {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 20%);
+    
+    &.active {
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 25%);
+    }
+  }
+  
+  .header-tab-icon {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 20%);
+    
+    &.active {
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 25%);
+    }
   }
 }
 </style>
