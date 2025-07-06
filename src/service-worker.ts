@@ -152,8 +152,26 @@ async function clearBadge() {
 // 安装事件
 self.addEventListener('install', event => {
   console.log('Service Worker install')
-  // 强制等待中的Service Worker立即成为活动的Service Worker
-  self.skipWaiting()
+  event.waitUntil(
+    (async () => {
+      // 预缓存关键状态数据
+      try {
+        const cache = await caches.open(STATE_CACHE_NAME)
+        const existingState = await cache.match(STATE_ENDPOINT)
+        
+        if (existingState) {
+          // 预热状态数据
+          const state = await existingState.json()
+          console.log('预缓存状态数据:', state)
+        }
+      } catch (error) {
+        console.error('预缓存状态数据失败:', error)
+      }
+      
+      // 强制等待中的Service Worker立即成为活动的Service Worker
+      self.skipWaiting()
+    })()
+  )
 })
 
 // 激活事件
@@ -164,7 +182,19 @@ self.addEventListener('activate', event => {
       // 启用导航预载功能以提高性能
       if ('navigationPreload' in self.registration) {
         await self.registration.navigationPreload.enable()
+        console.log('导航预加载已启用')
       }
+      
+      // 清理旧版本的缓存
+      const cacheNames = await caches.keys()
+      await Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName.includes('old-') || cacheName.includes('deprecated-')) {
+            console.log('清理旧缓存:', cacheName)
+            return caches.delete(cacheName)
+          }
+        })
+      )
     })(),
   )
   // 告诉活动的Service Worker立即控制页面

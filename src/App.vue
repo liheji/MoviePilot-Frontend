@@ -8,6 +8,7 @@ import { getBrowserLocale, setI18nLanguage } from './plugins/i18n'
 import { SupportedLocale } from '@/types/i18n'
 import { checkAndEmitUnreadMessages } from '@/utils/badge'
 import { preloadImage } from './@core/utils/image'
+import { globalLoadingStateManager } from '@/utils/loadingStateManager'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -34,6 +35,9 @@ const backgroundImages = ref<string[]>([])
 const activeImageIndex = ref(0)
 const isTransparentTheme = computed(() => globalTheme.name.value === 'transparent')
 let backgroundRotationTimer: NodeJS.Timeout | null = null
+
+// PWA状态恢复相关
+const isRestoring = ref(false)
 
 // ApexCharts 全局配置
 declare global {
@@ -123,8 +127,65 @@ function startBackgroundRotation() {
 function animateAndRemoveLoader() {
   const loadingBg = document.querySelector('#loading-bg') as HTMLElement
   if (loadingBg) {
-    removeEl('#loading-bg')
-    document.documentElement.style.removeProperty('background')
+    // 添加完成动画类
+    loadingBg.classList.add('loading-complete')
+    
+    // 等待动画完成后移除
+    setTimeout(() => {
+      removeEl('#loading-bg')
+      document.documentElement.style.removeProperty('background')
+    }, 800)
+  }
+}
+
+// 检查PWA状态并移除加载界面
+async function removeLoadingWithStateCheck() {
+  try {
+    console.log('开始检查加载状态...')
+    
+    // 设置各个组件的加载状态
+    globalLoadingStateManager.setLoadingState('pwa-state', true)
+    globalLoadingStateManager.setLoadingState('global-settings', true)
+    globalLoadingStateManager.setLoadingState('background-images', true)
+    
+    // 检查PWA状态是否已恢复
+    const pwaController = (window as any).pwaStateController
+    if (pwaController) {
+      isRestoring.value = true
+      await pwaController.waitForStateRestore()
+      console.log('PWA状态恢复完成')
+    }
+    globalLoadingStateManager.setLoadingState('pwa-state', false)
+    
+    // 确保关键资源已加载
+    await Promise.all([
+      // 等待全局设置初始化完成
+      globalSettingsStore.initialize().then(() => {
+        globalLoadingStateManager.setLoadingState('global-settings', false)
+      }),
+      // 等待背景图片加载状态稳定
+      new Promise(resolve => {
+        setTimeout(() => {
+          globalLoadingStateManager.setLoadingState('background-images', false)
+          resolve(void 0)
+        }, 200)
+      })
+    ])
+    
+    // 等待所有加载完成
+    await globalLoadingStateManager.waitForAllComplete()
+    console.log('所有资源加载完成，准备移除加载界面')
+    
+    // 移除加载界面
+    animateAndRemoveLoader()
+    
+    // 检查未读消息
+    checkAndEmitUnreadMessages()
+  } catch (error) {
+    console.error('移除加载界面时发生错误:', error)
+    // 即使出错也要移除加载界面
+    globalLoadingStateManager.reset()
+    animateAndRemoveLoader()
   }
 }
 
@@ -147,9 +208,11 @@ async function loadBackgroundImages(retryCount = 0) {
 }
 
 onMounted(async () => {
-  // 初始化全局设置
-  await globalSettingsStore.initialize()
-
+  // 监听PWA状态恢复事件
+  window.addEventListener('pwaStateRestored', () => {
+    isRestoring.value = false
+  })
+  
   // 配置 ApexCharts
   configureApexCharts()
 
@@ -170,14 +233,9 @@ onMounted(async () => {
   // 加载背景图片
   loadBackgroundImages()
 
-  // 移除加载动画
+  // 使用优化后的加载界面移除逻辑
   ensureRenderComplete(() => {
-    nextTick(() => {
-      // 移除加载动画，显示页面
-      animateAndRemoveLoader()
-      // 页面完全显示后，检查未读消息
-      checkAndEmitUnreadMessages()
-    })
+    nextTick(removeLoadingWithStateCheck)
   })
 })
 
@@ -205,7 +263,7 @@ onUnmounted(() => {
       <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
     </div>
     <!-- 页面内容 -->
-    <VApp :class="{ 'transparent-app': isTransparentTheme }">
+    <VApp :class="{ 'transparent-app': isTransparentTheme, 'pwa-restoring': isRestoring }">
       <RouterView />
     </VApp>
   </div>
@@ -266,5 +324,38 @@ onUnmounted(() => {
   inline-size: 100%;
   inset-block-start: 0;
   inset-inline-start: 0;
+}
+
+/* PWA过渡效果 */
+.transparent-app {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.pwa-restoring {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* 优化加载完成动画 */
+.loading-complete {
+  animation: fadeOutScale 0.8s ease-out forwards;
+}
+
+@keyframes fadeOutScale {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  70% {
+    opacity: 0.3;
+    transform: scale(1.05);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+    filter: blur(5px);
+  }
 }
 </style>

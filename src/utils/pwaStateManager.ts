@@ -275,6 +275,8 @@ export class StateRestoreDecision {
 export class VisibilityStateManager {
   private stateManager: PWAStateManager
   private blurTimer: number | null = null
+  private isRestoring = false
+  private restorePromise: Promise<void> | null = null
 
   constructor(stateManager: PWAStateManager) {
     this.stateManager = stateManager
@@ -313,10 +315,106 @@ export class VisibilityStateManager {
   }
 
   private handlePageVisible(): void {
-    const restoredState = this.stateManager.restoreState()
-    if (restoredState) {
-      this.restoreAppState(restoredState)
-      console.log('页面显示，已恢复状态')
+    if (this.isRestoring) return
+    
+    this.isRestoring = true
+    this.restorePromise = this.performStateRestore()
+  }
+
+  private async performStateRestore(): Promise<void> {
+    try {
+      // 显示轻量级恢复指示器
+      this.showRestoreIndicator()
+      
+      const restoredState = this.stateManager.restoreState()
+      if (restoredState) {
+        await this.restoreAppState(restoredState)
+        console.log('页面显示，已恢复状态')
+      }
+    } catch (error) {
+      console.error('状态恢复失败:', error)
+    } finally {
+      this.isRestoring = false
+      this.hideRestoreIndicator()
+    }
+  }
+
+  private showRestoreIndicator(): void {
+    // 检查是否已经存在指示器
+    if (document.getElementById('pwa-restore-indicator')) return
+    
+    const indicator = document.createElement('div')
+    indicator.id = 'pwa-restore-indicator'
+    indicator.innerHTML = `
+      <div class="restore-indicator">
+        <div class="restore-spinner"></div>
+        <div class="restore-text">正在恢复状态...</div>
+      </div>
+    `
+    document.body.appendChild(indicator)
+    
+    // 添加样式
+    const style = document.createElement('style')
+    style.textContent = `
+      #pwa-restore-indicator {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      #pwa-restore-indicator.show {
+        opacity: 1;
+      }
+      
+      .restore-indicator {
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        backdrop-filter: blur(10px);
+      }
+      
+      .restore-spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `
+    document.head.appendChild(style)
+    
+    // 触发显示动画
+    setTimeout(() => {
+      indicator.classList.add('show')
+    }, 10)
+  }
+
+  private hideRestoreIndicator(): void {
+    const indicator = document.getElementById('pwa-restore-indicator')
+    if (indicator) {
+      indicator.classList.remove('show')
+      setTimeout(() => {
+        indicator.remove()
+      }, 300)
     }
   }
 
@@ -350,13 +448,21 @@ export class VisibilityStateManager {
     }
   }
 
-  private restoreAppState(state: PWAState): void {
+  private async restoreAppState(state: PWAState): Promise<void> {
+    // 添加小延迟以确保页面完全加载
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
     if (state.scrollPosition) {
       window.scrollTo(0, state.scrollPosition)
     }
     if (state.appData) {
       this.restoreAppSpecificState(state.appData)
     }
+    
+    // 触发状态恢复完成事件
+    window.dispatchEvent(new CustomEvent('pwaStateRestored', {
+      detail: { state }
+    }))
   }
 
   private getAppSpecificState(): any {
@@ -439,6 +545,9 @@ export class PWAStateController {
   private swStateSync: ServiceWorkerStateSync
   private visibilityManager: VisibilityStateManager
   private restoreDecision: StateRestoreDecision
+  private stateRestorePromise: Promise<void> | null = null
+  private stateRestoreResolve: (() => void) | null = null
+  private isRestoring = false
 
   constructor() {
     this.stateManager = new PWAStateManager()
@@ -447,7 +556,26 @@ export class PWAStateController {
     this.visibilityManager = new VisibilityStateManager(this.stateManager)
     this.restoreDecision = new StateRestoreDecision()
     
+    // 创建状态恢复Promise
+    this.stateRestorePromise = new Promise((resolve) => {
+      this.stateRestoreResolve = resolve
+    })
+    
     this.init()
+  }
+
+  /**
+   * 等待状态恢复完成
+   */
+  async waitForStateRestore(): Promise<void> {
+    return this.stateRestorePromise || Promise.resolve()
+  }
+
+  /**
+   * 获取当前是否正在恢复状态
+   */
+  get isRestoringState(): boolean {
+    return this.isRestoring
   }
 
   private async init(): Promise<void> {
@@ -462,29 +590,41 @@ export class PWAStateController {
   }
 
   private async checkAndRestoreState(): Promise<void> {
-    const currentContext: PWAContext = {
-      url: window.location.href,
-      orientation: window.orientation || 0,
-      timestamp: Date.now()
-    }
+    this.isRestoring = true
+    
+    try {
+      const currentContext: PWAContext = {
+        url: window.location.href,
+        orientation: window.orientation || 0,
+        timestamp: Date.now()
+      }
 
-    // 尝试从多个来源恢复状态
-    const sources = [
-      () => this.stateManager.restoreState(),
-      () => this.indexedDBManager.restoreState(),
-      () => this.swStateSync.loadState(),
-      () => this.swStateSync.loadStateViaMessage()
-    ]
+      // 尝试从多个来源恢复状态
+      const sources = [
+        () => this.stateManager.restoreState(),
+        () => this.indexedDBManager.restoreState(),
+        () => this.swStateSync.loadState(),
+        () => this.swStateSync.loadStateViaMessage()
+      ]
 
-    for (const source of sources) {
-      try {
-        const savedState = await source()
-        if (this.restoreDecision.shouldRestoreState(savedState, currentContext)) {
-          await this.restoreState(savedState!)
-          return
+      for (const source of sources) {
+        try {
+          const savedState = await source()
+          if (this.restoreDecision.shouldRestoreState(savedState, currentContext)) {
+            await this.restoreState(savedState!)
+            console.log('PWA状态恢复成功')
+            return
+          }
+        } catch (error) {
+          console.error('状态恢复失败:', error)
         }
-      } catch (error) {
-        console.error('状态恢复失败:', error)
+      }
+    } finally {
+      this.isRestoring = false
+      // 状态恢复完成（无论成功还是失败）
+      if (this.stateRestoreResolve) {
+        this.stateRestoreResolve()
+        this.stateRestoreResolve = null
       }
     }
   }
@@ -508,18 +648,28 @@ export class PWAStateController {
   }
 
   private async restoreState(state: PWAState): Promise<void> {
+    console.log('开始恢复PWA状态:', {
+      url: state.url,
+      scrollPosition: state.scrollPosition,
+      timestamp: new Date(state.timestamp).toISOString(),
+      hasAppData: !!state.appData
+    })
+
     // 恢复滚动位置
     if (state.scrollPosition) {
+      console.log('恢复滚动位置:', state.scrollPosition)
       window.scrollTo(0, state.scrollPosition)
     }
 
     // 恢复应用特定状态
     if (state.appData) {
+      console.log('恢复应用特定状态:', state.appData)
       this.restoreAppSpecificState(state.appData)
     }
 
     // 触发状态恢复事件
     this.dispatchStateRestoreEvent(state)
+    console.log('PWA状态恢复完成')
   }
 
   private setupPeriodicSave(): void {
