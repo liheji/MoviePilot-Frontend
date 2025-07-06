@@ -1,15 +1,10 @@
-/**
- * PWA状态管理的Vue组合式API
- */
-
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import type { PWAState } from '@/utils/pwaStateManager'
 
 export function usePWAState() {
   const isStateRestored = ref(false)
   const stateRestoreCount = ref(0)
   const lastRestoredState = ref<PWAState | null>(null)
-
-  // 检查是否在PWA模式下运行
   const isPWAMode = ref(false)
 
   // 检查PWA模式
@@ -30,29 +25,24 @@ export function usePWAState() {
   // 手动触发状态恢复检查
   const checkStateRestore = async () => {
     if (window.pwaStateController) {
-      // 这里可以添加手动检查状态恢复的逻辑
       console.log('检查状态恢复')
     }
   }
 
   // 监听状态恢复事件
-  const handleStateRestored = (event: CustomEvent<{ state: PWAState }>) => {
+  const handleStateRestored = (event: Event) => {
+    const customEvent = event as CustomEvent<{ state: PWAState }>
     isStateRestored.value = true
     stateRestoreCount.value++
-    lastRestoredState.value = event.detail.state
+    lastRestoredState.value = customEvent.detail.state
     
-    console.log('Vue组件收到状态恢复通知:', event.detail.state)
+    console.log('Vue组件收到状态恢复通知:', customEvent.detail.state)
   }
 
   // 重置状态恢复标志
   const resetStateRestored = () => {
     isStateRestored.value = false
     lastRestoredState.value = null
-  }
-
-  // 获取状态管理器实例
-  const getStateController = () => {
-    return window.pwaStateController
   }
 
   // 检查状态管理器是否可用
@@ -75,7 +65,6 @@ export function usePWAState() {
     if (mediaQuery.addEventListener) {
       mediaQuery.addEventListener('change', handleDisplayModeChange)
     } else {
-      // 兼容旧版本
       mediaQuery.addListener(handleDisplayModeChange)
     }
     
@@ -83,7 +72,6 @@ export function usePWAState() {
       if (mediaQuery.removeEventListener) {
         mediaQuery.removeEventListener('change', handleDisplayModeChange)
       } else {
-        // 兼容旧版本
         mediaQuery.removeListener(handleDisplayModeChange)
       }
     })
@@ -104,50 +92,18 @@ export function usePWAState() {
     saveCurrentState,
     checkStateRestore,
     resetStateRestored,
-    getStateController,
     isStateManagerAvailable,
     checkPWAMode
   }
 }
 
-/**
- * 全局PWA状态管理器
- */
+// 全局PWA状态管理器
 export function useGlobalPWAState() {
   // 检查是否在PWA环境中
   const isPWAEnvironment = () => {
     return window.matchMedia('(display-mode: standalone)').matches || 
            (window.navigator as any).standalone || 
            document.referrer.includes('android-app://')
-  }
-
-  // 初始化状态管理器（如果尚未初始化）
-  const initStateManager = async () => {
-    if (!window.pwaStateController && isPWAEnvironment()) {
-      const { PWAStateController } = await import('@/utils/pwaStateManager')
-      window.pwaStateController = new PWAStateController()
-      console.log('延迟初始化PWA状态管理器')
-    }
-  }
-
-  // 保存应用状态
-  const saveAppState = async (customData?: any) => {
-    await initStateManager()
-    
-    if (window.pwaStateController) {
-      // 如果有自定义数据，可以通过这种方式传递
-      if (customData) {
-        // 临时存储自定义数据
-        ;(window as any).tempCustomState = customData
-      }
-      
-      await window.pwaStateController.saveCurrentState()
-      
-      // 清除临时数据
-      if (customData) {
-        delete (window as any).tempCustomState
-      }
-    }
   }
 
   // 获取存储的状态
@@ -159,12 +115,11 @@ export function useGlobalPWAState() {
   const clearStoredState = () => {
     localStorage.removeItem('mp-pwa-app-state')
     sessionStorage.removeItem('mp-pwa-session-state')
+    console.log('已清除PWA存储状态')
   }
 
   return {
     isPWAEnvironment,
-    initStateManager,
-    saveAppState,
     getStoredState,
     clearStoredState
   }
