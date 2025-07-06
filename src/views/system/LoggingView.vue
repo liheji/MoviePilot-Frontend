@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { isToday } from '@/@core/utils/index'
 import dayjs from 'dayjs';
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 定义输入变量
 const props = defineProps<{
@@ -10,6 +11,7 @@ const props = defineProps<{
 
 // 国际化
 const { t } = useI18n()
+const { useSSE } = useBackgroundOptimization()
 
 // 已解析的日志列表
 const parsedLogs = ref<{ level: string; date: string; time: string; program: string; content: string }[]>([])
@@ -21,9 +23,6 @@ const headers = [
   { title: t('logging.program'), value: 'program' },
   { title: t('logging.content'), value: 'content' },
 ]
-
-// SSE消息对象
-let eventSource: EventSource | null = null
 
 // 日志颜色映射表
 const logColorMap: Record<string, string> = {
@@ -38,55 +37,54 @@ function getLogColor(level: string): string {
   return logColorMap[level] || 'secondary'
 }
 
-// SSE持续获取日志
-function startSSELogging() {
-  console.log(props.logfile)
-  eventSource = new EventSource(
-    `${import.meta.env.VITE_API_BASE_URL}system/logging?logfile=${
-      encodeURIComponent(props.logfile) ?? 'moviepilot.log'
-    }`,
-  )
-  const buffer: string[] = []
-  let timeoutId: number | null = null
+// 日志缓冲区和超时处理
+const buffer: string[] = []
+let timeoutId: number | null = null
 
-  eventSource.addEventListener('message', event => {
-    const message = event.data
-    if (message) {
-      buffer.push(message)
-      if (!timeoutId) {
-        timeoutId = window.setTimeout(() => {
-          // 解析新日志
-          const newParsedLogs = buffer
-            .map(log => {
-              const logPattern = /^【(.*?)】\s*([\d]{4}-\d{2}-\d{2}(?:\s+\d{2}:\d{2})?)\s+(.*?)\s*-\s*(.*?)\s*-\s*(.*)$/
-              const matches = log.match(logPattern)
-              if (matches) {
-                const [, level, date, time, program, content] = matches
-                return { level, date, time, program, content }
-              }
-              return null
-            })
-            .filter(Boolean)
-          // 倒序后插入parsedLogs顶部
-          parsedLogs.value.unshift(...(newParsedLogs.reverse() as any[]))
-          // 保留最新的200条日志
-          parsedLogs.value = parsedLogs.value.slice(0, 200)
-          // 重置buffer
-          buffer.length = 0
-          timeoutId = null
-        }, 100)
-      }
+// SSE消息处理函数
+function handleSSEMessage(event: MessageEvent) {
+  const message = event.data
+  if (message) {
+    buffer.push(message)
+    if (!timeoutId) {
+      timeoutId = window.setTimeout(() => {
+        // 解析新日志
+        const newParsedLogs = buffer
+          .map(log => {
+            const logPattern = /^【(.*?)】\s*([\d]{4}-\d{2}-\d{2}(?:\s+\d{2}:\d{2})?)\s+(.*?)\s*-\s*(.*?)\s*-\s*(.*)$/
+            const matches = log.match(logPattern)
+            if (matches) {
+              const [, level, date, time, program, content] = matches
+              return { level, date, time, program, content }
+            }
+            return null
+          })
+          .filter(Boolean)
+        // 倒序后插入parsedLogs顶部
+        parsedLogs.value.unshift(...(newParsedLogs.reverse() as any[]))
+        // 保留最新的200条日志
+        parsedLogs.value = parsedLogs.value.slice(0, 200)
+        // 重置buffer
+        buffer.length = 0
+        timeoutId = null
+      }, 100)
     }
-  })
+  }
 }
 
-onMounted(() => {
-  startSSELogging()
-})
-
-onBeforeUnmount(() => {
-  if (eventSource) eventSource.close()
-})
+// 使用优化的SSE连接
+useSSE(
+  `${import.meta.env.VITE_API_BASE_URL}system/logging?logfile=${
+    encodeURIComponent(props.logfile) ?? 'moviepilot.log'
+  }`,
+  handleSSEMessage,
+  `logging-${props.logfile}`,
+  {
+    backgroundCloseDelay: 5000,
+    reconnectDelay: 3000,
+    maxReconnectAttempts: 3
+  }
+)
 </script>
 
 <template>

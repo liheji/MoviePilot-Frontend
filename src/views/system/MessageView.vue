@@ -3,9 +3,11 @@ import type { Message } from '@/api/types'
 import MessageCard from '@/components/cards/MessageCard.vue'
 import api from '@/api'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useSSE } = useBackgroundOptimization()
 
 // 定义事件
 const emit = defineEmits(['scroll'])
@@ -27,24 +29,30 @@ const page = ref(1)
 // 存量消息最新时间
 const lastTime = ref('')
 
-// SSE消息对象
-let eventSource: EventSource | null = null
-
-// SSE持续获取消息
-function startSSEMessager() {
-  eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/message?role=user`)
-  eventSource.addEventListener('message', event => {
-    const message = event.data
-    if (message) {
-      const object = JSON.parse(message)
-      if (compareTime(object.date, lastTime.value) <= 0) return
-      messages.value.push(object)
-      nextTick(() => {
-        emit('scroll') // 新消息到达时触发智能滚动
-      })
-    }
-  })
+// SSE消息处理函数
+function handleSSEMessage(event: MessageEvent) {
+  const message = event.data
+  if (message) {
+    const object = JSON.parse(message)
+    if (compareTime(object.date, lastTime.value) <= 0) return
+    messages.value.push(object)
+    nextTick(() => {
+      emit('scroll') // 新消息到达时触发智能滚动
+    })
+  }
 }
+
+// 使用优化的SSE连接
+const sseConnection = useSSE(
+  `${import.meta.env.VITE_API_BASE_URL}system/message?role=user`,
+  handleSSEMessage,
+  'message-view',
+  {
+    backgroundCloseDelay: 5000,
+    reconnectDelay: 3000,
+    maxReconnectAttempts: 3
+  }
+)
 
 // 调用API加载存量消息
 async function loadMessages({ done }: { done: any }) {
@@ -85,8 +93,6 @@ async function loadMessages({ done }: { done: any }) {
     }
     // 取消加载中
     loading.value = false
-    // 监听SSE消息
-    startSSEMessager()
   } catch (error) {
     console.error(error)
   }
@@ -109,10 +115,6 @@ onMounted(() => {
   nextTick(() => {
     emit('scroll')
   })
-})
-
-onBeforeUnmount(() => {
-  if (eventSource) eventSource.close()
 })
 </script>
 

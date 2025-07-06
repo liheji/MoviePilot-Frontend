@@ -6,9 +6,11 @@ import type { Context } from '@/api/types'
 import TorrentCardListView from '@/views/torrent/TorrentCardListView.vue'
 import TorrentRowListView from '@/views/torrent/TorrentRowListView.vue'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useProgressSSE } = useBackgroundOptimization()
 
 // 路由参数
 const route = useRoute()
@@ -55,8 +57,8 @@ const progressValue = ref(0)
 // 进度是否有效
 const progressEnabled = ref(false)
 
-// 加载进度SSE
-const progressEventSource = ref<EventSource>()
+// 进度是否激活
+const progressActive = ref(false)
 
 // 错误标题
 const errorTitle = ref(t('resource.noData'))
@@ -68,11 +70,29 @@ const errorDescription = ref(t('resource.noResourceFound'))
 const watchProgressValue = watch(
   progressValue,
   debounce(async () => {
-    if (progressEventSource.value && progressValue.value < 100) {
+    if (progressActive.value && progressValue.value < 100) {
       console.warn('卡进度超时 关闭进度条')
       stopLoadingProgress()
     }
   }, 60_000),
+)
+
+// 进度SSE消息处理函数
+function handleProgressMessage(event: MessageEvent) {
+  const progress = JSON.parse(event.data)
+  if (progress) {
+    progressText.value = progress.text
+    progressValue.value = progress.value
+    progressEnabled.value = progress.enable
+  }
+}
+
+// 使用优化的进度SSE连接
+const progressSSE = useProgressSSE(
+  `${import.meta.env.VITE_API_BASE_URL}system/progress/search`,
+  handleProgressMessage,
+  'resource-search-progress',
+  progressActive
 )
 
 // 使用SSE监听加载进度
@@ -81,38 +101,22 @@ function startLoadingProgress() {
   progressText.value = t('resource.searching')
   progressValue.value = 0
   progressEnabled.value = false
-  progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/search`)
-  progressEventSource.value.onmessage = event => {
-    const progress = JSON.parse(event.data)
-    if (progress) {
-      progressText.value = progress.text
-      progressValue.value = progress.value
-      progressEnabled.value = progress.enable
-    }
-  }
-
-  // 添加错误处理
-  progressEventSource.value.onerror = () => {
-    setTimeout(() => {
-      stopLoadingProgress()
-    }, 1000)
-  }
+  progressActive.value = true
+  progressSSE.start()
 }
 
 // 停止监听加载进度
 function stopLoadingProgress() {
   watchProgressValue.pause()
-  if (progressEventSource.value) {
-    progressEventSource.value.close()
-    progressEventSource.value = undefined
+  progressActive.value = false
+  progressSSE.stop()
 
-    // 确保进度显示100%，然后再渐进清零
-    progressValue.value = 100
-    setTimeout(() => {
-      progressValue.value = 0
-      progressEnabled.value = false
-    }, 1500) // 延长到1.5秒，让用户有足够时间看到完成状态
-  }
+  // 确保进度显示100%，然后再渐进清零
+  progressValue.value = 100
+  setTimeout(() => {
+    progressValue.value = 0
+    progressEnabled.value = false
+  }, 1500) // 延长到1.5秒，让用户有足够时间看到完成状态
 }
 
 // 设置视图类型
