@@ -54,7 +54,6 @@ const initializePWABeforeMount = async () => {
                 document.referrer.includes('android-app://')
   
   if (isPWA) {
-    console.log('检测到PWA模式，预初始化状态管理器')
     const pwaStateController = new PWAStateController()
     
     // 等待状态恢复完成
@@ -124,7 +123,6 @@ if (pwaStateController) {
   // 监听状态恢复事件
   window.addEventListener('pwaStateRestored', (event: Event) => {
     const customEvent = event as CustomEvent
-    console.log('PWA状态已恢复:', customEvent.detail.state)
     
     // 可以在这里添加状态恢复后的处理逻辑
     // 例如：通知Vue组件状态已恢复

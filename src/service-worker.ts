@@ -151,7 +151,6 @@ async function clearBadge() {
 
 // 安装事件
 self.addEventListener('install', event => {
-  console.log('Service Worker install')
   event.waitUntil(
     (async () => {
       // 预缓存关键状态数据
@@ -162,10 +161,9 @@ self.addEventListener('install', event => {
         if (existingState) {
           // 预热状态数据
           const state = await existingState.json()
-          console.log('预缓存状态数据:', state)
         }
       } catch (error) {
-        console.error('预缓存状态数据失败:', error)
+        // 静默处理错误
       }
       
       // 强制等待中的Service Worker立即成为活动的Service Worker
@@ -176,13 +174,11 @@ self.addEventListener('install', event => {
 
 // 激活事件
 self.addEventListener('activate', event => {
-  console.log('Service Worker activate')
   event.waitUntil(
     (async () => {
       // 启用导航预载功能以提高性能
       if ('navigationPreload' in self.registration) {
         await self.registration.navigationPreload.enable()
-        console.log('导航预加载已启用')
       }
       
       // 清理旧版本的缓存
@@ -190,7 +186,6 @@ self.addEventListener('activate', event => {
       await Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName.includes('old-') || cacheName.includes('deprecated-')) {
-            console.log('清理旧缓存:', cacheName)
             return caches.delete(cacheName)
           }
         })
@@ -257,7 +252,6 @@ precacheAndRoute(self.__WB_MANIFEST)
 
 // 监听 push 事件，显示通知
 self.addEventListener('push', function (event) {
-  console.log('notification push')
   if (!event.data) {
     return
   }
@@ -266,7 +260,6 @@ self.addEventListener('push', function (event) {
   try {
     payload = event.data?.json()
   } catch (err) {
-    console.log(err)
     payload = {
       title: event.data?.text(),
     }
@@ -290,14 +283,13 @@ self.addEventListener('push', function (event) {
         await Promise.all([self.registration.showNotification(payload.title, content), updateBadge(newCount)])
       })(),
     )
-  } catch (e) {
-    console.error(e)
-  }
+      } catch (e) {
+      // 静默处理错误
+    }
 })
 
 // 监听通知点击事件
 self.addEventListener('notificationclick', function (event) {
-  console.log('notification click')
   const info = event.notification
   if (event.action === 'close') {
     info.close()
@@ -308,7 +300,6 @@ self.addEventListener('notificationclick', function (event) {
 
 // 监听来自主应用的消息，用于清除徽章或更新徽章数量
 self.addEventListener('message', function (event) {
-  console.log('service worker received message:', event.data)
 
   if (event.data && event.data.type === 'CLEAR_BADGE') {
     // 清除徽章
@@ -317,7 +308,6 @@ self.addEventListener('message', function (event) {
         event.ports[0]?.postMessage({ success: true })
       })
       .catch(error => {
-        console.error('Failed to clear badge:', error)
         event.ports[0]?.postMessage({ success: false, error: error instanceof Error ? error.message : String(error) })
       })
   } else if (event.data && event.data.type === 'UPDATE_BADGE') {
@@ -329,7 +319,6 @@ self.addEventListener('message', function (event) {
         event.ports[0]?.postMessage({ success: true })
       })
       .catch(error => {
-        console.error('Failed to update badge:', error)
         event.ports[0]?.postMessage({ success: false, error: error instanceof Error ? error.message : String(error) })
       })
   } else if (event.data && event.data.type === 'GET_UNREAD_COUNT') {
@@ -339,7 +328,6 @@ self.addEventListener('message', function (event) {
         event.ports[0]?.postMessage({ count })
       })
       .catch(error => {
-        console.error('Failed to get unread count:', error)
         event.ports[0]?.postMessage({ count: 0 })
       })
   } else if (event.data && event.data.type === 'SAVE_PWA_STATE') {
@@ -355,7 +343,6 @@ self.addEventListener('message', function (event) {
         event.ports[0]?.postMessage({ success: result.success })
       })
       .catch(error => {
-        console.error('Failed to save PWA state:', error)
         event.ports[0]?.postMessage({ success: false, error: error instanceof Error ? error.message : String(error) })
       })
   } else if (event.data && event.data.type === 'GET_PWA_STATE') {
@@ -366,7 +353,6 @@ self.addEventListener('message', function (event) {
         event.ports[0]?.postMessage({ state })
       })
       .catch(error => {
-        console.error('Failed to get PWA state:', error)
         event.ports[0]?.postMessage({ state: {} })
       })
   }

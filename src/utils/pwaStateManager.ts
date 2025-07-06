@@ -312,7 +312,6 @@ export class VisibilityStateManager {
   private handlePageHidden(): void {
     const currentState = this.getCurrentAppState()
     this.stateManager.saveState(currentState)
-    console.log('页面被隐藏，已保存状态')
   }
 
   private handlePageVisible(): void {
@@ -327,10 +326,9 @@ export class VisibilityStateManager {
       const restoredState = this.stateManager.restoreState()
       if (restoredState) {
         await this.restoreAppState(restoredState)
-        console.log('页面显示，已静默恢复状态')
       }
     } catch (error) {
-      console.error('状态恢复失败:', error)
+      // 静默处理错误
     } finally {
       this.isRestoring = false
     }
@@ -530,11 +528,10 @@ export class PWAStateController {
           const savedState = await source()
           if (this.restoreDecision.shouldRestoreState(savedState, currentContext)) {
             await this.restoreState(savedState!)
-            console.log('PWA状态静默恢复成功')
             return
           }
         } catch (error) {
-          // 静默处理错误，不输出详细错误信息
+          // 静默处理错误
         }
       }
     } finally {
@@ -566,8 +563,6 @@ export class PWAStateController {
   }
 
   private async restoreState(state: PWAState): Promise<void> {
-    console.log('开始静默恢复PWA状态')
-
     const currentUrl = window.location.href
     const urlMatches = this.isUrlExactMatch(state.url, currentUrl)
 
@@ -586,7 +581,6 @@ export class PWAStateController {
 
     // 触发状态恢复事件
     this.dispatchStateRestoreEvent(state)
-    console.log('PWA状态静默恢复完成')
   }
 
   private isUrlExactMatch(savedUrl: string, currentUrl: string): boolean {
@@ -678,7 +672,6 @@ export class PWAStateController {
     // 恢复UI状态
     if (uiState.darkMode !== undefined) {
       // 这里可以根据实际的主题切换逻辑来恢复
-      console.log('恢复主题状态:', uiState.darkMode)
     }
   }
 

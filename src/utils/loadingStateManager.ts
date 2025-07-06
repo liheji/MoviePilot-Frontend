@@ -76,7 +76,7 @@ export class PWALoadingStateManager {
       try {
         listener(isLoading)
       } catch (error) {
-        console.error('加载状态监听器错误:', error)
+        // 静默处理错误
       }
     })
   }

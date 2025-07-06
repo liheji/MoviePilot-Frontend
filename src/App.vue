@@ -140,8 +140,6 @@ function animateAndRemoveLoader() {
 // 检查PWA状态并移除加载界面
 async function removeLoadingWithStateCheck() {
   try {
-    console.log('开始静默检查加载状态...')
-    
     // 设置各个组件的加载状态
     globalLoadingStateManager.setLoadingState('pwa-state', true)
     globalLoadingStateManager.setLoadingState('global-settings', true)
@@ -175,13 +173,12 @@ async function removeLoadingWithStateCheck() {
     
     // 检查未读消息
     checkAndEmitUnreadMessages()
-  } catch (error) {
-    console.error('移除加载界面时发生错误:', error)
-    // 即使出错也要移除加载界面
-    globalLoadingStateManager.reset()
-    animateAndRemoveLoader()
+      } catch (error) {
+      // 即使出错也要移除加载界面
+      globalLoadingStateManager.reset()
+      animateAndRemoveLoader()
+    }
   }
-}
 
 // 加载背景图片
 async function loadBackgroundImages(retryCount = 0) {
