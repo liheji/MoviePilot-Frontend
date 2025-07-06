@@ -1,6 +1,6 @@
 {
   "name": "moviepilot",
-  "version": "2.6.3",
+  "version": "2.6.2",
   "private": true,
   "type": "module",
   "bin": "dist/service.js",
