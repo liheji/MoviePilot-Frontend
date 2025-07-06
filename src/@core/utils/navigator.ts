@@ -43,3 +43,29 @@ export const isPWA = async (): Promise<boolean> => {
   }
   return (window.navigator as any).standalone === true
 }
+
+// 同步检测PWA显示模式
+export const isPWADisplayMode = (): boolean => {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone ||
+    document.referrer.includes('android-app://')
+  )
+}
+
+// 全面的PWA检测（推荐使用）
+export const checkPWAStatus = async () => {
+  const hasServiceWorker = await isPWA()
+  const isStandaloneMode = isPWADisplayMode()
+
+  return {
+    // 是否有PWA功能（Service Worker）
+    hasPWAFeatures: hasServiceWorker,
+    // 是否在独立显示模式下运行
+    isStandaloneMode,
+    // 综合判断：至少满足一个条件就认为是PWA环境
+    isPWAEnvironment: hasServiceWorker || isStandaloneMode,
+    // 完整的PWA体验：既有功能又在独立模式下运行
+    isFullPWA: hasServiceWorker && isStandaloneMode,
+  }
+}
