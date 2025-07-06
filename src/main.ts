@@ -45,26 +45,25 @@ import '@/styles/main.scss'
 
 // 8. PWA状态管理
 import { PWAStateController } from '@/utils/pwaStateManager'
+import { checkPWAStatus } from '@/@core/utils/navigator'
 
 // PWA状态管理器初始化函数
 const initializePWABeforeMount = async () => {
-  // 检查是否在PWA模式下运行
-  const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                (window.navigator as any).standalone || 
-                document.referrer.includes('android-app://')
-  
-  if (isPWA) {
+  // 使用统一的PWA检测方法
+  const pwaStatus = await checkPWAStatus()
+
+  if (pwaStatus.isPWAEnvironment) {
     const pwaStateController = new PWAStateController()
-    
+
     // 等待状态恢复完成
     await pwaStateController.waitForStateRestore()
-    
+
     // 将状态管理器绑定到全局对象
     ;(window as any).pwaStateController = pwaStateController
-    
+
     return pwaStateController
   }
-  
+
   return null
 }
 
@@ -123,12 +122,12 @@ if (pwaStateController) {
   // 监听状态恢复事件
   window.addEventListener('pwaStateRestored', (event: Event) => {
     const customEvent = event as CustomEvent
-    
+
     // 可以在这里添加状态恢复后的处理逻辑
     // 例如：通知Vue组件状态已恢复
     app.config.globalProperties.$pwaStateRestored = true
   })
-  
+
   // 监听应用即将卸载事件，保存状态
   window.addEventListener('beforeunload', () => {
     if (pwaStateController) {
