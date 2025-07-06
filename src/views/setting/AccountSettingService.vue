@@ -3,18 +3,17 @@ import { useToast } from 'vue-toastification'
 import api from '@/api'
 import type { ScheduleInfo } from '@/api/types'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useDataRefresh } = useBackgroundOptimization()
 
 // 提示框
 const $toast = useToast()
 
 // 定时服务列表
 const schedulerList = ref<ScheduleInfo[]>([])
-
-// 定时器
-let refreshTimer: NodeJS.Timeout | null = null
 
 // 调用API加载定时服务列表
 async function loadSchedulerList() {
@@ -60,22 +59,13 @@ function runCommand(id: string) {
   }
 }
 
-onMounted(() => {
-  loadSchedulerList()
-
-  // 启动定时器
-  refreshTimer = setInterval(() => {
-    loadSchedulerList()
-  }, 5000)
-})
-
-// 组件卸载时停止定时器
-onUnmounted(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
-})
+// 使用优化的数据刷新定时器
+useDataRefresh(
+  'scheduler-list',
+  loadSchedulerList,
+  5000, // 5秒间隔
+  true // 立即执行
+)
 </script>
 
 <template>

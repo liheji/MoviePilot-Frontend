@@ -3,9 +3,11 @@ import { formatSeconds } from '@/@core/utils/formatters'
 import api from '@/api'
 import type { Process } from '@/api/types'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useDataRefresh } = useBackgroundOptimization()
 
 // 表头
 const headers = [
@@ -18,9 +20,6 @@ const headers = [
 // 数据列表
 const processList = ref<Process[]>([])
 
-// 定时器
-let refreshTimer: NodeJS.Timeout | null = null
-
 // 调用API加载数据
 async function loadProcessList() {
   try {
@@ -32,22 +31,13 @@ async function loadProcessList() {
   }
 }
 
-onMounted(() => {
-  loadProcessList()
-
-  // 启动定时器
-  refreshTimer = setInterval(() => {
-    loadProcessList()
-  }, 5000)
-})
-
-// 组件卸载时停止定时器
-onUnmounted(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
-})
+// 使用优化的数据刷新定时器
+useDataRefresh(
+  'dashboard-processes',
+  loadProcessList,
+  5000, // 5秒间隔
+  true // 立即执行
+)
 </script>
 
 <template>

@@ -6,9 +6,11 @@ import NoDataFound from '@/components/NoDataFound.vue'
 import DownloadingCard from '@/components/cards/DownloadingCard.vue'
 import { useUserStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useDataRefresh } = useBackgroundOptimization()
 
 // 定义输入参数
 const props = defineProps<{
@@ -17,9 +19,6 @@ const props = defineProps<{
 
 // 用户 Store
 const userStore = useUserStore()
-
-// 定时器
-let refreshTimer: NodeJS.Timeout | null = null
 
 // 数据列表
 const dataList = ref<DownloadingInfo[]>([])
@@ -56,23 +55,13 @@ const filteredDataList = computed(() => {
   else return dataList.value.filter(data => data.userid === userName || data.username === userName)
 })
 
-// 加载时获取数据
-onBeforeMount(() => {
-  fetchData()
-
-  // 启动定时器
-  refreshTimer = setInterval(() => {
-    fetchData()
-  }, 3000)
-})
-
-// 组件卸载时停止定时器
-onUnmounted(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
-})
+// 使用优化的数据刷新定时器
+const { loading: dataLoading } = useDataRefresh(
+  'downloading-list',
+  fetchData,
+  3000, // 3秒间隔
+  true // 立即执行
+)
 </script>
 
 <template>

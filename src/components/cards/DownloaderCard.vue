@@ -11,12 +11,14 @@ import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 import { downloaderDict } from '@/api/constants'
 import { useDisplay } from 'vuetify'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 显示器宽度
 const display = useDisplay()
 
 // 获取i18n实例
 const { t } = useI18n()
+const { useConditionalDataRefresh } = useBackgroundOptimization()
 
 // 定义输入
 const props = defineProps({
@@ -43,9 +45,6 @@ const emit = defineEmits(['close', 'done', 'change'])
 // 提示框
 const $toast = useToast()
 
-// timeout定时器
-let timeoutTimer: NodeJS.Timeout | undefined = undefined
-
 // 上传速率
 const upload_rate = ref(0)
 
@@ -64,9 +63,15 @@ const downloaderInfo = ref<DownloaderConf>({
   config: {},
 })
 
+// 下载器是否应该刷新数据的计算属性
+const shouldRefresh = computed(() => props.allowRefresh && props.downloader.enabled)
+
 // 调用API查询下载器数据
 async function loadDownloaderInfo() {
-  if (!props.allowRefresh) {
+  if (!shouldRefresh.value) {
+    // 当下载器被禁用时，重置速率数据
+    upload_rate.value = 0
+    download_rate.value = 0
     return
   }
   try {
@@ -79,11 +84,6 @@ async function loadDownloaderInfo() {
     if (res) {
       upload_rate.value = res.upload_speed
       download_rate.value = res.download_speed
-      // 定时查询
-      clearTimeout(timeoutTimer)
-      if (props.downloader.enabled) {
-        timeoutTimer = setTimeout(loadDownloaderInfo, 3000)
-      }
     }
   } catch (e) {
     console.log(e)
@@ -141,14 +141,17 @@ function onClose() {
   emit('close')
 }
 
-onMounted(async () => {
-  if (props.downloader.enabled) {
-    await loadDownloaderInfo()
-  }
-})
+// 使用条件性数据刷新定时器（只在下载器启用时运行）
+const { stop: stopRefresh } = useConditionalDataRefresh(
+  `downloader-${props.downloader.name}`,
+  loadDownloaderInfo,
+  shouldRefresh, // 响应式条件：只有当allowRefresh为true且downloader启用时才运行
+  3000, // 3秒间隔
+  true // 立即执行一次
+)
 
 onUnmounted(() => {
-  if (timeoutTimer) clearTimeout(timeoutTimer)
+  stopRefresh()
 })
 </script>
 <template>

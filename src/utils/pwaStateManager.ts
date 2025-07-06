@@ -594,12 +594,22 @@ export class PWAStateController {
   }
 
   private setupPeriodicSave(): void {
-    // 每30秒保存一次状态
-    setInterval(() => {
-      if (!document.hidden) {
-        this.saveCurrentState()
-      }
-    }, 30000)
+    // 导入后台管理器
+    import('@/utils/backgroundManager').then(({ addBackgroundTimer }) => {
+      // 使用后台管理器，延长间隔
+      addBackgroundTimer(
+        'pwa-state-save',
+        () => {
+          // 只在前台时保存状态（由后台管理器自动处理）
+          this.saveCurrentState()
+        },
+        60000, // 改为60秒，减少频率
+        {
+          runInBackground: false, // 后台时不保存
+          skipInitialRun: true
+        }
+      )
+    })
   }
 
   private getAppSpecificState(): any {

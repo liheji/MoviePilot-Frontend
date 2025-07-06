@@ -43,8 +43,10 @@ import HeaderTab from './layouts/components/HeaderTab.vue'
 // 7. 样式文件 - 合并为单一导入
 import '@/styles/main.scss'
 
-// 8. PWA状态管理
+// 8. PWA状态管理和后台优化
 import { PWAStateController } from '@/utils/pwaStateManager'
+import { backgroundManager } from '@/utils/backgroundManager'
+import { sseManagerSingleton } from '@/utils/sseManager'
 import { checkPWAStatus } from '@/@core/utils/navigator'
 
 // PWA状态管理器初始化函数
@@ -135,6 +137,28 @@ if (pwaStateController) {
     }
   })
 }
+
+// 6. 初始化后台优化工具
+console.log('初始化后台优化工具...')
+
+// 将后台管理器绑定到全局对象（便于调试）
+if (import.meta.env.MODE === 'development') {
+  ;(window as any).backgroundManager = backgroundManager
+  ;(window as any).sseManagerSingleton = sseManagerSingleton
+  
+  // 添加全局调试函数
+  ;(window as any).debugBackground = () => {
+    console.table(backgroundManager.getTimersInfo())
+    console.log('Background Status:', backgroundManager.getStatus())
+  }
+}
+
+// 页面卸载时清理后台管理器
+window.addEventListener('beforeunload', () => {
+  console.log('应用卸载，清理后台资源...')
+  backgroundManager.destroy()
+  sseManagerSingleton.closeAllManagers()
+})
 
 // 导出状态管理器供其他模块使用
 export { pwaStateController }

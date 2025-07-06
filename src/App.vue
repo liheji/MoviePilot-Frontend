@@ -9,6 +9,7 @@ import { SupportedLocale } from '@/types/i18n'
 import { checkAndEmitUnreadMessages } from '@/utils/badge'
 import { preloadImage } from './@core/utils/image'
 import { globalLoadingStateManager } from '@/utils/loadingStateManager'
+import { addBackgroundTimer, removeBackgroundTimer } from '@/utils/backgroundManager'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -34,7 +35,6 @@ const loginStateKey = computed(() => (isLogin.value ? 'logged-in' : 'logged-out'
 const backgroundImages = ref<string[]>([])
 const activeImageIndex = ref(0)
 const isTransparentTheme = computed(() => globalTheme.name.value === 'transparent')
-let backgroundRotationTimer: NodeJS.Timeout | null = null
 
 
 
@@ -102,23 +102,37 @@ async function fetchBackgroundImages() {
   }
 }
 
+// 背景图片轮换函数
+function rotateBackgroundImage() {
+  if (backgroundImages.value.length > 1) {
+    // 计算下一个图片索引
+    const nextIndex = (activeImageIndex.value + 1) % backgroundImages.value.length
+    // 预加载下一张图片
+    preloadImage(backgroundImages.value[nextIndex]).then(success => {
+      // 只有图片成功加载才切换
+      if (success) {
+        activeImageIndex.value = nextIndex
+      }
+    })
+  }
+}
+
 // 开始背景图片轮换
 function startBackgroundRotation() {
-  // 清除轮换定时器
-  if (backgroundRotationTimer) clearInterval(backgroundRotationTimer)
+  // 清除现有定时器
+  removeBackgroundTimer('background-rotation')
+  
   if (backgroundImages.value.length > 1) {
-    // 每10秒切换一次
-    backgroundRotationTimer = setInterval(() => {
-      // 计算下一个图片索引
-      const nextIndex = (activeImageIndex.value + 1) % backgroundImages.value.length
-      // 预加载下一张图片
-      preloadImage(backgroundImages.value[nextIndex]).then(success => {
-        // 只有图片成功加载才切换
-        if (success) {
-          activeImageIndex.value = nextIndex
-        }
-      })
-    }, 10000)
+    // 使用优化的定时器管理器，后台时自动暂停
+    addBackgroundTimer(
+      'background-rotation',
+      rotateBackgroundImage,
+      10000, // 每10秒切换一次
+      {
+        runInBackground: false, // 后台时不运行
+        skipInitialRun: true // 不需要立即执行
+      }
+    )
   }
 }
 
@@ -220,11 +234,8 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  // 清除轮换定时器
-  if (backgroundRotationTimer) {
-    clearInterval(backgroundRotationTimer)
-    backgroundRotationTimer = null
-  }
+  // 清除背景轮换定时器
+  removeBackgroundTimer('background-rotation')
 })
 </script>
 

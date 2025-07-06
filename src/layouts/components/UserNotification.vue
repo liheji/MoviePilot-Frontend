@@ -2,17 +2,16 @@
 import { formatDateDifference } from '@core/utils/formatters'
 import { SystemNotification } from '@/api/types'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 const { t } = useI18n()
+const { useDelayedSSE } = useBackgroundOptimization()
 
 // 是否有新消息
 const hasNewMessage = ref(false)
 
 // 通知列表
 const notificationList = ref<SystemNotification[]>([])
-
-// 事件源
-let eventSource: EventSource | null = null
 
 // 弹窗
 const appsMenu = ref(false)
@@ -27,30 +26,27 @@ function markAllAsRead() {
   appsMenu.value = false
 }
 
-// SSE持续接收消息
-function startSSEMessager() {
-  // 延迟 3 秒启动 SSE，避免相关认证信息尚未写入 Cookie 导致 403
-  setTimeout(() => {
-    eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/message`)
-    eventSource.addEventListener('message', event => {
-      if (event.data) {
-        const noti: SystemNotification = JSON.parse(event.data)
-        notificationList.value.unshift(noti)
-        hasNewMessage.value = true
-      }
-    })
-  }, 3000)
+// 消息处理函数
+function handleMessage(event: MessageEvent) {
+  if (event.data) {
+    const noti: SystemNotification = JSON.parse(event.data)
+    notificationList.value.unshift(noti)
+    hasNewMessage.value = true
+  }
 }
 
-// 页面加载时，加载当前用户数据
-onBeforeMount(async () => {
-  startSSEMessager()
-})
-
-// 页面卸载时，关闭事件源
-onBeforeUnmount(() => {
-  if (eventSource) eventSource.close()
-})
+// 使用优化的SSE连接，延迟3秒启动，避免认证问题
+useDelayedSSE(
+  `${import.meta.env.VITE_API_BASE_URL}system/message`,
+  handleMessage,
+  'user-notification',
+  3000,
+  {
+    backgroundCloseDelay: 5000,
+    reconnectDelay: 3000,
+    maxReconnectAttempts: 3
+  }
+)
 </script>
 
 <template>

@@ -4,9 +4,11 @@ import { hexToRgb } from '@layouts/utils'
 import api from '@/api'
 import { formatBytes } from '@/@core/utils/formatters'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useDataRefresh } = useBackgroundOptimization()
 
 // 输入参数
 const props = defineProps({
@@ -29,9 +31,6 @@ const variableTheme = controlledComputed(
 )
 
 const chartKey = ref(0)
-
-// 定时器
-let refreshTimer: NodeJS.Timeout | null = null
 
 // 时间序列
 const series = ref([
@@ -113,7 +112,7 @@ const chartOptions = controlledComputed(
 )
 
 // 调用API接口获取最新内存使用量
-async function getMemorgUsage() {
+async function loadMemoryData() {
   if (!props.allowRefresh) return
   try {
     // 请求数据
@@ -128,24 +127,13 @@ async function getMemorgUsage() {
   }
 }
 
-onMounted(() => {
-  // 延迟启动，确保组件完全挂载
-  nextTick(() => {
-    getMemorgUsage()
-    // 启动定时器
-    refreshTimer = setInterval(() => {
-      getMemorgUsage()
-    }, 3000)
-  })
-})
-
-// 组件卸载时停止定时器
-onUnmounted(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
-})
+// 使用优化的数据刷新定时器
+const { loading } = useDataRefresh(
+  'analytics-memory',
+  loadMemoryData,
+  3000, // 3秒间隔
+  true // 立即执行
+)
 
 onActivated(() => {
   // 使用nextTick确保DOM准备完成后再更新chartKey

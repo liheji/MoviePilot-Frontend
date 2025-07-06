@@ -3,9 +3,11 @@ import { formatFileSize } from '@/@core/utils/formatters'
 import api from '@/api'
 import type { DownloaderInfo } from '@/api/types'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useDataRefresh } = useBackgroundOptimization()
 
 // 输入参数
 const props = defineProps({
@@ -15,9 +17,6 @@ const props = defineProps({
     default: true,
   },
 })
-
-// 定时器
-let refreshTimer: NodeJS.Timeout | null = null
 
 // 下载器信息
 const downloadInfo = ref<DownloaderInfo>({
@@ -78,22 +77,13 @@ async function loadDownloaderInfo() {
   }
 }
 
-onMounted(() => {
-  loadDownloaderInfo()
-
-  // 启动定时器
-  refreshTimer = setInterval(() => {
-    loadDownloaderInfo()
-  }, 3000)
-})
-
-// 组件卸载时停止定时器
-onUnmounted(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
-})
+// 使用优化的数据刷新定时器
+const { loading } = useDataRefresh(
+  'analytics-speed',
+  loadDownloaderInfo,
+  3000, // 3秒间隔
+  true // 立即执行
+)
 </script>
 
 <template>
