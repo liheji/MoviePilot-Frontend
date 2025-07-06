@@ -126,14 +126,8 @@ function startBackgroundRotation() {
 function animateAndRemoveLoader() {
   const loadingBg = document.querySelector('#loading-bg') as HTMLElement
   if (loadingBg) {
-    // 添加完成动画类
-    loadingBg.classList.add('loading-complete')
-    
-    // 等待动画完成后移除
-    setTimeout(() => {
-      removeEl('#loading-bg')
-      document.documentElement.style.removeProperty('background')
-    }, 800)
+    removeEl('#loading-bg')
+    document.documentElement.style.removeProperty('background')
   }
 }
 
@@ -173,12 +167,12 @@ async function removeLoadingWithStateCheck() {
     
     // 检查未读消息
     checkAndEmitUnreadMessages()
-      } catch (error) {
-      // 即使出错也要移除加载界面
-      globalLoadingStateManager.reset()
-      animateAndRemoveLoader()
-    }
+  } catch (error) {
+    // 即使出错也要移除加载界面
+    globalLoadingStateManager.reset()
+    animateAndRemoveLoader()
   }
+}
 
 // 加载背景图片
 async function loadBackgroundImages(retryCount = 0) {
