@@ -8,6 +8,7 @@ import { getBrowserLocale, setI18nLanguage } from './plugins/i18n'
 import { SupportedLocale } from '@/types/i18n'
 import { checkAndEmitUnreadMessages } from '@/utils/badge'
 import { preloadImage } from './@core/utils/image'
+import { globalLoadingStateManager } from '@/utils/loadingStateManager'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -34,6 +35,8 @@ const backgroundImages = ref<string[]>([])
 const activeImageIndex = ref(0)
 const isTransparentTheme = computed(() => globalTheme.name.value === 'transparent')
 let backgroundRotationTimer: NodeJS.Timeout | null = null
+
+
 
 // ApexCharts 全局配置
 declare global {
@@ -123,10 +126,59 @@ function startBackgroundRotation() {
 function animateAndRemoveLoader() {
   const loadingBg = document.querySelector('#loading-bg') as HTMLElement
   if (loadingBg) {
-    removeEl('#loading-bg')
-    document.documentElement.style.removeProperty('background')
+    // 添加完成动画类
+    loadingBg.classList.add('loading-complete')
+    
+    // 等待动画完成后移除
+    setTimeout(() => {
+      removeEl('#loading-bg')
+      document.documentElement.style.removeProperty('background')
+    }, 800)
   }
 }
+
+// 检查PWA状态并移除加载界面
+async function removeLoadingWithStateCheck() {
+  try {
+    // 设置各个组件的加载状态
+    globalLoadingStateManager.setLoadingState('pwa-state', true)
+    globalLoadingStateManager.setLoadingState('global-settings', true)
+    globalLoadingStateManager.setLoadingState('background-images', true)
+    
+    // 静默检查PWA状态恢复
+    const pwaController = (window as any).pwaStateController
+    if (pwaController) {
+      await pwaController.waitForStateRestore()
+    }
+    globalLoadingStateManager.setLoadingState('pwa-state', false)
+    
+    // 并行加载关键资源
+    await Promise.all([
+      globalSettingsStore.initialize().then(() => {
+        globalLoadingStateManager.setLoadingState('global-settings', false)
+      }),
+      new Promise(resolve => {
+        setTimeout(() => {
+          globalLoadingStateManager.setLoadingState('background-images', false)
+          resolve(void 0)
+        }, 50)
+      })
+    ])
+    
+    // 等待所有加载完成
+    await globalLoadingStateManager.waitForAllComplete()
+    
+    // 移除加载界面
+    animateAndRemoveLoader()
+    
+    // 检查未读消息
+    checkAndEmitUnreadMessages()
+      } catch (error) {
+      // 即使出错也要移除加载界面
+      globalLoadingStateManager.reset()
+      animateAndRemoveLoader()
+    }
+  }
 
 // 加载背景图片
 async function loadBackgroundImages(retryCount = 0) {
@@ -147,9 +199,6 @@ async function loadBackgroundImages(retryCount = 0) {
 }
 
 onMounted(async () => {
-  // 初始化全局设置
-  await globalSettingsStore.initialize()
-
   // 配置 ApexCharts
   configureApexCharts()
 
@@ -170,14 +219,9 @@ onMounted(async () => {
   // 加载背景图片
   loadBackgroundImages()
 
-  // 移除加载动画
+  // 使用优化后的加载界面移除逻辑
   ensureRenderComplete(() => {
-    nextTick(() => {
-      // 移除加载动画，显示页面
-      animateAndRemoveLoader()
-      // 页面完全显示后，检查未读消息
-      checkAndEmitUnreadMessages()
-    })
+    nextTick(removeLoadingWithStateCheck)
   })
 })
 
@@ -266,5 +310,30 @@ onUnmounted(() => {
   inline-size: 100%;
   inset-block-start: 0;
   inset-inline-start: 0;
+}
+
+
+
+/* 优化加载完成动画 */
+.loading-complete {
+  animation: fadeOutScale 0.8s ease-out forwards;
+}
+
+@keyframes fadeOutScale {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  70% {
+    opacity: 0.3;
+    transform: scale(1.05);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+    filter: blur(5px);
+  }
 }
 </style>

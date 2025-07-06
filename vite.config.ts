@@ -60,6 +60,8 @@ export default defineConfig({
             revision: null,
           },
         ],
+        // 启用导航预加载
+        navigationPreload: true,
         runtimeCaching: [
           {
             urlPattern: /\.(?:js|css|html)$/,
@@ -115,10 +117,16 @@ export default defineConfig({
           },
           {
             urlPattern: ({ request }) => request.destination === 'document',
-            handler: 'NetworkFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'pages-cache',
-              networkTimeoutSeconds: 10,
+              cacheKeyWillBeUsed: async ({ request }) => {
+                // 忽略状态参数，提高缓存命中率
+                const url = new URL(request.url)
+                url.searchParams.delete('restored')
+                url.searchParams.delete('t')
+                return url.toString()
+              },
             },
           },
         ],

@@ -18,14 +18,13 @@ export function usePWAState() {
   const saveCurrentState = async () => {
     if (window.pwaStateController) {
       await window.pwaStateController.saveCurrentState()
-      console.log('手动保存PWA状态')
     }
   }
 
   // 手动触发状态恢复检查
   const checkStateRestore = async () => {
     if (window.pwaStateController) {
-      console.log('检查状态恢复')
+      // 静默检查
     }
   }
 
@@ -35,8 +34,6 @@ export function usePWAState() {
     isStateRestored.value = true
     stateRestoreCount.value++
     lastRestoredState.value = customEvent.detail.state
-    
-    console.log('Vue组件收到状态恢复通知:', customEvent.detail.state)
   }
 
   // 重置状态恢复标志
@@ -115,7 +112,6 @@ export function useGlobalPWAState() {
   const clearStoredState = () => {
     localStorage.removeItem('mp-pwa-app-state')
     sessionStorage.removeItem('mp-pwa-session-state')
-    console.log('已清除PWA存储状态')
   }
 
   return {
