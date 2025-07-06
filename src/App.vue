@@ -36,8 +36,7 @@ const activeImageIndex = ref(0)
 const isTransparentTheme = computed(() => globalTheme.name.value === 'transparent')
 let backgroundRotationTimer: NodeJS.Timeout | null = null
 
-// PWA状态恢复相关
-const isRestoring = ref(false)
+
 
 // ApexCharts 全局配置
 declare global {
@@ -141,40 +140,35 @@ function animateAndRemoveLoader() {
 // 检查PWA状态并移除加载界面
 async function removeLoadingWithStateCheck() {
   try {
-    console.log('开始检查加载状态...')
+    console.log('开始静默检查加载状态...')
     
     // 设置各个组件的加载状态
     globalLoadingStateManager.setLoadingState('pwa-state', true)
     globalLoadingStateManager.setLoadingState('global-settings', true)
     globalLoadingStateManager.setLoadingState('background-images', true)
     
-    // 检查PWA状态是否已恢复
+    // 静默检查PWA状态恢复
     const pwaController = (window as any).pwaStateController
     if (pwaController) {
-      isRestoring.value = true
       await pwaController.waitForStateRestore()
-      console.log('PWA状态恢复完成')
     }
     globalLoadingStateManager.setLoadingState('pwa-state', false)
     
-    // 确保关键资源已加载
+    // 并行加载关键资源
     await Promise.all([
-      // 等待全局设置初始化完成
       globalSettingsStore.initialize().then(() => {
         globalLoadingStateManager.setLoadingState('global-settings', false)
       }),
-      // 等待背景图片加载状态稳定
       new Promise(resolve => {
         setTimeout(() => {
           globalLoadingStateManager.setLoadingState('background-images', false)
           resolve(void 0)
-        }, 200)
+        }, 50)
       })
     ])
     
     // 等待所有加载完成
     await globalLoadingStateManager.waitForAllComplete()
-    console.log('所有资源加载完成，准备移除加载界面')
     
     // 移除加载界面
     animateAndRemoveLoader()
@@ -208,11 +202,6 @@ async function loadBackgroundImages(retryCount = 0) {
 }
 
 onMounted(async () => {
-  // 监听PWA状态恢复事件
-  window.addEventListener('pwaStateRestored', () => {
-    isRestoring.value = false
-  })
-  
   // 配置 ApexCharts
   configureApexCharts()
 
@@ -263,7 +252,7 @@ onUnmounted(() => {
       <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
     </div>
     <!-- 页面内容 -->
-    <VApp :class="{ 'transparent-app': isTransparentTheme, 'pwa-restoring': isRestoring }">
+    <VApp :class="{ 'transparent-app': isTransparentTheme }">
       <RouterView />
     </VApp>
   </div>
@@ -326,15 +315,7 @@ onUnmounted(() => {
   inset-inline-start: 0;
 }
 
-/* PWA过渡效果 */
-.transparent-app {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
 
-.pwa-restoring {
-  opacity: 0.8;
-  transform: scale(0.98);
-}
 
 /* 优化加载完成动画 */
 .loading-complete {

@@ -225,24 +225,25 @@ export class ServiceWorkerStateSync {
  * 状态恢复决策器
  */
 export class StateRestoreDecision {
-  private maxStateAge = 30 * 60 * 1000 // 30分钟
+  private maxStateAge = 60 * 60 * 1000 // 60分钟，延长有效期
 
   shouldRestoreState(savedState: PWAState | null, currentContext: PWAContext): boolean {
     if (!savedState) return false
 
-    // 检查状态年龄
+    // 检查状态年龄 - 更宽松的过期检查
     if (this.isStateExpired(savedState)) {
       return false
     }
 
-    // 检查URL匹配
+    // URL匹配检查 - 更宽松的匹配策略
     if (!this.isUrlCompatible(savedState.url, currentContext.url)) {
-      return false
+      // 即使URL不匹配，也可以恢复一些基础状态（如滚动位置除外）
+      return true
     }
 
-    // 检查设备方向
+    // 设备方向变化不阻止状态恢复
     if (this.isOrientationChanged(savedState, currentContext)) {
-      return false
+      // 继续恢复
     }
 
     return true
@@ -323,100 +324,19 @@ export class VisibilityStateManager {
 
   private async performStateRestore(): Promise<void> {
     try {
-      // 显示轻量级恢复指示器
-      this.showRestoreIndicator()
-      
       const restoredState = this.stateManager.restoreState()
       if (restoredState) {
         await this.restoreAppState(restoredState)
-        console.log('页面显示，已恢复状态')
+        console.log('页面显示，已静默恢复状态')
       }
     } catch (error) {
       console.error('状态恢复失败:', error)
     } finally {
       this.isRestoring = false
-      this.hideRestoreIndicator()
     }
   }
 
-  private showRestoreIndicator(): void {
-    // 检查是否已经存在指示器
-    if (document.getElementById('pwa-restore-indicator')) return
-    
-    const indicator = document.createElement('div')
-    indicator.id = 'pwa-restore-indicator'
-    indicator.innerHTML = `
-      <div class="restore-indicator">
-        <div class="restore-spinner"></div>
-        <div class="restore-text">正在恢复状态...</div>
-      </div>
-    `
-    document.body.appendChild(indicator)
-    
-    // 添加样式
-    const style = document.createElement('style')
-    style.textContent = `
-      #pwa-restore-indicator {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-      
-      #pwa-restore-indicator.show {
-        opacity: 1;
-      }
-      
-      .restore-indicator {
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        backdrop-filter: blur(10px);
-      }
-      
-      .restore-spinner {
-        width: 20px;
-        height: 20px;
-        border: 2px solid transparent;
-        border-top: 2px solid white;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `
-    document.head.appendChild(style)
-    
-    // 触发显示动画
-    setTimeout(() => {
-      indicator.classList.add('show')
-    }, 10)
-  }
 
-  private hideRestoreIndicator(): void {
-    const indicator = document.getElementById('pwa-restore-indicator')
-    if (indicator) {
-      indicator.classList.remove('show')
-      setTimeout(() => {
-        indicator.remove()
-      }, 300)
-    }
-  }
 
   private handlePageUnload(): void {
     const currentState = this.getCurrentAppState()
@@ -449,9 +369,7 @@ export class VisibilityStateManager {
   }
 
   private async restoreAppState(state: PWAState): Promise<void> {
-    // 添加小延迟以确保页面完全加载
-    await new Promise(resolve => setTimeout(resolve, 100))
-    
+    // 立即恢复状态，无需延迟
     if (state.scrollPosition) {
       window.scrollTo(0, state.scrollPosition)
     }
@@ -612,11 +530,11 @@ export class PWAStateController {
           const savedState = await source()
           if (this.restoreDecision.shouldRestoreState(savedState, currentContext)) {
             await this.restoreState(savedState!)
-            console.log('PWA状态恢复成功')
+            console.log('PWA状态静默恢复成功')
             return
           }
         } catch (error) {
-          console.error('状态恢复失败:', error)
+          // 静默处理错误，不输出详细错误信息
         }
       }
     } finally {
@@ -648,28 +566,37 @@ export class PWAStateController {
   }
 
   private async restoreState(state: PWAState): Promise<void> {
-    console.log('开始恢复PWA状态:', {
-      url: state.url,
-      scrollPosition: state.scrollPosition,
-      timestamp: new Date(state.timestamp).toISOString(),
-      hasAppData: !!state.appData
-    })
+    console.log('开始静默恢复PWA状态')
 
-    // 恢复滚动位置
-    if (state.scrollPosition) {
-      console.log('恢复滚动位置:', state.scrollPosition)
-      window.scrollTo(0, state.scrollPosition)
+    const currentUrl = window.location.href
+    const urlMatches = this.isUrlExactMatch(state.url, currentUrl)
+
+    // 只有在URL完全匹配时才恢复滚动位置
+    if (state.scrollPosition && urlMatches) {
+      window.scrollTo({
+        top: state.scrollPosition,
+        behavior: 'auto'
+      })
     }
 
-    // 恢复应用特定状态
+    // 恢复应用特定状态 - 过滤掉不适用的状态
     if (state.appData) {
-      console.log('恢复应用特定状态:', state.appData)
-      this.restoreAppSpecificState(state.appData)
+      this.restoreAppSpecificState(state.appData, urlMatches)
     }
 
     // 触发状态恢复事件
     this.dispatchStateRestoreEvent(state)
-    console.log('PWA状态恢复完成')
+    console.log('PWA状态静默恢复完成')
+  }
+
+  private isUrlExactMatch(savedUrl: string, currentUrl: string): boolean {
+    try {
+      const saved = new URL(savedUrl)
+      const current = new URL(currentUrl)
+      return saved.pathname === current.pathname
+    } catch {
+      return false
+    }
   }
 
   private setupPeriodicSave(): void {
@@ -735,11 +662,14 @@ export class PWAStateController {
     return formData
   }
 
-  private restoreAppSpecificState(appData: any): void {
+  private restoreAppSpecificState(appData: any, urlMatches: boolean = true): void {
+    // 总是恢复UI状态（如主题等）
     if (appData.uiState) {
       this.restoreUIState(appData.uiState)
     }
-    if (appData.formState) {
+    
+    // 只有在URL匹配时才恢复表单状态
+    if (appData.formState && urlMatches) {
       this.restoreFormState(appData.formState)
     }
   }
