@@ -96,8 +96,8 @@ app
 // 5. 初始化PWA状态管理器
 let pwaStateController: PWAStateController | null = null
 
-// 等待DOM准备就绪后初始化状态管理
-document.addEventListener('DOMContentLoaded', () => {
+// PWA状态管理器初始化函数
+const initializePWAStateManager = () => {
   // 检查是否在PWA模式下运行
   const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                 (window.navigator as any).standalone || 
@@ -129,7 +129,16 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     console.log('非PWA模式，跳过状态管理器初始化')
   }
-})
+}
+
+// 检查DOM状态并初始化PWA状态管理
+if (document.readyState === 'loading') {
+  // DOM尚未加载完成，添加事件监听器
+  document.addEventListener('DOMContentLoaded', initializePWAStateManager)
+} else {
+  // DOM已经准备就绪，立即初始化
+  initializePWAStateManager()
+}
 
 // 导出状态管理器供其他模块使用
 export { pwaStateController }
