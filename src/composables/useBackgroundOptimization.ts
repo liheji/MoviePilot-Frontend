@@ -200,11 +200,93 @@ export function useBackgroundOptimization() {
     }
   }
 
+  /**
+   * 使用条件性数据刷新定时器（用于需要动态启停的场景）
+   * @param id 定时器ID
+   * @param loadDataFunc 加载数据函数
+   * @param condition 条件响应式引用，为true时启动定时器
+   * @param interval 刷新间隔（毫秒）
+   * @param immediate 是否立即执行
+   */
+  const useConditionalDataRefresh = (
+    id: string,
+    loadDataFunc: () => Promise<void> | void,
+    condition: Ref<boolean>,
+    interval: number = 3000,
+    immediate: boolean = true
+  ) => {
+    const loading = ref(false)
+    const isTimerActive = ref(false)
+    
+    const wrappedLoadData = async () => {
+      if (loading.value || !condition.value) return
+      
+      loading.value = true
+      try {
+        await loadDataFunc()
+      } catch (error) {
+        console.error(`条件数据刷新失败 [${id}]:`, error)
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const startTimer = () => {
+      if (!isTimerActive.value && condition.value) {
+        addBackgroundTimer(
+          id,
+          wrappedLoadData,
+          interval,
+          {
+            runInBackground: false,
+            skipInitialRun: !immediate
+          }
+        )
+        isTimerActive.value = true
+      }
+    }
+
+    const stopTimer = () => {
+      if (isTimerActive.value) {
+        removeBackgroundTimer(id)
+        isTimerActive.value = false
+      }
+    }
+    
+    onMounted(() => {
+      if (condition.value) {
+        startTimer()
+      }
+      
+      // 监听条件变化
+      watch(condition, (newValue: boolean) => {
+        if (newValue) {
+          startTimer()
+        } else {
+          stopTimer()
+        }
+      })
+    })
+    
+    onUnmounted(() => {
+      stopTimer()
+    })
+    
+    return {
+      loading,
+      refresh: wrappedLoadData,
+      stop: stopTimer,
+      start: startTimer,
+      isActive: isTimerActive
+    }
+  }
+
   return {
     useSSE,
     useTimer,
     useDelayedSSE,
     useProgressSSE,
-    useDataRefresh
+    useDataRefresh,
+    useConditionalDataRefresh
   }
 }
