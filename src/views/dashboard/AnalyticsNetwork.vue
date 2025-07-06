@@ -3,9 +3,11 @@ import { useTheme } from 'vuetify'
 import { hexToRgb } from '@layouts/utils'
 import api from '@/api'
 import { useI18n } from 'vue-i18n'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useDataRefresh } = useBackgroundOptimization()
 
 // 输入参数
 const props = defineProps({
@@ -28,9 +30,6 @@ const variableTheme = controlledComputed(
 )
 
 const chartKey = ref(0)
-
-// 定时器
-let refreshTimer: NodeJS.Timeout | null = null
 
 // 时间序列 - 上行和下行流量
 const series = ref([
@@ -161,23 +160,13 @@ async function getNetworkUsage() {
   }
 }
 
-onMounted(() => {
-  // 延迟启动，确保组件完全挂载
-  nextTick(() => {
-    getNetworkUsage()
-    refreshTimer = setInterval(() => {
-      getNetworkUsage()
-    }, 2000)
-  })
-})
-
-// 组件卸载时停止定时器
-onUnmounted(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
-})
+// 使用优化的数据刷新定时器
+useDataRefresh(
+  'dashboard-network',
+  getNetworkUsage,
+  2000, // 2秒间隔
+  true // 立即执行
+)
 
 onActivated(() => {
   nextTick(() => {

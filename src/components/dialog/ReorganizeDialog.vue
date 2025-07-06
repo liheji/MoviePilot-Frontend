@@ -9,9 +9,11 @@ import ProgressDialog from './ProgressDialog.vue'
 import { FileItem, StorageConf, TransferDirectoryConf, TransferForm } from '@/api/types'
 import { useI18n } from 'vue-i18n'
 import { useGlobalSettingsStore } from '@/stores'
+import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
 
 // 国际化
 const { t } = useI18n()
+const { useProgressSSE } = useBackgroundOptimization()
 
 // 显示器宽度
 const display = useDisplay()
@@ -49,8 +51,8 @@ const $toast = useToast()
 // TMDB选择对话框
 const mediaSelectorDialog = ref(false)
 
-// 加载进度SSE
-const progressEventSource = ref<EventSource>()
+// 进度是否激活
+const progressActive = ref(false)
 
 // 整理进度条
 const progressDialog = ref(false)
@@ -189,34 +191,34 @@ async function handleTransferLog(logid: number, background: boolean = false) {
   }
 }
 
+// 进度SSE消息处理函数
+function handleProgressMessage(event: MessageEvent) {
+  const progress = JSON.parse(event.data)
+  if (progress) {
+    progressText.value = progress.text
+    progressValue.value = progress.value
+  }
+}
+
+// 使用优化的进度SSE连接
+const progressSSE = useProgressSSE(
+  `${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`,
+  handleProgressMessage,
+  'reorganize-progress',
+  progressActive
+)
+
 // 使用SSE监听加载进度
 function startLoadingProgress() {
-  // 在创建新连接之前，先确保任何可能存在的旧连接都被关闭了，防止因快速重复点击而产生孤儿连接。
-  if (progressEventSource.value) {
-    progressEventSource.value.close()
-  }
-
   progressText.value = t('dialog.reorganize.processing')
-  progressEventSource.value = new EventSource(`${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`)
-  progressEventSource.value.onmessage = event => {
-    const progress = JSON.parse(event.data)
-    if (progress) {
-      progressText.value = progress.text
-      progressValue.value = progress.value
-    }
-  }
-
-  // 发生错误时，也确保连接被关闭，避免重试等意外行为
-  progressEventSource.value.onerror = () => {
-    if (progressEventSource.value) {
-      progressEventSource.value.close()
-    }
-  }
+  progressActive.value = true
+  progressSSE.start()
 }
 
 // 停止监听加载进度
 function stopLoadingProgress() {
-  progressEventSource.value?.close()
+  progressActive.value = false
+  progressSSE.stop()
 }
 
 // 整理文件
