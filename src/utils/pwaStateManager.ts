@@ -73,12 +73,12 @@ export class StateCollector {
     
     scrollContainers.forEach(selector => {
       const elements = document.querySelectorAll(selector)
-      elements.forEach((element, index) => {
+      elements.forEach((element) => {
         if (element.scrollTop > 0 || element.scrollLeft > 0) {
           positions.push({
             x: element.scrollLeft,
             y: element.scrollTop,
-            element: `${selector}:nth-of-type(${index + 1})`
+            element: this.generateElementSelector(element)
           })
         }
       })
@@ -222,14 +222,61 @@ export class StateCollector {
     
     const scrollableElements = element.querySelectorAll('[class*="overflow"], .v-card-text')
     if (scrollableElements.length > 0) {
-      data.scrollPositions = Array.from(scrollableElements).map((el, index) => ({
-        selector: `${element.className}:nth-of-type(${index + 1}) [class*="overflow"]`,
+      data.scrollPositions = Array.from(scrollableElements).map((el) => ({
+        selector: this.generateElementSelector(el),
         x: el.scrollLeft,
         y: el.scrollTop
       }))
     }
     
     return data
+  }
+  
+  private static generateElementSelector(element: Element): string {
+    if (element.id) {
+      return `#${element.id}`
+    }
+    
+    const path = []
+    let current = element
+    
+    while (current && current !== document.body) {
+      let selector = current.tagName.toLowerCase()
+      
+      if (current.id) {
+        selector += `#${current.id}`
+        path.unshift(selector)
+        break
+      }
+      
+      if (current.className) {
+        const classes = current.className.split(/\s+/).filter(c => c && !c.includes('v-'))
+        if (classes.length > 0) {
+          selector += `.${classes[0]}`
+        }
+      }
+      
+      // Use nth-child instead of nth-of-type, but only when necessary
+      const parent = current.parentElement
+      if (parent) {
+        const siblings = Array.from(parent.children).filter(child => 
+          child.tagName === current.tagName &&
+          child.className === current.className
+        )
+        
+        if (siblings.length > 1) {
+          const index = siblings.indexOf(current) + 1
+          selector += `:nth-child(${index})`
+        }
+      }
+      
+      path.unshift(selector)
+      current = current.parentElement as Element
+      
+      if (path.length >= 4) break
+    }
+    
+    return path.join(' > ')
   }
   
   private static getFieldSelector(element: HTMLInputElement): string {
