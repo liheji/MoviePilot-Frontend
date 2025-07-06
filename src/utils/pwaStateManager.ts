@@ -1,27 +1,315 @@
 /**
  * PWA状态管理器
  * 用于在iOS设备上防止后台被杀时丢失状态，提供状态恢复功能
+ * 只在页面隐藏时收集状态，避免实时监听影响性能
  */
 
-// 应用状态接口
+export interface ScrollPosition {
+  x: number
+  y: number
+  element?: string
+}
+
+export interface ModalState {
+  id: string
+  isOpen: boolean
+  data?: any
+}
+
+export interface FormFieldState {
+  selector: string
+  value: string | number | boolean
+  type: string
+  checked?: boolean
+  selectedIndex?: number
+}
+
 export interface PWAState {
   url: string
   scrollPosition: number
+  scrollPositions: ScrollPosition[]
   orientation: number
   timestamp: number
   appData?: any
   formData?: Record<string, any>
+  formFields?: FormFieldState[]
+  modalStates?: ModalState[]
   userSelections?: {
     selectedItems: string[]
     activeTab?: string
   }
 }
 
-// 当前上下文接口
 export interface PWAContext {
   url: string
   orientation: number
   timestamp: number
+}
+
+/**
+ * 状态收集器
+ * 只在需要时收集状态，不进行实时监听
+ */
+export class StateCollector {
+  
+  static collectScrollPositions(): ScrollPosition[] {
+    const positions: ScrollPosition[] = []
+    
+    positions.push({
+      x: window.scrollX,
+      y: window.scrollY,
+      element: 'window'
+    })
+    
+    const scrollContainers = [
+      '.v-main__wrap',
+      '.v-card-text', 
+      '.v-sheet',
+      '.perfect-scrollbar',
+      '[data-simplebar]',
+      '.overflow-auto',
+      '.overflow-y-auto'
+    ]
+    
+    scrollContainers.forEach(selector => {
+      const elements = document.querySelectorAll(selector)
+      elements.forEach((element) => {
+        if (element.scrollTop > 0 || element.scrollLeft > 0) {
+          positions.push({
+            x: element.scrollLeft,
+            y: element.scrollTop,
+            element: this.generateElementSelector(element)
+          })
+        }
+      })
+    })
+    
+    return positions
+  }
+  
+  static collectModalStates(): ModalState[] {
+    const states: ModalState[] = []
+    
+    const modalSelectors = [
+      '.v-dialog',
+      '.v-menu', 
+      '.v-overlay',
+      '.v-tooltip',
+      '.v-snackbar',
+      '.modal',
+      '.popup',
+      '.drawer',
+      '.v-navigation-drawer',
+      '[role="dialog"]',
+      '[role="alertdialog"]'
+    ]
+    
+    modalSelectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector)
+      elements.forEach(element => {
+        if (this.isModalOpen(element)) {
+          states.push({
+            id: this.getModalId(element),
+            isOpen: true,
+            data: this.extractModalData(element)
+          })
+        }
+      })
+    })
+    
+    return states
+  }
+  
+  static collectFormFields(): FormFieldState[] {
+    const fields: FormFieldState[] = []
+    
+    const formElements = document.querySelectorAll('input, textarea, select')
+    formElements.forEach(element => {
+      const inputElement = element as HTMLInputElement
+      
+      if (inputElement.type === 'password' || inputElement.type === 'hidden') {
+        return
+      }
+      
+      if (inputElement.value || inputElement.checked) {
+        fields.push({
+          selector: this.getFieldSelector(inputElement),
+          value: inputElement.value,
+          type: inputElement.type,
+          checked: inputElement.checked,
+          selectedIndex: inputElement.tagName === 'SELECT' ? 
+            (inputElement as unknown as HTMLSelectElement).selectedIndex : undefined
+        })
+      }
+    })
+    
+    return fields
+  }
+  
+  static restoreScrollPositions(positions: ScrollPosition[]): void {
+    positions.forEach(pos => {
+      if (pos.element === 'window') {
+        window.scrollTo({ top: pos.y, left: pos.x, behavior: 'auto' })
+      } else {
+        const elements = document.querySelectorAll(pos.element!)
+        elements.forEach(element => {
+          element.scrollTo({ top: pos.y, left: pos.x, behavior: 'auto' })
+        })
+      }
+    })
+  }
+  
+  static restoreModalStates(states: ModalState[]): void {
+    states.forEach(state => {
+      window.dispatchEvent(new CustomEvent('restoreModalState', {
+        detail: state
+      }))
+    })
+  }
+  
+  static restoreFormFields(fields: FormFieldState[]): void {
+    fields.forEach(field => {
+      const elements = document.querySelectorAll(field.selector)
+      elements.forEach(element => {
+        const inputElement = element as HTMLInputElement
+        
+        if (field.type === 'checkbox' || field.type === 'radio') {
+          inputElement.checked = field.checked || false
+        } else if (field.type === 'select-one' || field.type === 'select-multiple') {
+          const selectElement = inputElement as unknown as HTMLSelectElement
+          if (field.selectedIndex !== undefined) {
+            selectElement.selectedIndex = field.selectedIndex
+          }
+        } else {
+          inputElement.value = field.value as string
+        }
+        
+        inputElement.dispatchEvent(new Event('input', { bubbles: true }))
+        inputElement.dispatchEvent(new Event('change', { bubbles: true }))
+      })
+    })
+  }
+  
+  private static isModalOpen(element: Element): boolean {
+    const computedStyle = window.getComputedStyle(element)
+    return computedStyle.display !== 'none' &&
+           computedStyle.visibility !== 'hidden' &&
+           computedStyle.opacity !== '0' &&
+           !element.hasAttribute('hidden') &&
+           element.getAttribute('aria-hidden') !== 'true'
+  }
+  
+  private static getModalId(element: Element): string {
+    return element.id || 
+           element.getAttribute('data-modal-id') ||
+           element.className.replace(/\s+/g, '-') ||
+           `modal-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  }
+  
+  private static extractModalData(element: Element): any {
+    const data: any = {}
+    
+    const inputs = element.querySelectorAll('input, select, textarea')
+    if (inputs.length > 0) {
+      data.formData = {}
+      inputs.forEach(input => {
+        const inputElement = input as HTMLInputElement
+        if (inputElement.name && inputElement.value) {
+          data.formData[inputElement.name] = inputElement.value
+        }
+      })
+    }
+    
+    const scrollableElements = element.querySelectorAll('[class*="overflow"], .v-card-text')
+    if (scrollableElements.length > 0) {
+      data.scrollPositions = Array.from(scrollableElements).map((el) => ({
+        selector: this.generateElementSelector(el),
+        x: el.scrollLeft,
+        y: el.scrollTop
+      }))
+    }
+    
+    return data
+  }
+  
+  private static generateElementSelector(element: Element): string {
+    if (element.id) {
+      return `#${element.id}`
+    }
+    
+    const path = []
+    let current = element
+    
+    while (current && current !== document.body) {
+      let selector = current.tagName.toLowerCase()
+      
+      if (current.id) {
+        selector += `#${current.id}`
+        path.unshift(selector)
+        break
+      }
+      
+      if (current.className) {
+        const classes = current.className.split(/\s+/).filter(c => c && !c.includes('v-'))
+        if (classes.length > 0) {
+          selector += `.${classes[0]}`
+        }
+      }
+      
+      // Use nth-child instead of nth-of-type, but only when necessary
+      const parent = current.parentElement
+      if (parent) {
+        const siblings = Array.from(parent.children).filter(child => 
+          child.tagName === current.tagName &&
+          child.className === current.className
+        )
+        
+        if (siblings.length > 1) {
+          const index = siblings.indexOf(current) + 1
+          selector += `:nth-child(${index})`
+        }
+      }
+      
+      path.unshift(selector)
+      current = current.parentElement as Element
+      
+      if (path.length >= 4) break
+    }
+    
+    return path.join(' > ')
+  }
+  
+  private static getFieldSelector(element: HTMLInputElement): string {
+    if (element.id) return `#${element.id}`
+    if (element.name) return `[name="${element.name}"]`
+    
+    const path = []
+    let current = element as Element
+    
+    while (current && current !== document.body) {
+      let selector = current.tagName.toLowerCase()
+      
+      if (current.id) {
+        selector += `#${current.id}`
+        path.unshift(selector)
+        break
+      }
+      
+      if (current.className) {
+        const classes = current.className.split(/\s+/).filter(c => c)
+        if (classes.length > 0) {
+          selector += `.${classes[0]}`
+        }
+      }
+      
+      path.unshift(selector)
+      current = current.parentNode as Element
+      
+      if (path.length >= 3) break
+    }
+    
+    return path.join(' > ')
+  }
 }
 
 /**
@@ -334,8 +622,6 @@ export class VisibilityStateManager {
     }
   }
 
-
-
   private handlePageUnload(): void {
     const currentState = this.getCurrentAppState()
     this.stateManager.saveState(currentState)
@@ -360,6 +646,7 @@ export class VisibilityStateManager {
     return {
       url: window.location.href,
       scrollPosition: window.scrollY,
+      scrollPositions: [{ x: window.scrollX, y: window.scrollY, element: 'window' }],
       orientation: window.orientation || 0,
       timestamp: Date.now(),
       appData: this.getAppSpecificState()
@@ -452,9 +739,6 @@ export class VisibilityStateManager {
   }
 }
 
-/**
- * 完整的PWA状态管理器
- */
 export class PWAStateController {
   private stateManager: PWAStateManager
   private indexedDBManager: PWAIndexedDBManager
@@ -472,7 +756,6 @@ export class PWAStateController {
     this.visibilityManager = new VisibilityStateManager(this.stateManager)
     this.restoreDecision = new StateRestoreDecision()
     
-    // 创建状态恢复Promise
     this.stateRestorePromise = new Promise((resolve) => {
       this.stateRestoreResolve = resolve
     })
@@ -480,29 +763,17 @@ export class PWAStateController {
     this.init()
   }
 
-  /**
-   * 等待状态恢复完成
-   */
   async waitForStateRestore(): Promise<void> {
     return this.stateRestorePromise || Promise.resolve()
   }
 
-  /**
-   * 获取当前是否正在恢复状态
-   */
   get isRestoringState(): boolean {
     return this.isRestoring
   }
 
   private async init(): Promise<void> {
-    // 清理过期状态
     this.stateManager.clearExpiredState()
-    
-    // 检查是否需要恢复状态
     await this.checkAndRestoreState()
-    
-    // 设置定期保存
-    this.setupPeriodicSave()
   }
 
   private async checkAndRestoreState(): Promise<void> {
@@ -545,15 +816,21 @@ export class PWAStateController {
   }
 
   async saveCurrentState(): Promise<void> {
+    const scrollPositions = StateCollector.collectScrollPositions()
+    const modalStates = StateCollector.collectModalStates()
+    const formFields = StateCollector.collectFormFields()
+
     const state: PWAState = {
       url: window.location.href,
       scrollPosition: window.scrollY,
+      scrollPositions: scrollPositions.length > 0 ? scrollPositions : [{ x: window.scrollX, y: window.scrollY, element: 'window' }],
       orientation: window.orientation || 0,
       timestamp: Date.now(),
-      appData: this.getAppSpecificState()
+      appData: this.getAppSpecificState(),
+      modalStates: modalStates.length > 0 ? modalStates : undefined,
+      formFields: formFields.length > 0 ? formFields : undefined
     }
 
-    // 多重保存策略
     await Promise.allSettled([
       this.stateManager.saveState(state),
       this.indexedDBManager.saveState(state),
@@ -566,20 +843,27 @@ export class PWAStateController {
     const currentUrl = window.location.href
     const urlMatches = this.isUrlExactMatch(state.url, currentUrl)
 
-    // 只有在URL完全匹配时才恢复滚动位置
-    if (state.scrollPosition && urlMatches) {
+    if (state.scrollPositions && urlMatches) {
+      StateCollector.restoreScrollPositions(state.scrollPositions)
+    } else if (state.scrollPosition && urlMatches) {
       window.scrollTo({
         top: state.scrollPosition,
         behavior: 'auto'
       })
     }
 
-    // 恢复应用特定状态 - 过滤掉不适用的状态
-    if (state.appData) {
-      this.restoreAppSpecificState(state.appData, urlMatches)
+    if (state.modalStates) {
+      StateCollector.restoreModalStates(state.modalStates)
     }
 
-    // 触发状态恢复事件
+    if (state.formFields && urlMatches) {
+      StateCollector.restoreFormFields(state.formFields)
+    }
+
+    if (state.appData) {
+      this.restoreAppSpecificState(state.appData)
+    }
+
     this.dispatchStateRestoreEvent(state)
   }
 
@@ -593,121 +877,31 @@ export class PWAStateController {
     }
   }
 
-  private setupPeriodicSave(): void {
-    // 导入后台管理器
-    import('@/utils/backgroundManager').then(({ addBackgroundTimer }) => {
-      // 使用后台管理器，延长间隔
-      addBackgroundTimer(
-        'pwa-state-save',
-        () => {
-          // 只在前台时保存状态（由后台管理器自动处理）
-          this.saveCurrentState()
-        },
-        60000, // 改为60秒，减少频率
-        {
-          runInBackground: false, // 后台时不保存
-          skipInitialRun: true
-        }
-      )
-    })
-  }
-
   private getAppSpecificState(): any {
-    // 可以在这里添加MoviePilot特定的状态
     return {
-      // 路由状态
-      routerState: this.getRouterState(),
-      // 用户界面状态
-      uiState: this.getUIState(),
-      // 表单状态
-      formState: this.getFormState()
-    }
-  }
-
-  private getRouterState(): any {
-    // 获取Vue Router状态
-    return {
-      currentRoute: window.location.pathname,
-      query: window.location.search,
-      hash: window.location.hash
-    }
-  }
-
-  private getUIState(): any {
-    // 获取UI状态
-    return {
-      sidebarOpen: document.querySelector('.v-navigation-drawer--active') !== null,
-      darkMode: document.documentElement.classList.contains('dark') || 
-                document.documentElement.getAttribute('data-theme') === 'dark'
-    }
-  }
-
-  private getFormState(): any {
-    // 获取表单状态
-    const forms = document.querySelectorAll('form')
-    const formData: Record<string, any> = {}
-    
-    forms.forEach((form, index) => {
-      const inputs = form.querySelectorAll('input, select, textarea')
-      const data: Record<string, any> = {}
-      
-      inputs.forEach((input) => {
-        const element = input as HTMLInputElement
-        if (element.name) {
-          data[element.name] = element.value
-        }
-      })
-      
-      if (Object.keys(data).length > 0) {
-        formData[`form-${index}`] = data
+      routerState: {
+        currentRoute: window.location.pathname,
+        query: window.location.search,
+        hash: window.location.hash
+      },
+      uiState: {
+        sidebarOpen: document.querySelector('.v-navigation-drawer--active') !== null,
+        darkMode: document.documentElement.getAttribute('data-theme') === 'dark'
       }
-    })
-    
-    return formData
-  }
-
-  private restoreAppSpecificState(appData: any, urlMatches: boolean = true): void {
-    // 总是恢复UI状态（如主题等）
-    if (appData.uiState) {
-      this.restoreUIState(appData.uiState)
-    }
-    
-    // 只有在URL匹配时才恢复表单状态
-    if (appData.formState && urlMatches) {
-      this.restoreFormState(appData.formState)
     }
   }
 
-  private restoreUIState(uiState: any): void {
-    // 恢复UI状态
-    if (uiState.darkMode !== undefined) {
-      // 这里可以根据实际的主题切换逻辑来恢复
-    }
-  }
-
-  private restoreFormState(formState: any): void {
-    // 恢复表单状态
-    Object.entries(formState).forEach(([formId, data]) => {
-      const formIndex = parseInt(formId.split('-')[1])
-      const form = document.querySelectorAll('form')[formIndex]
-      
-      if (form) {
-        Object.entries(data as Record<string, any>).forEach(([name, value]) => {
-          const input = form.querySelector(`[name="${name}"]`) as HTMLInputElement
-          if (input) {
-            input.value = value as string
-            // 触发change事件，以便Vue能够响应
-            input.dispatchEvent(new Event('input', { bubbles: true }))
-          }
-        })
-      }
-    })
+  private restoreAppSpecificState(appData: any): void {
+    // 基础状态恢复，可根据需要扩展
   }
 
   private dispatchStateRestoreEvent(state: PWAState): void {
-    const event = new CustomEvent('pwaStateRestored', {
+    window.dispatchEvent(new CustomEvent('pwaStateRestored', {
       detail: { state }
-    })
-    window.dispatchEvent(event)
+    }))
+  }
+
+  destroy(): void {
+    // 无需清理资源
   }
 }

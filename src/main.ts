@@ -136,17 +136,19 @@ if (pwaStateController) {
       pwaStateController.saveCurrentState()
     }
   })
+
+  // 监听页面隐藏事件，保存状态
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && pwaStateController) {
+      pwaStateController.saveCurrentState()
+    }
+  })
 }
 
 // 6. 初始化后台优化工具
-console.log('初始化后台优化工具...')
-
-// 将后台管理器绑定到全局对象（便于调试）
 if (import.meta.env.MODE === 'development') {
   ;(window as any).backgroundManager = backgroundManager
   ;(window as any).sseManagerSingleton = sseManagerSingleton
-  
-  // 添加全局调试函数
   ;(window as any).debugBackground = () => {
     console.table(backgroundManager.getTimersInfo())
     console.log('Background Status:', backgroundManager.getStatus())
@@ -155,9 +157,12 @@ if (import.meta.env.MODE === 'development') {
 
 // 页面卸载时清理后台管理器
 window.addEventListener('beforeunload', () => {
-  console.log('应用卸载，清理后台资源...')
   backgroundManager.destroy()
   sseManagerSingleton.closeAllManagers()
+  
+  if (pwaStateController) {
+    pwaStateController.destroy()
+  }
 })
 
 // 导出状态管理器供其他模块使用
