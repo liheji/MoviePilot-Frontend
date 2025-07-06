@@ -1,4 +1,4 @@
-# PWA轻量级状态管理使用指南
+# PWA状态管理使用指南
 
 ## 概述
 
@@ -254,11 +254,11 @@ if (window.pwaStateController) {
 
 ```javascript
 // 测试状态收集功能
-const { LightweightStateCollector } = await import('@/utils/pwaStateManager')
+const { StateCollector } = await import('@/utils/pwaStateManager')
 
-console.log('滚动位置:', LightweightStateCollector.collectScrollPositions())
-console.log('弹窗状态:', LightweightStateCollector.collectModalStates())
-console.log('表单字段:', LightweightStateCollector.collectFormFields())
+console.log('滚动位置:', StateCollector.collectScrollPositions())
+console.log('弹窗状态:', StateCollector.collectModalStates())
+console.log('表单字段:', StateCollector.collectFormFields())
 ```
 
 ## 性能优势

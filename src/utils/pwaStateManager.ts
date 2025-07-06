@@ -1,24 +1,21 @@
 /**
- * PWA状态管理器 - 轻量级版本
+ * PWA状态管理器
  * 用于在iOS设备上防止后台被杀时丢失状态，提供状态恢复功能
  * 只在页面隐藏时收集状态，避免实时监听影响性能
  */
 
-// 滚动位置接口
 export interface ScrollPosition {
   x: number
   y: number
-  element?: string // 元素选择器
+  element?: string
 }
 
-// 弹窗状态接口
 export interface ModalState {
   id: string
   isOpen: boolean
   data?: any
 }
 
-// 表单字段状态接口
 export interface FormFieldState {
   selector: string
   value: string | number | boolean
@@ -27,24 +24,22 @@ export interface FormFieldState {
   selectedIndex?: number
 }
 
-// 应用状态接口 - 增强版本
 export interface PWAState {
   url: string
   scrollPosition: number
-  scrollPositions: ScrollPosition[] // 多个滚动位置
+  scrollPositions: ScrollPosition[]
   orientation: number
   timestamp: number
   appData?: any
   formData?: Record<string, any>
-  formFields?: FormFieldState[] // 详细的表单字段状态
-  modalStates?: ModalState[] // 弹窗状态
+  formFields?: FormFieldState[]
+  modalStates?: ModalState[]
   userSelections?: {
     selectedItems: string[]
     activeTab?: string
   }
 }
 
-// 当前上下文接口
 export interface PWAContext {
   url: string
   orientation: number
@@ -52,28 +47,23 @@ export interface PWAContext {
 }
 
 /**
- * 轻量级状态收集器
+ * 状态收集器
  * 只在需要时收集状态，不进行实时监听
  */
-export class LightweightStateCollector {
+export class StateCollector {
   
-  /**
-   * 收集当前页面的滚动位置
-   */
   static collectScrollPositions(): ScrollPosition[] {
     const positions: ScrollPosition[] = []
     
-    // 主窗口滚动
     positions.push({
       x: window.scrollX,
       y: window.scrollY,
       element: 'window'
     })
     
-    // 常见的滚动容器
     const scrollContainers = [
       '.v-main__wrap',
-      '.v-card-text',
+      '.v-card-text', 
       '.v-sheet',
       '.perfect-scrollbar',
       '[data-simplebar]',
@@ -97,15 +87,12 @@ export class LightweightStateCollector {
     return positions
   }
   
-  /**
-   * 收集当前页面的弹窗状态
-   */
   static collectModalStates(): ModalState[] {
     const states: ModalState[] = []
     
     const modalSelectors = [
       '.v-dialog',
-      '.v-menu',
+      '.v-menu', 
       '.v-overlay',
       '.v-tooltip',
       '.v-snackbar',
@@ -121,12 +108,11 @@ export class LightweightStateCollector {
       const elements = document.querySelectorAll(selector)
       elements.forEach(element => {
         if (this.isModalOpen(element)) {
-          const state: ModalState = {
+          states.push({
             id: this.getModalId(element),
             isOpen: true,
             data: this.extractModalData(element)
-          }
-          states.push(state)
+          })
         }
       })
     })
@@ -134,9 +120,6 @@ export class LightweightStateCollector {
     return states
   }
   
-  /**
-   * 收集当前页面的表单字段状态
-   */
   static collectFormFields(): FormFieldState[] {
     const fields: FormFieldState[] = []
     
@@ -144,31 +127,25 @@ export class LightweightStateCollector {
     formElements.forEach(element => {
       const inputElement = element as HTMLInputElement
       
-      // 跳过密码字段和隐藏字段
       if (inputElement.type === 'password' || inputElement.type === 'hidden') {
         return
       }
       
-      // 只收集有值的字段
       if (inputElement.value || inputElement.checked) {
-        const fieldState: FormFieldState = {
+        fields.push({
           selector: this.getFieldSelector(inputElement),
           value: inputElement.value,
           type: inputElement.type,
           checked: inputElement.checked,
           selectedIndex: inputElement.tagName === 'SELECT' ? 
             (inputElement as unknown as HTMLSelectElement).selectedIndex : undefined
-        }
-        fields.push(fieldState)
+        })
       }
     })
     
     return fields
   }
   
-  /**
-   * 恢复滚动位置
-   */
   static restoreScrollPositions(positions: ScrollPosition[]): void {
     positions.forEach(pos => {
       if (pos.element === 'window') {
@@ -182,21 +159,14 @@ export class LightweightStateCollector {
     })
   }
   
-  /**
-   * 恢复弹窗状态
-   */
   static restoreModalStates(states: ModalState[]): void {
     states.forEach(state => {
-      const event = new CustomEvent('restoreModalState', {
+      window.dispatchEvent(new CustomEvent('restoreModalState', {
         detail: state
-      })
-      window.dispatchEvent(event)
+      }))
     })
   }
   
-  /**
-   * 恢复表单字段
-   */
   static restoreFormFields(fields: FormFieldState[]): void {
     fields.forEach(field => {
       const elements = document.querySelectorAll(field.selector)
@@ -214,17 +184,14 @@ export class LightweightStateCollector {
           inputElement.value = field.value as string
         }
         
-        // 触发事件以便Vue能够响应
         inputElement.dispatchEvent(new Event('input', { bubbles: true }))
         inputElement.dispatchEvent(new Event('change', { bubbles: true }))
       })
     })
   }
   
-  // 辅助方法
   private static isModalOpen(element: Element): boolean {
     const computedStyle = window.getComputedStyle(element)
-    
     return computedStyle.display !== 'none' &&
            computedStyle.visibility !== 'hidden' &&
            computedStyle.opacity !== '0' &&
@@ -242,7 +209,6 @@ export class LightweightStateCollector {
   private static extractModalData(element: Element): any {
     const data: any = {}
     
-    // 提取表单数据
     const inputs = element.querySelectorAll('input, select, textarea')
     if (inputs.length > 0) {
       data.formData = {}
@@ -254,7 +220,6 @@ export class LightweightStateCollector {
       })
     }
     
-    // 提取滚动位置
     const scrollableElements = element.querySelectorAll('[class*="overflow"], .v-card-text')
     if (scrollableElements.length > 0) {
       data.scrollPositions = Array.from(scrollableElements).map((el, index) => ({
@@ -271,7 +236,6 @@ export class LightweightStateCollector {
     if (element.id) return `#${element.id}`
     if (element.name) return `[name="${element.name}"]`
     
-    // 简化的选择器生成
     const path = []
     let current = element as Element
     
@@ -294,7 +258,6 @@ export class LightweightStateCollector {
       path.unshift(selector)
       current = current.parentNode as Element
       
-      // 限制深度，避免选择器过长
       if (path.length >= 3) break
     }
     
@@ -729,9 +692,6 @@ export class VisibilityStateManager {
   }
 }
 
-/**
- * 完整的PWA状态管理器 - 轻量级版本
- */
 export class PWAStateController {
   private stateManager: PWAStateManager
   private indexedDBManager: PWAIndexedDBManager
@@ -749,7 +709,6 @@ export class PWAStateController {
     this.visibilityManager = new VisibilityStateManager(this.stateManager)
     this.restoreDecision = new StateRestoreDecision()
     
-    // 创建状态恢复Promise
     this.stateRestorePromise = new Promise((resolve) => {
       this.stateRestoreResolve = resolve
     })
@@ -757,29 +716,17 @@ export class PWAStateController {
     this.init()
   }
 
-  /**
-   * 等待状态恢复完成
-   */
   async waitForStateRestore(): Promise<void> {
     return this.stateRestorePromise || Promise.resolve()
   }
 
-  /**
-   * 获取当前是否正在恢复状态
-   */
   get isRestoringState(): boolean {
     return this.isRestoring
   }
 
   private async init(): Promise<void> {
-    // 清理过期状态
     this.stateManager.clearExpiredState()
-    
-    // 检查是否需要恢复状态
     await this.checkAndRestoreState()
-    
-    // 设置定期保存
-    this.setupPeriodicSave()
   }
 
   private async checkAndRestoreState(): Promise<void> {
@@ -822,10 +769,9 @@ export class PWAStateController {
   }
 
   async saveCurrentState(): Promise<void> {
-    // 使用轻量级收集器收集当前状态
-    const scrollPositions = LightweightStateCollector.collectScrollPositions()
-    const modalStates = LightweightStateCollector.collectModalStates()
-    const formFields = LightweightStateCollector.collectFormFields()
+    const scrollPositions = StateCollector.collectScrollPositions()
+    const modalStates = StateCollector.collectModalStates()
+    const formFields = StateCollector.collectFormFields()
 
     const state: PWAState = {
       url: window.location.href,
@@ -838,7 +784,6 @@ export class PWAStateController {
       formFields: formFields.length > 0 ? formFields : undefined
     }
 
-    // 多重保存策略
     await Promise.allSettled([
       this.stateManager.saveState(state),
       this.indexedDBManager.saveState(state),
@@ -851,33 +796,27 @@ export class PWAStateController {
     const currentUrl = window.location.href
     const urlMatches = this.isUrlExactMatch(state.url, currentUrl)
 
-    // 恢复滚动位置
     if (state.scrollPositions && urlMatches) {
-      LightweightStateCollector.restoreScrollPositions(state.scrollPositions)
+      StateCollector.restoreScrollPositions(state.scrollPositions)
     } else if (state.scrollPosition && urlMatches) {
-      // 向后兼容：如果没有新的滚动位置数据，使用旧的方式
       window.scrollTo({
         top: state.scrollPosition,
         behavior: 'auto'
       })
     }
 
-    // 恢复弹窗状态
     if (state.modalStates) {
-      LightweightStateCollector.restoreModalStates(state.modalStates)
+      StateCollector.restoreModalStates(state.modalStates)
     }
 
-    // 恢复表单字段
     if (state.formFields && urlMatches) {
-      LightweightStateCollector.restoreFormFields(state.formFields)
+      StateCollector.restoreFormFields(state.formFields)
     }
 
-    // 恢复应用特定状态 - 过滤掉不适用的状态
     if (state.appData) {
-      this.restoreAppSpecificState(state.appData, urlMatches)
+      this.restoreAppSpecificState(state.appData)
     }
 
-    // 触发状态恢复事件
     this.dispatchStateRestoreEvent(state)
   }
 
@@ -891,114 +830,31 @@ export class PWAStateController {
     }
   }
 
-  private setupPeriodicSave(): void {
-    // 轻量级版本不需要定时保存
-    // 只在页面隐藏时保存状态
-  }
-
   private getAppSpecificState(): any {
-    // 可以在这里添加MoviePilot特定的状态
     return {
-      // 路由状态
-      routerState: this.getRouterState(),
-      // 用户界面状态
-      uiState: this.getUIState(),
-      // 表单状态
-      formState: this.getFormState()
-    }
-  }
-
-  private getRouterState(): any {
-    // 获取Vue Router状态
-    return {
-      currentRoute: window.location.pathname,
-      query: window.location.search,
-      hash: window.location.hash
-    }
-  }
-
-  private getUIState(): any {
-    // 获取UI状态
-    return {
-      sidebarOpen: document.querySelector('.v-navigation-drawer--active') !== null,
-      darkMode: document.documentElement.classList.contains('dark') || 
-                document.documentElement.getAttribute('data-theme') === 'dark'
-    }
-  }
-
-  private getFormState(): any {
-    // 获取表单状态
-    const forms = document.querySelectorAll('form')
-    const formData: Record<string, any> = {}
-    
-    forms.forEach((form, index) => {
-      const inputs = form.querySelectorAll('input, select, textarea')
-      const data: Record<string, any> = {}
-      
-      inputs.forEach((input) => {
-        const element = input as HTMLInputElement
-        if (element.name) {
-          data[element.name] = element.value
-        }
-      })
-      
-      if (Object.keys(data).length > 0) {
-        formData[`form-${index}`] = data
+      routerState: {
+        currentRoute: window.location.pathname,
+        query: window.location.search,
+        hash: window.location.hash
+      },
+      uiState: {
+        sidebarOpen: document.querySelector('.v-navigation-drawer--active') !== null,
+        darkMode: document.documentElement.getAttribute('data-theme') === 'dark'
       }
-    })
-    
-    return formData
-  }
-
-  private restoreAppSpecificState(appData: any, urlMatches: boolean = true): void {
-    // 总是恢复UI状态（如主题等）
-    if (appData.uiState) {
-      this.restoreUIState(appData.uiState)
-    }
-    
-    // 只有在URL匹配时才恢复表单状态
-    if (appData.formState && urlMatches) {
-      this.restoreFormState(appData.formState)
     }
   }
 
-  private restoreUIState(uiState: any): void {
-    // 恢复UI状态
-    if (uiState.darkMode !== undefined) {
-      // 这里可以根据实际的主题切换逻辑来恢复
-    }
-  }
-
-  private restoreFormState(formState: any): void {
-    // 恢复表单状态
-    Object.entries(formState).forEach(([formId, data]) => {
-      const formIndex = parseInt(formId.split('-')[1])
-      const form = document.querySelectorAll('form')[formIndex]
-      
-      if (form) {
-        Object.entries(data as Record<string, any>).forEach(([name, value]) => {
-          const input = form.querySelector(`[name="${name}"]`) as HTMLInputElement
-          if (input) {
-            input.value = value as string
-            // 触发change事件，以便Vue能够响应
-            input.dispatchEvent(new Event('input', { bubbles: true }))
-          }
-        })
-      }
-    })
+  private restoreAppSpecificState(appData: any): void {
+    // 基础状态恢复，可根据需要扩展
   }
 
   private dispatchStateRestoreEvent(state: PWAState): void {
-    const event = new CustomEvent('pwaStateRestored', {
+    window.dispatchEvent(new CustomEvent('pwaStateRestored', {
       detail: { state }
-    })
-    window.dispatchEvent(event)
+    }))
   }
 
-  /**
-   * 销毁管理器并清理资源
-   */
   destroy(): void {
-    // 轻量级版本无需清理资源
+    // 无需清理资源
   }
 }
