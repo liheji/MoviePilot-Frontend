@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTabStateRestore } from '@/composables/useStateRestore'
+
 const props = defineProps({
   modelValue: {
     type: String,
@@ -8,22 +10,51 @@ const props = defineProps({
     type: Array as PropType<{ title: string; icon: string; tab: string }[]>,
     default: () => [],
   },
+  // 新增：是否启用PWA状态恢复
+  enableStateRestore: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const currentValue = ref(props.modelValue)
+// 集成PWA状态恢复功能
+const pwaTabState = props.enableStateRestore ? useTabStateRestore(props.modelValue) : null
 
+// 使用PWA状态恢复的activeTab或本地状态
+const currentValue = ref(pwaTabState?.activeTab.value || props.modelValue)
+
+// 监听currentValue变化，同时更新PWA状态和父组件
 watch(currentValue, newVal => {
   emit('update:modelValue', newVal)
+  // 如果启用了PWA状态恢复，同步更新PWA状态
+  if (pwaTabState && newVal) {
+    pwaTabState.activeTab.value = newVal
+  }
 })
 
+// 监听父组件的modelValue变化
 watch(
   () => props.modelValue,
   value => {
     currentValue.value = value
+    // 同步到PWA状态
+    if (pwaTabState && value) {
+      pwaTabState.activeTab.value = value
+    }
   },
 )
+
+// 如果启用了PWA状态恢复，监听PWA状态变化
+if (pwaTabState) {
+  watch(pwaTabState.activeTab, newTab => {
+    if (newTab && newTab !== currentValue.value) {
+      currentValue.value = newTab
+      emit('update:modelValue', newTab)
+    }
+  })
+}
 
 // Ref for the tabs container
 const tabsContainerRef = ref<HTMLElement | null>(null)

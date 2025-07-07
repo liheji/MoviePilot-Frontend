@@ -43,39 +43,17 @@ import HeaderTab from './layouts/components/HeaderTab.vue'
 // 7. 样式文件 - 合并为单一导入
 import '@/styles/main.scss'
 
-// 8. PWA状态管理和后台优化
-import { PWAStateController } from '@/utils/pwaStateManager'
+// 8. 状态恢复插件
+import stateRestorePlugin from '@/plugins/stateRestore'
+
+// 9. 后台优化工具
 import { backgroundManager } from '@/utils/backgroundManager'
 import { sseManagerSingleton } from '@/utils/sseManager'
-import { checkPWAStatus } from '@/@core/utils/navigator'
-
-// PWA状态管理器初始化函数
-const initializePWABeforeMount = async () => {
-  // 使用统一的PWA检测方法
-  const pwaStatus = await checkPWAStatus()
-
-  if (pwaStatus.isPWAEnvironment) {
-    const pwaStateController = new PWAStateController()
-
-    // 等待状态恢复完成
-    await pwaStateController.waitForStateRestore()
-
-    // 将状态管理器绑定到全局对象
-    ;(window as any).pwaStateController = pwaStateController
-
-    return pwaStateController
-  }
-
-  return null
-}
-
-// 在创建Vue应用前初始化PWA状态管理器
-const pwaStateController = await initializePWABeforeMount()
 
 // 创建Vue实例
 const app = createApp(App)
 
-// 注册pinia
+// 1. 注册pinia
 app.use(pinia)
 
 // 异步加载远程组件（不阻塞启动）
@@ -83,13 +61,16 @@ loadRemoteComponents().catch(error => {
   console.error('Failed to load remote components', error)
 })
 
-// 1. 注册 UI 框架
+// 2. 注册 UI 框架
 app.use(vuetify)
 
-// 2. 注册路由
+// 3. 注册路由
 app.use(router)
 
-// 3. 注册全局组件
+// 4. 注册状态恢复插件
+app.use(stateRestorePlugin)
+
+// 5. 注册全局组件
 app
   .component('VAceEditor', VAceEditor)
   .component('VApexChart', VueApexCharts)
@@ -108,7 +89,7 @@ app
   .component('VHeaderTab', HeaderTab)
   .component('VPageContentTitle', PageContentTitle)
 
-// 4. 注册其他插件
+// 6. 注册其他插件
 app
   .use(PerfectScrollbarPlugin)
   .use(Toast, {
@@ -119,49 +100,8 @@ app
   .use(i18n)
   .mount('#app')
 
-// 5. 添加状态恢复事件监听器
-if (pwaStateController) {
-  // 监听状态恢复事件
-  window.addEventListener('pwaStateRestored', (event: Event) => {
-    // 可以在这里添加状态恢复后的处理逻辑
-    // 例如：通知Vue组件状态已恢复
-    app.config.globalProperties.$pwaStateRestored = true
-  })
-
-  // 监听应用即将卸载事件，保存状态
-  window.addEventListener('beforeunload', () => {
-    if (pwaStateController) {
-      pwaStateController.saveCurrentState()
-    }
-  })
-
-  // 监听页面隐藏事件，保存状态
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden && pwaStateController) {
-      pwaStateController.saveCurrentState()
-    }
-  })
-}
-
-// 6. 初始化后台优化工具
-if (import.meta.env.MODE === 'development') {
-  ;(window as any).backgroundManager = backgroundManager
-  ;(window as any).sseManagerSingleton = sseManagerSingleton
-  ;(window as any).debugBackground = () => {
-    console.table(backgroundManager.getTimersInfo())
-    console.log('Background Status:', backgroundManager.getStatus())
-  }
-}
-
 // 页面卸载时清理后台管理器
 window.addEventListener('beforeunload', () => {
   backgroundManager.destroy()
   sseManagerSingleton.closeAllManagers()
-
-  if (pwaStateController) {
-    pwaStateController.destroy()
-  }
 })
-
-// 导出状态管理器供其他模块使用
-export { pwaStateController }

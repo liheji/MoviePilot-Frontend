@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import { useTabStateRestore } from '@/composables/useStateRestore'
 
 // 动态标签页相关类型
 interface DynamicHeaderTabButton {
@@ -38,7 +39,17 @@ export function useDynamicHeaderTab() {
     items: DynamicHeaderTabItem[] | ComputedRef<DynamicHeaderTabItem[]> | Ref<DynamicHeaderTabItem[]>
     modelValue: Ref<string>
     appendButtons?: DynamicHeaderTabButton[]
+    enableStateRestore?: boolean
   }) => {
+    // 集成PWA状态恢复功能
+    const enablePWARestore = config.enableStateRestore !== false // 默认启用
+    const pwaTabState = enablePWARestore ? useTabStateRestore(config.modelValue.value) : null
+
+    // 如果启用了PWA状态恢复，先尝试恢复状态
+    if (pwaTabState && pwaTabState.activeTab.value) {
+      config.modelValue.value = pwaTabState.activeTab.value
+    }
+
     const tabConfig: DynamicHeaderTabConfig = {
       items: Array.isArray(config.items) ? config.items : config.items.value,
       modelValue: config.modelValue.value,
@@ -46,12 +57,34 @@ export function useDynamicHeaderTab() {
       routePath: route.path,
       onUpdateModelValue: (value: string) => {
         config.modelValue.value = value
+        // 同步到PWA状态
+        if (pwaTabState && value) {
+          pwaTabState.activeTab.value = value
+        }
       },
+    }
+
+    // 如果启用了PWA状态恢复，监听PWA状态变化并同步到modelValue
+    if (pwaTabState) {
+      watch(pwaTabState.activeTab, newTab => {
+        if (newTab && newTab !== config.modelValue.value) {
+          config.modelValue.value = newTab
+          // 更新tabConfig并重新注册
+          tabConfig.modelValue = newTab
+          if (registerDynamicHeaderTab) {
+            registerDynamicHeaderTab(tabConfig)
+          }
+        }
+      })
     }
 
     // 监听modelValue变化并更新配置
     watch(config.modelValue, newValue => {
       tabConfig.modelValue = newValue
+      // 同步到PWA状态
+      if (pwaTabState && newValue) {
+        pwaTabState.activeTab.value = newValue
+      }
       // 重新注册以更新值
       if (registerDynamicHeaderTab) {
         registerDynamicHeaderTab(tabConfig)
