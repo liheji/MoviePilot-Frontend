@@ -1,28 +1,8 @@
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 
 // Service Worker 类型声明
-declare let self: ServiceWorkerGlobalScope
-
-// 扩展ServiceWorkerRegistration类型以支持sync
-interface SyncManager {
-  register(tag: string): Promise<void>
-}
-
-interface ServiceWorkerRegistration {
-  readonly sync: SyncManager
-}
-
-// 扩展ExtendableEvent以支持sync事件
-interface SyncEvent extends ExtendableEvent {
-  readonly tag: string
-  readonly lastChance: boolean
-}
-
-// 扩展ServiceWorkerGlobalScope事件映射
-declare global {
-  interface ServiceWorkerGlobalScopeEventMap {
-    'sync': SyncEvent
-  }
+declare let self: ServiceWorkerGlobalScope & {
+  __WB_MANIFEST: Array<{ url: string; revision?: string }>
 }
 
 // 缓存版本控制
