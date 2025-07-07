@@ -57,19 +57,61 @@ const statusIcon = computed(() => {
 const colorTheme = computed(() => {
   return props.type === 'online' ? 'success' : 'error'
 })
+
+// 动画时长
+const ENTER_DURATION = 600
+const LEAVE_DURATION = 400
+
+// 进入动画
+function onEnter(el: HTMLElement, done: () => void) {
+  // 初始状态
+  el.style.opacity = '0'
+  el.style.transform = 'scale(0.9)'
+  el.style.filter = 'blur(10px)'
+  
+  // 强制重绘
+  el.offsetHeight
+  
+  // 应用过渡
+  el.style.transition = `all ${ENTER_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1)`
+  
+  // 目标状态
+  requestAnimationFrame(() => {
+    el.style.opacity = '1'
+    el.style.transform = 'scale(1)'
+    el.style.filter = 'blur(0)'
+  })
+  
+  // 动画完成
+  setTimeout(done, ENTER_DURATION)
+}
+
+// 离开动画
+function onLeave(el: HTMLElement, done: () => void) {
+  // 应用过渡
+  el.style.transition = `all ${LEAVE_DURATION}ms cubic-bezier(0.4, 0, 1, 1)`
+  
+  // 目标状态
+  requestAnimationFrame(() => {
+    el.style.opacity = '0'
+    el.style.transform = 'scale(1.1)'
+    el.style.filter = 'blur(20px)'
+  })
+  
+  // 动画完成
+  setTimeout(done, LEAVE_DURATION)
+}
 </script>
 
 <template>
-  <Transition
-    enter-active-class="transition-all duration-500"
-    enter-from-class="opacity-0 scale-95"
-    enter-to-class="opacity-100 scale-100"
-    leave-active-class="transition-all duration-300"
-    leave-from-class="opacity-100 scale-100"
-    leave-to-class="opacity-0 scale-95"
-  >
-    <div v-if="shouldShow" class="offline-page">
-      <div class="offline-container">
+  <Teleport to="body">
+    <Transition
+      :css="false"
+      @enter="onEnter"
+      @leave="onLeave"
+    >
+            <div v-if="shouldShow" class="offline-page" ref="offlinePage">
+        <div class="offline-container" :class="{ 'container-animate': shouldShow }">
         <!-- 状态图标 -->
         <div class="status-icon-wrapper">
           <div class="status-icon-bg">
@@ -129,7 +171,8 @@ const colorTheme = computed(() => {
         </div>
       </div>
     </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -143,6 +186,7 @@ const colorTheme = computed(() => {
   backdrop-filter: blur(10px);
   background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgb(var(--v-theme-surface-variant)) 100%);
   inset: 0;
+  will-change: transform, opacity, filter;
 }
 
 .offline-container {
@@ -153,6 +197,15 @@ const colorTheme = computed(() => {
   inline-size: 100%;
   max-inline-size: 500px;
   text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.offline-page .offline-container.container-animate {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
 }
 
 .status-icon-wrapper {
@@ -172,6 +225,10 @@ const colorTheme = computed(() => {
   margin-inline: auto;
 }
 
+.status-icon-bg {
+  animation: iconPulse 3s ease-in-out infinite;
+}
+
 .status-icon-bg::before {
   position: absolute;
   z-index: -1;
@@ -180,6 +237,27 @@ const colorTheme = computed(() => {
   content: '';
   inset: -4px;
   opacity: 0.1;
+  animation: iconGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes iconGlow {
+  0% {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(1.1);
+  }
 }
 
 .content-section {

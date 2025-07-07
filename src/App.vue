@@ -10,6 +10,7 @@ import { checkAndEmitUnreadMessages } from '@/utils/badge'
 import { preloadImage } from './@core/utils/image'
 import { globalLoadingStateManager } from '@/utils/loadingStateManager'
 import { addBackgroundTimer, removeBackgroundTimer } from '@/utils/backgroundManager'
+import PWAInstallPrompt from '@/components/PWAInstallPrompt.vue'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -254,6 +255,8 @@ onUnmounted(() => {
     <!-- 页面内容 -->
     <VApp :class="{ 'transparent-app': isTransparentTheme }">
       <RouterView />
+      <!-- PWA安装提示 -->
+      <PWAInstallPrompt />
     </VApp>
   </div>
 </template>
