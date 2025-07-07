@@ -78,9 +78,17 @@ export function usePWAInstall() {
     installPrompt.value = null
   }
 
-  // 检查是否支持PWA安装
+  // 检查是否支持 PWA 安装
+  // 使用 "onbeforeinstallprompt" 事件的存在性来判断，而不是检查
+  // BeforeInstallPromptEvent 构造函数（在运行时并不存在）。
+  // 对于不触发 beforeinstallprompt 的 iOS Safari，同样允许通过
+  // "添加到主屏幕" 的方式安装，因此这里也认为是支持的。
   const isPWASupported = computed(() => {
-    return 'serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window
+    const hasServiceWorker = 'serviceWorker' in navigator
+    const supportsInstallPromptEvent = 'onbeforeinstallprompt' in window
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+
+    return hasServiceWorker && (supportsInstallPromptEvent || isIOS)
   })
 
   // 获取安装指南（针对不同平台）
