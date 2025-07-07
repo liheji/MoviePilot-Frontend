@@ -31,13 +31,8 @@ export interface PWAState {
   orientation: number
   timestamp: number
   appData?: any
-  formData?: Record<string, any>
   formFields?: FormFieldState[]
   modalStates?: ModalState[]
-  userSelections?: {
-    selectedItems: string[]
-    activeTab?: string
-  }
 }
 
 export interface PWAContext {
@@ -343,7 +338,7 @@ export class PWAStateManager {
         JSON.stringify({
           scrollPosition: state.scrollPosition,
           activeTab: state.appData?.activeTab,
-          formData: state.formData,
+          formData: state.appData?.formData,
         }),
       )
     } catch (error) {
@@ -578,194 +573,10 @@ export class StateRestoreDecision {
   }
 }
 
-/**
- * 页面可见性状态管理器
- */
-export class VisibilityStateManager {
-  private stateManager: PWAStateManager
-  private blurTimer: number | null = null
-  private isRestoring = false
-  private restorePromise: Promise<void> | null = null
-
-  constructor(stateManager: PWAStateManager) {
-    this.stateManager = stateManager
-    this.setupVisibilityListener()
-  }
-
-  private setupVisibilityListener(): void {
-    // 监听页面可见性变化
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.handlePageHidden()
-      } else {
-        this.handlePageVisible()
-      }
-    })
-
-    // 监听页面卸载
-    window.addEventListener('beforeunload', () => {
-      this.handlePageUnload()
-    })
-
-    // 监听页面焦点变化
-    window.addEventListener('blur', () => {
-      this.handlePageBlur()
-    })
-
-    window.addEventListener('focus', () => {
-      this.handlePageFocus()
-    })
-  }
-
-  private handlePageHidden(): void {
-    const currentState = this.getCurrentAppState()
-    this.stateManager.saveState(currentState)
-  }
-
-  private handlePageVisible(): void {
-    if (this.isRestoring) return
-
-    this.isRestoring = true
-    this.restorePromise = this.performStateRestore()
-  }
-
-  private async performStateRestore(): Promise<void> {
-    try {
-      const restoredState = this.stateManager.restoreState()
-      if (restoredState) {
-        await this.restoreAppState(restoredState)
-      }
-    } catch (error) {
-      // 静默处理错误
-    } finally {
-      this.isRestoring = false
-    }
-  }
-
-  private handlePageUnload(): void {
-    const currentState = this.getCurrentAppState()
-    this.stateManager.saveState(currentState)
-  }
-
-  private handlePageBlur(): void {
-    if (this.blurTimer) clearTimeout(this.blurTimer)
-    this.blurTimer = window.setTimeout(() => {
-      const currentState = this.getCurrentAppState()
-      this.stateManager.saveState(currentState)
-    }, 1000)
-  }
-
-  private handlePageFocus(): void {
-    if (this.blurTimer) {
-      clearTimeout(this.blurTimer)
-      this.blurTimer = null
-    }
-  }
-
-  private getCurrentAppState(): PWAState {
-    return {
-      url: window.location.href,
-      scrollPosition: window.scrollY,
-      scrollPositions: [{ x: window.scrollX, y: window.scrollY, element: 'window' }],
-      orientation: window.orientation || 0,
-      timestamp: Date.now(),
-      appData: this.getAppSpecificState(),
-    }
-  }
-
-  private async restoreAppState(state: PWAState): Promise<void> {
-    // 立即恢复状态，无需延迟
-    if (state.scrollPosition) {
-      window.scrollTo(0, state.scrollPosition)
-    }
-    if (state.appData) {
-      this.restoreAppSpecificState(state.appData)
-    }
-
-    // 触发状态恢复完成事件
-    window.dispatchEvent(
-      new CustomEvent('pwaStateRestored', {
-        detail: { state },
-      }),
-    )
-  }
-
-  private getAppSpecificState(): any {
-    // 获取应用特定状态
-    return {
-      formData: this.getFormData(),
-      userSelections: this.getUserSelections(),
-    }
-  }
-
-  private restoreAppSpecificState(appData: any): void {
-    if (appData.formData) {
-      this.restoreFormData(appData.formData)
-    }
-    if (appData.userSelections) {
-      this.restoreUserSelections(appData.userSelections)
-    }
-  }
-
-  private getFormData(): Record<string, any> {
-    const forms = document.querySelectorAll('form')
-    const formData: Record<string, any> = {}
-
-    forms.forEach((form, index) => {
-      const data = new FormData(form)
-      formData[`form-${index}`] = Object.fromEntries(data)
-    })
-
-    return formData
-  }
-
-  private restoreFormData(formData: Record<string, any>): void {
-    Object.entries(formData).forEach(([formId, data]) => {
-      const formIndex = parseInt(formId.split('-')[1])
-      const form = document.querySelectorAll('form')[formIndex]
-
-      if (form) {
-        Object.entries(data).forEach(([name, value]) => {
-          const input = form.querySelector(`[name="${name}"]`) as HTMLInputElement
-          if (input) {
-            input.value = value as string
-          }
-        })
-      }
-    })
-  }
-
-  private getUserSelections(): any {
-    return {
-      selectedItems: Array.from(document.querySelectorAll('.selected')).map(el => el.id),
-      activeTab: document.querySelector('.tab.active')?.id,
-    }
-  }
-
-  private restoreUserSelections(selections: any): void {
-    if (selections.selectedItems) {
-      selections.selectedItems.forEach((id: string) => {
-        const element = document.getElementById(id)
-        if (element) {
-          element.classList.add('selected')
-        }
-      })
-    }
-
-    if (selections.activeTab) {
-      const tab = document.getElementById(selections.activeTab)
-      if (tab) {
-        tab.classList.add('active')
-      }
-    }
-  }
-}
-
 export class PWAStateController {
   private stateManager: PWAStateManager
   private indexedDBManager: PWAIndexedDBManager
   private swStateSync: ServiceWorkerStateSync
-  private visibilityManager: VisibilityStateManager
   private restoreDecision: StateRestoreDecision
   private stateRestorePromise: Promise<void> | null = null
   private stateRestoreResolve: (() => void) | null = null
@@ -775,7 +586,6 @@ export class PWAStateController {
     this.stateManager = new PWAStateManager()
     this.indexedDBManager = new PWAIndexedDBManager()
     this.swStateSync = new ServiceWorkerStateSync()
-    this.visibilityManager = new VisibilityStateManager(this.stateManager)
     this.restoreDecision = new StateRestoreDecision()
 
     this.stateRestorePromise = new Promise(resolve => {
@@ -787,10 +597,6 @@ export class PWAStateController {
 
   async waitForStateRestore(): Promise<void> {
     return this.stateRestorePromise || Promise.resolve()
-  }
-
-  get isRestoringState(): boolean {
-    return this.isRestoring
   }
 
   private async init(): Promise<void> {
