@@ -86,7 +86,7 @@ export function usePWAInstall() {
   const isPWASupported = computed(() => {
     const hasServiceWorker = 'serviceWorker' in navigator
     const supportsInstallPromptEvent = 'onbeforeinstallprompt' in window
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
 
     return hasServiceWorker && (supportsInstallPromptEvent || isIOS)
   })
