@@ -42,19 +42,27 @@ async function saveStateToCache(request: Request): Promise<Response> {
   try {
     const state = await request.json()
     const cache = await caches.open(STATE_CACHE_NAME)
-    
-    await cache.put(STATE_ENDPOINT, new Response(JSON.stringify({
-      ...state,
-      timestamp: Date.now()
-    })))
-    
+
+    await cache.put(
+      STATE_ENDPOINT,
+      new Response(
+        JSON.stringify({
+          ...state,
+          timestamp: Date.now(),
+        }),
+      ),
+    )
+
     return new Response(JSON.stringify({ success: true }))
   } catch (error) {
     console.error('Failed to save state to cache:', error)
-    return new Response(JSON.stringify({ success: false, error: error instanceof Error ? error.message : String(error) }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({ success: false, error: error instanceof Error ? error.message : String(error) }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    )
   }
 }
 
@@ -63,22 +71,22 @@ async function getStateFromCache(): Promise<Response> {
   try {
     const cache = await caches.open(STATE_CACHE_NAME)
     const response = await cache.match(STATE_ENDPOINT)
-    
+
     if (response) {
       const state = await response.json()
       return new Response(JSON.stringify(state), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       })
     }
-    
+
     return new Response(JSON.stringify({}), {
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     })
   } catch (error) {
     console.error('Failed to get state from cache:', error)
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     })
   }
 }
@@ -127,9 +135,9 @@ async function updateBadge(count: number) {
   if ('setAppBadge' in navigator) {
     try {
       if (count > 0) {
-        await navigator.setAppBadge(count)
+        await navigator.setAppBadge!(count)
       } else {
-        await navigator.clearAppBadge()
+        await navigator.clearAppBadge!()
       }
     } catch (error) {
       console.error('Failed to update app badge:', error)
@@ -141,7 +149,7 @@ async function updateBadge(count: number) {
 async function clearBadge() {
   if ('clearAppBadge' in navigator) {
     try {
-      await navigator.clearAppBadge()
+      await navigator.clearAppBadge!()
       await setStoredUnreadCount(0)
     } catch (error) {
       console.error('Failed to clear app badge:', error)
@@ -157,18 +165,17 @@ self.addEventListener('install', event => {
       try {
         const cache = await caches.open(STATE_CACHE_NAME)
         const existingState = await cache.match(STATE_ENDPOINT)
-        
+
         if (existingState) {
-          // 预热状态数据
-          const state = await existingState.json()
+          // 预热状态数据（无需处理，仅确保缓存可用）
         }
       } catch (error) {
         // 静默处理错误
       }
-      
+
       // 强制等待中的Service Worker立即成为活动的Service Worker
       self.skipWaiting()
-    })()
+    })(),
   )
 })
 
@@ -180,7 +187,7 @@ self.addEventListener('activate', event => {
       if ('navigationPreload' in self.registration) {
         await self.registration.navigationPreload.enable()
       }
-      
+
       // 清理旧版本的缓存
       const cacheNames = await caches.keys()
       await Promise.all(
@@ -188,7 +195,7 @@ self.addEventListener('activate', event => {
           if (cacheName.includes('old-') || cacheName.includes('deprecated-')) {
             return caches.delete(cacheName)
           }
-        })
+        }),
       )
     })(),
   )
@@ -199,7 +206,7 @@ self.addEventListener('activate', event => {
 // 处理API请求，当离线时发送消息到客户端
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url)
-  
+
   // 处理PWA状态管理请求
   if (url.pathname === STATE_ENDPOINT) {
     if (event.request.method === 'POST') {
@@ -209,7 +216,7 @@ self.addEventListener('fetch', event => {
     }
     return
   }
-  
+
   if (event.request.url.includes('/api/v1/') && event.request.method === 'GET') {
     event.respondWith(
       (async () => {
@@ -283,9 +290,9 @@ self.addEventListener('push', function (event) {
         await Promise.all([self.registration.showNotification(payload.title, content), updateBadge(newCount)])
       })(),
     )
-      } catch (e) {
-      // 静默处理错误
-    }
+  } catch (e) {
+    // 静默处理错误
+  }
 })
 
 // 监听通知点击事件
@@ -300,7 +307,6 @@ self.addEventListener('notificationclick', function (event) {
 
 // 监听来自主应用的消息，用于清除徽章或更新徽章数量
 self.addEventListener('message', function (event) {
-
   if (event.data && event.data.type === 'CLEAR_BADGE') {
     // 清除徽章
     clearBadge()
@@ -333,11 +339,13 @@ self.addEventListener('message', function (event) {
   } else if (event.data && event.data.type === 'SAVE_PWA_STATE') {
     // 保存PWA状态
     const state = event.data.state || {}
-    saveStateToCache(new Request(STATE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(state)
-    }))
+    saveStateToCache(
+      new Request(STATE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(state),
+      }),
+    )
       .then(response => response.json())
       .then(result => {
         event.ports[0]?.postMessage({ success: result.success })

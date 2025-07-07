@@ -51,48 +51,47 @@ export interface PWAContext {
  * 只在需要时收集状态，不进行实时监听
  */
 export class StateCollector {
-  
   static collectScrollPositions(): ScrollPosition[] {
     const positions: ScrollPosition[] = []
-    
+
     positions.push({
       x: window.scrollX,
       y: window.scrollY,
-      element: 'window'
+      element: 'window',
     })
-    
+
     const scrollContainers = [
       '.v-main__wrap',
-      '.v-card-text', 
+      '.v-card-text',
       '.v-sheet',
       '.perfect-scrollbar',
       '[data-simplebar]',
       '.overflow-auto',
-      '.overflow-y-auto'
+      '.overflow-y-auto',
     ]
-    
+
     scrollContainers.forEach(selector => {
       const elements = document.querySelectorAll(selector)
-      elements.forEach((element) => {
+      elements.forEach(element => {
         if (element.scrollTop > 0 || element.scrollLeft > 0) {
           positions.push({
             x: element.scrollLeft,
             y: element.scrollTop,
-            element: this.generateElementSelector(element)
+            element: this.generateElementSelector(element),
           })
         }
       })
     })
-    
+
     return positions
   }
-  
+
   static collectModalStates(): ModalState[] {
     const states: ModalState[] = []
-    
+
     const modalSelectors = [
       '.v-dialog',
-      '.v-menu', 
+      '.v-menu',
       '.v-overlay',
       '.v-tooltip',
       '.v-snackbar',
@@ -101,9 +100,9 @@ export class StateCollector {
       '.drawer',
       '.v-navigation-drawer',
       '[role="dialog"]',
-      '[role="alertdialog"]'
+      '[role="alertdialog"]',
     ]
-    
+
     modalSelectors.forEach(selector => {
       const elements = document.querySelectorAll(selector)
       elements.forEach(element => {
@@ -111,41 +110,43 @@ export class StateCollector {
           states.push({
             id: this.getModalId(element),
             isOpen: true,
-            data: this.extractModalData(element)
+            data: this.extractModalData(element),
           })
         }
       })
     })
-    
+
     return states
   }
-  
+
   static collectFormFields(): FormFieldState[] {
     const fields: FormFieldState[] = []
-    
+
     const formElements = document.querySelectorAll('input, textarea, select')
     formElements.forEach(element => {
       const inputElement = element as HTMLInputElement
-      
+
       if (inputElement.type === 'password' || inputElement.type === 'hidden') {
         return
       }
-      
+
       if (inputElement.value || inputElement.checked) {
         fields.push({
           selector: this.getFieldSelector(inputElement),
           value: inputElement.value,
           type: inputElement.type,
           checked: inputElement.checked,
-          selectedIndex: inputElement.tagName === 'SELECT' ? 
-            (inputElement as unknown as HTMLSelectElement).selectedIndex : undefined
+          selectedIndex:
+            inputElement.tagName === 'SELECT'
+              ? (inputElement as unknown as HTMLSelectElement).selectedIndex
+              : undefined,
         })
       }
     })
-    
+
     return fields
   }
-  
+
   static restoreScrollPositions(positions: ScrollPosition[]): void {
     positions.forEach(pos => {
       if (pos.element === 'window') {
@@ -158,21 +159,23 @@ export class StateCollector {
       }
     })
   }
-  
+
   static restoreModalStates(states: ModalState[]): void {
     states.forEach(state => {
-      window.dispatchEvent(new CustomEvent('restoreModalState', {
-        detail: state
-      }))
+      window.dispatchEvent(
+        new CustomEvent('restoreModalState', {
+          detail: state,
+        }),
+      )
     })
   }
-  
+
   static restoreFormFields(fields: FormFieldState[]): void {
     fields.forEach(field => {
       const elements = document.querySelectorAll(field.selector)
       elements.forEach(element => {
         const inputElement = element as HTMLInputElement
-        
+
         if (field.type === 'checkbox' || field.type === 'radio') {
           inputElement.checked = field.checked || false
         } else if (field.type === 'select-one' || field.type === 'select-multiple') {
@@ -183,32 +186,36 @@ export class StateCollector {
         } else {
           inputElement.value = field.value as string
         }
-        
+
         inputElement.dispatchEvent(new Event('input', { bubbles: true }))
         inputElement.dispatchEvent(new Event('change', { bubbles: true }))
       })
     })
   }
-  
+
   private static isModalOpen(element: Element): boolean {
     const computedStyle = window.getComputedStyle(element)
-    return computedStyle.display !== 'none' &&
-           computedStyle.visibility !== 'hidden' &&
-           computedStyle.opacity !== '0' &&
-           !element.hasAttribute('hidden') &&
-           element.getAttribute('aria-hidden') !== 'true'
+    return (
+      computedStyle.display !== 'none' &&
+      computedStyle.visibility !== 'hidden' &&
+      computedStyle.opacity !== '0' &&
+      !element.hasAttribute('hidden') &&
+      element.getAttribute('aria-hidden') !== 'true'
+    )
   }
-  
+
   private static getModalId(element: Element): string {
-    return element.id || 
-           element.getAttribute('data-modal-id') ||
-           element.className.replace(/\s+/g, '-') ||
-           `modal-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    return (
+      element.id ||
+      element.getAttribute('data-modal-id') ||
+      element.className.replace(/\s+/g, '-') ||
+      `modal-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    )
   }
-  
+
   private static extractModalData(element: Element): any {
     const data: any = {}
-    
+
     const inputs = element.querySelectorAll('input, select, textarea')
     if (inputs.length > 0) {
       data.formData = {}
@@ -219,95 +226,94 @@ export class StateCollector {
         }
       })
     }
-    
+
     const scrollableElements = element.querySelectorAll('[class*="overflow"], .v-card-text')
     if (scrollableElements.length > 0) {
-      data.scrollPositions = Array.from(scrollableElements).map((el) => ({
+      data.scrollPositions = Array.from(scrollableElements).map(el => ({
         selector: this.generateElementSelector(el),
         x: el.scrollLeft,
-        y: el.scrollTop
+        y: el.scrollTop,
       }))
     }
-    
+
     return data
   }
-  
+
   private static generateElementSelector(element: Element): string {
     if (element.id) {
       return `#${element.id}`
     }
-    
+
     const path = []
     let current = element
-    
+
     while (current && current !== document.body) {
       let selector = current.tagName.toLowerCase()
-      
+
       if (current.id) {
         selector += `#${current.id}`
         path.unshift(selector)
         break
       }
-      
+
       if (current.className) {
         const classes = current.className.split(/\s+/).filter(c => c && !c.includes('v-'))
         if (classes.length > 0) {
           selector += `.${classes[0]}`
         }
       }
-      
+
       // Use nth-child instead of nth-of-type, but only when necessary
       const parent = current.parentElement
       if (parent) {
-        const siblings = Array.from(parent.children).filter(child => 
-          child.tagName === current.tagName &&
-          child.className === current.className
+        const siblings = Array.from(parent.children).filter(
+          child => child.tagName === current.tagName && child.className === current.className,
         )
-        
+
         if (siblings.length > 1) {
           const index = siblings.indexOf(current) + 1
           selector += `:nth-child(${index})`
         }
       }
-      
+
       path.unshift(selector)
       current = current.parentElement as Element
-      
+
       if (path.length >= 4) break
     }
-    
+
     return path.join(' > ')
   }
-  
+
   private static getFieldSelector(element: HTMLInputElement): string {
     if (element.id) return `#${element.id}`
     if (element.name) return `[name="${element.name}"]`
-    
+
     const path = []
     let current = element as Element
-    
+
     while (current && current !== document.body) {
       let selector = current.tagName.toLowerCase()
-      
+
       if (current.id) {
         selector += `#${current.id}`
         path.unshift(selector)
         break
       }
-      
+
       if (current.className) {
         const classes = current.className.split(/\s+/).filter(c => c)
         if (classes.length > 0) {
           selector += `.${classes[0]}`
         }
       }
-      
+
       path.unshift(selector)
       current = current.parentNode as Element
-      
+
       if (path.length >= 3) break
     }
-    
+
     return path.join(' > ')
   }
 }
@@ -323,17 +329,23 @@ export class PWAStateManager {
   saveState(state: PWAState): void {
     try {
       // 主要状态存储到localStorage
-      localStorage.setItem(this.storageKey, JSON.stringify({
-        ...state,
-        timestamp: Date.now()
-      }))
-      
+      localStorage.setItem(
+        this.storageKey,
+        JSON.stringify({
+          ...state,
+          timestamp: Date.now(),
+        }),
+      )
+
       // 临时状态存储到sessionStorage
-      sessionStorage.setItem(this.sessionKey, JSON.stringify({
-        scrollPosition: state.scrollPosition,
-        activeTab: state.appData?.activeTab,
-        formData: state.formData
-      }))
+      sessionStorage.setItem(
+        this.sessionKey,
+        JSON.stringify({
+          scrollPosition: state.scrollPosition,
+          activeTab: state.appData?.activeTab,
+          formData: state.formData,
+        }),
+      )
     } catch (error) {
       console.error('状态保存失败:', error)
     }
@@ -344,15 +356,15 @@ export class PWAStateManager {
     try {
       const savedState = localStorage.getItem(this.storageKey)
       const sessionState = sessionStorage.getItem(this.sessionKey)
-      
+
       if (savedState) {
         const state = JSON.parse(savedState)
         const sessionData = sessionState ? JSON.parse(sessionState) : {}
-        
+
         return {
           ...state,
           ...sessionData,
-          isRestored: true
+          isRestored: true,
         }
       }
     } catch (error) {
@@ -362,7 +374,8 @@ export class PWAStateManager {
   }
 
   // 清除过期状态
-  clearExpiredState(maxAge = 24 * 60 * 60 * 1000): void { // 24小时
+  clearExpiredState(maxAge = 24 * 60 * 60 * 1000): void {
+    // 24小时
     try {
       const savedState = localStorage.getItem(this.storageKey)
       if (savedState) {
@@ -389,11 +402,11 @@ export class PWAIndexedDBManager {
   private async initDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.dbVersion)
-      
+
       request.onerror = () => reject(request.error)
       request.onsuccess = () => resolve(request.result)
-      
-      request.onupgradeneeded = (event) => {
+
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result
         if (!db.objectStoreNames.contains(this.storeName)) {
           db.createObjectStore(this.storeName, { keyPath: 'id' })
@@ -407,11 +420,11 @@ export class PWAIndexedDBManager {
       const db = await this.initDB()
       const transaction = db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
-      
+
       await store.put({
         id: 'appState',
         data: state,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       })
     } catch (error) {
       console.error('IndexedDB保存失败:', error)
@@ -423,7 +436,7 @@ export class PWAIndexedDBManager {
       const db = await this.initDB()
       const transaction = db.transaction([this.storeName], 'readonly')
       const store = transaction.objectStore(this.storeName)
-      
+
       return new Promise((resolve, reject) => {
         const request = store.get('appState')
         request.onsuccess = () => {
@@ -447,12 +460,13 @@ export class ServiceWorkerStateSync {
 
   async saveState(state: PWAState): Promise<boolean> {
     try {
+      // 通过Service Worker的fetch拦截器保存状态
       const response = await fetch(this.stateEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(state)
+        body: JSON.stringify(state),
       })
-      
+
       const result = await response.json()
       return result.success
     } catch (error) {
@@ -474,17 +488,20 @@ export class ServiceWorkerStateSync {
 
   // 使用MessageChannel与Service Worker通信
   async saveStateViaMessage(state: PWAState): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         const channel = new MessageChannel()
-        channel.port1.onmessage = (event) => {
+        channel.port1.onmessage = event => {
           resolve(event.data.success)
         }
-        
-        navigator.serviceWorker.controller.postMessage({
-          type: 'SAVE_PWA_STATE',
-          state
-        }, [channel.port2])
+
+        navigator.serviceWorker.controller.postMessage(
+          {
+            type: 'SAVE_PWA_STATE',
+            state,
+          },
+          [channel.port2],
+        )
       } else {
         resolve(false)
       }
@@ -492,16 +509,19 @@ export class ServiceWorkerStateSync {
   }
 
   async loadStateViaMessage(): Promise<PWAState | null> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         const channel = new MessageChannel()
-        channel.port1.onmessage = (event) => {
+        channel.port1.onmessage = event => {
           resolve(event.data.state || null)
         }
-        
-        navigator.serviceWorker.controller.postMessage({
-          type: 'GET_PWA_STATE'
-        }, [channel.port2])
+
+        navigator.serviceWorker.controller.postMessage(
+          {
+            type: 'GET_PWA_STATE',
+          },
+          [channel.port2],
+        )
       } else {
         resolve(null)
       }
@@ -543,7 +563,7 @@ export class StateRestoreDecision {
 
   private isUrlCompatible(savedUrl: string, currentUrl: string): boolean {
     if (!savedUrl || !currentUrl) return false
-    
+
     try {
       const savedPath = new URL(savedUrl).pathname
       const currentPath = new URL(currentUrl).pathname
@@ -604,7 +624,7 @@ export class VisibilityStateManager {
 
   private handlePageVisible(): void {
     if (this.isRestoring) return
-    
+
     this.isRestoring = true
     this.restorePromise = this.performStateRestore()
   }
@@ -649,7 +669,7 @@ export class VisibilityStateManager {
       scrollPositions: [{ x: window.scrollX, y: window.scrollY, element: 'window' }],
       orientation: window.orientation || 0,
       timestamp: Date.now(),
-      appData: this.getAppSpecificState()
+      appData: this.getAppSpecificState(),
     }
   }
 
@@ -661,18 +681,20 @@ export class VisibilityStateManager {
     if (state.appData) {
       this.restoreAppSpecificState(state.appData)
     }
-    
+
     // 触发状态恢复完成事件
-    window.dispatchEvent(new CustomEvent('pwaStateRestored', {
-      detail: { state }
-    }))
+    window.dispatchEvent(
+      new CustomEvent('pwaStateRestored', {
+        detail: { state },
+      }),
+    )
   }
 
   private getAppSpecificState(): any {
     // 获取应用特定状态
     return {
       formData: this.getFormData(),
-      userSelections: this.getUserSelections()
+      userSelections: this.getUserSelections(),
     }
   }
 
@@ -688,12 +710,12 @@ export class VisibilityStateManager {
   private getFormData(): Record<string, any> {
     const forms = document.querySelectorAll('form')
     const formData: Record<string, any> = {}
-    
+
     forms.forEach((form, index) => {
       const data = new FormData(form)
       formData[`form-${index}`] = Object.fromEntries(data)
     })
-    
+
     return formData
   }
 
@@ -701,7 +723,7 @@ export class VisibilityStateManager {
     Object.entries(formData).forEach(([formId, data]) => {
       const formIndex = parseInt(formId.split('-')[1])
       const form = document.querySelectorAll('form')[formIndex]
-      
+
       if (form) {
         Object.entries(data).forEach(([name, value]) => {
           const input = form.querySelector(`[name="${name}"]`) as HTMLInputElement
@@ -716,7 +738,7 @@ export class VisibilityStateManager {
   private getUserSelections(): any {
     return {
       selectedItems: Array.from(document.querySelectorAll('.selected')).map(el => el.id),
-      activeTab: document.querySelector('.tab.active')?.id
+      activeTab: document.querySelector('.tab.active')?.id,
     }
   }
 
@@ -729,7 +751,7 @@ export class VisibilityStateManager {
         }
       })
     }
-    
+
     if (selections.activeTab) {
       const tab = document.getElementById(selections.activeTab)
       if (tab) {
@@ -755,11 +777,11 @@ export class PWAStateController {
     this.swStateSync = new ServiceWorkerStateSync()
     this.visibilityManager = new VisibilityStateManager(this.stateManager)
     this.restoreDecision = new StateRestoreDecision()
-    
-    this.stateRestorePromise = new Promise((resolve) => {
+
+    this.stateRestorePromise = new Promise(resolve => {
       this.stateRestoreResolve = resolve
     })
-    
+
     this.init()
   }
 
@@ -778,12 +800,12 @@ export class PWAStateController {
 
   private async checkAndRestoreState(): Promise<void> {
     this.isRestoring = true
-    
+
     try {
       const currentContext: PWAContext = {
         url: window.location.href,
         orientation: window.orientation || 0,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
 
       // 尝试从多个来源恢复状态
@@ -791,7 +813,7 @@ export class PWAStateController {
         () => this.stateManager.restoreState(),
         () => this.indexedDBManager.restoreState(),
         () => this.swStateSync.loadState(),
-        () => this.swStateSync.loadStateViaMessage()
+        () => this.swStateSync.loadStateViaMessage(),
       ]
 
       for (const source of sources) {
@@ -823,19 +845,20 @@ export class PWAStateController {
     const state: PWAState = {
       url: window.location.href,
       scrollPosition: window.scrollY,
-      scrollPositions: scrollPositions.length > 0 ? scrollPositions : [{ x: window.scrollX, y: window.scrollY, element: 'window' }],
+      scrollPositions:
+        scrollPositions.length > 0 ? scrollPositions : [{ x: window.scrollX, y: window.scrollY, element: 'window' }],
       orientation: window.orientation || 0,
       timestamp: Date.now(),
       appData: this.getAppSpecificState(),
       modalStates: modalStates.length > 0 ? modalStates : undefined,
-      formFields: formFields.length > 0 ? formFields : undefined
+      formFields: formFields.length > 0 ? formFields : undefined,
     }
 
     await Promise.allSettled([
       this.stateManager.saveState(state),
       this.indexedDBManager.saveState(state),
       this.swStateSync.saveState(state),
-      this.swStateSync.saveStateViaMessage(state)
+      this.swStateSync.saveStateViaMessage(state),
     ])
   }
 
@@ -848,7 +871,7 @@ export class PWAStateController {
     } else if (state.scrollPosition && urlMatches) {
       window.scrollTo({
         top: state.scrollPosition,
-        behavior: 'auto'
+        behavior: 'auto',
       })
     }
 
@@ -882,12 +905,12 @@ export class PWAStateController {
       routerState: {
         currentRoute: window.location.pathname,
         query: window.location.search,
-        hash: window.location.hash
+        hash: window.location.hash,
       },
       uiState: {
         sidebarOpen: document.querySelector('.v-navigation-drawer--active') !== null,
-        darkMode: document.documentElement.getAttribute('data-theme') === 'dark'
-      }
+        darkMode: document.documentElement.getAttribute('data-theme') === 'dark',
+      },
     }
   }
 
@@ -896,9 +919,11 @@ export class PWAStateController {
   }
 
   private dispatchStateRestoreEvent(state: PWAState): void {
-    window.dispatchEvent(new CustomEvent('pwaStateRestored', {
-      detail: { state }
-    }))
+    window.dispatchEvent(
+      new CustomEvent('pwaStateRestored', {
+        detail: { state },
+      }),
+    )
   }
 
   destroy(): void {
