@@ -1,28 +1,8 @@
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 
 // Service Worker 类型声明
-declare let self: ServiceWorkerGlobalScope
-
-// 扩展ServiceWorkerRegistration类型以支持sync
-interface SyncManager {
-  register(tag: string): Promise<void>
-}
-
-interface ServiceWorkerRegistration {
-  readonly sync: SyncManager
-}
-
-// 扩展ExtendableEvent以支持sync事件
-interface SyncEvent extends ExtendableEvent {
-  readonly tag: string
-  readonly lastChance: boolean
-}
-
-// 扩展ServiceWorkerGlobalScope事件映射
-declare global {
-  interface ServiceWorkerGlobalScopeEventMap {
-    'sync': SyncEvent
-  }
+declare let self: ServiceWorkerGlobalScope & {
+  __WB_MANIFEST: Array<{ url: string; revision?: string }>
 }
 
 // 缓存版本控制
@@ -80,40 +60,67 @@ async function setStoredUnreadCount(count: number): Promise<void> {
 
 // 简单的IndexedDB包装器
 async function openDB(): Promise<IDBDatabase> {
+  // Bump the version to add the new "sync" store while keeping existing data intact
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('mp_badge_db', 1)
+    const request = indexedDB.open('mp_badge_db', 2)
+
     request.onerror = () => reject(request.error)
     request.onsuccess = () => resolve(request.result)
+
     request.onupgradeneeded = event => {
       const db = (event.target as IDBOpenDBRequest).result
+
+      // Badge store (existing)
       if (!db.objectStoreNames.contains('badge')) {
         db.createObjectStore('badge')
+      }
+
+      // Dedicated store for offline-sync items
+      if (!db.objectStoreNames.contains('sync')) {
+        db.createObjectStore('sync')
       }
     }
   })
 }
 
 // 获取IndexedDB中的数据
-async function get(key: string): Promise<any> {
+async function get(key: string, storeName: string = 'badge'): Promise<any> {
   const db = await openDB()
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['badge'], 'readonly')
-    const store = transaction.objectStore('badge')
+    const tx = db.transaction([storeName], 'readonly')
+    const store = tx.objectStore(storeName)
     const request = store.get(key)
+
     request.onerror = () => reject(request.error)
     request.onsuccess = () => resolve(request.result)
   })
 }
 
 // 保存数据到IndexedDB
-async function set(key: string, value: any): Promise<void> {
+async function set(key: string, value: any, storeName: string = 'badge'): Promise<void> {
   const db = await openDB()
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['badge'], 'readwrite')
-    const store = transaction.objectStore('badge')
-    const request = store.put(value, key)
-    request.onerror = () => reject(request.error)
-    request.onsuccess = () => resolve()
+    const tx = db.transaction([storeName], 'readwrite')
+    const store = tx.objectStore(storeName)
+
+    store.put(value, key)
+
+    tx.oncomplete = () => resolve()
+    tx.onerror = () => reject(tx.error)
+  })
+}
+
+// 删除IndexedDB中的数据（确保事务完成）
+async function del(key: string, storeName: string = 'badge'): Promise<void> {
+  const db = await openDB()
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction([storeName], 'readwrite')
+    const store = tx.objectStore(storeName)
+
+    store.delete(key)
+
+    tx.oncomplete = () => resolve()
+    tx.onerror = () => reject(tx.error)
   })
 }
 
@@ -363,7 +370,7 @@ const syncQueue: Array<{
 
 // 添加请求到同步队列
 async function addToSyncQueue(request: Request) {
-  const id = `sync-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   const url = request.url
   const method = request.method
   
@@ -384,8 +391,8 @@ async function addToSyncQueue(request: Request) {
     timestamp: Date.now(),
   }
   
-  // 保存到IndexedDB
-  await set(`sync-${id}`, syncItem)
+  // 保存到IndexedDB (使用专用的 "sync" store)
+  await set(id, syncItem, 'sync')
   syncQueue.push(syncItem)
   
   // 注册后台同步
@@ -397,23 +404,20 @@ async function addToSyncQueue(request: Request) {
 // 执行同步队列中的请求
 async function processSyncQueue() {
   const db = await openDB()
-  const transaction = db.transaction(['badge'], 'readonly')
-  const store = transaction.objectStore('badge')
-  const request = store.getAllKeys()
-  
-  const keys = await new Promise<IDBValidKey[]>((resolve, reject) => {
-    request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
+
+  // 使用专用的 "sync" store，并开启 readwrite 事务（便于后续删除）
+  const tx = db.transaction(['sync'], 'readwrite')
+  const store = tx.objectStore('sync')
+
+  const items: Array<any> = await new Promise((resolve, reject) => {
+    const req = store.getAll()
+    req.onsuccess = () => resolve(req.result)
+    req.onerror = () => reject(req.error)
   })
-  
-  // 过滤出同步项
-  const syncKeys = keys.filter(key => String(key).startsWith('sync-'))
-  
-  for (const key of syncKeys) {
+
+  for (const syncItem of items) {
+    const key = syncItem.id
     try {
-      const syncItem = await get(String(key))
-      if (!syncItem) continue
-      
       // 构建请求
       const init: RequestInit = {
         method: syncItem.method,
@@ -421,20 +425,18 @@ async function processSyncQueue() {
           'Content-Type': 'application/json',
         },
       }
-      
+
       if (syncItem.data) {
         init.body = syncItem.data
       }
-      
+
       // 发送请求
       const response = await fetch(syncItem.url, init)
-      
+
       if (response.ok) {
-        // 成功后删除同步项
-        const deleteTransaction = db.transaction(['badge'], 'readwrite')
-        const deleteStore = deleteTransaction.objectStore('badge')
-        await deleteStore.delete(key)
-        
+        // 成功后删除同步项，并等待事务完成
+        await del(key, 'sync')
+
         // 通知客户端同步成功
         const clients = await self.clients.matchAll()
         clients.forEach(client => {
@@ -449,13 +451,10 @@ async function processSyncQueue() {
       }
     } catch (error) {
       console.error('Sync failed for item:', key, error)
-      
-      // 检查是否超过24小时，如果是则删除
-      const syncItem = await get(String(key))
-      if (syncItem && Date.now() - syncItem.timestamp > 24 * 60 * 60 * 1000) {
-        const deleteTransaction = db.transaction(['badge'], 'readwrite')
-        const deleteStore = deleteTransaction.objectStore('badge')
-        await deleteStore.delete(key)
+
+      // 如果该同步项已存在超过 24 小时，则将其丢弃
+      if (Date.now() - syncItem.timestamp > 24 * 60 * 60 * 1000) {
+        await del(key, 'sync')
       }
     }
   }
