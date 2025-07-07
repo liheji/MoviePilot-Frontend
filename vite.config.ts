@@ -9,6 +9,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
 import { resolve } from 'node:path'
 import federation from '@originjs/vite-plugin-federation'
+import topLevelAwait from 'vite-plugin-top-level-await'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -258,6 +259,12 @@ export default defineConfig({
         'prefer_related_applications': false,
         'related_applications': [],
       },
+    }),
+    topLevelAwait({
+      // The export name of top-level await promise for each chunk module
+      promiseExportName: '__mp_tla',
+      // The function to generate import names of top-level await promise in each chunk module
+      promiseImportName: i => `__mp_tla_${i}`,
     }),
   ],
   define: { 'process.env': {} },
