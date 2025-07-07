@@ -54,16 +54,37 @@ export default defineConfig({
       filename: 'service-worker.ts',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2,ttf,otf,eot}'],
-        // 确保offline.html被预缓存
+        // 确保关键资源被预缓存
         additionalManifestEntries: [
           {
             url: '/offline.html',
+            revision: null,
+          },
+          // 预缓存App Shell关键资源
+          {
+            url: '/loader.css',
+            revision: null,
+          },
+          {
+            url: '/logo.png',
             revision: null,
           },
         ],
         // 启用导航预加载
         navigationPreload: true,
         runtimeCaching: [
+          // App Shell缓存 - 优先缓存
+          {
+            urlPattern: /^\/$|\/index\.html$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'app-shell-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 7 * 24 * 60 * 60, // 7天
+              },
+            },
+          },
           {
             urlPattern: /\.(?:js|css|html)$/,
             handler: 'StaleWhileRevalidate',
@@ -131,8 +152,8 @@ export default defineConfig({
             },
           },
         ],
-        navigateFallback: null,
-        navigateFallbackDenylist: [/.*\/api\/v\d+\/system\/logging.*/, /\/offline\.html$/],
+        navigateFallback: '/offline.html',
+        navigateFallbackDenylist: [/.*\/api\/.*/, /\/offline\.html$/],
         ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^gclid$/],
         skipWaiting: true,
         clientsClaim: true,
