@@ -11,6 +11,9 @@ const display = useDisplay()
 // 国际化
 const { t } = useI18n()
 
+// 路由
+const route = useRoute()
+
 // 当前选择的分类
 const currentCategory = ref(t('recommend.all'))
 
@@ -300,7 +303,9 @@ onActivated(async () => {
     </VDialog>
 
     <!-- 快速滚动到顶部按钮 -->
-    <VScrollToTopBtn />
+    <Teleport to="body" v-if="route.path === '/recommend'">
+      <VScrollToTopBtn />
+    </Teleport>
   </div>
 </template>
 

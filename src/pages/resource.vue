@@ -92,7 +92,7 @@ const progressSSE = useProgressSSE(
   `${import.meta.env.VITE_API_BASE_URL}system/progress/search`,
   handleProgressMessage,
   'resource-search-progress',
-  progressActive
+  progressActive,
 )
 
 // 使用SSE监听加载进度
@@ -288,7 +288,9 @@ onUnmounted(() => {
     <!-- 初始加载状态 -->
     <LoadingBanner v-else-if="!isRefreshed && !(progressEnabled || progressValue > 0)" />
     <!-- 滚动到顶部按钮 -->
-    <VScrollToTopBtn />
+    <Teleport to="body" v-if="route.path === '/resource'">
+      <VScrollToTopBtn />
+    </Teleport>
   </div>
 </template>
 
@@ -300,7 +302,6 @@ onUnmounted(() => {
   justify-content: center;
   inset-block-start: env(safe-area-inset-top);
   inset-inline: 0;
-  padding-block-start: 4rem;
 }
 
 .search-progress-card {

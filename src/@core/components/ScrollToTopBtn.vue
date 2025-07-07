@@ -51,8 +51,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  inset-block-end: 30px;
-  inset-inline-end: 30px;
+  inset-block-end: 2rem;
+  inset-inline-end: 2rem;
 }
 
 .global-action-button {

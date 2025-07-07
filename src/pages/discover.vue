@@ -16,6 +16,9 @@ const display = useDisplay()
 // 国际化
 const { t } = useI18n()
 
+// 路由
+const route = useRoute()
+
 const activeTab = ref('')
 
 // 本地存储键值
@@ -151,10 +154,6 @@ onBeforeMount(async () => {
   }
 })
 
-
-
-
-
 onActivated(async () => {
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
@@ -246,7 +245,9 @@ onActivated(async () => {
       </VCard>
     </VDialog>
     <!-- 快速滚动到顶部按钮 -->
-    <VScrollToTopBtn />
+    <Teleport to="body" v-if="route.path === '/discover'">
+      <VScrollToTopBtn />
+    </Teleport>
   </div>
 </template>
 <style lang="scss" scoped>

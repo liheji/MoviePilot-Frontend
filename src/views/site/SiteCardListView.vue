@@ -13,6 +13,9 @@ import { usePWA } from '@/composables/usePWA'
 // 国际化
 const { t } = useI18n()
 
+// 路由
+const route = useRoute()
+
 // APP
 const display = useDisplay()
 // PWA模式检测
@@ -302,7 +305,7 @@ useDynamicButton({
     :error-description="filterOption === 'all' ? t('site.sitesWillBeShownHere') : t('common.tryChangingFilters')"
   />
   <!-- 新增站点按钮 -->
-  <Teleport to="body">
+  <Teleport to="body" v-if="route.path === '/site'">
     <VFab
       v-if="isRefreshed && !appMode"
       icon="mdi-web-plus"

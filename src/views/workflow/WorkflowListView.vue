@@ -11,7 +11,9 @@ import { usePWA } from '@/composables/usePWA'
 // 国际化
 const { t } = useI18n()
 
-// APP
+// 路由
+const route = useRoute()
+
 // PWA模式检测
 const { appMode } = usePWA()
 
@@ -72,7 +74,7 @@ useDynamicButton({
   </div>
 
   <!-- 新增按钮 -->
-  <Teleport to="body">
+  <Teleport to="body" v-if="route.path === '/workflow'">
     <VFab
       v-if="isRefreshed && !appMode"
       icon="mdi-plus"

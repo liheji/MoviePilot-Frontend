@@ -6,7 +6,6 @@ import NoDataFound from '@/components/NoDataFound.vue'
 import SubscribeCard from '@/components/cards/SubscribeCard.vue'
 import SubscribeHistoryDialog from '@/components/dialog/SubscribeHistoryDialog.vue'
 import { useUserStore } from '@/stores'
-import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 import { usePWA } from '@/composables/usePWA'
@@ -14,8 +13,9 @@ import { usePWA } from '@/composables/usePWA'
 // 国际化
 const { t } = useI18n()
 
-// APP
-const display = useDisplay()
+// 路由
+const route = useRoute()
+
 // PWA模式检测
 const { appMode } = usePWA()
 
@@ -183,7 +183,7 @@ useDynamicButton({
     :error-description="keyword ? t('subscribe.noFilterData') : t('subscribe.noSubscribeData')"
   />
   <!-- 底部操作按钮 -->
-  <Teleport to="body">
+  <Teleport to="body" v-if="route.path === '/subscribe'">
     <div v-if="isRefreshed">
       <VFab
         v-if="userStore.superUser && !appMode"

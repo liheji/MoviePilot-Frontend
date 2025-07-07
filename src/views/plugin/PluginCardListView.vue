@@ -1526,9 +1526,9 @@ function onDragStartPlugin(evt: any) {
     </VWindow>
   </div>
 
-  <div v-if="isRefreshed">
-    <!-- 插件搜索图标 -->
-    <Teleport to="body">
+  <!-- 插件搜索图标 -->
+  <Teleport to="body" v-if="route.path === '/plugins'">
+    <div v-if="isRefreshed">
       <VFab
         v-if="!appMode"
         icon="mdi-magnify"
@@ -1541,8 +1541,8 @@ function onDragStartPlugin(evt: any) {
         @click="SearchDialog = true"
         :class="{ 'mb-12': appMode }"
       />
-    </Teleport>
-  </div>
+    </div>
+  </Teleport>
   <!-- 插件市场设置窗口 -->
   <PluginMarketSettingDialog
     v-if="MarketSettingDialog"

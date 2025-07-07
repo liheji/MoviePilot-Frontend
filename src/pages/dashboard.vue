@@ -19,6 +19,9 @@ const display = useDisplay()
 // PWA模式检测
 const { appMode } = usePWA()
 
+// 路由
+const route = useRoute()
+
 // 从用户 Store 中获取superuser信息
 const superUser = useUserStore().superUser
 
@@ -353,7 +356,7 @@ onDeactivated(() => {
   </draggable>
 
   <!-- 底部操作按钮（只在非移动设备上显示） -->
-  <Teleport to="body">
+  <Teleport to="body" v-if="route.path === '/dashboard'">
     <VFab
       v-if="!appMode"
       icon="mdi-view-dashboard-edit"

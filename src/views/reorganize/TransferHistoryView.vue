@@ -700,7 +700,7 @@ onMounted(() => {
   </VCard>
 
   <!-- 底部操作按钮 -->
-  <Teleport to="body">
+  <Teleport to="body" v-if="route.path === '/history'">
     <div v-if="isRefreshed && selected.length > 0">
       <VFab
         icon="mdi-trash-can-outline"
