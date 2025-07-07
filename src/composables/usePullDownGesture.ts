@@ -219,7 +219,7 @@ export function usePullDownGesture(options: PullDownOptions = {}) {
   let eventsAdded = false
 
   const addEventListeners = () => {
-    if (!eventsAdded && appMode.value && display.mdAndDown.value) {
+    if (!eventsAdded && appMode.value) {
       document.addEventListener('touchstart', handleTouchStart, { passive: false })
       document.addEventListener('touchmove', handleTouchMove, { passive: false })
       document.addEventListener('touchend', handleTouchEnd, { passive: true })
@@ -238,23 +238,18 @@ export function usePullDownGesture(options: PullDownOptions = {}) {
 
   // PWA状态确定后，一次性决定是否添加事件监听器
   onMounted(() => {
-    // 如果PWA已经检测完成，直接添加事件监听器
-    if (appMode.value !== null) {
-      addEventListeners()
-    } else {
-      // 等待PWA检测完成（从null变为boolean）
-      const stopWatcher = watch(
-        appMode,
-        newValue => {
-          if (newValue !== null) {
-            addEventListeners()
-            // PWA状态确定后停止监听
-            stopWatcher()
-          }
-        },
-        { immediate: true },
-      )
-    }
+    // 等待PWA检测完成后添加事件监听器
+    const stopWatcher = watch(
+      appMode,
+      newValue => {
+        if (newValue) {
+          addEventListeners()
+          // PWA状态确定后停止监听
+          stopWatcher()
+        }
+      },
+      { immediate: true },
+    )
   })
 
   onBeforeUnmount(() => {

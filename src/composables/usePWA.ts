@@ -19,22 +19,23 @@ async function initializePWAGlobally() {
 
   if (globalPwaStatus.value !== null || globalLoading.value) return Promise.resolve()
 
-  initPromise = new Promise(async (resolve, reject) => {
+  initPromise = new Promise(async resolve => {
     globalLoading.value = true
     try {
       globalPwaStatus.value = await checkPWAStatus()
-      resolve()
     } catch (error) {
       console.error('Failed to detect PWA status', error)
+      // 即使检测失败，也设置一个合理的默认值
       globalPwaStatus.value = {
         hasPWAFeatures: false,
         isStandaloneMode: isPWADisplayMode(),
         isPWAEnvironment: isPWADisplayMode(),
         isFullPWA: false,
       }
-      reject(error)
     } finally {
       globalLoading.value = false
+      // 无论成功还是失败，都解决Promise
+      resolve()
     }
   })
 

@@ -63,9 +63,24 @@ export const checkPWAStatus = async () => {
     hasPWAFeatures: hasServiceWorker,
     // 是否在独立显示模式下运行
     isStandaloneMode,
-    // 综合判断：至少满足一个条件就认为是PWA环境
-    isPWAEnvironment: hasServiceWorker || isStandaloneMode,
+    // 综合判断：更宽松的检测，在移动设备上默认启用PWA功能
+    isPWAEnvironment: hasServiceWorker || isStandaloneMode || isMobileDevice(),
     // 完整的PWA体验：既有功能又在独立模式下运行
     isFullPWA: hasServiceWorker && isStandaloneMode,
   }
+}
+
+// 检测是否为移动设备
+const isMobileDevice = (): boolean => {
+  // 检查用户代理字符串
+  const userAgent = navigator.userAgent || ''
+  const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i
+
+  // 检查触摸屏支持
+  const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
+  // 检查屏幕尺寸（小于768px认为是移动设备）
+  const isMobileSize = window.innerWidth < 768
+
+  return mobileRegex.test(userAgent) || hasTouchScreen || isMobileSize
 }

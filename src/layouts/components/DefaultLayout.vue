@@ -169,7 +169,7 @@ useScrollLockWithWatch(showPluginQuickAccess)
 // 检查是否可以使用下拉手势
 const canUsePullGesture = () => {
   // 检查是否在dashboard页面
-  const isDashboard = route.name === 'dashboard' || route.path === '/dashboard'
+  const isDashboard = route.path === '/dashboard' || route.path === '/'
   // 检查是否是管理员
   const isAdmin = superUser.value
   // 检查插件快速访问面板是否已显示
