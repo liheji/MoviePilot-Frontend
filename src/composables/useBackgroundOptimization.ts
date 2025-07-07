@@ -7,7 +7,6 @@ import { addBackgroundTimer, removeBackgroundTimer } from '@/utils/backgroundMan
  * 统一管理SSE连接和定时器，优化iOS后台性能
  */
 export function useBackgroundOptimization() {
-  
   /**
    * 使用优化的SSE连接
    * @param url SSE连接地址
@@ -16,29 +15,29 @@ export function useBackgroundOptimization() {
    * @param options 选项
    */
   const useSSE = (
-    url: string, 
-    messageHandler: (event: MessageEvent) => void, 
+    url: string,
+    messageHandler: (event: MessageEvent) => void,
     listenerId: string,
     options?: {
       backgroundCloseDelay?: number
       reconnectDelay?: number
       maxReconnectAttempts?: number
-    }
+    },
   ) => {
     const manager = sseManagerSingleton.getManager(url, options)
-    
+
     onMounted(() => {
       manager.addMessageListener(listenerId, messageHandler)
     })
-    
+
     onUnmounted(() => {
       manager.removeMessageListener(listenerId)
     })
-    
+
     return {
       manager,
       readyState: () => manager.readyState,
-      close: () => manager.removeMessageListener(listenerId)
+      close: () => manager.removeMessageListener(listenerId),
     }
   }
 
@@ -56,18 +55,18 @@ export function useBackgroundOptimization() {
     options?: {
       runInBackground?: boolean
       skipInitialRun?: boolean
-    }
+    },
   ) => {
     onMounted(() => {
       addBackgroundTimer(id, callback, interval, options)
     })
-    
+
     onUnmounted(() => {
       removeBackgroundTimer(id)
     })
-    
+
     return {
-      remove: () => removeBackgroundTimer(id)
+      remove: () => removeBackgroundTimer(id),
     }
   }
 
@@ -84,24 +83,24 @@ export function useBackgroundOptimization() {
     messageHandler: (event: MessageEvent) => void,
     listenerId: string,
     delay: number = 3000,
-    options?: Parameters<typeof useSSE>[3]
+    options?: Parameters<typeof useSSE>[3],
   ) => {
     const manager = sseManagerSingleton.getManager(url, options)
-    
+
     onMounted(() => {
       setTimeout(() => {
         manager.addMessageListener(listenerId, messageHandler)
       }, delay)
     })
-    
+
     onUnmounted(() => {
       manager.removeMessageListener(listenerId)
     })
-    
+
     return {
       manager,
       readyState: () => manager.readyState,
-      close: () => manager.removeMessageListener(listenerId)
+      close: () => manager.removeMessageListener(listenerId),
     }
   }
 
@@ -116,32 +115,32 @@ export function useBackgroundOptimization() {
     url: string,
     messageHandler: (event: MessageEvent) => void,
     listenerId: string,
-    isActive: Ref<boolean>
+    isActive: Ref<boolean>,
   ) => {
     const manager = sseManagerSingleton.getManager(url, {
       backgroundCloseDelay: 1000, // 进度SSE更快关闭
       reconnectDelay: 1000,
-      maxReconnectAttempts: 5
+      maxReconnectAttempts: 5,
     })
-    
+
     const startProgress = () => {
       if (isActive.value) {
         manager.addMessageListener(listenerId, messageHandler)
       }
     }
-    
+
     const stopProgress = () => {
       manager.removeMessageListener(listenerId)
     }
-    
+
     onUnmounted(() => {
       stopProgress()
     })
-    
+
     return {
       start: startProgress,
       stop: stopProgress,
-      manager
+      manager,
     }
   }
 
@@ -156,13 +155,13 @@ export function useBackgroundOptimization() {
     id: string,
     loadDataFunc: () => Promise<void> | void,
     interval: number = 3000,
-    immediate: boolean = true
+    immediate: boolean = true,
   ) => {
     const loading = ref(false)
-    
+
     const wrappedLoadData = async () => {
       if (loading.value) return
-      
+
       loading.value = true
       try {
         await loadDataFunc()
@@ -172,31 +171,26 @@ export function useBackgroundOptimization() {
         loading.value = false
       }
     }
-    
+
     onMounted(async () => {
       if (immediate) {
         await wrappedLoadData()
       }
-      
-      addBackgroundTimer(
-        id,
-        wrappedLoadData,
-        interval,
-        {
-          runInBackground: false, // 后台不刷新数据
-          skipInitialRun: true // 已经手动执行过了
-        }
-      )
+
+      addBackgroundTimer(id, wrappedLoadData, interval, {
+        runInBackground: false, // 后台不刷新数据
+        skipInitialRun: true, // 已经手动执行过了
+      })
     })
-    
+
     onUnmounted(() => {
       removeBackgroundTimer(id)
     })
-    
+
     return {
       loading,
       refresh: wrappedLoadData,
-      stop: () => removeBackgroundTimer(id)
+      stop: () => removeBackgroundTimer(id),
     }
   }
 
@@ -213,14 +207,14 @@ export function useBackgroundOptimization() {
     loadDataFunc: () => Promise<void> | void,
     condition: Ref<boolean>,
     interval: number = 3000,
-    immediate: boolean = true
+    immediate: boolean = true,
   ) => {
     const loading = ref(false)
     const isTimerActive = ref(false)
-    
+
     const wrappedLoadData = async () => {
       if (loading.value || !condition.value) return
-      
+
       loading.value = true
       try {
         await loadDataFunc()
@@ -233,15 +227,10 @@ export function useBackgroundOptimization() {
 
     const startTimer = () => {
       if (!isTimerActive.value && condition.value) {
-        addBackgroundTimer(
-          id,
-          wrappedLoadData,
-          interval,
-          {
-            runInBackground: false,
-            skipInitialRun: !immediate
-          }
-        )
+        addBackgroundTimer(id, wrappedLoadData, interval, {
+          runInBackground: false,
+          skipInitialRun: !immediate,
+        })
         isTimerActive.value = true
       }
     }
@@ -252,12 +241,12 @@ export function useBackgroundOptimization() {
         isTimerActive.value = false
       }
     }
-    
+
     onMounted(() => {
       if (condition.value) {
         startTimer()
       }
-      
+
       // 监听条件变化
       watch(condition, (newValue: boolean) => {
         if (newValue) {
@@ -267,17 +256,17 @@ export function useBackgroundOptimization() {
         }
       })
     })
-    
+
     onUnmounted(() => {
       stopTimer()
     })
-    
+
     return {
       loading,
       refresh: wrappedLoadData,
       stop: stopTimer,
       start: startTimer,
-      isActive: isTimerActive
+      isActive: isTimerActive,
     }
   }
 
@@ -287,6 +276,6 @@ export function useBackgroundOptimization() {
     useDelayedSSE,
     useProgressSSE,
     useDataRefresh,
-    useConditionalDataRefresh
+    useConditionalDataRefresh,
   }
 }

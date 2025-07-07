@@ -13,10 +13,6 @@ const options = {
 // 存储未读消息数量的键名
 const UNREAD_COUNT_KEY = 'mp_unread_count'
 
-// 状态管理相关的缓存名称和端点
-const STATE_CACHE_NAME = 'mp-pwa-state-cache'
-const STATE_ENDPOINT = '/api/pwa-state'
-
 // 从IndexedDB获取未读消息数量
 async function getStoredUnreadCount(): Promise<number> {
   try {
@@ -34,60 +30,6 @@ async function setStoredUnreadCount(count: number): Promise<void> {
     await set(UNREAD_COUNT_KEY, count)
   } catch (error) {
     console.error('Failed to set stored unread count:', error)
-  }
-}
-
-// 保存PWA状态到缓存
-async function saveStateToCache(request: Request): Promise<Response> {
-  try {
-    const state = await request.json()
-    const cache = await caches.open(STATE_CACHE_NAME)
-
-    await cache.put(
-      STATE_ENDPOINT,
-      new Response(
-        JSON.stringify({
-          ...state,
-          timestamp: Date.now(),
-        }),
-      ),
-    )
-
-    return new Response(JSON.stringify({ success: true }))
-  } catch (error) {
-    console.error('Failed to save state to cache:', error)
-    return new Response(
-      JSON.stringify({ success: false, error: error instanceof Error ? error.message : String(error) }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      },
-    )
-  }
-}
-
-// 从缓存获取PWA状态
-async function getStateFromCache(): Promise<Response> {
-  try {
-    const cache = await caches.open(STATE_CACHE_NAME)
-    const response = await cache.match(STATE_ENDPOINT)
-
-    if (response) {
-      const state = await response.json()
-      return new Response(JSON.stringify(state), {
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    return new Response(JSON.stringify({}), {
-      headers: { 'Content-Type': 'application/json' },
-    })
-  } catch (error) {
-    console.error('Failed to get state from cache:', error)
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
   }
 }
 
@@ -158,25 +100,9 @@ async function clearBadge() {
 }
 
 // 安装事件
-self.addEventListener('install', event => {
-  event.waitUntil(
-    (async () => {
-      // 预缓存关键状态数据
-      try {
-        const cache = await caches.open(STATE_CACHE_NAME)
-        const existingState = await cache.match(STATE_ENDPOINT)
-
-        if (existingState) {
-          // 预热状态数据（无需处理，仅确保缓存可用）
-        }
-      } catch (error) {
-        // 静默处理错误
-      }
-
-      // 强制等待中的Service Worker立即成为活动的Service Worker
-      self.skipWaiting()
-    })(),
-  )
+self.addEventListener('install', () => {
+  // 强制等待中的Service Worker立即成为活动的Service Worker
+  self.skipWaiting()
 })
 
 // 激活事件
@@ -206,16 +132,6 @@ self.addEventListener('activate', event => {
 // 处理API请求，当离线时发送消息到客户端
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url)
-
-  // 处理PWA状态管理请求
-  if (url.pathname === STATE_ENDPOINT) {
-    if (event.request.method === 'POST') {
-      event.respondWith(saveStateToCache(event.request))
-    } else if (event.request.method === 'GET') {
-      event.respondWith(getStateFromCache())
-    }
-    return
-  }
 
   if (event.request.url.includes('/api/v1/') && event.request.method === 'GET') {
     event.respondWith(
@@ -335,33 +251,6 @@ self.addEventListener('message', function (event) {
       })
       .catch(error => {
         event.ports[0]?.postMessage({ count: 0 })
-      })
-  } else if (event.data && event.data.type === 'SAVE_PWA_STATE') {
-    // 保存PWA状态
-    const state = event.data.state || {}
-    saveStateToCache(
-      new Request(STATE_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(state),
-      }),
-    )
-      .then(response => response.json())
-      .then(result => {
-        event.ports[0]?.postMessage({ success: result.success })
-      })
-      .catch(error => {
-        event.ports[0]?.postMessage({ success: false, error: error instanceof Error ? error.message : String(error) })
-      })
-  } else if (event.data && event.data.type === 'GET_PWA_STATE') {
-    // 获取PWA状态
-    getStateFromCache()
-      .then(response => response.json())
-      .then(state => {
-        event.ports[0]?.postMessage({ state })
-      })
-      .catch(error => {
-        event.ports[0]?.postMessage({ state: {} })
       })
   }
 })
