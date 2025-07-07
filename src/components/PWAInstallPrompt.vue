@@ -3,12 +3,7 @@ import { usePWAInstall } from '@/composables/usePWAInstall'
 import { useToast } from 'vue-toastification'
 
 const { t } = useI18n()
-const { 
-  isInstallable, 
-  isInstalled, 
-  showInstallPrompt,
-  getInstallInstructions 
-} = usePWAInstall()
+const { isInstallable, isInstalled, showInstallPrompt, getInstallInstructions } = usePWAInstall()
 
 const showBanner = ref(false)
 const showInstructions = ref(false)
@@ -28,14 +23,14 @@ onMounted(() => {
       const dismissedDate = new Date(dismissedTime)
       const now = new Date()
       const daysDiff = (now.getTime() - dismissedDate.getTime()) / (1000 * 60 * 60 * 24)
-      
+
       // 如果距离上次关闭不到7天，不显示
       if (daysDiff < 7) {
         dismissed.value = true
         return
       }
     }
-    
+
     showBanner.value = true
   }, 30000) // 30秒后显示
 })
@@ -62,7 +57,21 @@ const dismissBanner = () => {
 }
 
 // 获取平台特定的安装说明
-const instructions = computed(() => getInstallInstructions())
+const instructions = computed(() => {
+  const rawInstructions = getInstallInstructions()
+  const platformKey = rawInstructions.platformKey
+
+  // 获取平台显示名称
+  const platformName = t(`pwa.platforms.${platformKey}`)
+
+  // 获取安装步骤
+  const steps = t(`pwa.installSteps.${platformKey}`)
+
+  return {
+    platform: platformName,
+    steps: Array.isArray(steps) ? steps : [],
+  }
+})
 </script>
 
 <template>
@@ -75,30 +84,17 @@ const instructions = computed(() => getInstallInstructions())
     leave-from-class="translate-y-0 opacity-100"
     leave-to-class="translate-y-full opacity-0"
   >
-    <div
-      v-if="shouldShowBanner && showBanner"
-      class="pwa-install-banner"
-    >
+    <div v-if="shouldShowBanner && showBanner" class="pwa-install-banner">
       <div class="banner-content">
         <VIcon icon="mdi-cellphone-link" size="24" class="me-3" />
         <div class="flex-grow-1">
-          <div class="font-weight-medium">安装 MoviePilot 应用</div>
-          <div class="text-sm opacity-70">获得更好的离线体验和性能</div>
+          <div class="font-weight-medium">{{ t('pwa.installApp') }}</div>
+          <div class="text-sm opacity-70">{{ t('pwa.installDescription') }}</div>
         </div>
-        <VBtn
-          color="primary"
-          size="small"
-          variant="flat"
-          @click="handleInstall"
-        >
-          安装
+        <VBtn color="primary" size="small" variant="flat" @click="handleInstall">
+          {{ t('pwa.install') }}
         </VBtn>
-        <VBtn
-          icon
-          size="small"
-          variant="text"
-          @click="dismissBanner"
-        >
+        <VBtn icon size="small" variant="text" @click="dismissBanner">
           <VIcon icon="mdi-close" />
         </VBtn>
       </div>
@@ -106,20 +102,17 @@ const instructions = computed(() => getInstallInstructions())
   </Transition>
 
   <!-- 手动安装说明对话框 -->
-  <VDialog
-    v-model="showInstructions"
-    max-width="500"
-  >
+  <VDialog v-model="showInstructions" max-width="500">
     <VCard>
       <VCardTitle class="d-flex align-center">
         <VIcon icon="mdi-information-outline" class="me-2" />
-        安装指南
+        {{ t('pwa.installGuide') }}
       </VCardTitle>
-      
+
       <VCardText>
         <div class="mb-4">
           <div class="text-subtitle-1 mb-2">
-            在 {{ instructions.platform }} 上安装 MoviePilot：
+            {{ t('pwa.installInstructions', { platform: instructions.platform }) }}
           </div>
           <VList density="compact">
             <VListItem
@@ -131,24 +124,16 @@ const instructions = computed(() => getInstallInstructions())
             </VListItem>
           </VList>
         </div>
-        
-        <VAlert
-          type="info"
-          variant="tonal"
-          density="compact"
-        >
-          安装后，您可以从主屏幕快速访问 MoviePilot，并享受离线功能。
+
+        <VAlert type="info" variant="tonal" density="compact">
+          {{ t('pwa.installNote') }}
         </VAlert>
       </VCardText>
-      
+
       <VCardActions>
         <VSpacer />
-        <VBtn
-          color="primary"
-          variant="text"
-          @click="showInstructions = false"
-        >
-          知道了
+        <VBtn color="primary" variant="text" @click="showInstructions = false">
+          {{ t('pwa.gotIt') }}
         </VBtn>
       </VCardActions>
     </VCard>
@@ -158,14 +143,13 @@ const instructions = computed(() => getInstallInstructions())
 <style scoped>
 .pwa-install-banner {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
   z-index: 1000;
-  background: rgb(var(--v-theme-surface));
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 12px;
+  background: rgb(var(--v-theme-surface));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 10%);
+  inset-block-end: 20px;
+  inset-inline: 20px;
 }
 
 .banner-content {
@@ -175,11 +159,10 @@ const instructions = computed(() => getInstallInstructions())
   gap: 8px;
 }
 
-@media (min-width: 600px) {
+@media (width >= 600px) {
   .pwa-install-banner {
-    left: auto;
-    right: 20px;
-    max-width: 400px;
+    inset-inline: auto 20px;
+    max-inline-size: 400px;
   }
 }
 </style>

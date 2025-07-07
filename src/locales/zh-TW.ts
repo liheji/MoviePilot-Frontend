@@ -149,6 +149,76 @@ export default {
     online: '在線模式',
     onlineMessage: '網絡連接已恢復',
   },
+  pwa: {
+    installApp: '安裝 MoviePilot 應用',
+    installDescription: '獲得更好的離線體驗和性能',
+    install: '安裝',
+    installSuccess: '應用安裝成功！',
+    installGuide: '安裝指南',
+    installInstructions: '在 {platform} 上安裝 MoviePilot：',
+    installNote: '安裝後，您可以從主屏幕快速訪問 MoviePilot，並享受離線功能。',
+    gotIt: '知道了',
+    // 平台特定的說明
+    platforms: {
+      ios: 'iOS',
+      android: 'Android',
+      chrome: 'Chrome',
+      edge: 'Edge',
+      firefox: 'Firefox',
+      safari: 'Safari',
+      desktop: '桌面設備',
+      mobile: '移動設備',
+      other: '其他瀏覽器',
+    },
+    // 安裝步驟
+    installSteps: {
+      ios: [
+        '點擊瀏覽器底部的分享按鈕',
+        '選擇"添加到主屏幕"',
+        '點擊"添加"確認安裝',
+      ],
+      android: [
+        '點擊瀏覽器菜單（三個點）',
+        '選擇"添加到主屏幕"或"安裝應用"',
+        '點擊"安裝"確認',
+      ],
+      chrome: [
+        '點擊地址欄右側的安裝圖標',
+        '或者點擊瀏覽器菜單中的"安裝 MoviePilot"',
+        '點擊"安裝"確認',
+      ],
+      edge: [
+        '點擊地址欄右側的應用圖標',
+        '選擇"安裝此站點為應用"',
+        '點擊"安裝"確認',
+      ],
+      firefox: [
+        '點擊地址欄右側的安裝圖標',
+        '選擇"安裝"',
+        '確認安裝到桌面',
+      ],
+      safari: [
+        '點擊分享按鈕',
+        '選擇"添加到主屏幕"',
+        '點擊"添加"確認',
+      ],
+      desktop: [
+        '點擊地址欄右側的安裝圖標',
+        '選擇"安裝應用"',
+        '按照提示完成安裝',
+      ],
+      mobile: [
+        '點擊瀏覽器菜單',
+        '選擇"添加到主屏幕"',
+        '確認安裝',
+      ],
+      other: [
+        '查找瀏覽器中的"安裝"選項',
+        '通常在地址欄或菜單中',
+        '按照提示完成安裝',
+      ],
+    },
+  },
   login: {
     wallpapers: '壁紙',
     username: '用戶名',

@@ -50,7 +50,7 @@ export function useRecentPlugins() {
       // 按访问时间倒序排列
       return recentPlugins.sort((a, b) => b.access_time - a.access_time).map(recentPluginToPlugin)
     } catch (error) {
-      console.error('获取最近访问插件失败:', error)
+      console.error(error)
       return []
     }
   }
@@ -76,7 +76,7 @@ export function useRecentPlugins() {
 
       localStorage.setItem(RECENT_PLUGINS_KEY, JSON.stringify(recentPlugins))
     } catch (error) {
-      console.error('保存最近访问插件失败:', error)
+      console.error(error)
     }
   }
 
@@ -85,7 +85,7 @@ export function useRecentPlugins() {
     try {
       localStorage.removeItem(RECENT_PLUGINS_KEY)
     } catch (error) {
-      console.error('清除最近访问插件失败:', error)
+      console.error(error)
     }
   }
 
@@ -100,7 +100,7 @@ export function useRecentPlugins() {
 
       localStorage.setItem(RECENT_PLUGINS_KEY, JSON.stringify(recentPlugins))
     } catch (error) {
-      console.error('移除最近访问插件失败:', error)
+      console.error(error)
     }
   }
 

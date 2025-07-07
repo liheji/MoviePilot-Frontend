@@ -148,6 +148,76 @@ export default {
     online: 'Online Mode',
     onlineMessage: 'Network connection restored',
   },
+  pwa: {
+    installApp: 'Install MoviePilot App',
+    installDescription: 'Get better offline experience and performance',
+    install: 'Install',
+    installSuccess: 'App installed successfully!',
+    installGuide: 'Installation Guide',
+    installInstructions: 'Install MoviePilot on {platform}:',
+    installNote: 'After installation, you can quickly access MoviePilot from your home screen and enjoy offline features.',
+    gotIt: 'Got it',
+    // Platform specific descriptions
+    platforms: {
+      ios: 'iOS',
+      android: 'Android',
+      chrome: 'Chrome',
+      edge: 'Edge',
+      firefox: 'Firefox',
+      safari: 'Safari',
+      desktop: 'Desktop',
+      mobile: 'Mobile',
+      other: 'Other Browser',
+    },
+    // Installation steps
+    installSteps: {
+      ios: [
+        'Tap the share button at the bottom of the browser',
+        'Select "Add to Home Screen"',
+        'Tap "Add" to confirm installation',
+      ],
+      android: [
+        'Tap the browser menu (three dots)',
+        'Select "Add to Home Screen" or "Install App"',
+        'Tap "Install" to confirm',
+      ],
+      chrome: [
+        'Click the install icon in the address bar',
+        'Or click "Install MoviePilot" in the browser menu',
+        'Click "Install" to confirm',
+      ],
+      edge: [
+        'Click the app icon in the address bar',
+        'Select "Install this site as an app"',
+        'Click "Install" to confirm',
+      ],
+      firefox: [
+        'Click the install icon in the address bar',
+        'Select "Install"',
+        'Confirm installation to desktop',
+      ],
+      safari: [
+        'Click the share button',
+        'Select "Add to Home Screen"',
+        'Tap "Add" to confirm',
+      ],
+      desktop: [
+        'Click the install icon in the address bar',
+        'Select "Install App"',
+        'Follow the prompts to complete installation',
+      ],
+      mobile: [
+        'Tap the browser menu',
+        'Select "Add to Home Screen"',
+        'Confirm installation',
+      ],
+      other: [
+        'Look for "Install" option in your browser',
+        'Usually in the address bar or menu',
+        'Follow the prompts to complete installation',
+      ],
+    },
+  },
   login: {
     wallpapers: 'Wallpapers',
     username: 'Username',
