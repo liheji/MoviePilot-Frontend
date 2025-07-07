@@ -36,8 +36,6 @@ const backgroundImages = ref<string[]>([])
 const activeImageIndex = ref(0)
 const isTransparentTheme = computed(() => globalTheme.name.value === 'transparent')
 
-
-
 // ApexCharts 全局配置
 declare global {
   interface Window {
@@ -121,7 +119,7 @@ function rotateBackgroundImage() {
 function startBackgroundRotation() {
   // 清除现有定时器
   removeBackgroundTimer('background-rotation')
-  
+
   if (backgroundImages.value.length > 1) {
     // 使用优化的定时器管理器，后台时自动暂停
     addBackgroundTimer(
@@ -130,8 +128,8 @@ function startBackgroundRotation() {
       10000, // 每10秒切换一次
       {
         runInBackground: false, // 后台时不运行
-        skipInitialRun: true // 不需要立即执行
-      }
+        skipInitialRun: true, // 不需要立即执行
+      },
     )
   }
 }
@@ -152,14 +150,14 @@ async function removeLoadingWithStateCheck() {
     globalLoadingStateManager.setLoadingState('pwa-state', true)
     globalLoadingStateManager.setLoadingState('global-settings', true)
     globalLoadingStateManager.setLoadingState('background-images', true)
-    
+
     // 静默检查PWA状态恢复
     const pwaController = (window as any).pwaStateController
     if (pwaController) {
       await pwaController.waitForStateRestore()
     }
     globalLoadingStateManager.setLoadingState('pwa-state', false)
-    
+
     // 并行加载关键资源
     await Promise.all([
       globalSettingsStore.initialize().then(() => {
@@ -170,15 +168,15 @@ async function removeLoadingWithStateCheck() {
           globalLoadingStateManager.setLoadingState('background-images', false)
           resolve(void 0)
         }, 50)
-      })
+      }),
     ])
-    
+
     // 等待所有加载完成
     await globalLoadingStateManager.waitForAllComplete()
-    
+
     // 移除加载界面
     animateAndRemoveLoader()
-    
+
     // 检查未读消息
     checkAndEmitUnreadMessages()
   } catch (error) {
@@ -315,30 +313,5 @@ onUnmounted(() => {
   inline-size: 100%;
   inset-block-start: 0;
   inset-inline-start: 0;
-}
-
-
-
-/* 优化加载完成动画 */
-.loading-complete {
-  animation: fadeOutScale 0.8s ease-out forwards;
-}
-
-@keyframes fadeOutScale {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0px);
-  }
-  70% {
-    opacity: 0.3;
-    transform: scale(1.05);
-    filter: blur(2px);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.1);
-    filter: blur(5px);
-  }
 }
 </style>

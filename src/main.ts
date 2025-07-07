@@ -123,8 +123,6 @@ app
 if (pwaStateController) {
   // 监听状态恢复事件
   window.addEventListener('pwaStateRestored', (event: Event) => {
-    const customEvent = event as CustomEvent
-
     // 可以在这里添加状态恢复后的处理逻辑
     // 例如：通知Vue组件状态已恢复
     app.config.globalProperties.$pwaStateRestored = true
@@ -159,7 +157,7 @@ if (import.meta.env.MODE === 'development') {
 window.addEventListener('beforeunload', () => {
   backgroundManager.destroy()
   sseManagerSingleton.closeAllManagers()
-  
+
   if (pwaStateController) {
     pwaStateController.destroy()
   }
