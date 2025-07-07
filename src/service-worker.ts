@@ -3,6 +3,51 @@ import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 // Service Worker 类型声明
 declare let self: ServiceWorkerGlobalScope
 
+// 扩展ServiceWorkerRegistration类型以支持sync
+interface SyncManager {
+  register(tag: string): Promise<void>
+}
+
+interface ServiceWorkerRegistration {
+  readonly sync: SyncManager
+}
+
+// 扩展ExtendableEvent以支持sync事件
+interface SyncEvent extends ExtendableEvent {
+  readonly tag: string
+  readonly lastChance: boolean
+}
+
+// 扩展ServiceWorkerGlobalScope事件映射
+declare global {
+  interface ServiceWorkerGlobalScopeEventMap {
+    'sync': SyncEvent
+  }
+}
+
+// 缓存版本控制
+const CACHE_VERSION = 'v1.0.0'
+const CACHE_NAMES = {
+  appShell: `app-shell-${CACHE_VERSION}`,
+  static: `static-resources-${CACHE_VERSION}`,
+  images: `image-cache-${CACHE_VERSION}`,
+  fonts: `font-cache-${CACHE_VERSION}`,
+  api: `api-cache-${CACHE_VERSION}`,
+  tmdb: `tmdb-image-cache-${CACHE_VERSION}`,
+  pages: `pages-cache-${CACHE_VERSION}`,
+}
+
+// 缓存大小限制
+const CACHE_SIZE_LIMITS = {
+  appShell: { maxEntries: 10, maxAgeSeconds: 7 * 24 * 60 * 60 }, // 7天
+  static: { maxEntries: 100, maxAgeSeconds: 30 * 24 * 60 * 60 }, // 30天
+  images: { maxEntries: 200, maxAgeSeconds: 30 * 24 * 60 * 60 }, // 30天
+  fonts: { maxEntries: 50, maxAgeSeconds: 365 * 24 * 60 * 60 }, // 1年
+  api: { maxEntries: 500, maxAgeSeconds: 24 * 60 * 60 }, // 24小时
+  tmdb: { maxEntries: 300, maxAgeSeconds: 7 * 24 * 60 * 60 }, // 7天
+  pages: { maxEntries: 50, maxAgeSeconds: 7 * 24 * 60 * 60 }, // 7天
+}
+
 // 通知选项
 const options = {
   icon: '/logo.png',
@@ -99,6 +144,100 @@ async function clearBadge() {
   }
 }
 
+// 清理旧版本缓存
+async function deleteOldCaches() {
+  const cacheWhitelist = Object.values(CACHE_NAMES)
+  const cacheNames = await caches.keys()
+  
+  await Promise.all(
+    cacheNames.map(async (cacheName) => {
+      if (!cacheWhitelist.includes(cacheName)) {
+        console.log('Deleting old cache:', cacheName)
+        return caches.delete(cacheName)
+      }
+    })
+  )
+}
+
+// 获取缓存大小
+async function getCacheSize(cacheName: string): Promise<number> {
+  if (!('estimate' in navigator.storage)) {
+    return 0
+  }
+  
+  try {
+    const cache = await caches.open(cacheName)
+    const keys = await cache.keys()
+    let totalSize = 0
+    
+    for (const request of keys) {
+      const response = await cache.match(request)
+      if (response) {
+        const blob = await response.blob()
+        totalSize += blob.size
+      }
+    }
+    
+    return totalSize
+  } catch (error) {
+    console.error('Failed to get cache size:', error)
+    return 0
+  }
+}
+
+// 监控缓存大小
+async function monitorCacheSize() {
+  const cacheSizes: Record<string, number> = {}
+  let totalSize = 0
+  
+  for (const [key, cacheName] of Object.entries(CACHE_NAMES)) {
+    const size = await getCacheSize(cacheName)
+    cacheSizes[key] = size
+    totalSize += size
+  }
+  
+  // 发送缓存统计信息给客户端
+  const clients = await self.clients.matchAll()
+  clients.forEach(client => {
+    client.postMessage({
+      type: 'CACHE_SIZE_UPDATE',
+      data: {
+        cacheSizes,
+        totalSize,
+        totalSizeMB: (totalSize / 1024 / 1024).toFixed(2),
+      }
+    })
+  })
+  
+  return { cacheSizes, totalSize }
+}
+
+// 清理过期缓存条目
+async function cleanupExpiredCaches() {
+  for (const [key, cacheName] of Object.entries(CACHE_NAMES)) {
+    const limit = CACHE_SIZE_LIMITS[key as keyof typeof CACHE_SIZE_LIMITS]
+    if (!limit) continue
+    
+    try {
+      const cache = await caches.open(cacheName)
+      const keys = await cache.keys()
+      
+      // 如果缓存条目超过限制，删除最老的条目
+      if (keys.length > limit.maxEntries) {
+        const deleteCount = keys.length - limit.maxEntries
+        console.log(`Cleaning up ${deleteCount} entries from ${cacheName}`)
+        
+        // 删除最老的条目（假设数组开头是最老的）
+        for (let i = 0; i < deleteCount; i++) {
+          await cache.delete(keys[i])
+        }
+      }
+    } catch (error) {
+      console.error(`Failed to cleanup cache ${cacheName}:`, error)
+    }
+  }
+}
+
 // 安装事件
 self.addEventListener('install', () => {
   // 强制等待中的Service Worker立即成为活动的Service Worker
@@ -115,14 +254,13 @@ self.addEventListener('activate', event => {
       }
 
       // 清理旧版本的缓存
-      const cacheNames = await caches.keys()
-      await Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName.includes('old-') || cacheName.includes('deprecated-')) {
-            return caches.delete(cacheName)
-          }
-        }),
-      )
+      await deleteOldCaches()
+      
+      // 清理过期的缓存条目
+      await cleanupExpiredCaches()
+      
+      // 监控缓存大小
+      await monitorCacheSize()
     })(),
   )
   // 告诉活动的Service Worker立即控制页面
@@ -133,45 +271,206 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url)
 
-  if (event.request.url.includes('/api/v1/') && event.request.method === 'GET') {
-    event.respondWith(
-      (async () => {
-        try {
-          // 尝试网络请求
-          const networkResponse = await fetch(event.request)
-          return networkResponse
-        } catch (error) {
-          // 网络错误时，通知客户端当前处于离线状态
-          if (self.clients) {
-            self.clients.matchAll().then(clients => {
-              clients.forEach(client => {
-                client.postMessage({
-                  type: 'OFFLINE_STATUS',
-                  offline: true,
+  // 处理API请求
+  if (event.request.url.includes('/api/v1/')) {
+    // GET请求：尝试从缓存返回
+    if (event.request.method === 'GET') {
+      event.respondWith(
+        (async () => {
+          try {
+            // 尝试网络请求
+            const networkResponse = await fetch(event.request)
+            return networkResponse
+          } catch (error) {
+            // 网络错误时，通知客户端当前处于离线状态
+            if (self.clients) {
+              self.clients.matchAll().then(clients => {
+                clients.forEach(client => {
+                  client.postMessage({
+                    type: 'OFFLINE_STATUS',
+                    offline: true,
+                  })
                 })
               })
-            })
-          }
+            }
 
-          // 尝试返回缓存的响应
-          const cache = await caches.open('api-cache')
-          const cachedResponse = await cache.match(event.request)
-          if (cachedResponse) {
-            return cachedResponse
-          }
+            // 尝试返回缓存的响应
+            const cache = await caches.open(CACHE_NAMES.api)
+            const cachedResponse = await cache.match(event.request)
+            if (cachedResponse) {
+              return cachedResponse
+            }
 
-          // 如果没有缓存，抛出错误
-          throw error
-        }
-      })(),
-    )
+            // 如果没有缓存，抛出错误
+            throw error
+          }
+        })(),
+      )
+    } 
+    // POST/PUT/DELETE请求：离线时加入同步队列
+    else if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(event.request.method)) {
+      event.respondWith(
+        (async () => {
+          try {
+            // 尝试网络请求
+            const networkResponse = await fetch(event.request)
+            return networkResponse
+          } catch (error) {
+            // 网络错误时，加入同步队列
+            await addToSyncQueue(event.request)
+            
+            // 通知客户端请求已加入队列
+            if (self.clients) {
+              self.clients.matchAll().then(clients => {
+                clients.forEach(client => {
+                  client.postMessage({
+                    type: 'REQUEST_QUEUED',
+                    url: event.request.url,
+                    method: event.request.method,
+                  })
+                })
+              })
+            }
+            
+            // 返回一个假的成功响应
+            return new Response(
+              JSON.stringify({ 
+                success: true, 
+                queued: true,
+                message: '请求已加入离线队列，将在网络恢复后自动同步' 
+              }),
+              {
+                status: 202,
+                headers: { 'Content-Type': 'application/json' },
+              }
+            )
+          }
+        })(),
+      )
+    }
     return
   }
 })
 
+// 后台同步队列
+const syncQueue: Array<{
+  id: string
+  url: string
+  method: string
+  data?: any
+  timestamp: number
+}> = []
+
+// 添加请求到同步队列
+async function addToSyncQueue(request: Request) {
+  const id = `sync-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  const url = request.url
+  const method = request.method
+  
+  let data: any = null
+  if (method !== 'GET' && method !== 'HEAD') {
+    try {
+      data = await request.clone().text()
+    } catch (e) {
+      console.error('Failed to read request body:', e)
+    }
+  }
+  
+  const syncItem = {
+    id,
+    url,
+    method,
+    data,
+    timestamp: Date.now(),
+  }
+  
+  // 保存到IndexedDB
+  await set(`sync-${id}`, syncItem)
+  syncQueue.push(syncItem)
+  
+  // 注册后台同步
+  if ('sync' in self.registration) {
+    await self.registration.sync.register('sync-data')
+  }
+}
+
+// 执行同步队列中的请求
+async function processSyncQueue() {
+  const db = await openDB()
+  const transaction = db.transaction(['badge'], 'readonly')
+  const store = transaction.objectStore('badge')
+  const request = store.getAllKeys()
+  
+  const keys = await new Promise<IDBValidKey[]>((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () => reject(request.error)
+  })
+  
+  // 过滤出同步项
+  const syncKeys = keys.filter(key => String(key).startsWith('sync-'))
+  
+  for (const key of syncKeys) {
+    try {
+      const syncItem = await get(String(key))
+      if (!syncItem) continue
+      
+      // 构建请求
+      const init: RequestInit = {
+        method: syncItem.method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+      
+      if (syncItem.data) {
+        init.body = syncItem.data
+      }
+      
+      // 发送请求
+      const response = await fetch(syncItem.url, init)
+      
+      if (response.ok) {
+        // 成功后删除同步项
+        const deleteTransaction = db.transaction(['badge'], 'readwrite')
+        const deleteStore = deleteTransaction.objectStore('badge')
+        await deleteStore.delete(key)
+        
+        // 通知客户端同步成功
+        const clients = await self.clients.matchAll()
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'SYNC_SUCCESS',
+            syncId: syncItem.id,
+            url: syncItem.url,
+          })
+        })
+      } else {
+        throw new Error(`HTTP ${response.status}`)
+      }
+    } catch (error) {
+      console.error('Sync failed for item:', key, error)
+      
+      // 检查是否超过24小时，如果是则删除
+      const syncItem = await get(String(key))
+      if (syncItem && Date.now() - syncItem.timestamp > 24 * 60 * 60 * 1000) {
+        const deleteTransaction = db.transaction(['badge'], 'readwrite')
+        const deleteStore = deleteTransaction.objectStore('badge')
+        await deleteStore.delete(key)
+      }
+    }
+  }
+}
+
 // 初始化 Workbox
 cleanupOutdatedCaches()
 precacheAndRoute(self.__WB_MANIFEST)
+
+// 监听 sync 事件，处理后台同步
+self.addEventListener('sync', (event: SyncEvent) => {
+  if (event.tag === 'sync-data') {
+    event.waitUntil(processSyncQueue())
+  }
+})
 
 // 监听 push 事件，显示通知
 self.addEventListener('push', function (event) {
@@ -251,6 +550,28 @@ self.addEventListener('message', function (event) {
       })
       .catch(error => {
         event.ports[0]?.postMessage({ count: 0 })
+      })
+  } else if (event.data && event.data.type === 'CLEANUP_CACHES') {
+    // 手动触发缓存清理
+    Promise.all([
+      deleteOldCaches(),
+      cleanupExpiredCaches(),
+      monitorCacheSize()
+    ])
+      .then(([, , cacheInfo]) => {
+        event.ports[0]?.postMessage({ success: true, cacheInfo })
+      })
+      .catch(error => {
+        event.ports[0]?.postMessage({ success: false, error: error instanceof Error ? error.message : String(error) })
+      })
+  } else if (event.data && event.data.type === 'GET_CACHE_INFO') {
+    // 获取缓存信息
+    monitorCacheSize()
+      .then(cacheInfo => {
+        event.ports[0]?.postMessage({ success: true, cacheInfo })
+      })
+      .catch(error => {
+        event.ports[0]?.postMessage({ success: false, error: error instanceof Error ? error.message : String(error) })
       })
   }
 })

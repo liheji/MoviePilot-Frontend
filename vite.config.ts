@@ -62,10 +62,6 @@ export default defineConfig({
           },
           // 预缓存App Shell关键资源
           {
-            url: '/loader.css',
-            revision: null,
-          },
-          {
             url: '/logo.png',
             revision: null,
           },
