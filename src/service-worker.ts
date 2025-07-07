@@ -155,14 +155,14 @@ async function clearBadge() {
 async function deleteOldCaches() {
   const cacheWhitelist = Object.values(CACHE_NAMES)
   const cacheNames = await caches.keys()
-  
+
   await Promise.all(
-    cacheNames.map(async (cacheName) => {
+    cacheNames.map(async cacheName => {
       if (!cacheWhitelist.includes(cacheName)) {
         console.log('Deleting old cache:', cacheName)
         return caches.delete(cacheName)
       }
-    })
+    }),
   )
 }
 
@@ -171,12 +171,12 @@ async function getCacheSize(cacheName: string): Promise<number> {
   if (!('estimate' in navigator.storage)) {
     return 0
   }
-  
+
   try {
     const cache = await caches.open(cacheName)
     const keys = await cache.keys()
     let totalSize = 0
-    
+
     for (const request of keys) {
       const response = await cache.match(request)
       if (response) {
@@ -184,7 +184,7 @@ async function getCacheSize(cacheName: string): Promise<number> {
         totalSize += blob.size
       }
     }
-    
+
     return totalSize
   } catch (error) {
     console.error('Failed to get cache size:', error)
@@ -196,13 +196,13 @@ async function getCacheSize(cacheName: string): Promise<number> {
 async function monitorCacheSize() {
   const cacheSizes: Record<string, number> = {}
   let totalSize = 0
-  
+
   for (const [key, cacheName] of Object.entries(CACHE_NAMES)) {
     const size = await getCacheSize(cacheName)
     cacheSizes[key] = size
     totalSize += size
   }
-  
+
   // 发送缓存统计信息给客户端
   const clients = await self.clients.matchAll()
   clients.forEach(client => {
@@ -212,10 +212,10 @@ async function monitorCacheSize() {
         cacheSizes,
         totalSize,
         totalSizeMB: (totalSize / 1024 / 1024).toFixed(2),
-      }
+      },
     })
   })
-  
+
   return { cacheSizes, totalSize }
 }
 
@@ -224,16 +224,16 @@ async function cleanupExpiredCaches() {
   for (const [key, cacheName] of Object.entries(CACHE_NAMES)) {
     const limit = CACHE_SIZE_LIMITS[key as keyof typeof CACHE_SIZE_LIMITS]
     if (!limit) continue
-    
+
     try {
       const cache = await caches.open(cacheName)
       const keys = await cache.keys()
-      
+
       // 如果缓存条目超过限制，删除最老的条目
       if (keys.length > limit.maxEntries) {
         const deleteCount = keys.length - limit.maxEntries
         console.log(`Cleaning up ${deleteCount} entries from ${cacheName}`)
-        
+
         // 删除最老的条目（假设数组开头是最老的）
         for (let i = 0; i < deleteCount; i++) {
           await cache.delete(keys[i])
@@ -262,10 +262,10 @@ self.addEventListener('activate', event => {
 
       // 清理旧版本的缓存
       await deleteOldCaches()
-      
+
       // 清理过期的缓存条目
       await cleanupExpiredCaches()
-      
+
       // 监控缓存大小
       await monitorCacheSize()
     })(),
@@ -313,7 +313,7 @@ self.addEventListener('fetch', event => {
           }
         })(),
       )
-    } 
+    }
     // POST/PUT/DELETE请求：离线时加入同步队列
     else if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(event.request.method)) {
       event.respondWith(
@@ -325,7 +325,7 @@ self.addEventListener('fetch', event => {
           } catch (error) {
             // 网络错误时，加入同步队列
             await addToSyncQueue(event.request)
-            
+
             // 通知客户端请求已加入队列
             if (self.clients) {
               self.clients.matchAll().then(clients => {
@@ -338,18 +338,18 @@ self.addEventListener('fetch', event => {
                 })
               })
             }
-            
+
             // 返回一个假的成功响应
             return new Response(
-              JSON.stringify({ 
-                success: true, 
+              JSON.stringify({
+                success: true,
                 queued: true,
-                message: '请求已加入离线队列，将在网络恢复后自动同步' 
+                message: '请求已加入离线队列，将在网络恢复后自动同步',
               }),
               {
                 status: 202,
                 headers: { 'Content-Type': 'application/json' },
-              }
+              },
             )
           }
         })(),
@@ -373,7 +373,7 @@ async function addToSyncQueue(request: Request) {
   const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   const url = request.url
   const method = request.method
-  
+
   let data: any = null
   if (method !== 'GET' && method !== 'HEAD') {
     try {
@@ -382,7 +382,7 @@ async function addToSyncQueue(request: Request) {
       console.error('Failed to read request body:', e)
     }
   }
-  
+
   const syncItem = {
     id,
     url,
@@ -390,11 +390,11 @@ async function addToSyncQueue(request: Request) {
     data,
     timestamp: Date.now(),
   }
-  
+
   // 保存到IndexedDB (使用专用的 "sync" store)
   await set(id, syncItem, 'sync')
   syncQueue.push(syncItem)
-  
+
   // 注册后台同步
   if ('sync' in self.registration) {
     await self.registration.sync.register('sync-data')
@@ -405,15 +405,18 @@ async function addToSyncQueue(request: Request) {
 async function processSyncQueue() {
   const db = await openDB()
 
-  // 使用专用的 "sync" store，并开启 readwrite 事务（便于后续删除）
-  const tx = db.transaction(['sync'], 'readwrite')
-  const store = tx.objectStore('sync')
-
+  // 先用只读事务获取所有同步项
   const items: Array<any> = await new Promise((resolve, reject) => {
+    const tx = db.transaction(['sync'], 'readonly')
+    const store = tx.objectStore('sync')
     const req = store.getAll()
     req.onsuccess = () => resolve(req.result)
     req.onerror = () => reject(req.error)
   })
+
+  // 收集需要删除的项目ID
+  const itemsToDelete: string[] = []
+  const itemsToDeleteExpired: string[] = []
 
   for (const syncItem of items) {
     const key = syncItem.id
@@ -434,8 +437,8 @@ async function processSyncQueue() {
       const response = await fetch(syncItem.url, init)
 
       if (response.ok) {
-        // 成功后删除同步项，并等待事务完成
-        await del(key, 'sync')
+        // 成功后标记为需要删除
+        itemsToDelete.push(key)
 
         // 通知客户端同步成功
         const clients = await self.clients.matchAll()
@@ -452,11 +455,28 @@ async function processSyncQueue() {
     } catch (error) {
       console.error('Sync failed for item:', key, error)
 
-      // 如果该同步项已存在超过 24 小时，则将其丢弃
+      // 如果该同步项已存在超过 24 小时，则标记为需要删除
       if (Date.now() - syncItem.timestamp > 24 * 60 * 60 * 1000) {
-        await del(key, 'sync')
+        itemsToDeleteExpired.push(key)
       }
     }
+  }
+
+  // 批量删除所有成功处理的项目和过期项目
+  const allItemsToDelete = [...itemsToDelete, ...itemsToDeleteExpired]
+  if (allItemsToDelete.length > 0) {
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(['sync'], 'readwrite')
+      const store = tx.objectStore('sync')
+
+      // 批量删除所有标记的项目
+      allItemsToDelete.forEach(id => {
+        store.delete(id)
+      })
+
+      tx.oncomplete = () => resolve()
+      tx.onerror = () => reject(tx.error)
+    })
   }
 }
 
@@ -552,11 +572,7 @@ self.addEventListener('message', function (event) {
       })
   } else if (event.data && event.data.type === 'CLEANUP_CACHES') {
     // 手动触发缓存清理
-    Promise.all([
-      deleteOldCaches(),
-      cleanupExpiredCaches(),
-      monitorCacheSize()
-    ])
+    Promise.all([deleteOldCaches(), cleanupExpiredCaches(), monitorCacheSize()])
       .then(([, , cacheInfo]) => {
         event.ports[0]?.postMessage({ success: true, cacheInfo })
       })
