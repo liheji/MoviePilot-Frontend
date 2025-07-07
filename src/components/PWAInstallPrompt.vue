@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { usePWAInstall } from '@/composables/usePWAInstall'
+import { useToast } from 'vue-toastification'
 
 const { t } = useI18n()
 const { 
   isInstallable, 
   isInstalled, 
-  isPWASupported,
   showInstallPrompt,
   getInstallInstructions 
 } = usePWAInstall()
