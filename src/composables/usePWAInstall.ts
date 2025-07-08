@@ -96,54 +96,54 @@ export function usePWAInstall() {
     const ua = navigator.userAgent
     const isIOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream
     const isAndroid = /Android/.test(ua)
-    const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua)
+    const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua) && !/Edg/.test(ua)
     const isChrome = /Chrome/.test(ua) && !/Edg/.test(ua)
     const isEdge = /Edg/.test(ua)
     const isFirefox = /Firefox/.test(ua)
 
-    if (isIOS && isSafari) {
+    if (isEdge) {
       return {
-        platform: 'ios',
+        platform: 'Microsoft Edge',
+        platformKey: 'edge',
+      }
+    } else if (isIOS && isSafari) {
+      return {
+        platform: 'iOS Safari',
         platformKey: 'ios',
       }
     } else if (isAndroid && isChrome) {
       return {
-        platform: 'android',
+        platform: 'Android Chrome',
         platformKey: 'android',
-      }
-    } else if (isEdge) {
-      return {
-        platform: 'edge',
-        platformKey: 'edge',
       }
     } else if (isFirefox && isAndroid) {
       return {
-        platform: 'firefox',
-        platformKey: 'android', // Firefox on Android uses similar steps to Chrome
+        platform: 'Android Firefox',
+        platformKey: 'android',
       }
     } else if (isFirefox) {
       return {
-        platform: 'firefox',
+        platform: 'Firefox',
         platformKey: 'firefox',
       }
     } else if (isChrome) {
       return {
-        platform: 'chrome',
+        platform: 'Chrome',
         platformKey: 'chrome',
       }
     } else if (isSafari) {
       return {
-        platform: 'safari',
+        platform: 'Safari',
         platformKey: 'safari',
       }
     } else if (isAndroid) {
       return {
-        platform: 'mobile',
+        platform: 'Mobile Browser',
         platformKey: 'mobile',
       }
     } else {
       return {
-        platform: 'desktop',
+        platform: 'Desktop Browser',
         platformKey: 'desktop',
       }
     }
