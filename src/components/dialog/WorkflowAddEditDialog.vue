@@ -89,7 +89,7 @@ async function editWorkflow() {
     <VCard>
       <VCardItem>
         <template #prepend>
-          <VIcon icon="mdi-clock-outline" class="me-2" />
+          <VIcon icon="mdi-workflow-outline" class="me-2" />
         </template>
         <VCardTitle>{{ title }}</VCardTitle>
       </VCardItem>

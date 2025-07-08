@@ -330,7 +330,7 @@ export default {
     },
   },
   workflowTabs: {
-    list: '工作流',
+    list: '我的工作流',
     share: '工作流分享',
   },
   pluginTabs: {
@@ -1130,6 +1130,8 @@ export default {
       subscribeStatisticShareHint: '分享訂閱統計數據到熱門訂閱，供其他MPer參考',
       pluginStatisticShare: '上報插件安裝數據',
       pluginStatisticShareHint: '上報插件安裝數據給服務器，用於統計展示插件安裝情況',
+      workflowStatisticShare: '分享工作流數據',
+      workflowStatisticShareHint: '分享工作流統計數據到熱門工作流，供其他MPer參考',
       bigMemoryMode: '大內存模式',
       bigMemoryModeHint: '使用更大的內存緩存數據，提升系統性能',
       dbWalEnable: 'WAL模式',

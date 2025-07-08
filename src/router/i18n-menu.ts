@@ -302,12 +302,12 @@ export function getWorkflowTabs() {
     {
       title: t('workflowTabs.list'),
       tab: 'list',
-      icon: 'mdi-format-list-bulleted',
+      icon: 'mdi-workflow-outline',
     },
     {
       title: t('workflowTabs.share'),
       tab: 'share',
-      icon: 'mdi-share',
+      icon: 'mdi-share-variant',
     },
   ]
 }

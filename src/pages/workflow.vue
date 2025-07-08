@@ -11,7 +11,7 @@ const { t } = useI18n()
 
 const route = useRoute()
 
-const activeTab = ref((route.query.tab as string) || '')
+const activeTab = ref((route.query.tab as string) || 'list')
 const shareViewKey = ref(0)
 
 // 获取标签页
@@ -22,19 +22,19 @@ const workflowTabs = computed(() => {
 // 新增工作流对话框
 const addWorkflowDialog = ref(false)
 
-// 工作流列表刷新key
-const workflowListKey = ref(0)
-
 // 分享搜索词
 const shareKeyword = ref('')
+
+// 搜索分享对话框
+const searchShareDialog = ref(false)
+
+// 搜索分享激活器
+const searchActivator = computed(() => '[data-menu-activator="search-btn"]')
 
 // 搜索分享
 const searchShares = () => {
   shareViewKey.value++
 }
-
-// VMenu activator选择器
-const searchActivator = computed(() => '[data-menu-activator="search-btn"]')
 
 // 使用动态标签页
 const { registerHeaderTab } = useDynamicHeaderTab()
@@ -45,26 +45,15 @@ registerHeaderTab({
   modelValue: activeTab,
   appendButtons: [
     {
-      icon: 'mdi-movie-search-outline',
+      icon: 'mdi-search',
       variant: 'text',
       color: computed(() => (shareKeyword.value ? 'primary' : 'gray')),
       class: 'settings-icon-button',
       dataAttr: 'search-btn',
-      action: () => {
-        // 这里可以添加搜索弹窗逻辑
-        console.log('Search workflow shares')
-      },
       show: computed(() => activeTab.value === 'share'),
-    },
-    {
-      icon: 'mdi-plus',
-      variant: 'text',
-      color: 'gray',
-      class: 'settings-icon-button',
       action: () => {
-        addWorkflowDialog.value = true
+        searchShareDialog.value = true
       },
-      show: computed(() => activeTab.value === 'list'),
     },
   ],
 })
@@ -91,25 +80,6 @@ onMounted(() => {
       <VWindowItem value="share">
         <transition name="fade-slide" appear>
           <div>
-            <div class="mb-4">
-              <VRow>
-                <VCol cols="12" md="6">
-                  <VTextField
-                    v-model="shareKeyword"
-                    :label="t('workflow.searchShares')"
-                    prepend-inner-icon="mdi-magnify"
-                    clearable
-                    @keyup.enter="searchShares"
-                    @click:clear="searchShares"
-                  />
-                </VCol>
-                <VCol cols="12" md="6" class="d-flex align-center">
-                  <VBtn @click="searchShares" prepend-icon="mdi-magnify" class="me-2">
-                    {{ t('workflow.searchShares') }}
-                  </VBtn>
-                </VCol>
-              </VRow>
-            </div>
             <WorkflowShareView :keyword="shareKeyword" :key="shareViewKey" />
           </div>
         </transition>
@@ -123,6 +93,34 @@ onMounted(() => {
       @close="addWorkflowDialog = false"
       @save="addWorkflowDialog = false"
     />
+
+    <!-- 搜索工作流分享弹窗 -->
+    <Teleport to="body" v-if="searchShareDialog">
+      <VMenu
+        v-model="searchShareDialog"
+        width="25rem"
+        :close-on-content-click="false"
+        :activator="searchActivator"
+        location="bottom end"
+      >
+        <VCard>
+          <VCardItem>
+            <VCardTitle>
+              <VIcon icon="mdi-movie-search-outline" class="mr-2" />
+              {{ t('workflow.searchShares') }}
+            </VCardTitle>
+            <VDialogCloseBtn @click="searchShareDialog = false" />
+          </VCardItem>
+          <VCardText>
+            <VTextField v-model="shareKeyword" :label="t('workflow.searchShares')" clearable density="comfortable">
+              <template #append>
+                <VBtn prepend-icon="mdi-magnify" color="primary" @click="searchShares">{{ t('common.search') }}</VBtn>
+              </template>
+            </VTextField>
+          </VCardText>
+        </VCard>
+      </VMenu>
+    </Teleport>
   </div>
 </template>
 

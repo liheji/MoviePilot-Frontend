@@ -155,7 +155,8 @@ export default {
     installSuccess: 'App installed successfully!',
     installGuide: 'Installation Guide',
     installInstructions: 'Install MoviePilot on {platform}:',
-    installNote: 'After installation, you can quickly access MoviePilot from your home screen and enjoy offline features.',
+    installNote:
+      'After installation, you can quickly access MoviePilot from your home screen and enjoy offline features.',
     gotIt: 'Got it',
     // Platform specific descriptions
     platforms: {
@@ -330,7 +331,7 @@ export default {
     },
   },
   workflowTabs: {
-    list: 'Workflow',
+    list: 'My Workflows',
     share: 'Workflow Share',
   },
   pluginTabs: {
@@ -1135,6 +1136,8 @@ export default {
         'Share subscription statistics to popular subscriptions for other MP users to reference',
       pluginStatisticShare: 'Report Plugin Installation Data',
       pluginStatisticShareHint: 'Report plugin installation data to the server for statistics and display purposes',
+      workflowStatisticShare: 'Share Workflow Data',
+      workflowStatisticShareHint: 'Share workflow statistics to popular workflows for other MP users to reference',
       bigMemoryMode: 'Large Memory Mode',
       bigMemoryModeHint: 'Use more memory to cache data and improve system performance',
       dbWalEnable: 'WAL Mode',
