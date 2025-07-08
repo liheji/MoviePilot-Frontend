@@ -64,9 +64,27 @@ const dismissBanner = () => {
 
 // 从编译对象中提取文本
 const extractText = (obj: any): string => {
+  // 如果是字符串直接返回
   if (typeof obj === 'string') return obj
-  if (obj?.body?.static) return obj.body.static
-  if (obj?.source) return obj.source
+
+  // 如果是对象，尝试多种方式获取文本
+  if (obj) {
+    // 尝试获取编译对象中的静态文本
+    if (obj.body?.static) return obj.body.static
+    // 尝试获取源文本
+    if (obj.source) return obj.source
+    // 尝试获取文本属性
+    if (obj.text) return obj.text
+    // 尝试获取值属性
+    if (obj.value) return obj.value
+    // 如果对象可以转换为字符串
+    if (obj.toString && typeof obj.toString === 'function' && obj.toString() !== '[object Object]') {
+      return obj.toString()
+    }
+  }
+
+  // 如果都获取不到，返回空字符串
+  console.warn('Failed to extract text from object:', obj)
   return ''
 }
 
