@@ -62,31 +62,7 @@ const dismissBanner = () => {
   localStorage.setItem('pwa-install-dismissed', new Date().toISOString())
 }
 
-// 从编译对象中提取文本
-const extractText = (obj: any): string => {
-  // 如果是字符串直接返回
-  if (typeof obj === 'string') return obj
 
-  // 如果是对象，尝试多种方式获取文本
-  if (obj) {
-    // 尝试获取编译对象中的静态文本
-    if (obj.body?.static) return obj.body.static
-    // 尝试获取源文本
-    if (obj.source) return obj.source
-    // 尝试获取文本属性
-    if (obj.text) return obj.text
-    // 尝试获取值属性
-    if (obj.value) return obj.value
-    // 如果对象可以转换为字符串
-    if (obj.toString && typeof obj.toString === 'function' && obj.toString() !== '[object Object]') {
-      return obj.toString()
-    }
-  }
-
-  // 如果都获取不到，返回空字符串
-  console.warn('Failed to extract text from object:', obj)
-  return ''
-}
 
 // 获取平台特定的安装说明
 const instructions = computed(() => {
@@ -96,11 +72,26 @@ const instructions = computed(() => {
   // 获取平台显示名称
   const platformName = t(`pwa.platforms.${platformKey}`)
 
-  // 获取安装步骤
-  const currentLocale = unref(locale) as string
-  const currentMessages = messages.value[currentLocale] || messages.value['zh-CN']
-  const rawSteps = (currentMessages as any).pwa?.installSteps?.[platformKey] || []
-  const steps = Array.isArray(rawSteps) ? rawSteps.map(extractText) : []
+  // 直接使用t函数获取安装步骤，避免编译对象的问题
+  const steps = []
+  const maxSteps = 10 // 最大步骤数，防止无限循环
+  
+  for (let i = 0; i < maxSteps; i++) {
+    try {
+      const stepKey = `pwa.installSteps.${platformKey}.${i}`
+      const stepText = t(stepKey)
+      
+      // 如果返回的是键名本身，说明没有找到对应的翻译
+      if (stepText === stepKey) {
+        break
+      }
+      
+      steps.push(stepText)
+    } catch (error) {
+      // 如果出现错误，说明没有更多步骤
+      break
+    }
+  }
 
   return {
     platform: platformName,
