@@ -171,51 +171,51 @@ export default {
     },
     // Installation steps
     installSteps: {
-      ios: [
-        'Tap the share button at the bottom of the browser',
-        'Select "Add to Home Screen"',
-        'Tap "Add" to confirm installation',
-      ],
-      android: [
-        'Tap the browser menu (three dots)',
-        'Select "Add to Home Screen" or "Install App"',
-        'Tap "Install" to confirm',
-      ],
-      chrome: [
-        'Click the install icon in the address bar',
-        'Or click "Install MoviePilot" in the browser menu',
-        'Click "Install" to confirm',
-      ],
-      edge: [
-        'Click the app icon in the address bar',
-        'Select "Install this site as an app"',
-        'Click "Install" to confirm',
-      ],
-      firefox: [
-        'Click the install icon in the address bar',
-        'Select "Install"',
-        'Confirm installation to desktop',
-      ],
-      safari: [
-        'Click the share button',
-        'Select "Add to Home Screen"',
-        'Tap "Add" to confirm',
-      ],
-      desktop: [
-        'Click the install icon in the address bar',
-        'Select "Install App"',
-        'Follow the prompts to complete installation',
-      ],
-      mobile: [
-        'Tap the browser menu',
-        'Select "Add to Home Screen"',
-        'Confirm installation',
-      ],
-      other: [
-        'Look for "Install" option in your browser',
-        'Usually in the address bar or menu',
-        'Follow the prompts to complete installation',
-      ],
+      ios: {
+        0: 'Tap the share button at the bottom of the browser',
+        1: 'Select "Add to Home Screen"',
+        2: 'Tap "Add" to confirm installation',
+      },
+      android: {
+        0: 'Tap the browser menu (three dots)',
+        1: 'Select "Add to Home Screen" or "Install App"',
+        2: 'Tap "Install" to confirm',
+      },
+      chrome: {
+        0: 'Click the install icon in the address bar',
+        1: 'Or click "Install MoviePilot" in the browser menu',
+        2: 'Click "Install" to confirm',
+      },
+      edge: {
+        0: 'Click the app icon in the address bar',
+        1: 'Select "Install this site as an app"',
+        2: 'Click "Install" to confirm',
+      },
+      firefox: {
+        0: 'Click the install icon in the address bar',
+        1: 'Select "Install"',
+        2: 'Confirm installation to desktop',
+      },
+      safari: {
+        0: 'Click the share button',
+        1: 'Select "Add to Home Screen"',
+        2: 'Tap "Add" to confirm',
+      },
+      desktop: {
+        0: 'Click the install icon in the address bar',
+        1: 'Select "Install App"',
+        2: 'Follow the prompts to complete installation',
+      },
+      mobile: {
+        0: 'Tap the browser menu',
+        1: 'Select "Add to Home Screen"',
+        2: 'Confirm installation',
+      },
+      other: {
+        0: 'Look for "Install" option in your browser',
+        1: 'Usually in the address bar or menu',
+        2: 'Follow the prompts to complete installation',
+      },
     },
   },
   login: {
