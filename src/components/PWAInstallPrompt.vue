@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { usePWAInstall } from '@/composables/usePWAInstall'
+import { useAuthStore } from '@/stores'
+import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toastification'
 
-const { t } = useI18n()
-const { isInstallable, isInstalled, showInstallPrompt, getInstallInstructions } = usePWAInstall()
+const { t, locale, messages } = useI18n()
+const { isInstalled, showInstallPrompt, getInstallInstructions } = usePWAInstall()
 
 const showBanner = ref(false)
 const showInstructions = ref(false)
 const dismissed = ref(false)
 
+// 检查是否登录
+const authStore = useAuthStore()
+const isLogin = computed(() => authStore.token)
+
 // 检查是否应该显示横幅
 const shouldShowBanner = computed(() => {
-  return isInstallable.value && !isInstalled.value && !dismissed.value && !showInstructions.value
+  return !isInstalled.value && !dismissed.value && !showInstructions.value && isLogin.value
 })
 
 // 显示延迟（避免立即显示）
@@ -24,15 +30,15 @@ onMounted(() => {
       const now = new Date()
       const daysDiff = (now.getTime() - dismissedDate.getTime()) / (1000 * 60 * 60 * 24)
 
-      // 如果距离上次关闭不到7天，不显示
-      if (daysDiff < 7) {
+      // 如果距离上次关闭不到30天，不显示
+      if (daysDiff < 30) {
         dismissed.value = true
         return
       }
     }
 
     showBanner.value = true
-  }, 30000) // 30秒后显示
+  }, 5000) // 5秒后显示
 })
 
 // 处理安装
@@ -56,6 +62,14 @@ const dismissBanner = () => {
   localStorage.setItem('pwa-install-dismissed', new Date().toISOString())
 }
 
+// 从编译对象中提取文本
+const extractText = (obj: any): string => {
+  if (typeof obj === 'string') return obj
+  if (obj?.body?.static) return obj.body.static
+  if (obj?.source) return obj.source
+  return ''
+}
+
 // 获取平台特定的安装说明
 const instructions = computed(() => {
   const rawInstructions = getInstallInstructions()
@@ -65,49 +79,56 @@ const instructions = computed(() => {
   const platformName = t(`pwa.platforms.${platformKey}`)
 
   // 获取安装步骤
-  const steps = t(`pwa.installSteps.${platformKey}`)
+  const currentLocale = unref(locale) as string
+  const currentMessages = messages.value[currentLocale] || messages.value['zh-CN']
+  const rawSteps = (currentMessages as any).pwa?.installSteps?.[platformKey] || []
+  const steps = Array.isArray(rawSteps) ? rawSteps.map(extractText) : []
 
   return {
     platform: platformName,
-    steps: Array.isArray(steps) ? steps : [],
+    steps,
   }
 })
 </script>
 
 <template>
   <!-- 安装横幅 -->
-  <Transition
-    enter-active-class="transition-all duration-300"
-    enter-from-class="translate-y-full opacity-0"
-    enter-to-class="translate-y-0 opacity-100"
-    leave-active-class="transition-all duration-300"
-    leave-from-class="translate-y-0 opacity-100"
-    leave-to-class="translate-y-full opacity-0"
-  >
-    <div v-if="shouldShowBanner && showBanner" class="pwa-install-banner">
-      <div class="banner-content">
-        <VIcon icon="mdi-cellphone-link" size="24" class="me-3" />
-        <div class="flex-grow-1">
-          <div class="font-weight-medium">{{ t('pwa.installApp') }}</div>
-          <div class="text-sm opacity-70">{{ t('pwa.installDescription') }}</div>
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition-all duration-300"
+      enter-from-class="translate-y-full opacity-0"
+      enter-to-class="translate-y-0 opacity-100"
+      leave-active-class="transition-all duration-300"
+      leave-from-class="translate-y-0 opacity-100"
+      leave-to-class="translate-y-full opacity-0"
+    >
+      <div v-if="shouldShowBanner && showBanner" class="pwa-install-banner">
+        <div class="banner-content">
+          <VIcon icon="mdi-cellphone-link" size="24" class="me-3" />
+          <div class="flex-grow-1">
+            <div class="font-weight-medium">{{ t('pwa.installApp') }}</div>
+            <div class="text-sm opacity-70">{{ t('pwa.installDescription') }}</div>
+          </div>
+          <VBtn color="primary" size="small" variant="flat" @click="handleInstall">
+            {{ t('pwa.install') }}
+          </VBtn>
+          <VBtn icon size="small" variant="text" @click="dismissBanner">
+            <VIcon icon="mdi-close" />
+          </VBtn>
         </div>
-        <VBtn color="primary" size="small" variant="flat" @click="handleInstall">
-          {{ t('pwa.install') }}
-        </VBtn>
-        <VBtn icon size="small" variant="text" @click="dismissBanner">
-          <VIcon icon="mdi-close" />
-        </VBtn>
       </div>
-    </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 
   <!-- 手动安装说明对话框 -->
   <VDialog v-model="showInstructions" max-width="500">
     <VCard>
-      <VCardTitle class="d-flex align-center">
-        <VIcon icon="mdi-information-outline" class="me-2" />
-        {{ t('pwa.installGuide') }}
-      </VCardTitle>
+      <VCardItem>
+        <VCardTitle class="d-flex align-center">
+          <VIcon icon="mdi-information-outline" class="me-2" />
+          {{ t('pwa.installGuide') }}
+        </VCardTitle>
+      </VCardItem>
 
       <VCardText>
         <div class="mb-4">
@@ -148,7 +169,7 @@ const instructions = computed(() => {
   border-radius: 12px;
   background: rgb(var(--v-theme-surface));
   box-shadow: 0 4px 20px rgba(0, 0, 0, 10%);
-  inset-block-end: 20px;
+  inset-block-end: 5rem;
   inset-inline: 20px;
 }
 
