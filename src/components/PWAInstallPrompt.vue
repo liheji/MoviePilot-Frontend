@@ -102,7 +102,7 @@ const instructions = computed(() => {
       leave-from-class="translate-y-0 opacity-100"
       leave-to-class="translate-y-full opacity-0"
     >
-      <div v-if="shouldShowBanner && showBanner" class="pwa-install-banner">
+      <VCard v-if="shouldShowBanner && showBanner" class="pwa-install-banner">
         <div class="banner-content">
           <VIcon icon="mdi-cellphone-link" size="24" class="me-3" />
           <div class="flex-grow-1">
@@ -116,7 +116,7 @@ const instructions = computed(() => {
             <VIcon icon="mdi-close" />
           </VBtn>
         </div>
-      </div>
+      </VCard>
     </Transition>
   </Teleport>
 
