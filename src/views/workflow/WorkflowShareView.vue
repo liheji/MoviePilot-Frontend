@@ -113,9 +113,13 @@ async function fetchData({ done }: { done: any }) {
 }
 
 // 将数据从列表中移除
-function removeData(id: number) {
+function removeData(id: string) {
   dataList.value = dataList.value.filter(item => item.id !== id)
 }
+
+onActivated(() => {
+  fetchData({ done: () => {} })
+})
 </script>
 
 <template>
@@ -126,7 +130,7 @@ function removeData(id: number) {
     <template #empty />
     <div v-if="dataList.length > 0" class="grid gap-4 grid-workflow-share-card" tabindex="0">
       <div v-for="data in dataList" :key="data.id">
-        <WorkflowShareCard :media="data" @delete="removeData(data.id || 0)" />
+        <WorkflowShareCard :workflow="data" @delete="removeData(data.id || '')" />
       </div>
     </div>
     <NoDataFound

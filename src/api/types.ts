@@ -147,7 +147,7 @@ export interface SubscribeShare {
 // 工作流分享
 export interface WorkflowShare {
   // 分享ID
-  id?: number
+  id?: string
   // 工作流ID
   workflow_id?: string
   // 分享标题

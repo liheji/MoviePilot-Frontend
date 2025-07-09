@@ -5,13 +5,14 @@ import { WorkflowShare } from '@/api/types'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import { useGlobalSettingsStore } from '@/stores'
+import { VueFlow, useVueFlow } from '@vue-flow/core'
 
 // 国际化
 const { t } = useI18n()
 
 // 输入参数
 const props = defineProps({
-  media: Object as PropType<WorkflowShare>,
+  workflow: Object as PropType<WorkflowShare>,
 })
 
 // 定义事件
@@ -31,13 +32,66 @@ const processing = ref(false)
 // 删除中
 const deleting = ref(false)
 
-// 是否折叠
-const isExpanded = ref(false)
+// 流程图相关
+const { nodes, edges } = useVueFlow()
 
-// 折叠展开
-function toggleExpand() {
-  isExpanded.value = !isExpanded.value
+// 自定义节点类型
+const nodeTypes: Record<string, any> = ref({})
+
+// 自动扫描目录下所有的 .vue 文件
+const components = import.meta.glob('../workflow/*Action.vue')
+
+// 动态加载某个组件
+const loadComponent = async (componentName: string) => {
+  const component = components[`../workflow/${componentName}.vue`]
+  if (component) {
+    return ((await component()) as any).default
+  }
+  throw new Error(t('dialog.workflowActions.componentNotFound', { component: componentName }))
 }
+
+// 将所有components中的组件加载到nodeTypes中
+for (const path in components) {
+  const componentName = path.match(/\.\/workflow\/(.*).vue$/)?.[1]
+  if (!componentName) {
+    continue
+  }
+  loadComponent(componentName).then(component => {
+    nodeTypes.value[componentName] = markRaw(component)
+  })
+}
+
+// 解析工作流数据
+const parsedWorkflow = computed(() => {
+  if (!props.workflow) return null
+
+  try {
+    const workflow = { ...props.workflow }
+
+    // 解析actions
+    if (typeof workflow.actions === 'string') {
+      workflow.actions = JSON.parse(workflow.actions)
+    }
+
+    // 解析flows
+    if (typeof workflow.flows === 'string') {
+      workflow.flows = JSON.parse(workflow.flows)
+    }
+
+    return workflow
+  } catch (error) {
+    console.error('解析工作流数据失败:', error)
+    return props.workflow
+  }
+})
+
+// 初始化流程图数据
+onMounted(() => {
+  if (parsedWorkflow.value) {
+    nodes.value = parsedWorkflow.value.actions ?? []
+    edges.value = parsedWorkflow.value.flows ?? []
+  }
+})
 
 // 复用工作流
 async function doFork() {
@@ -46,14 +100,14 @@ async function doFork() {
   try {
     processing.value = true
     // 请求API
-    const result: { [key: string]: any } = await api.post('workflow/fork', props.media)
+    const result: { [key: string]: any } = await api.post('workflow/fork', props.workflow)
     // 工作流状态
     if (result.success) {
-      $toast.success(t('workflow.addSuccess', { name: props.media?.share_title }))
+      $toast.success(t('workflow.addSuccess', { name: props.workflow?.share_title }))
       // 完成
       emit('fork', result.data.id)
     } else {
-      $toast.error(t('workflow.addFailed', { name: props.media?.share_title, message: result.message }))
+      $toast.error(t('workflow.addFailed', { name: props.workflow?.share_title, message: result.message }))
     }
   } catch (error) {
     console.error(error)
@@ -70,7 +124,7 @@ async function doDelete() {
   try {
     deleting.value = true
     // 请求API
-    const result: { [key: string]: any } = await api.delete(`workflow/share/${props.media?.id}`, {
+    const result: { [key: string]: any } = await api.delete(`workflow/share/${props.workflow?.id}`, {
       params: {
         share_uid: globalSettings.USER_UNIQUE_ID,
       },
@@ -98,35 +152,55 @@ async function doDelete() {
       <VCardText>
         <VCol>
           <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
+            <div class="ma-auto">
+              <div class="workflow-preview">
+                <VueFlow
+                  :nodes="nodes"
+                  :edges="edges"
+                  :nodeTypes="nodeTypes"
+                  :default-edge-options="{ type: 'animation', animated: true }"
+                  :delete-key-code="null"
+                  :select-nodes-on-drag="false"
+                  :nodes-draggable="false"
+                  :nodes-connectable="false"
+                  :fit-view="true"
+                  :fit-view-options="{ padding: 0.1, minZoom: 0.2, maxZoom: 1 }"
+                  :default-viewport="{ x: 0, y: 0, zoom: 0.2 }"
+                  class="workflow-preview-flow"
+                />
+              </div>
+            </div>
+
+            <!-- 右侧内容 -->
             <div class="flex-grow">
               <VCardItem>
                 <VCardTitle
                   class="text-center text-md-left break-words whitespace-break-spaces line-clamp-2 overflow-hidden text-ellipsis"
                 >
-                  {{ props.media?.share_title }}
+                  {{ props.workflow?.share_title }}
                 </VCardTitle>
                 <VCardSubtitle
                   class="text-center text-md-left break-words whitespace-break-spaces line-clamp-4 overflow-hidden text-ellipsis"
                 >
-                  {{ props.media?.share_comment }}
+                  {{ props.workflow?.share_comment }}
                 </VCardSubtitle>
                 <VList lines="one">
                   <VListItem class="ps-0">
                     <VListItemTitle class="text-center text-md-left">
                       <span class="font-weight-medium">{{ t('workflow.sharer') }}：</span>
-                      <span class="text-body-1"> {{ media?.share_user }}</span>
+                      <span class="text-body-1"> {{ props.workflow?.share_user }}</span>
                     </VListItemTitle>
                   </VListItem>
-                  <VListItem class="ps-0" v-if="media?.timer">
+                  <VListItem class="ps-0" v-if="props.workflow?.timer">
                     <VListItemTitle class="text-center text-md-left">
                       <span class="font-weight-medium">{{ t('workflow.timer') }}：</span>
-                      <span class="text-body-1"> {{ media?.timer }}</span>
+                      <span class="text-body-1"> {{ props.workflow?.timer }}</span>
                     </VListItemTitle>
                   </VListItem>
-                  <VListItem class="ps-0" v-if="media?.actions">
+                  <VListItem class="ps-0" v-if="parsedWorkflow?.actions">
                     <VListItemTitle class="text-center text-md-left">
                       <span class="font-weight-medium">{{ t('workflow.actionCount') }}：</span>
-                      <span class="text-body-1"> {{ media?.actions?.length }}</span>
+                      <span class="text-body-1"> {{ parsedWorkflow?.actions?.length }}</span>
                     </VListItemTitle>
                   </VListItem>
                 </VList>
@@ -144,7 +218,7 @@ async function doDelete() {
                     </VBtn>
                     <VBtn
                       v-if="
-                        (props.media?.share_uid && props.media?.share_uid === globalSettings.USER_UNIQUE_ID) ||
+                        (props.workflow?.share_uid && props.workflow?.share_uid === globalSettings.USER_UNIQUE_ID) ||
                         globalSettings.WORKFLOW_SHARE_MANAGE
                       "
                       color="error"
@@ -157,9 +231,9 @@ async function doDelete() {
                       {{ t('workflow.cancelShare') }}
                     </VBtn>
                   </div>
-                  <div class="text-xs mt-2" v-if="props.media?.count">
+                  <div class="text-xs mt-2" v-if="props.workflow?.count">
                     <VIcon icon="mdi-fire" />{{
-                      t('workflow.usageCount', { count: props.media?.count?.toLocaleString() })
+                      t('workflow.usageCount', { count: props.workflow?.count?.toLocaleString() })
                     }}
                   </div>
                 </div>
@@ -171,3 +245,71 @@ async function doDelete() {
     </VCard>
   </VDialog>
 </template>
+
+<style lang="scss">
+@import '@vue-flow/core/dist/style.css';
+@import '@vue-flow/core/dist/theme-default.css';
+@import '@vue-flow/minimap/dist/style.css';
+
+.workflow-preview {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  background-color: rgba(var(--v-theme-surface), 0.8);
+  block-size: 320px;
+  inline-size: 240px;
+}
+
+.workflow-preview-flow {
+  block-size: 100%;
+  inline-size: 100%;
+
+  .vue-flow__node {
+    border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+    border-radius: 8px;
+    font-size: 10px;
+
+    &:hover {
+      box-shadow: none;
+      transform: none;
+    }
+
+    &.selected {
+      box-shadow: none;
+    }
+  }
+
+  .vue-flow__edge-path,
+  .vue-flow__connection-path {
+    stroke-width: 2;
+  }
+
+  .vue-flow__handle {
+    border-radius: 2px;
+    block-size: 12px;
+    inline-size: 4px;
+  }
+
+  // 自定义动作连线样式
+  .vue-flow__edge.animation {
+    .vue-flow__edge-path {
+      stroke: rgb(var(--v-theme-primary));
+    }
+
+    &.selected {
+      .vue-flow__edge-path {
+        stroke: rgb(var(--v-theme-primary));
+        stroke-width: 3;
+      }
+    }
+  }
+}
+
+@media screen and (width <= 600px) {
+  .workflow-preview {
+    block-size: 240px;
+    inline-size: 320px;
+  }
+}
+</style>

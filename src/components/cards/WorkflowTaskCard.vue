@@ -334,10 +334,6 @@ const resolveProgress = (item: Workflow) => {
       :workflow="workflow"
     />
     <!-- 分享对话框 -->
-    <WorkflowShareDialog
-      v-if="shareDialog"
-      :workflow="workflow"
-      @close="shareDialog = false"
-    />
+    <WorkflowShareDialog v-if="shareDialog" v-model="shareDialog" :workflow="workflow" @close="shareDialog = false" />
   </div>
 </template>

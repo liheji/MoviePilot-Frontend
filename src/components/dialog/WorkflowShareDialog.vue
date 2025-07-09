@@ -25,17 +25,23 @@ const shareDoing = ref(false)
 
 // 工作流分享表单
 const shareForm = ref<WorkflowShare>({
-  workflow_id: props.workflow?.id ?? '',
+  id: props.workflow?.id ?? '',
   share_title: props.workflow?.name ?? '',
+  share_comment: '',
+  share_user: '',
 })
 
 // 监听props变化
-watch(() => props.workflow, (newWorkflow) => {
-  if (newWorkflow) {
-    shareForm.value.workflow_id = newWorkflow.id ?? ''
-    shareForm.value.share_title = newWorkflow.name ?? ''
-  }
-}, { immediate: true })
+watch(
+  () => props.workflow,
+  newWorkflow => {
+    if (newWorkflow) {
+      shareForm.value.id = newWorkflow.id ?? ''
+      shareForm.value.share_title = newWorkflow.name ?? ''
+    }
+  },
+  { immediate: true },
+)
 
 // 分享工作流
 async function doShare() {
