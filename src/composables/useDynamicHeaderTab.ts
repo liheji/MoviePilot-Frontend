@@ -45,9 +45,13 @@ export function useDynamicHeaderTab() {
     const enablePWARestore = config.enableStateRestore !== false // 默认启用
     const pwaTabState = enablePWARestore ? useTabStateRestore(config.modelValue.value) : null
 
-    // 如果启用了PWA状态恢复，先尝试恢复状态
-    if (pwaTabState && pwaTabState.activeTab.value) {
+    // 标记是否已经初始化过，避免重复恢复状态
+    let isInitialized = false
+
+    // 如果启用了PWA状态恢复，先尝试恢复状态（仅在首次初始化时）
+    if (pwaTabState && pwaTabState.activeTab.value && !isInitialized) {
       config.modelValue.value = pwaTabState.activeTab.value
+      isInitialized = true
     }
 
     const tabConfig: DynamicHeaderTabConfig = {
@@ -65,6 +69,7 @@ export function useDynamicHeaderTab() {
     }
 
     // 如果启用了PWA状态恢复，监听PWA状态变化并同步到modelValue
+    // 但只在非激活状态下响应，避免干扰页面激活时的状态
     if (pwaTabState) {
       watch(pwaTabState.activeTab, newTab => {
         if (newTab && newTab !== config.modelValue.value) {
@@ -152,7 +157,15 @@ export function useDynamicHeaderTab() {
 
     // 处理页面激活时重新注册（支持keep-alive缓存的页面）
     onActivated(() => {
+      // 页面激活时，优先使用当前页面的实际状态，而不是恢复的PWA状态
+      // 这样可以避免从后台切换回来时显示错误的标签页
       nextTick(() => {
+        // 确保使用当前页面的实际modelValue，不受PWA状态恢复影响
+        tabConfig.modelValue = config.modelValue.value
+        // 同步当前状态到PWA存储，确保状态一致性
+        if (pwaTabState && config.modelValue.value) {
+          pwaTabState.activeTab.value = config.modelValue.value
+        }
         doRegister()
       })
     })

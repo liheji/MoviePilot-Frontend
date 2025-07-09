@@ -48,25 +48,12 @@ export function useTabStateRestore(defaultTab?: string) {
     }
   })
 
-  // 组件挂载时恢复状态
+  // 组件挂载时恢复状态（仅在首次加载时）
   onMounted(() => {
     // 先尝试恢复，如果没有保存的状态则使用默认值
     if (!restoreTabState() && defaultTab) {
       activeTab.value = defaultTab
     }
-  })
-
-  // 监听全局恢复事件
-  const handleRestore = () => {
-    restoreTabState()
-  }
-
-  onMounted(() => {
-    window.addEventListener('pwa-state-restore', handleRestore)
-  })
-
-  onUnmounted(() => {
-    window.removeEventListener('pwa-state-restore', handleRestore)
   })
 
   return {

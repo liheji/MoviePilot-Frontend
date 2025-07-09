@@ -149,23 +149,25 @@ class StateRestore {
     // 页面显示时检查是否需要恢复状态
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
-        this.checkAndRestore()
+        // 只恢复路由状态，不自动恢复标签页状态
+        // 标签页状态由组件自己控制，避免干扰当前页面状态
+        this.checkAndRestoreRoute()
       }
     })
 
     // 页面加载完成后恢复状态
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => this.checkAndRestore(), 100)
+        setTimeout(() => this.checkAndRestoreRoute(), 100)
       })
     } else {
-      setTimeout(() => this.checkAndRestore(), 100)
+      setTimeout(() => this.checkAndRestoreRoute(), 100)
     }
   }
 
-  // 检查并恢复状态
-  private checkAndRestore() {
-    // 1. 恢复路由（如果当前路径与保存的不同）
+  // 检查并恢复路由状态（不恢复标签页状态）
+  private checkAndRestoreRoute() {
+    // 只恢复路由（如果当前路径与保存的不同）
     const savedRoute = this.route.restoreRoute()
     if (savedRoute && savedRoute.path !== window.location.pathname) {
       const fullPath = savedRoute.path + savedRoute.search + savedRoute.hash
@@ -173,7 +175,7 @@ class StateRestore {
       window.history.replaceState(null, '', fullPath)
     }
 
-    // 2. 发送恢复事件，让组件自行处理标签页恢复
+    // 发送恢复事件，但标签页恢复由组件自己决定
     window.dispatchEvent(
       new CustomEvent('pwa-state-restore', {
         detail: {
