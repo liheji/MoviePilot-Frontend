@@ -309,7 +309,7 @@ async function doDelete() {
 @media screen and (width <= 600px) {
   .workflow-preview {
     block-size: 240px;
-    inline-size: 320px;
+    inline-size: 240px;
   }
 }
 </style>
