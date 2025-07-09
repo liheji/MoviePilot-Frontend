@@ -71,7 +71,7 @@ export const checkPWAStatus = async () => {
 }
 
 // 检测是否为移动设备
-const isMobileDevice = (): boolean => {
+export const isMobileDevice = (): boolean => {
   // 检查用户代理字符串
   const userAgent = navigator.userAgent || ''
   const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i

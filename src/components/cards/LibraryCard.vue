@@ -170,13 +170,15 @@ onMounted(async () => {
                 <VSkeletonLoader class="object-cover aspect-w-3 aspect-h-2" />
               </div>
             </template>
-            <VCardText
-              class="w-full flex flex-col flex-wrap justify-end align-center text-white absolute bottom-0 cursor-pointer pa-2"
-            >
-              <h1 class="mb-1 text-white text-shadow font-bold line-clamp-2 overflow-hidden text-ellipsis ...">
-                {{ props.media?.name }}
-              </h1>
-            </VCardText>
+            <template #default>
+              <VCardText
+                class="w-full flex flex-col flex-wrap justify-end align-center text-white absolute bottom-0 cursor-pointer pa-2"
+              >
+                <h1 class="mb-1 text-white text-shadow font-bold line-clamp-2 overflow-hidden text-ellipsis ...">
+                  {{ props.media?.name }}
+                </h1>
+              </VCardText>
+            </template>
           </VImg>
         </template>
       </VCard>

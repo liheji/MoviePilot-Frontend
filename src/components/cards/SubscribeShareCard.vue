@@ -121,7 +121,9 @@ function doDelete() {
                     <VSkeletonLoader class="object-cover aspect-w-3 aspect-h-2" />
                   </div>
                 </template>
-                <div class="absolute inset-0 subscribe-card-background"></div>
+                <template #default>
+                  <div class="absolute inset-0 subscribe-card-background"></div>
+                </template>
               </VImg>
             </template>
             <div class="h-full flex flex-col">

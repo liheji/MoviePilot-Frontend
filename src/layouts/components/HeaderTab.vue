@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTabStateRestore } from '@/composables/useStateRestore'
+import { isMobileDevice } from '@/@core/utils/navigator'
 
 const props = defineProps({
   modelValue: {
@@ -77,6 +78,11 @@ const scrollTabs = (direction: 'left' | 'right') => {
     left: scrollPosition,
     behavior: 'smooth',
   })
+
+  // 滚动完成后更新指示器状态
+  setTimeout(() => {
+    updateTabsIndicator()
+  }, 300) // 等待滚动动画完成
 }
 
 // Function to check and update the indicator state
@@ -84,14 +90,17 @@ const updateTabsIndicator = () => {
   const el = tabsContainerRef.value
   if (!el) return
 
+  // 在移动端不显示滚动指示器
+  const isMobile = isMobileDevice()
+
   const tolerance = 1 // Allow 1px tolerance
   const hasOverflow = el.scrollWidth > el.clientWidth + tolerance
   const isScrolledToEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - tolerance
   const isScrolledToStart = el.scrollLeft <= tolerance
 
-  showTabsScrollIndicator.value = hasOverflow && !isScrolledToEnd
-  showLeftButton.value = hasOverflow && !isScrolledToStart
-  showRightButton.value = hasOverflow && !isScrolledToEnd
+  showTabsScrollIndicator.value = hasOverflow && !isScrolledToEnd && !isMobile
+  showLeftButton.value = hasOverflow && !isScrolledToStart && !isMobile
+  showRightButton.value = hasOverflow && !isScrolledToEnd && !isMobile
 }
 
 // Debounce resize handler
@@ -106,6 +115,8 @@ const handleResize = () => {
 onMounted(async () => {
   // Add resize listener for tabs indicator
   window.addEventListener('resize', handleResize)
+  // Add scroll listener for tabs container
+  tabsContainerRef.value?.addEventListener('scroll', updateTabsIndicator)
   // Initial check for tabs indicator after DOM update
   await nextTick() // Ensure element is rendered
   updateTabsIndicator()
@@ -173,6 +184,11 @@ onUnmounted(() => {
   &.right-button {
     margin-inline-start: 6px;
   }
+
+  // 在移动端隐藏滚动按钮
+  @media (width <= 768px) {
+    display: none !important;
+  }
 }
 
 .header-tabs {
@@ -208,6 +224,18 @@ onUnmounted(() => {
     opacity: 0; // Hidden by default
     pointer-events: none; // Allow interaction with content behind it
     transition: opacity 0.2s ease-in-out;
+  }
+
+  // Show indicator when class is applied
+  &.show-indicator::after {
+    opacity: 1;
+  }
+
+  // 在移动端隐藏渐变指示器
+  @media (width <= 768px) {
+    &::after {
+      display: none !important;
+    }
   }
 }
 
