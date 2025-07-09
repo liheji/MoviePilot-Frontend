@@ -93,6 +93,7 @@ export default {
     sendMessage: '发送消息',
     transferFile: '整理文件',
     invokePlugin: '调用插件',
+    note: '备注',
   },
   qualityOptions: {
     all: '全部',
@@ -656,6 +657,12 @@ export default {
       actionid: '动作ID',
       actionParams: '动作参数',
       loadPluginSettingFailed: '加载插件设置失败',
+    },
+    note: {
+      title: '备注',
+      subtitle: '添加流程说明注释',
+      content: '备注内容',
+      placeholder: '请输入备注内容...',
     },
     title: '工作流',
     share: '工作流分享',

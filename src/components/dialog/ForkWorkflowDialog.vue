@@ -152,7 +152,7 @@ async function doDelete() {
       <VCardText>
         <VCol>
           <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
-            <div class="ma-auto">
+            <div class="ma-auto mt-5">
               <div class="workflow-preview">
                 <VueFlow
                   :nodes="nodes"
@@ -257,7 +257,7 @@ async function doDelete() {
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   background-color: rgba(var(--v-theme-surface), 0.8);
-  block-size: 320px;
+  block-size: 280px;
   inline-size: 240px;
 }
 

@@ -344,6 +344,10 @@ export const actionStepOptions = [
     title: i18n.global.t('actionStep.invokePlugin'),
     value: '调用插件',
   },
+  {
+    title: i18n.global.t('actionStep.note'),
+    value: '备注',
+  },
 ]
 
 // 操作步骤字典

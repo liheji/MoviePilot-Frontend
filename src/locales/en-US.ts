@@ -93,6 +93,7 @@ export default {
     sendMessage: 'Send Message',
     transferFile: 'Transfer File',
     invokePlugin: 'Invoke Plugin',
+    note: 'Note',
   },
   qualityOptions: {
     all: 'All',
@@ -659,6 +660,12 @@ export default {
       actionid: 'Action ID',
       actionParams: 'Action Parameters',
       loadPluginSettingFailed: 'Failed to load plugin settings',
+    },
+    note: {
+      title: 'Note',
+      subtitle: 'Add workflow description notes',
+      content: 'Note Content',
+      placeholder: 'Please enter note content...',
     },
     title: 'Workflow',
     share: 'Workflow Share',
