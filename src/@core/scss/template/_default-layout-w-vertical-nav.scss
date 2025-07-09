@@ -28,11 +28,25 @@ $header: ".layout-navbar";
 
     // Scrolled styles for sticky navbar
     @at-root {
-      /* ℹ️ This html selector with not selector is required when:
-        dialog is opened and window don't have any scroll. This removes window-scrolled class from layout and out style broke
+      /* ℹ️ Only apply scrolled styles when window is actually scrolled,
+        not when dialog is opened without scroll
     */
-      html.v-overlay-scroll-blocked .layout-navbar-fixed,
       &.window-scrolled.layout-navbar-fixed {
+
+        #{$header} {
+          @extend %default-layout-vertical-nav-scrolled-sticky-elevated-nav;
+          @extend %default-layout-vertical-nav-floating-navbar-and-sticky-elevated-navbar-scrolled;
+        }
+
+        .navbar-blur#{$header} {
+          @extend %blurry-bg;
+        }
+      }
+
+      /* ℹ️ Ensure header styles are preserved when dialog is opened,
+        regardless of scroll state
+    */
+      html.v-overlay-scroll-blocked &.window-scrolled.layout-navbar-fixed {
 
         #{$header} {
           @extend %default-layout-vertical-nav-scrolled-sticky-elevated-nav;

@@ -6,19 +6,13 @@
 
 html.v-overlay-scroll-blocked {
   position: fixed;
+  position: relative;
+
+  --v-body-scroll-y: 0px !important;
 }
 
-/* 防止Chrome移动端下拉刷新干扰 */
 body {
   overscroll-behavior: none;
-}
-
-@media (width <= 768px){
-  html.v-overlay-scroll-blocked {
-    position: relative;
-
-    --v-body-scroll-y: 0px !important;
-  }
 }
 
 @mixin hide-scrollbar {
