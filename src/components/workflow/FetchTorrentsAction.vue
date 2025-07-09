@@ -132,6 +132,7 @@ onMounted(() => {
               multiple
               outlined
               dense
+              clearable
             />
           </VCol>
         </VRow>
