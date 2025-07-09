@@ -1738,6 +1738,8 @@ export default {
       confirmShare: '確認分享',
       shareSuccess: '{name} 分享成功！',
       shareFailed: '{name} 分享失敗：{message}！',
+      securityWarning: '安全提醒',
+      securityWarningMessage: '分享前請確保工作流沒有敏感資訊，比如RSS連結中的PassKey等，避免產生資訊洩露。',
     },
     u115Auth: {
       loginTitle: '115網盤登錄',

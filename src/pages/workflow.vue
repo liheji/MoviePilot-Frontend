@@ -13,6 +13,7 @@ const route = useRoute()
 
 const activeTab = ref((route.query.tab as string) || 'list')
 const shareViewKey = ref(0)
+const listViewKey = ref(0)
 
 // 获取标签页
 const workflowTabs = computed(() => {
@@ -73,14 +74,14 @@ onMounted(() => {
       <VWindowItem value="list">
         <transition name="fade-slide" appear>
           <div>
-            <WorkflowListView />
+            <WorkflowListView :key="listViewKey" />
           </div>
         </transition>
       </VWindowItem>
       <VWindowItem value="share">
         <transition name="fade-slide" appear>
           <div>
-            <WorkflowShareView :keyword="shareKeyword" :key="shareViewKey" />
+            <WorkflowShareView :keyword="shareKeyword" :key="shareViewKey" @update="listViewKey++" />
           </div>
         </transition>
       </VWindowItem>

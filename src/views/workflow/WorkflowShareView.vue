@@ -14,6 +14,9 @@ const props = defineProps({
   keyword: String,
 })
 
+// 定义事件
+const emit = defineEmits(['update'])
+
 // 判断是否有滚动条
 function hasScroll() {
   return document.body.scrollHeight - (window.innerHeight || document.documentElement.clientHeight) > 2
@@ -130,7 +133,7 @@ onActivated(() => {
     <template #empty />
     <div v-if="dataList.length > 0" class="grid gap-4 grid-workflow-share-card" tabindex="0">
       <div v-for="data in dataList" :key="data.id">
-        <WorkflowShareCard :workflow="data" @delete="removeData(data.id || '')" />
+        <WorkflowShareCard :workflow="data" @delete="removeData(data.id || '')" @update="emit('update')" />
       </div>
     </div>
     <NoDataFound

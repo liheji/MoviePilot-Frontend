@@ -1762,6 +1762,8 @@ export default {
       confirmShare: 'Confirm Share',
       shareSuccess: '{name} shared successfully!',
       shareFailed: '{name} share failed: {message}!',
+      securityWarning: 'Security Warning',
+      securityWarningMessage: 'Before sharing, please ensure the workflow does not contain sensitive information such as PassKey in RSS links to avoid information leakage.',
     },
     u115Auth: {
       loginTitle: '115 Cloud Login',

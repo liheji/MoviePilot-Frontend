@@ -9,7 +9,7 @@ const props = defineProps({
 })
 
 // 定义删除事件
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'update'])
 
 // 复用工作流弹窗
 const forkWorkflowDialog = ref(false)
@@ -68,6 +68,7 @@ function showForkWorkflow() {
 function finishForkWorkflow(wid: string) {
   workflowId.value = wid
   forkWorkflowDialog.value = false
+  emit('update')
 }
 
 // 删除工作流分享时处理

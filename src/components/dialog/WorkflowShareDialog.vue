@@ -82,12 +82,20 @@ const $toast = useToast()
       <VDivider />
       <VCardText>
         <VDialogCloseBtn @click="emit('close')" />
+        <!-- 安全警告信息 -->
+        <VAlert
+          type="warning"
+          variant="tonal"
+          class="mb-4"
+          :title="t('dialog.workflowShare.securityWarning')"
+          :text="t('dialog.workflowShare.securityWarningMessage')"
+          prepend-icon="mdi-alert-circle-outline"
+        />
         <VForm @submit.prevent="() => {}" class="pt-2">
           <VRow>
             <VCol cols="12">
               <VTextField
                 v-model="shareForm.share_title"
-                readonly
                 :label="t('dialog.workflowShare.title')"
                 :rules="[requiredValidator]"
                 persistent-hint

@@ -1739,6 +1739,8 @@ export default {
       confirmShare: '确认分享',
       shareSuccess: '{name} 分享成功！',
       shareFailed: '{name} 分享失败：{message}！',
+      securityWarning: '安全提醒',
+      securityWarningMessage: '分享前请确保工作流没有敏感信息，比如RSS链接中的PassKey等，避免产生信息泄露。',
     },
     u115Auth: {
       loginTitle: '115网盘登录',
