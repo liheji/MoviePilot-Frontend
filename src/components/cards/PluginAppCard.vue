@@ -267,15 +267,15 @@ const dropdownItems = ref([
     <!-- 安装插件进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
     <!-- 更新日志 -->
-    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
+    <DialogWrapper v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
       <VCard :title="t('plugin.updateHistoryTitle', { name: props.plugin?.plugin_name })">
         <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />
         <VersionHistory :history="props.plugin?.history" />
       </VCard>
-    </VDialog>
+    </DialogWrapper>
     <!-- 插件详情-->
-    <VDialog v-if="detailDialog" v-model="detailDialog" max-width="30rem">
+    <DialogWrapper v-if="detailDialog" v-model="detailDialog" max-width="30rem">
       <VCard>
         <VDialogCloseBtn @click="detailDialog = false" />
         <VCardText>
@@ -335,6 +335,6 @@ const dropdownItems = ref([
           </VCol>
         </VCardText>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
   </div>
 </template>

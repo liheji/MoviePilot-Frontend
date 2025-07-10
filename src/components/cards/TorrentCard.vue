@@ -278,7 +278,7 @@ onMounted(() => {
     </VCard>
 
     <!-- 更多来源对话框 -->
-    <VDialog v-model="showMoreTorrents" max-width="25rem" location="center">
+    <DialogWrapper v-model="showMoreTorrents" max-width="25rem" location="center">
       <VCard>
         <VCardTitle class="py-3 d-flex align-center">
           <span>其他来源</span>
@@ -361,7 +361,7 @@ onMounted(() => {
           </VList>
         </VCardText>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
 
     <AddDownloadDialog
       v-if="addDownloadDialog"

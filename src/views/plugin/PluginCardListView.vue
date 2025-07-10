@@ -1552,7 +1552,7 @@ function onDragStartPlugin(evt: any) {
   />
 
   <!-- 插件搜索窗口 -->
-  <VDialog
+  <DialogWrapper
     v-if="SearchDialog"
     v-model="SearchDialog"
     scrollable
@@ -1611,20 +1611,20 @@ function onDragStartPlugin(evt: any) {
         </VVirtualScroll>
       </VList>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 
   <!-- 安装插件进度框 -->
-  <VDialog v-if="progressDialog" v-model="progressDialog" :scrim="false" width="25rem">
+  <DialogWrapper v-if="progressDialog" v-model="progressDialog" :scrim="false" width="25rem">
     <VCard color="primary">
       <VCardText class="text-center">
         {{ progressText }}
         <VProgressLinear indeterminate color="white" class="mb-0 mt-1" />
       </VCardText>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 
   <!-- 新建文件夹对话框 -->
-  <VDialog v-if="newFolderDialog" v-model="newFolderDialog" max-width="400">
+  <DialogWrapper v-if="newFolderDialog" v-model="newFolderDialog" max-width="400">
     <VCard>
       <VDialogCloseBtn @click="newFolderDialog = false" />
       <VCardItem>
@@ -1646,5 +1646,5 @@ function onDragStartPlugin(evt: any) {
         }}</VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

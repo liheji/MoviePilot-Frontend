@@ -68,7 +68,7 @@ const $toast = useToast()
 </script>
 
 <template>
-  <VDialog scrollable max-width="30rem" :fullscreen="!display.mdAndUp.value">
+  <DialogWrapper scrollable max-width="30rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem class="py-2">
         <template #prepend>
@@ -132,5 +132,5 @@ const $toast = useToast()
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

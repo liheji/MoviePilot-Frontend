@@ -454,7 +454,7 @@ watch(
     </VRow>
 
     <!-- 双重验证弹窗 -->
-    <VDialog v-if="otpDialog" v-model="otpDialog" max-width="45rem" scrollable>
+    <DialogWrapper v-if="otpDialog" v-model="otpDialog" max-width="45rem" scrollable>
       <!-- 开启双重验证弹窗内容 -->
       <VCard>
         <VDialogCloseBtn @click="otpDialog = false" />
@@ -492,6 +492,6 @@ watch(
           </VForm>
         </VCardText>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
   </div>
 </template>

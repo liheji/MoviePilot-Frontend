@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     ConfirmDialog: typeof import('./src/@core/components/ConfirmDialog.vue')['default']
     DialogCloseBtn: typeof import('./src/@core/components/DialogCloseBtn.vue')['default']
+    DialogWrapper: typeof import('./src/@core/components/DialogWrapper.vue')['default']
     ErrorHeader: typeof import('./src/@core/components/ErrorHeader.vue')['default']
     ExistIcon: typeof import('./src/@core/components/ExistIcon.vue')['default']
     LoadingBanner: typeof import('./src/@core/components/LoadingBanner.vue')['default']

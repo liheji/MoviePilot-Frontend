@@ -547,7 +547,7 @@ watch(
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
 
     <!-- 更新日志 -->
-    <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable :fullscreen="!display.mdAndUp.value">
+    <DialogWrapper v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable :fullscreen="!display.mdAndUp.value">
       <VCard :title="t('plugin.updateHistoryTitle', { name: props.plugin?.plugin_name })">
         <VDialogCloseBtn @click="releaseDialog = false" />
         <VDivider />
@@ -562,10 +562,10 @@ watch(
           </VBtn>
         </VCardItem>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
 
     <!-- 实时日志弹窗 -->
-    <VDialog
+    <DialogWrapper
       v-if="loggingDialog"
       v-model="loggingDialog"
       scrollable
@@ -591,10 +591,10 @@ watch(
           <LoggingView :logfile="`plugins/${props.plugin?.id?.toLowerCase()}.log`" />
         </VCardText>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
 
     <!-- 插件分身对话框 -->
-    <VDialog
+    <DialogWrapper
       v-if="pluginCloneDialog"
       v-model="pluginCloneDialog"
       width="600"
@@ -700,7 +700,7 @@ watch(
           </VBtn>
         </VCardActions>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
   </div>
 </template>
 

@@ -197,7 +197,7 @@ const isMacOS = computed(() => {
 </script>
 
 <template>
-  <VDialog scrollable fullscreen :scrim="false" transition="dialog-bottom-transition">
+  <DialogWrapper scrollable fullscreen :scrim="false" transition="dialog-bottom-transition">
     <VCard class="workflow-dialog">
       <!-- Toolbar -->
       <VToolbar color="primary" density="comfortable">
@@ -256,7 +256,7 @@ const isMacOS = computed(() => {
       @close="importCodeDialog = false"
       @save="saveCodeString"
     />
-  </VDialog>
+  </DialogWrapper>
 </template>
 
 <style lang="scss">

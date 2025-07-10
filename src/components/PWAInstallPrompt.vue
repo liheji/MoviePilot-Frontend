@@ -133,7 +133,7 @@ const instructions = computed(() => {
   </Teleport>
 
   <!-- 手动安装说明对话框 -->
-  <VDialog v-model="showInstructions" max-width="500">
+  <DialogWrapper v-model="showInstructions" max-width="500">
     <VCard>
       <VCardItem>
         <VCardTitle class="d-flex align-center">
@@ -170,7 +170,7 @@ const instructions = computed(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>
 
 <style scoped>

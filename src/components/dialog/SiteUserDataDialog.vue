@@ -287,7 +287,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <VDialog scrollable eager max-width="80rem" :fullscreen="!display.mdAndUp.value">
+  <DialogWrapper scrollable eager max-width="80rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem>
         <VCardTitle
@@ -484,5 +484,5 @@ onBeforeMount(() => {
     </VCard>
     <!-- 进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="t('dialog.siteUserData.refreshing')" />
-  </VDialog>
+  </DialogWrapper>
 </template>

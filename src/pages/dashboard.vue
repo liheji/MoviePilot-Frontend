@@ -370,7 +370,7 @@ onDeactivated(() => {
   </Teleport>
 
   <!-- 弹窗，根据配置生成选项 -->
-  <VDialog v-if="dialog" v-model="dialog" max-width="35rem" :fullscreen="!display.mdAndUp.value" scrollable>
+  <DialogWrapper v-if="dialog" v-model="dialog" max-width="35rem" :fullscreen="!display.mdAndUp.value" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -423,7 +423,7 @@ onDeactivated(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>
 <style lang="scss" scoped>
 .settings-card-header {

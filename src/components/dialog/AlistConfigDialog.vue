@@ -70,7 +70,7 @@ async function savaAlistConfig() {
 </script>
 
 <template>
-  <VDialog width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
+  <DialogWrapper width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
@@ -143,5 +143,5 @@ async function savaAlistConfig() {
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

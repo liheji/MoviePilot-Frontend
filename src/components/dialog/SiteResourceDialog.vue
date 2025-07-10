@@ -130,7 +130,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VDialog scrollable fullscreen :scrim="false" transition="dialog-bottom-transition">
+  <DialogWrapper scrollable fullscreen :scrim="false" transition="dialog-bottom-transition">
     <VCard>
       <!-- Toolbar -->
       <div>
@@ -281,7 +281,7 @@ onMounted(() => {
       @error="addDownloadError"
       @close="addDownloadDialog = false"
     />
-  </VDialog>
+  </DialogWrapper>
 </template>
 
 <style lang="scss" scoped>

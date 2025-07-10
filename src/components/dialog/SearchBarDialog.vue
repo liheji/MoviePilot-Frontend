@@ -357,7 +357,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <VDialog v-model="dialog" max-width="42rem" scrollable :fullscreen="!display.mdAndUp.value">
+  <DialogWrapper v-model="dialog" max-width="42rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard class="search-dialog">
       <!-- 搜索输入框 -->
       <VCardItem class="pa-4 pa-sm-5 search-box-container">
@@ -741,7 +741,7 @@ onMounted(() => {
         </div>
       </VCardText>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 
   <!-- 站点选择对话框 -->
   <SearchSiteDialog

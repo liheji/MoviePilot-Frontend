@@ -712,7 +712,7 @@ onMounted(() => {
       </VCardText>
     </VCard>
     <!-- 重命名弹窗 -->
-    <VDialog v-if="renamePopper" v-model="renamePopper" max-width="35rem">
+    <DialogWrapper v-if="renamePopper" v-model="renamePopper" max-width="35rem">
       <VCard>
         <VCardItem>
           <template #prepend>
@@ -746,7 +746,7 @@ onMounted(() => {
           </VBtn>
         </VCardActions>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
     <!-- 文件整理弹窗 -->
     <ReorganizeDialog
       v-if="transferPopper"

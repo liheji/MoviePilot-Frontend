@@ -444,7 +444,7 @@ onMounted(() => {
     :indeterminate="true"
   />
   <!-- 模板编辑器对话框 -->
-  <VDialog v-model="editorVisible" v-if="editorVisible" max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <DialogWrapper v-model="editorVisible" v-if="editorVisible" max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem class="py-2">
         <template #prepend>
@@ -472,7 +472,7 @@ onMounted(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>
 <style scoped>
 /* Monaco编辑器容器样式 */

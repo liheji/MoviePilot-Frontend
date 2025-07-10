@@ -423,7 +423,7 @@ onMounted(() => {
   </VCard>
 
   <!-- 重新识别对话框 -->
-  <VDialog v-model="reidentifyDialog" scrollable max-width="35rem">
+  <DialogWrapper v-model="reidentifyDialog" scrollable max-width="35rem">
     <VCard>
       <VCardItem class="py-2">
         <template #prepend>
@@ -469,5 +469,5 @@ onMounted(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

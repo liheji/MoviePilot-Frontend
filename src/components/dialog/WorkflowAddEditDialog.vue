@@ -85,7 +85,7 @@ async function editWorkflow() {
 </script>
 
 <template>
-  <VDialog scrollable :close-on-back="false" eager max-width="30rem" :fullscreen="!display.mdAndUp.value">
+  <DialogWrapper scrollable :close-on-back="false" eager max-width="30rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem>
         <template #prepend>
@@ -140,5 +140,5 @@ async function editWorkflow() {
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

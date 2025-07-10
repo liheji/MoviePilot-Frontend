@@ -134,7 +134,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VDialog width="40rem" scrollable>
+  <DialogWrapper width="40rem" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -179,5 +179,5 @@ onMounted(async () => {
         </VBtn>
       </VCardText>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

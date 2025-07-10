@@ -141,7 +141,7 @@ function onClose() {
       </VCardText>
     </VCard>
 
-    <VDialog
+    <DialogWrapper
       v-if="notificationInfoDialog"
       v-model="notificationInfoDialog"
       scrollable
@@ -476,6 +476,6 @@ function onClose() {
           </VBtn>
         </VCardActions>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
   </div>
 </template>

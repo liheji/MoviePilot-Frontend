@@ -88,6 +88,9 @@ export default defineComponent({
         },
       })
 
+      // 检查是否有弹窗打开（通过CSS类名判断）
+      const isDialogOpen = document.documentElement.classList.contains('dialog-scroll-locked')
+
       return h(
         'div',
         {
@@ -96,7 +99,7 @@ export default defineComponent({
             'layout-navbar-fixed',
             mdAndDown.value && 'layout-overlay-nav',
             route.meta.layoutWrapperClasses,
-            scrollDistance.value && 'window-scrolled',
+            (scrollDistance.value || isDialogOpen) && 'window-scrolled',
           ],
         },
         [verticalNav, h('div', { class: 'layout-content-wrapper' }, [navbar, main, footer]), layoutOverlay],

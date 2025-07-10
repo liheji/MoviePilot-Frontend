@@ -223,7 +223,7 @@ function onClose() {
         <VImg :src="filter_group_svg" cover class="mt-10" max-width="3rem" />
       </VCardText>
     </VCard>
-    <VDialog
+    <DialogWrapper
       v-if="groupInfoDialog"
       v-model="groupInfoDialog"
       scrollable
@@ -308,7 +308,7 @@ function onClose() {
           </VBtn>
         </VCardActions>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
     <ImportCodeDialog
       v-if="importCodeDialog"
       v-model="importCodeDialog"

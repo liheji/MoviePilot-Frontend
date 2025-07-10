@@ -366,7 +366,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VDialog scrollable max-width="40rem" :fullscreen="!display.mdAndUp.value">
+  <DialogWrapper scrollable max-width="40rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem :class="props.oper === 'add' ? 'py-3' : 'py-2'">
         <template #prepend>
@@ -619,5 +619,5 @@ onMounted(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

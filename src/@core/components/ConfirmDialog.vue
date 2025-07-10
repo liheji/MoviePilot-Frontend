@@ -59,7 +59,7 @@ function handleCancel() {
 </script>
 
 <template>
-  <VDialog :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)" :max-width="width">
+  <DialogWrapper :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)" :max-width="width">
     <VCard>
       <VCardItem>
         <div class="d-flex align-center justify-start mt-3">
@@ -82,5 +82,5 @@ function handleCancel() {
       </VCardActions>
       <VDialogCloseBtn @click="handleCancel" />
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

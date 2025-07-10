@@ -196,7 +196,7 @@ onUnmounted(() => {
       </VCard>
     </VHover>
 
-    <VDialog
+    <DialogWrapper
       v-if="downloaderInfoDialog"
       v-model="downloaderInfoDialog"
       scrollable
@@ -383,6 +383,6 @@ onUnmounted(() => {
           </VBtn>
         </VCardActions>
       </VCard>
-    </VDialog>
+    </DialogWrapper>
   </div>
 </template>

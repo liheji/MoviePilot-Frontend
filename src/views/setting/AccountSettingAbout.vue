@@ -261,7 +261,7 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <VDialog v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
+  <DialogWrapper v-if="releaseDialog" v-model="releaseDialog" width="600" scrollable>
     <VCard>
       <VCardItem>
         <VDialogCloseBtn @click="releaseDialog = false" />
@@ -269,7 +269,7 @@ onMounted(() => {
       </VCardItem>
       <VCardText v-html="releaseDialogBody" />
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>
 
 <style type="scss" scoped>

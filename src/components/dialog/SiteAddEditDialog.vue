@@ -147,7 +147,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VDialog scrollable :close-on-back="false" eager max-width="45rem" :fullscreen="!display.mdAndUp.value">
+  <DialogWrapper scrollable :close-on-back="false" eager max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem :class="props.oper === 'add' ? 'py-3' : 'py-2'">
         <template #prepend>
@@ -350,5 +350,5 @@ onMounted(async () => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>

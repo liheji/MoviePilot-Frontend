@@ -15,12 +15,12 @@ defineProps({
 const emit = defineEmits(['close'])
 </script>
 <template>
-  <VDialog max-width="50rem">
+  <DialogWrapper max-width="50rem">
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
         <MediaInfoCard :context="context" />
       </VCardItem>
     </VCard>
-  </VDialog>
+  </DialogWrapper>
 </template>
