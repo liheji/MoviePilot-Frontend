@@ -183,7 +183,7 @@ useDynamicButton({
     :error-description="keyword ? t('subscribe.noFilterData') : t('subscribe.noSubscribeData')"
   />
   <!-- 底部操作按钮 -->
-  <Teleport to="body" v-if="route.path.startsWith('/subscribe')">
+  <Teleport to="body" v-if="route.path.startsWith(`/subscribe/${props.type === '电影' ? 'movie' : 'tv'}`)">
     <div v-if="isRefreshed">
       <VFab
         v-if="userStore.superUser && !appMode"
