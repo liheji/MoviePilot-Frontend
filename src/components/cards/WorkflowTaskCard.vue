@@ -190,32 +190,29 @@ const resolveProgress = (item: Workflow) => {
         :class="{ 'transition transform-cpu duration-300 -translate-y-1': hover.isHovering }"
       >
         <VCardItem
+          class="px-2"
           :class="{
-            'py-1': workflow?.description,
-            'py-3': !workflow?.description,
+            'py-0': workflow?.description,
+            'py-2': !workflow?.description,
             [`bg-${resolveStatusVariant(workflow?.state).color}`]: true,
           }"
         >
           <template #prepend>
-            <VAvatar variant="text" class="me-2">
+            <VAvatar variant="text" size="small">
               <VIcon
                 v-if="workflow?.state === 'P'"
                 color="success"
-                size="x-large"
                 icon="mdi-play"
                 @click.stop="handleEnable(workflow)"
               />
-              <VIcon v-else color="warning" icon="mdi-pause" size="x-large" @click.stop="handlePause(workflow)" />
+              <VIcon v-else color="warning" icon="mdi-pause" @click.stop="handlePause(workflow)" />
             </VAvatar>
           </template>
-          <VCardTitle class="text-white">
+          <VCardTitle class="text-white text-lg">
             {{ workflow?.name }}
           </VCardTitle>
           <VCardSubtitle class="text-white">{{ workflow?.description }}</VCardSubtitle>
           <template #append>
-            <IconBtn>
-              <VIcon icon="mdi-vector-polyline-edit" @click.stop="handleFlow(workflow)" />
-            </IconBtn>
             <IconBtn>
               <VIcon icon="mdi-dots-vertical" />
               <VMenu activator="parent" close-on-content-click>
@@ -225,6 +222,12 @@ const resolveProgress = (item: Workflow) => {
                       <VIcon icon="mdi-note-edit" />
                     </template>
                     <VListItemTitle>{{ t('workflow.task.edit') }}</VListItemTitle>
+                  </VListItem>
+                  <VListItem base-color="success" @click="handleFlow(workflow)">
+                    <template #prepend>
+                      <VIcon icon="mdi-vector-polyline" />
+                    </template>
+                    <VListItemTitle>{{ t('workflow.task.editFlow') }}</VListItemTitle>
                   </VListItem>
                   <VListItem v-if="workflow.current_action" base-color="info" @click="handleRun(workflow, false)">
                     <template #prepend>
@@ -269,34 +272,34 @@ const resolveProgress = (item: Workflow) => {
         </VCardItem>
         <VDivider />
         <VCardText>
-          <div class="d-flex flex-column gap-y-4">
-            <div class="d-flex flex-wrap gap-x-6">
+          <div class="d-flex flex-column gap-y-2">
+            <div class="d-flex flex-wrap gap-x-3">
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.timer') }}</div>
-                <h5 class="text-h6">{{ workflow?.timer }}</h5>
+                <h5 class="text-lg">{{ workflow?.timer }}</h5>
               </div>
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.status') }}</div>
-                <h5 class="text-h6" :class="`text-${resolveStatusVariant(workflow?.state).color}`">
+                <h5 class="text-lg" :class="`text-${resolveStatusVariant(workflow?.state).color}`">
                   {{ resolveStatusVariant(workflow?.state).text }}
                 </h5>
               </div>
             </div>
-            <div class="d-flex flex-wrap gap-x-6">
+            <div class="d-flex flex-wrap gap-x-3">
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.actionCount') }}</div>
                 <div>
-                  <VAvatar size="32" color="primary" variant="tonal">
+                  <VAvatar size="28" color="primary" variant="tonal">
                     <span class="text-sm">{{ workflow?.actions?.length }}</span>
                   </VAvatar>
                 </div>
               </div>
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.runCount') }}</div>
-                <h5 class="text-h6">{{ workflow?.run_count }}</h5>
+                <h5 class="text-lg">{{ workflow?.run_count }}</h5>
               </div>
             </div>
-            <div class="d-flex flex-wrap gap-x-6">
+            <div class="d-flex flex-wrap gap-x-3">
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.progress') }}</div>
                 <div class="d-flex align-center gap-5">
@@ -307,7 +310,7 @@ const resolveProgress = (item: Workflow) => {
                 </div>
               </div>
             </div>
-            <div class="d-flex flex-wrap gap-x-6" v-if="workflow?.result">
+            <div class="d-flex flex-wrap gap-x-3" v-if="workflow?.result">
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.error') }}</div>
                 <div class="text-error">{{ workflow?.result }}</div>

@@ -469,10 +469,10 @@ onBeforeUnmount(() => {
             style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
           >
             <span class="font-semibold text-sm">{{ props.media?.year }}</span>
-            <h1 class="mb-1 text-white font-bold text-lg line-clamp-1 overflow-hidden text-ellipsis ...">
+            <h1 class="media-card-title font-bold mb-2 text-white line-clamp-2 overflow-hidden text-ellipsis ...">
               {{ props.media?.title }}
             </h1>
-            <p class="line-clamp-3 overflow-hidden text-sm text-ellipsis ...">
+            <p class="media-card-overview line-clamp-3 overflow-hidden text-ellipsis ...">
               {{ props.media?.overview }}
             </p>
             <div v-if="props.media?.collection_id" class="mb-3" @click.stop=""></div>
@@ -556,3 +556,14 @@ onBeforeUnmount(() => {
     @close="chooseSiteDialog = false"
   />
 </template>
+<style scoped>
+.media-card-title {
+  font-size: 1.125rem;
+  line-height: 1.25rem;
+}
+
+.media-card-overview {
+  font-size: 0.875rem;
+  line-height: 1rem;
+}
+</style>

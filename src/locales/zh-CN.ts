@@ -491,6 +491,7 @@ export default {
     dragComponentHint: '拖动组件到画布',
     task: {
       edit: '编辑任务',
+      editFlow: '编辑流程',
       share: '分享',
       continue: '继续执行',
       restart: '重新执行',

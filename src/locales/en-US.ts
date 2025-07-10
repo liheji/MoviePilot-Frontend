@@ -494,6 +494,7 @@ export default {
     dragComponentHint: 'Drag component to canvas',
     task: {
       edit: 'Edit Task',
+      editFlow: 'Edit Flow',
       share: 'Share',
       continue: 'Continue',
       restart: 'Restart',
