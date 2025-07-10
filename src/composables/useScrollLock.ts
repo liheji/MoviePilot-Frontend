@@ -1,7 +1,7 @@
 import { ref, watch, onBeforeUnmount, readonly } from 'vue'
 
-// 弹窗滚动锁定配置
-export interface DialogScrollLockOptions {
+// 滚动锁定配置
+export interface ScrollLockOptions {
   // 是否在组件卸载时自动恢复滚动
   autoRestore?: boolean
   // 是否保存和恢复滚动位置
@@ -17,7 +17,7 @@ export interface DialogScrollLockOptions {
 }
 
 // 默认配置
-const DEFAULT_OPTIONS: Required<DialogScrollLockOptions> = {
+const DEFAULT_OPTIONS: Required<ScrollLockOptions> = {
   autoRestore: true,
   preserveScrollPosition: true,
   preventTouchScroll: true,
@@ -28,7 +28,7 @@ const DEFAULT_OPTIONS: Required<DialogScrollLockOptions> = {
   },
 }
 
-export function useDialogScrollLock(options: DialogScrollLockOptions = {}) {
+export function useScrollLock(options: ScrollLockOptions = {}) {
   const config = { ...DEFAULT_OPTIONS, ...options }
 
   // 状态管理
@@ -189,8 +189,8 @@ export function useDialogScrollLock(options: DialogScrollLockOptions = {}) {
 }
 
 // 便捷的自动监听版本
-export function useDialogScrollLockWithWatch(target: any, options: DialogScrollLockOptions = {}) {
-  const scrollLock = useDialogScrollLock(options)
+export function useScrollLockWithWatch(target: any, options: ScrollLockOptions = {}) {
+  const scrollLock = useScrollLock(options)
 
   // 自动监听目标值的变化
   const stopWatcher = scrollLock.watchTarget(target)

@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { computed, watch, onBeforeUnmount } from 'vue'
-import { useDialogScrollLockWithWatch } from '@/composables/useDialogScrollLock'
+import { useScrollLockWithWatch } from '@/composables/useScrollLock'
 
 // Props
 interface Props {
@@ -35,7 +35,7 @@ const dialogModel = computed({
 })
 
 // 使用滚动锁定
-const { isLocked, lockScroll, restoreScroll } = useDialogScrollLockWithWatch(dialogModel, {
+const { isLocked, lockScroll, restoreScroll } = useScrollLockWithWatch(dialogModel, {
   autoRestore: true,
   preserveScrollPosition: props.preserveScrollPosition,
   preventTouchScroll: props.preventTouchScroll,
