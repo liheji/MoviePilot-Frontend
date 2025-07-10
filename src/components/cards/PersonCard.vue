@@ -90,7 +90,7 @@ function goPersonDetail() {
             <div class="absolute inset-0 flex h-full w-full flex-col items-center p-2">
               <div class="relative mt-2 mb-4 flex h-1/2 w-full justify-center">
                 <VAvatar
-                  size="120"
+                  size="90"
                   :class="{
                     'ring-1 ring-gray-700': isImageLoaded,
                   }"

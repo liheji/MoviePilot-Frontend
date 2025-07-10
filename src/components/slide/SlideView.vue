@@ -179,15 +179,15 @@ onActivated(() => {
 <style lang="scss" scoped>
 .slider-container {
   position: relative;
-  margin-block-end: 24px;
+  margin-block-end: 8px;
 }
 
 .slider-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-block-end: 12px;
+  gap: 8px;
+  margin-block-end: 8px;
   padding-block: 0;
   padding-inline: 8px;
 

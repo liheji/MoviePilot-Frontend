@@ -102,7 +102,6 @@ body {
 .slider-header {
   position: relative;
   display: flex;
-  margin-block: 1.5rem 1rem;
 }
 
 .slider-title {
@@ -183,7 +182,7 @@ body {
 }
 
 .grid-media-card {
-  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 }
 
 .grid-backdrop-card {

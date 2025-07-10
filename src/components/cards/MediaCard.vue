@@ -468,11 +468,11 @@ onBeforeUnmount(() => {
             class="w-full h-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2"
             style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
           >
-            <span class="font-bold">{{ props.media?.year }}</span>
-            <h1 class="mb-1 text-white font-extrabold text-xl line-clamp-2 overflow-hidden text-ellipsis ...">
+            <span class="font-semibold text-sm">{{ props.media?.year }}</span>
+            <h1 class="mb-1 text-white font-bold text-lg line-clamp-1 overflow-hidden text-ellipsis ...">
               {{ props.media?.title }}
             </h1>
-            <p class="leading-4 line-clamp-4 overflow-hidden text-ellipsis ...">
+            <p class="line-clamp-3 overflow-hidden text-sm text-ellipsis ...">
               {{ props.media?.overview }}
             </p>
             <div v-if="props.media?.collection_id" class="mb-3" @click.stop=""></div>
@@ -481,10 +481,16 @@ onBeforeUnmount(() => {
                 v-if="hasPermission({ is_superuser: userStore.superUser, ...userStore.permissions }, 'search')"
                 icon="mdi-magnify"
                 color="white"
+                size="small"
                 @click.stop="clickSearch"
               />
               <VSpacer />
-              <IconBtn icon="mdi-heart" :color="isSubscribed ? 'error' : 'white'" @click.stop="handleSubscribe" />
+              <IconBtn
+                icon="mdi-heart"
+                :color="isSubscribed ? 'error' : 'white'"
+                size="small"
+                @click.stop="handleSubscribe"
+              />
             </div>
           </VCardText>
           <!-- 类型角标 -->

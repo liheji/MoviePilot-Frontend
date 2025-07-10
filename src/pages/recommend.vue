@@ -248,7 +248,13 @@ onActivated(async () => {
     </div>
 
     <!-- 设置面板 -->
-    <DialogWrapper v-model="dialog" width="35rem" class="settings-dialog" scrollable :fullscreen="!display.mdAndUp.value">
+    <DialogWrapper
+      v-model="dialog"
+      width="35rem"
+      class="settings-dialog"
+      scrollable
+      :fullscreen="!display.mdAndUp.value"
+    >
       <VCard class="settings-card">
         <VCardItem class="settings-card-header">
           <VCardTitle>
@@ -332,7 +338,6 @@ onActivated(async () => {
 }
 
 .content-group {
-  margin-block-end: 24px;
   transition: opacity 0.3s ease;
 }
 

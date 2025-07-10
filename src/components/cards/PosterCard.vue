@@ -80,8 +80,8 @@ function goPlay(isHovering: boolean | null = false) {
           style="background: linear-gradient(rgba(45, 55, 72, 40%) 0%, rgba(45, 55, 72, 90%) 100%)"
           @click.stop="goPlay(hover.isHovering)"
         >
-          <span class="font-bold">{{ props.media?.subtitle }}</span>
-          <h1 class="mb-1 text-white font-extrabold text-xl line-clamp-2 overflow-hidden text-ellipsis ...">
+          <span class="font-semibold text-sm">{{ props.media?.subtitle }}</span>
+          <h1 class="mb-1 text-white font-bold text-lg line-clamp-2 overflow-hidden text-ellipsis ...">
             {{ props.media?.title }}
           </h1>
         </VCardText>

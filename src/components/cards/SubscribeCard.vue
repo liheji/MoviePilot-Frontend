@@ -445,6 +445,6 @@ function onSubscribeEditRemove() {
 </template>
 <style lang="scss" scoped>
 .subscribe-card-background {
-  background-image: linear-gradient(90deg, rgba(31, 41, 55, 47%) 0%, rgb(31, 41, 55) 100%);
+  background-image: linear-gradient(180deg, rgba(31, 41, 55, 47%) 0%, rgb(31, 41, 55) 100%);
 }
 </style>

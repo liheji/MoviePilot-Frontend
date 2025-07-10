@@ -53,11 +53,11 @@ const getImgUrl = computed(() => {
                 class="w-full flex flex-col flex-wrap justify-end align-left text-white absolute bottom-0 cursor-pointer pa-2"
               >
                 <h1
-                  class="mb-1 text-white text-shadow font-extrabold text-xl line-clamp-2 overflow-hidden text-ellipsis ..."
+                  class="mb-1 text-white text-shadow font-bold text-lg line-clamp-2 overflow-hidden text-ellipsis ..."
                 >
                   {{ props.media?.title }}
                 </h1>
-                <span class="text-shadow">{{ props.media?.subtitle }}</span>
+                <span class="text-shadow text-sm">{{ props.media?.subtitle }}</span>
               </VCardText>
             </template>
           </VImg>
