@@ -100,13 +100,13 @@ function doDelete() {
           >
             <div class="h-full flex flex-col">
               <VCardText class="flex items-center pa-3 pb-1 grow">
-                <div class="flex flex-col justify-center">
-                  <VCardTitle class="text-lg text-bold text-white line-clamp-2 overflow-hidden text-ellipsis ...">
+                <div class="flex flex-col justify-center w-full">
+                  <VCardTitle class="text-lg text-bold text-white line-clamp-2 break-words">
                     {{ props.workflow?.share_title }}
                   </VCardTitle>
-                  <VCardSubtitle class="line-clamp-3 overflow-hidden text-white text-ellipsis ...">
+                  <div class="px-4 text-white text-opacity-90 overflow-hidden line-clamp-3 break-all ...">
                     {{ props.workflow?.share_comment }}
-                  </VCardSubtitle>
+                  </div>
                 </div>
               </VCardText>
               <VCardText class="flex justify-space-between align-center flex-wrap py-2">
