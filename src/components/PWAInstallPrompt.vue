@@ -15,9 +15,14 @@ const dismissed = ref(false)
 const authStore = useAuthStore()
 const isLogin = computed(() => authStore.token)
 
+// 检查当前是不是https环境
+const isHttps = computed(() => {
+  return window.location.protocol === 'https:'
+})
+
 // 检查是否应该显示横幅
 const shouldShowBanner = computed(() => {
-  return !isInstalled.value && !dismissed.value && !showInstructions.value && isLogin.value
+  return !isInstalled.value && !dismissed.value && !showInstructions.value && isLogin.value && isHttps.value
 })
 
 // 显示延迟（避免立即显示）
@@ -62,8 +67,6 @@ const dismissBanner = () => {
   localStorage.setItem('pwa-install-dismissed', new Date().toISOString())
 }
 
-
-
 // 获取平台特定的安装说明
 const instructions = computed(() => {
   const rawInstructions = getInstallInstructions()
@@ -75,17 +78,17 @@ const instructions = computed(() => {
   // 直接使用t函数获取安装步骤，避免编译对象的问题
   const steps = []
   const maxSteps = 10 // 最大步骤数，防止无限循环
-  
+
   for (let i = 0; i < maxSteps; i++) {
     try {
       const stepKey = `pwa.installSteps.${platformKey}.${i}`
       const stepText = t(stepKey)
-      
+
       // 如果返回的是键名本身，说明没有找到对应的翻译
       if (stepText === stepKey) {
         break
       }
-      
+
       steps.push(stepText)
     } catch (error) {
       // 如果出现错误，说明没有更多步骤
