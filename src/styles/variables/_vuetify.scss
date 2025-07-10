@@ -1,5 +1,4 @@
-// ❗ Path must be relative
-@forward "../../@core/scss/libs/vuetify/variables";
+@forward "@core/scss/libs/vuetify/variables";
 
 // 如果需要自定义Vuetify变量，可以在这里添加
 // @forward "../../@core/scss/libs/vuetify/variables" with (
