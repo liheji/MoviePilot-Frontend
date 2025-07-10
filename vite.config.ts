@@ -138,13 +138,6 @@ export default defineConfig({
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'pages-cache',
-              cacheKeyWillBeUsed: async ({ request }) => {
-                // 忽略状态参数，提高缓存命中率
-                const url = new URL(request.url)
-                url.searchParams.delete('restored')
-                url.searchParams.delete('t')
-                return url.toString()
-              },
             },
           },
         ],
