@@ -34,6 +34,8 @@ $header: ".layout-navbar";
       &.window-scrolled.layout-navbar-fixed {
 
         #{$header} {
+          padding-inline: 1rem;
+
           @extend %default-layout-vertical-nav-scrolled-sticky-elevated-nav;
           @extend %default-layout-vertical-nav-floating-navbar-and-sticky-elevated-navbar-scrolled;
         }
@@ -50,6 +52,8 @@ $header: ".layout-navbar";
       html.dialog-scroll-locked &.layout-navbar-fixed {
 
         #{$header} {
+          padding-inline: 1rem;
+
           @extend %default-layout-vertical-nav-scrolled-sticky-elevated-nav;
           @extend %default-layout-vertical-nav-floating-navbar-and-sticky-elevated-navbar-scrolled;
         }
