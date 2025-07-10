@@ -18,7 +18,7 @@ import { useRoute } from 'vue-router'
 import { filterMenusByPermission } from '@/utils/permission'
 import { onUnreadMessage } from '@/utils/badge'
 import { usePullDownGesture } from '@/composables/usePullDownGesture'
-import { useScrollLockWithWatch } from '@/composables/useScrollLock'
+import { useDialogScrollLockWithWatch } from '@/composables/useDialogScrollLock'
 import { usePWA } from '@/composables/usePWA'
 import OfflinePage from '@/layouts/components/OfflinePage.vue'
 import { useGlobalOfflineStatus } from '@/composables/useOfflineStatus'
@@ -164,7 +164,7 @@ const handleServiceWorkerMessage = (event: MessageEvent) => {
 }
 
 // 使用滚动锁定 composable（自动监听showPluginQuickAccess的变化）
-useScrollLockWithWatch(showPluginQuickAccess)
+useDialogScrollLockWithWatch(showPluginQuickAccess)
 
 // 检查是否可以使用下拉手势
 const canUsePullGesture = () => {
