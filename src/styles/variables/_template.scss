@@ -1,6 +1,6 @@
-@forward "@core/scss/template/variables";
+@forward "@core/scss/variables";
 
-// ℹ️ Remove above import and uncomment below to override core variables.
-// @forward "@core/scss/template/variables" with (
-//   $<variable-name>: <variable-value>
-// )
+// 如果需要自定义变量，可以在这里添加
+// @forward "@core/scss/variables" with (
+//   $custom-variable: value
+// );

@@ -1,67 +1,88 @@
-@use "vuetify/lib/styles/tools/_elevation" as mixins_elevation;
+@use "@configured-variables" as variables;
+@use "../mixins";
 
+// 👉 Apex chart
 .apexcharts-canvas {
-  &line[stroke="transparent"] {
-    display: "none";
+  // For RTL alignment
+  .apexcharts-yaxis-texts-g {
+    text-align: start;
   }
 
+  // Tooltip
   .apexcharts-tooltip {
-    @include mixins_elevation.elevation(3);
-
-    border-color: rgba(var(--v-border-color), var(--v-border-opacity));
-    background: rgb(var(--v-theme-surface));
+    line-height: 1.5;
 
     .apexcharts-tooltip-title {
       border-color: rgba(var(--v-border-color), var(--v-border-opacity));
       background: rgb(var(--v-theme-surface));
+      font-weight: 500;
+      margin-block-end: 0.25rem;
+      padding-inline: 1rem;
+    }
+
+    .apexcharts-tooltip-text {
+      display: flex;
+      align-items: center;
+      color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
+      font-size: inherit;
+      gap: 0.5rem;
+      line-height: inherit;
+    }
+
+    .apexcharts-tooltip-text-label,
+    .apexcharts-tooltip-text-value {
       font-weight: 600;
+      line-height: 1.5;
+    }
+    
+    .apexcharts-tooltip-series-group {
+      padding-block: 0 0.5rem;
+      padding-inline: 1rem;
+
+      &:last-child {
+        padding-block-end: 1rem;
+      }
+
+      &.active {
+        padding-block-start: 0;
+      }
     }
 
     &.apexcharts-theme-light {
-      color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
-    }
-
-    &.apexcharts-theme-dark {
-      color: white;
-    }
-
-    .apexcharts-tooltip-series-group:first-of-type {
-      padding-block-end: 0;
-    }
-  }
-
-  .apexcharts-xaxistooltip {
-    border-color: rgba(var(--v-border-color), var(--v-border-opacity));
-    background: rgb(var(--v-theme-grey-50));
-    color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
-
-    &::after {
-      border-block-end-color: rgb(var(--v-theme-grey-50));
-    }
-
-    &::before {
-      border-block-end-color: rgba(var(--v-border-color), var(--v-border-opacity));
+      border-color: rgb(var(--v-border-color));
+      background: rgb(var(--v-theme-surface));
+      box-shadow: none;
+      
+      .apexcharts-tooltip-text-label,
+      .apexcharts-tooltip-text-value {
+        color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
+      }
     }
   }
 
+  .apexcharts-marker {
+    transition: none;
+  }
+
+  // 👉 stroke-dasharray
+  .apexcharts-radialbar,
+  .apexcharts-radialbar-slice-current {
+    stroke-linecap: round;
+  }
+
+  .apexcharts-xaxistooltip,
   .apexcharts-yaxistooltip {
-    border-color: rgba(var(--v-border-color), var(--v-border-opacity));
-    background: rgb(var(--v-theme-grey-50));
+    border-color: rgb(var(--v-border-color));
+    background: rgb(var(--v-theme-surface));
+    color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity));
 
-    &::after {
-      border-inline-start-color: rgb(var(--v-theme-grey-50));
-    }
-
+    &::after,
     &::before {
-      border-inline-start-color: rgba(var(--v-border-color), var(--v-border-opacity));
+      border-block-end-color: rgb(var(--v-border-color));
     }
   }
 
-  .apexcharts-xaxistooltip-text,
-  .apexcharts-yaxistooltip-text {
-    color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
-  }
-
+  // 👉 Text color
   .apexcharts-text,
   .apexcharts-tooltip-text,
   .apexcharts-datalabel-label,
@@ -69,19 +90,16 @@
   .apexcharts-xaxistooltip-text,
   .apexcharts-yaxistooltip-text,
   .apexcharts-legend-text {
+    color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity)) !important;
     font-family: inherit !important;
   }
 
-  .apexcharts-pie-label {
-    fill: white;
-    filter: none;
-  }
-
-  .apexcharts-marker {
-    box-shadow: none;
-  }
-
-  .apexcharts-legend-marker {
-    margin-inline-end: 0.3875rem;
+  // 👉 Annotation Label
+  .apexcharts-annotation-rect {
+    &.apexcharts-xaxis-annotation-rect,
+    &.apexcharts-yaxis-annotation-rect {
+      fill-opacity: 0.05;
+      stroke-opacity: 0;
+    }
   }
 }

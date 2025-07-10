@@ -1,5 +1,5 @@
-@use "@core/scss/utils";
 @use "@configured-variables" as variables;
+@use "../../utils";
 
 // 👉 Application
 // ℹ️ We need accurate vh in mobile devices as well
@@ -45,6 +45,17 @@ h6,
   }
 }
 
+// 👉 Button
+@if variables.$vuetify-reduce-default-compact-button-icon-size {
+  .v-btn--density-compact.v-btn--size-default {
+    .v-btn__content > svg {
+      block-size: 22px;
+      font-size: 22px;
+      inline-size: 22px;
+    }
+  }
+}
+
 // 👉 Card
 // Removes padding-top for immediately placed v-card-text after itself
 .v-card-text {
@@ -71,7 +82,9 @@ h6,
   &.v-checkbox-btn,
   &.v-radio,
   &.v-radio-btn {
-    margin-inline-start: -0.5625rem;
+    .v-selection-control__wrapper {
+      margin-inline-start: -0.5625rem;
+    }
   }
 }
 
@@ -79,7 +92,9 @@ h6,
   &.v-radio,
   &.v-radio-btn,
   &.v-checkbox-btn {
-    margin-inline-start: -0.3125rem;
+    .v-selection-control__wrapper {
+      margin-inline-start: -0.3125rem;
+    }
   }
 }
 
@@ -87,7 +102,9 @@ h6,
   &.v-checkbox-btn,
   &.v-radio,
   &.v-radio-btn {
-    margin-inline-start: -0.6875rem;
+    .v-selection-control__wrapper {
+      margin-inline-start: -0.6875rem;
+    }
   }
 }
 
@@ -154,13 +171,131 @@ h6,
     padding-block: 0 !important;
     padding-inline: 0 !important;
 
+    > .v-ripple__container {
+      opacity: 0;
+    }
+
     &:not(:last-child) {
       padding-block-end: var(--v-card-list-gap) !important;
     }
   }
+
+  .v-list-item:hover,
+  .v-list-item:focus,
+  .v-list-item:active,
+  .v-list-item.active {
+    > .v-list-item__overlay {
+      opacity: 0 !important;
+    }
+  }
 }
 
-// 👉 Table
-.v-table {
-  color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
+// 👉 Divider
+.v-divider {
+  color: rgb(var(--v-border-color));
 }
+
+// 👉 DataTable
+.v-data-table {
+  /* stylelint-disable-next-line no-descending-specificity */
+  .v-checkbox-btn .v-selection-control__wrapper {
+    margin-inline-start: 0 !important;
+  }
+
+  .v-selection-control {
+    display: flex !important;
+  }
+
+  .v-pagination {
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  }
+}
+
+// 👉 v-field
+.v-field:hover .v-field__outline {
+  --v-field-border-opacity: var(--v-medium-emphasis-opacity);
+}
+
+// 👉 VLabel
+.v-label {
+  opacity: 1 !important;
+
+  &:not(.v-field-label--floating) {
+    color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity));
+  }
+}
+
+// 👉 Overlay
+.v-overlay__scrim,
+.v-navigation-drawer__scrim {
+  background: rgba(var(--v-overlay-scrim-background), var(--v-overlay-scrim-opacity)) !important;
+  opacity: 1 !important;
+}
+
+// 👉 VMessages
+.v-messages {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  opacity: 1;
+}
+
+// 👉 Alert close btn
+.v-alert__close {
+  .v-btn--icon .v-icon {
+    --v-icon-size-multiplier: 1.5;
+  }
+}
+
+// 👉 Badge icon alignment
+.v-badge__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 👉 Dialog
+.v-dialog--fullscreen {
+  background-color: rgb(var(--v-theme-surface));
+}
+
+// For dialog card title
+.v-card-item + .v-card-text {
+  padding-block-start: 0 !important;
+}
+
+// 👉 v-slide-group (List of chips)
+.v-slide-group {
+  .v-slide-group__container {
+    display: flex;
+    flex-wrap: wrap;
+
+    // Spacing between buttons in v-slide-group
+    .v-slide-group-item:not(:last-child) {
+      margin-inline-end: 0.5rem;
+    }
+  }
+}
+
+// 👉 Expansion Panel
+.v-expansion-panels {
+  .v-expansion-panel-title {
+    min-block-size: unset !important;
+    padding-block: 1rem !important;
+  }
+}
+
+// 👉 v-textarea
+.v-textarea {
+  textarea {
+    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+
+    &:hover,
+    &:focus {
+      color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+    }
+  }
+}
+
+// 👉 Cursor
+.cursor-pointer {
+  cursor: pointer;
+} 

@@ -1,6 +1,6 @@
 @use "./placeholders";
 @use "@configured-variables" as variables;
-@use "@core/scss/mixins" as mixins;
+@use "./mixins" as mixins;
 @use "vuetify/lib/styles/tools/states" as vuetifyStates;
 @use "vuetify/lib/styles/tools/elevation" as elevation;
 

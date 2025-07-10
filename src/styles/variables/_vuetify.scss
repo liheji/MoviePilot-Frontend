@@ -1,7 +1,7 @@
 // ❗ Path must be relative
-@forward "../../@core/scss/template/libs/vuetify/variables";
+@forward "../../@core/scss/libs/vuetify/variables";
 
-// ℹ️ Remove above import and uncomment below to override core variables.
-// @forward "../../@core/scss/template/libs/vuetify/variables" with (
-//   $<variable-name>: <variable-value>
-// )
+// 如果需要自定义Vuetify变量，可以在这里添加
+// @forward "../../@core/scss/libs/vuetify/variables" with (
+//   $custom-vuetify-variable: value
+// );

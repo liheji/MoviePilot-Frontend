@@ -1,7 +1,7 @@
-@use "@core/scss/mixins";
+@use "../mixins";
 @use "@configured-variables" as variables;
 @use "vuetify/lib/styles/tools/states" as vuetifyStates;
-@use "@core/scss/utils";
+@use "../utils";
 
 // Nav items styles (including section title)
 %vertical-nav-item {
