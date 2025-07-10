@@ -70,7 +70,34 @@ export function useScrollLock(options: ScrollLockOptions = {}) {
   // 阻止触摸滚动事件
   const preventTouchScroll = (event: TouchEvent) => {
     if (isLocked.value && config.preventTouchScroll) {
-      event.preventDefault()
+      // 检查触摸事件的目标元素是否在弹窗内
+      const target = event.target as Element
+      if (target) {
+        // 检查目标元素是否在弹窗、菜单或其他覆盖层内
+        const isInDialog = target.closest(
+          '.v-dialog, .v-menu, .v-bottom-sheet, .v-snackbar, [role="dialog"], .v-overlay__content',
+        )
+
+        // 检查目标元素是否是可滚动的内容区域
+        const isScrollableContent = target.closest(
+          '.v-card-text, .v-list, .v-table__wrapper, .v-data-table__wrapper, .v-sheet, .v-card__content, .v-data-table, .v-table',
+        )
+
+        // 检查目标元素是否在可滚动的容器内
+        const scrollableContainer = target.closest('[style*="overflow"], [class*="overflow"]')
+        const isInScrollableContainer =
+          scrollableContainer &&
+          (scrollableContainer.scrollHeight > scrollableContainer.clientHeight ||
+            getComputedStyle(scrollableContainer).overflow !== 'hidden')
+
+        // 如果不在弹窗内且不是可滚动内容且不在可滚动容器内，则阻止滚动
+        if (!isInDialog && !isScrollableContent && !isInScrollableContainer) {
+          event.preventDefault()
+        }
+      } else {
+        // 如果无法确定目标元素，则阻止滚动以确保安全
+        event.preventDefault()
+      }
     }
   }
 
