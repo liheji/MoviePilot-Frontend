@@ -253,7 +253,7 @@ onUnmounted(() => {
       <div v-if="isLogin && isTransparentTheme" class="global-blur-layer"></div>
     </div>
     <!-- 页面内容 -->
-    <VApp :class="{ 'transparent-app': isTransparentTheme }">
+    <VApp>
       <RouterView />
       <!-- PWA安装提示 -->
       <PWAInstallPrompt />

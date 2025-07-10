@@ -318,9 +318,8 @@ body {
   box-shadow: none !important;
 }
 
-
-// 透明主题特殊样式
-.transparent-app {
+// 透明主题下的弹出窗口样式
+html[data-theme="transparent"] {
   // 先将所有全局组件定义放在前面，避免CSS优先级问题
   .v-application, .v-layout, .v-main, .layout-page-content {
     background: transparent;
@@ -409,10 +408,6 @@ body {
     background-color: rgba(var(--v-theme-surface), 0);
   }
   
-}
-
-// 透明主题下的弹出窗口样式
-html[data-theme="transparent"] {
   .v-overlay__content {
     border-radius: 12px !important;
     backdrop-filter: blur(10px) !important;
