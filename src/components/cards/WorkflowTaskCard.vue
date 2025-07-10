@@ -271,7 +271,7 @@ const resolveProgress = (item: Workflow) => {
           </template>
         </VCardItem>
         <VDivider />
-        <VCardText>
+        <VCardText class="pa-3">
           <div class="d-flex flex-column gap-y-2">
             <div class="d-flex flex-wrap gap-x-3">
               <div class="flex-1">

@@ -49,7 +49,7 @@ onActivated(() => {
   <SlideView v-if="componentLoaded">
     <template #content>
       <template v-for="data in dataList" :key="data.tmdb_id || data.douban_id || data.bangumi_id">
-        <MediaCard :media="data" width="8rem" />
+        <MediaCard :media="data" width="9rem" />
       </template>
     </template>
   </SlideView>

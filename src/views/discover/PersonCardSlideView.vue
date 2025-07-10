@@ -39,7 +39,7 @@ onMounted(fetchData)
   <SlideView v-if="componentLoaded">
     <template #content>
       <template v-for="data in dataList" :key="data.id">
-        <PersonCard :person="data" width="8rem" />
+        <PersonCard :person="data" width="9rem" />
       </template>
     </template>
   </SlideView>
