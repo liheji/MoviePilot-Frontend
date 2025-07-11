@@ -99,6 +99,10 @@ function episodeGroupItemProps(item: { title: string; subtitle: string }) {
 
 // 查询所有剧集组
 async function getEpisodeGroups() {
+  if (!subscribeForm.value.tmdbid) {
+    console.warn('tmdbid is not set or is empty')
+    return
+  }
   try {
     episodeGroups.value = await api.get(`media/groups/${subscribeForm.value.tmdbid}`)
   } catch (error) {
@@ -283,7 +287,7 @@ onMounted(() => {
   <DialogWrapper scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem class="py-2">
-				<VDialogCloseBtn @click="emit('close')" />
+        <VDialogCloseBtn @click="emit('close')" />
         <template #prepend>
           <VIcon icon="mdi-clipboard-list-outline" class="me-2" />
         </template>
