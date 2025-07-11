@@ -12,6 +12,7 @@ import { useDisplay } from 'vuetify'
 import MediaInfoDialog from '../dialog/MediaInfoDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
+import { usePWA } from '@/composables/usePWA'
 
 // 国际化
 const { t } = useI18n()
@@ -19,6 +20,8 @@ const { useProgressSSE } = useBackgroundOptimization()
 
 // 显示器宽度
 const display = useDisplay()
+
+const { appMode } = usePWA()
 
 // 输入参数
 const inProps = defineProps({
@@ -35,7 +38,6 @@ const inProps = defineProps({
     required: true,
   },
   sort: String,
-  listStyle: String,
   showTree: Boolean,
 })
 
@@ -124,6 +126,30 @@ const transferItems = ref<FileItem[]>([])
 
 // 当前图片地址
 const currentImgLink = ref('')
+
+// 计算列表可用高度
+const listAvailableHeight = computed(() => {
+  // 获取视口高度
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+
+  // navbar高度
+  const navbarHeight = 72
+  // 工具栏高度（包含搜索框和按钮）
+  const toolbarHeight = 64
+  // 底部导航栏高度
+  const footerHeight = appMode.value ? 80 : 16
+  // 安全区域高度
+  const safeAreaHeight =
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom')) ||
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-top')) ||
+    0
+
+  // 计算可用高度，预留一些边距
+  const availableHeight = viewportHeight - navbarHeight - toolbarHeight - footerHeight - safeAreaHeight - 40
+
+  // 确保最小高度
+  return Math.max(availableHeight, 300)
+})
 
 // 是否为图片文件
 const isImage = computed(() => {
@@ -546,7 +572,7 @@ const progressSSE = useProgressSSE(
   `${import.meta.env.VITE_API_BASE_URL}system/progress/batchrename`,
   handleProgressMessage,
   'file-batch-rename-progress',
-  progressActive
+  progressActive,
 )
 
 // 使用SSE监听加载进度
@@ -566,6 +592,14 @@ onMounted(() => {
   list_files()
 })
 </script>
+
+<style scoped>
+.file-list-container {
+  overflow: hidden auto;
+  block-size: 100%;
+  max-block-size: 100%;
+}
+</style>
 
 <template>
   <div>
@@ -635,9 +669,12 @@ onMounted(() => {
         <VImg :src="currentImgLink" max-width="100%" max-height="100%" />
       </VCardText>
       <!-- 目录和文件列表 -->
-      <VCardText v-else-if="dirs.length || files.length" class="p-0">
-        <VList class="text-high-emphasis">
-          <VVirtualScroll :items="[...dirs, ...files]" :style="listStyle">
+      <VCardText v-else-if="dirs.length || files.length" class="p-0 flex-grow-1 overflow-hidden">
+        <VList
+          class="text-high-emphasis file-list-container"
+          :style="{ height: `${listAvailableHeight}px`, maxHeight: `${listAvailableHeight}px` }"
+        >
+          <VVirtualScroll :items="[...dirs, ...files]" style="block-size: 100%">
             <template #default="{ item }">
               <VHover>
                 <template #default="hover">

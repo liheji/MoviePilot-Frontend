@@ -4,12 +4,39 @@ import type { FileItem } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import type { AxiosRequestConfig } from 'axios'
 import { useI18n } from 'vue-i18n'
+import { usePWA } from '@/composables/usePWA'
 
 // 国际化
 const { t } = useI18n()
 
 // 显示器宽度
 const display = useDisplay()
+
+const { appMode } = usePWA()
+
+// 计算列表可用高度
+const availableHeight = computed(() => {
+  // 获取视口高度
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+
+  // navbar高度
+  const navbarHeight = 72
+  // 工具栏高度
+  const toolbarHeight = 25
+  // 底部导航栏高度
+  const footerHeight = appMode.value ? 80 : 16
+  // 安全区域高度
+  const safeAreaHeight =
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom')) ||
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-top')) ||
+    0
+
+  // 计算可用高度，预留一些边距
+  const availableHeight = viewportHeight - navbarHeight - toolbarHeight - footerHeight - safeAreaHeight - 40
+
+  // 确保最小高度
+  return Math.max(availableHeight, 300)
+})
 
 // 输入参数
 const props = defineProps({
@@ -125,11 +152,6 @@ async function loadRootDirectories() {
   await loadSubdirectories('/')
 }
 
-// 获取目录层级深度
-function getDirectoryDepth(path: string) {
-  return path.split('/').filter(p => p).length
-}
-
 // 检索所有目录节点
 function getAllDirectories() {
   const allDirs: { dir: FileItem; level: number; parentPath: string }[] = []
@@ -227,11 +249,6 @@ const flattenedDirectories = computed(() => {
   return getAllDirectories()
 })
 
-// 组件挂载时初始加载
-onMounted(async () => {
-  await loadRootDirectories()
-})
-
 // 检查路径是否为指定目录的子目录或后代
 function isChildOrDescendant(path: string, ancestorPath: string) {
   if (!path || !ancestorPath) return false
@@ -260,10 +277,19 @@ function getIndentLevel(path: string, ancestorPath: string) {
 
   return pathParts - ancestorParts
 }
+
+// 组件挂载时初始加载
+onMounted(async () => {
+  await loadRootDirectories()
+})
+
+onActivated(() => {
+  updateHeight()
+})
 </script>
 
 <template>
-  <VCard class="file-navigator rounded-e-0 rounded-t-0" v-if="!isMobile">
+  <VCard class="file-navigator rounded-e-0 rounded-t-0" v-if="!isMobile" :height="`${availableHeight}px`">
     <div class="tree-container">
       <!-- 根目录项 -->
       <div

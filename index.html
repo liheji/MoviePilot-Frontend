@@ -2,6 +2,8 @@
 <html lang="zh-CN" style="
     overflow: hidden auto;
     min-block-size: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+    --safe-area-inset-top: env(safe-area-inset-top);
     background: var(--initial-loader-bg, #fff);
   ">
 
@@ -87,11 +89,11 @@
   <link rel="dns-prefetch" href="//image.tmdb.org" />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  
+
   <!-- 预加载关键资源 -->
   <link rel="preload" href="/logo.png" as="image" />
   <link rel="modulepreload" href="/src/main.ts" />
-  
+
   <!-- 内联关键CSS -->
   <style>
     /* 关键路径CSS - 从loader.css内联 */
