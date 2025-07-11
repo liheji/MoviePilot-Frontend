@@ -81,6 +81,10 @@ function getMediaId() {
 
 // 查询所有剧集组
 async function getEpisodeGroups() {
+  if (!props.media?.tmdb_id) {
+    console.log('tmdbid is not set or is empty')
+    return
+  }
   try {
     episodeGroups.value = await api.get(`media/groups/${props.media?.tmdb_id}`)
   } catch (error) {
