@@ -100,7 +100,7 @@ function episodeGroupItemProps(item: { title: string; subtitle: string }) {
 // 查询所有剧集组
 async function getEpisodeGroups() {
   if (!subscribeForm.value.tmdbid) {
-    console.log('tmdbid is not set or is empty')
+    console.warn('tmdbid is not set or is empty')
     return
   }
   try {
