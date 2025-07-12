@@ -232,7 +232,6 @@ function buildPlexDeepLink(playUrl: string): string {
         plexToken,
         deepLink,
       })
-      alert(deepLink)
       return deepLink
     }
 
