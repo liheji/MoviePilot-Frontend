@@ -16,7 +16,7 @@ import { useTheme } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { hasPermission } from '@/utils/permission'
 import { useGlobalSettingsStore } from '@/stores'
-import { openMediaServerWithAutoDetect } from '@/utils/mediaServerDeepLink'
+import { openMediaServerWithAutoDetect, openDoubanApp } from '@/utils/appDeepLink'
 
 // 国际化
 const { t } = useI18n()
@@ -354,6 +354,18 @@ function getDoubanLink() {
   return `https://movie.douban.com/subject/${mediaDetail.value.douban_id}`
 }
 
+// 处理豆瓣链接点击
+async function handleDoubanClick() {
+  if (mediaDetail.value.douban_id) {
+    await openDoubanApp(
+      mediaDetail.value.douban_id,
+      mediaDetail.value.type,
+      mediaDetail.value.title,
+      mediaDetail.value.year,
+    )
+  }
+}
+
 // 拼装IMDB地址
 function getImdbLink() {
   return `https://www.imdb.com/title/${mediaDetail.value.imdb_id}`
@@ -477,7 +489,7 @@ async function handlePlay() {
     const result: { [key: string]: any } = await api.get(`mediaserver/play/${existsItemId.value}`)
     if (result?.success) {
       // 使用深度链接工具，优先跳转到APP，失败后跳转到网页
-      await openMediaServerWithAutoDetect(result.data.url)
+      await openMediaServerWithAutoDetect(result.data.url, undefined, result.data.server_type)
     } else {
       $toast.error(`获取播放链接失败：${result.message}！`)
     }
@@ -668,19 +680,14 @@ onBeforeMount(() => {
                 <span class="ms-1">TheMovieDb</span>
               </div>
             </a>
-            <a
-              v-if="mediaDetail.douban_id"
-              class="mb-2 mr-2 inline-flex last:mr-0"
-              :href="getDoubanLink()"
-              target="_blank"
-            >
+            <div v-if="mediaDetail.douban_id" class="mb-2 mr-2 inline-flex last:mr-0" @click="handleDoubanClick">
               <div
                 class="inline-flex cursor-pointer items-center rounded-full bg-gray-600 px-2 py-1 text-sm text-gray-200 ring-1 ring-gray-500 transition hover:bg-gray-700"
               >
                 <VIcon icon="mdi-link" />
                 <span class="ms-1">豆瓣</span>
               </div>
-            </a>
+            </div>
             <a v-if="mediaDetail.imdb_id" class="mb-2 mr-2 inline-flex last:mr-0" :href="getImdbLink()" target="_blank">
               <div
                 class="inline-flex cursor-pointer items-center rounded-full bg-gray-600 px-2 py-1 text-sm text-gray-200 ring-1 ring-gray-500 transition hover:bg-gray-700"

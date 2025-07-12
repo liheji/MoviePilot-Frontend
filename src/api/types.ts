@@ -986,6 +986,8 @@ export interface MediaServerPlayItem {
   link?: string
   // 播放百分比
   percent?: number
+  // 媒体服务器类型
+  server_type?: string
 }
 
 // 媒体服务器媒体库
@@ -1006,6 +1008,8 @@ export interface MediaServerLibrary {
   image_list?: string[]
   // 链接
   link?: string
+  // 媒体服务器类型
+  server_type?: string
 }
 
 // 消息通知

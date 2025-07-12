@@ -4,7 +4,7 @@ import plex from '@images/misc/plex.png'
 import emby from '@images/misc/emby.png'
 import jellyfin from '@images/misc/jellyfin.png'
 import trimemedia from '@images/logos/trimemedia.png'
-import { openMediaServerWithAutoDetect } from '@/utils/mediaServerDeepLink'
+import { openMediaServerWithAutoDetect } from '@/utils/appDeepLink'
 
 // 输入参数
 const props = defineProps({
@@ -37,17 +37,17 @@ function imageErrorHandler() {
 
 // 默认图片
 function getDefaultImage() {
-  if (props.media?.server === 'plex') return plex
-  else if (props.media?.server === 'emby') return emby
-  else if (props.media?.server === 'jellyfin') return jellyfin
-  else if (props.media?.server === 'trimemedia') return trimemedia
+  if (props.media?.server_type === 'plex') return plex
+  else if (props.media?.server_type === 'emby') return emby
+  else if (props.media?.server_type === 'jellyfin') return jellyfin
+  else if (props.media?.server_type === 'trimemedia') return trimemedia
   else return plex
 }
 
 // 跳转播放
 async function goPlay() {
   if (props.media?.link) {
-    await openMediaServerWithAutoDetect(props.media.link)
+    await openMediaServerWithAutoDetect(props.media.link, undefined, props.media.server_type)
   }
 }
 
