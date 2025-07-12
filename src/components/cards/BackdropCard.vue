@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { MediaServerPlayItem } from '@/api/types'
+import { openMediaServerWithAutoDetect } from '@/utils/mediaServerDeepLink'
 // 输入参数
 const props = defineProps({
   media: Object as PropType<MediaServerPlayItem>,
@@ -16,8 +17,10 @@ function imageLoadHandler() {
 }
 
 // 跳转播放
-function goPlay() {
-  if (props.media?.link) window.open(props.media?.link, '_blank')
+async function goPlay() {
+  if (props.media?.link) {
+    await openMediaServerWithAutoDetect(props.media.link)
+  }
 }
 
 // 计算图片地址

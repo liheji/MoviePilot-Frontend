@@ -84,3 +84,15 @@ export const isMobileDevice = (): boolean => {
 
   return mobileRegex.test(userAgent) || hasTouchScreen || isMobileSize
 }
+
+// 检测是否为iOS设备
+export const isIOSDevice = (): boolean => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  return /iphone|ipad|ipod/.test(userAgent) && !(window as any).MSStream
+}
+
+// 检测是否为Android设备
+export const isAndroidDevice = (): boolean => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  return /android/.test(userAgent)
+}

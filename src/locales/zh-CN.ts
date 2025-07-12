@@ -737,6 +737,8 @@ export default {
       searchResource: '搜索资源',
       subscribe: '订阅',
       playOnline: '在线播放',
+      playInApp: 'APP播放',
+      playInWeb: '网页播放',
     },
     search: {
       byTitle: '标题',
@@ -764,6 +766,14 @@ export default {
     error: {
       title: '出错啦！',
       noMediaInfo: '未识别到媒体信息。',
+    },
+    server: {
+      plex: 'Plex',
+      jellyfin: 'Jellyfin',
+      emby: 'Emby',
+      appLaunchFailed: 'APP启动失败，正在跳转到网页版',
+      appNotInstalled: '未检测到APP，正在跳转到网页版',
+      downloadApp: '下载APP',
     },
   },
   subscribe: {

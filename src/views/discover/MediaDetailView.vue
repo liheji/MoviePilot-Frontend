@@ -16,6 +16,7 @@ import { useTheme } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { hasPermission } from '@/utils/permission'
 import { useGlobalSettingsStore } from '@/stores'
+import { openMediaServerWithAutoDetect } from '@/utils/mediaServerDeepLink'
 
 // 国际化
 const { t } = useI18n()
@@ -475,10 +476,8 @@ async function handlePlay() {
   try {
     const result: { [key: string]: any } = await api.get(`mediaserver/play/${existsItemId.value}`)
     if (result?.success) {
-      // 打开链接地址
-      setTimeout(() => {
-        window.open(result.data.url, '_blank')
-      }, 100)
+      // 使用深度链接工具，优先跳转到APP，失败后跳转到网页
+      await openMediaServerWithAutoDetect(result.data.url)
     } else {
       $toast.error(`获取播放链接失败：${result.message}！`)
     }

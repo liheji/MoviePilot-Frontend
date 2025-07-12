@@ -4,6 +4,7 @@ import plex from '@images/misc/plex.png'
 import emby from '@images/misc/emby.png'
 import jellyfin from '@images/misc/jellyfin.png'
 import trimemedia from '@images/logos/trimemedia.png'
+import { openMediaServerWithAutoDetect } from '@/utils/mediaServerDeepLink'
 
 // 输入参数
 const props = defineProps({
@@ -44,8 +45,10 @@ function getDefaultImage() {
 }
 
 // 跳转播放
-function goPlay() {
-  if (props.media?.link) window.open(props.media?.link, '_blank')
+async function goPlay() {
+  if (props.media?.link) {
+    await openMediaServerWithAutoDetect(props.media.link)
+  }
 }
 
 // 生成图片代理路径

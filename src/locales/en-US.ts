@@ -740,6 +740,8 @@ export default {
       searchResource: 'Search Resource',
       subscribe: 'Subscribe',
       playOnline: 'Play Online',
+      playInApp: 'Play in App',
+      playInWeb: 'Play in Web',
     },
     search: {
       byTitle: 'Title',
@@ -767,6 +769,14 @@ export default {
     error: {
       title: 'Error!',
       noMediaInfo: 'No media information recognized.',
+    },
+    server: {
+      plex: 'Plex',
+      jellyfin: 'Jellyfin',
+      emby: 'Emby',
+      appLaunchFailed: 'App launch failed, redirecting to web version',
+      appNotInstalled: 'App not detected, redirecting to web version',
+      downloadApp: 'Download App',
     },
   },
   subscribe: {

@@ -735,6 +735,8 @@ export default {
       searchResource: '搜索資源',
       subscribe: '訂閱',
       playOnline: '線上播放',
+      playInApp: 'APP播放',
+      playInWeb: '網頁播放',
     },
     search: {
       byTitle: '標題',
@@ -762,6 +764,14 @@ export default {
     error: {
       title: '出錯啦！',
       noMediaInfo: '未識別到媒體信息。',
+    },
+    server: {
+      plex: 'Plex',
+      jellyfin: 'Jellyfin',
+      emby: 'Emby',
+      appLaunchFailed: 'APP啟動失敗，正在跳轉到網頁版',
+      appNotInstalled: '未檢測到APP，正在跳轉到網頁版',
+      downloadApp: '下載APP',
     },
   },
   subscribe: {

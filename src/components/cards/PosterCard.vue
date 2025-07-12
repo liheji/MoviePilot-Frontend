@@ -2,6 +2,7 @@
 import type { PropType } from 'vue'
 import type { MediaServerPlayItem } from '@/api/types'
 import noImage from '@images/no-image.jpeg'
+import { openMediaServerWithAutoDetect } from '@/utils/mediaServerDeepLink'
 
 // 输入参数
 const props = defineProps({
@@ -31,8 +32,10 @@ const getImgUrl = computed(() => {
 })
 
 // 跳转播放
-function goPlay(isHovering: boolean | null = false) {
-  if (props.media?.link && isHovering) window.open(props.media?.link, '_blank')
+async function goPlay(isHovering: boolean | null = false) {
+  if (props.media?.link && isHovering) {
+    await openMediaServerWithAutoDetect(props.media.link)
+  }
 }
 </script>
 

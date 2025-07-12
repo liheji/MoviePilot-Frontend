@@ -65,3 +65,6 @@ export function getQueryValue(key: string, url = window.location.href): string {
   const res = reg.exec(url)
   return res ? res[1] : ''
 }
+
+// 导出 navigator 相关函数
+export { isMobileDevice, isIOSDevice, isAndroidDevice } from './navigator'
