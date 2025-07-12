@@ -155,8 +155,8 @@ function buildDeepLinkUrl(appType: AppType, params: string | DoubanAppParams): s
  * - 媒体项: web/index.html#!/server/{machineIdentifier}/details?key={item_id}&X-Plex-Token={token}
  *
  * Plex官方APP URL格式：
- * - 媒体库: http://[PMS_IP_Address]:32400/library/sections/29/all?X-Plex-Token=YourTokenGoesHere
- * - 媒体项: http://[PMS_IP_ADDRESS]:32400/library/metadata/1668?X-Plex-Token=YourTokenGoesHere
+ * plex://play/?metadataKey=/library/metadata/$SOME_ID&server=$SERVER_ID
+ * 例如: plex://play/?metadataKey=/library/metadata/123&server=456
  *
  * @param playUrl 播放链接
  */
@@ -216,18 +216,34 @@ function buildPlexDeepLink(playUrl: string): string {
       }
     }
 
-    // 构建深度链接
-    if (mediaId) {
-      // http://[PMS_IP_ADDRESS]:32400/library/metadata/1668?X-Plex-Token=YourTokenGoesHere
-      let deepLink = `plex://library/metadata/${mediaId}`
+    // 构建深度链接 - 使用新的官方格式
+    if (mediaId && machineIdentifier) {
+      // plex://play/?metadataKey=/library/metadata/$SOME_ID&server=$SERVER_ID
+      let deepLink = `plex://play/?metadataKey=/library/metadata/${mediaId}&server=${machineIdentifier}`
       if (plexToken) {
-        deepLink += `?X-Plex-Token=${plexToken}`
+        deepLink += `&X-Plex-Token=${plexToken}`
       }
       console.log('Plex深度链接构建成功:', {
         originalUrl: playUrl,
         machineIdentifier,
         libraryKey,
         librarySectionId,
+        mediaId,
+        plexToken,
+        deepLink,
+      })
+      alert(deepLink)
+      return deepLink
+    }
+
+    // 如果有媒体ID但没有机器标识符，尝试使用旧的格式作为降级
+    if (mediaId) {
+      let deepLink = `plex://library/metadata/${mediaId}`
+      if (plexToken) {
+        deepLink += `?X-Plex-Token=${plexToken}`
+      }
+      console.log('Plex深度链接构建成功(降级格式):', {
+        originalUrl: playUrl,
         mediaId,
         plexToken,
         deepLink,
