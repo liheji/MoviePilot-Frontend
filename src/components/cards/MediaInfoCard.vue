@@ -47,10 +47,12 @@ function openTmdbPage(type: string, tmdbId: number) {
         </div>
         <div class="flex-grow">
           <VCardItem class="pb-1">
-            <VCardTitle class="text-center text-md-left">
+            <div class="text-center text-md-left text-h6 font-weight-bold line-clamp-2 overflow-hidden text-ellipsis">
               {{ context?.media_info?.title || context?.meta_info?.name }}
-              {{ context?.meta_info?.season_episode }}
-            </VCardTitle>
+              <span v-if="context?.meta_info?.season_episode" class="text-sm text-medium-emphasis align-top">
+                {{ context?.meta_info?.season_episode }}
+              </span>
+            </div>
             <VCardSubtitle class="text-center text-md-left">
               {{ context?.media_info?.year || context?.meta_info?.year }}
             </VCardSubtitle>
