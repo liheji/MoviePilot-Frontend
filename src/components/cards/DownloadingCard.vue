@@ -43,19 +43,14 @@ function imageLoadHandler() {
   imageLoaded.value = true
 }
 
-// 计算文本类
-function getTextClass() {
-  return imageLoaded.value ? 'text-white' : ''
-}
-
 // 下载状态控制
 async function toggleDownload() {
   const operation = isDownloading.value ? 'stop' : 'start'
   try {
     const result: { [key: string]: any } = await api.get(`download/${operation}/${props.info?.hash}`, {
       params: {
-        name: props.downloaderName
-      }
+        name: props.downloaderName,
+      },
     })
 
     if (result.success) isDownloading.value = !isDownloading.value
@@ -67,7 +62,7 @@ async function toggleDownload() {
 // 删除下截
 async function deleteDownload() {
   try {
-    await api.delete(`download/${props.info?.hash}`, {params: {name: props.downloaderName}})
+    await api.delete(`download/${props.info?.hash}`, { params: { name: props.downloaderName } })
     cardState.value = false
   } catch (error) {
     console.error(error)
@@ -76,35 +71,52 @@ async function deleteDownload() {
 </script>
 
 <template>
-  <VCard v-if="cardState" :key="props.info?.hash">
+  <VCard v-if="cardState" :key="props.info?.hash" class="flex flex-col h-full" rounded="0" min-height="150">
     <template #image>
-      <VImg :src="props.info?.media.image" aspect-ratio="2/3" cover class="brightness-50" @load="imageLoadHandler" />
+      <VImg :src="props.info?.media.image" aspect-ratio="2/3" cover @load="imageLoadHandler" position="top">
+        <template #placeholder>
+          <div class="w-full h-full">
+            <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
+          </div>
+        </template>
+        <template #default>
+          <div class="absolute inset-0 outline-none downloading-card-background"></div>
+        </template>
+      </VImg>
     </template>
 
-    <VCardTitle class="break-words whitespace-normal" :class="getTextClass()">
-      {{ props.info?.media.title || props.info?.name }}
-      {{
-        props.info?.media.episode
-          ? `${props.info?.media.season} ${props.info?.media.episode}`
-          : props.info?.season_episode
-      }}
-    </VCardTitle>
+    <div>
+      <VCardTitle class="break-words whitespace-normal text-white">
+        {{ props.info?.media.title || props.info?.name }}
+        {{
+          props.info?.media.episode
+            ? `${props.info?.media.season} ${props.info?.media.episode}`
+            : props.info?.season_episode
+        }}
+      </VCardTitle>
 
-    <VCardSubtitle class="break-words whitespace-normal" :class="getTextClass()">
-      {{ props.info?.title }}
-    </VCardSubtitle>
+      <VCardSubtitle class="break-words whitespace-normal text-white">
+        {{ props.info?.title }}
+      </VCardSubtitle>
 
-    <VCardText class="text-subtitle-1 pt-3 pb-1" :class="getTextClass()">
-      {{ getSpeedText() }}
-    </VCardText>
+      <VCardText class="text-subtitle-1 pt-3 pb-1 text-white">
+        {{ getSpeedText() }}
+      </VCardText>
 
-    <VCardText v-if="getPercentage() > 0" :class="getTextClass()">
-      <VProgressLinear :model-value="getPercentage()" />
-    </VCardText>
+      <VCardText v-if="getPercentage() > 0" class="text-white">
+        <VProgressLinear :model-value="getPercentage()" bg-color="success" color="success" />
+      </VCardText>
 
-    <VCardActions class="justify-space-between">
-      <VBtn :icon="`${isDownloading ? 'mdi-pause' : 'mdi-play'}`" @click="toggleDownload" />
-      <VBtn color="error" icon="mdi-trash-can-outline" @click="deleteDownload" />
-    </VCardActions>
+      <VCardActions class="justify-space-between">
+        <VBtn :icon="`${isDownloading ? 'mdi-pause' : 'mdi-play'}`" @click="toggleDownload" />
+        <VBtn color="error" icon="mdi-trash-can-outline" @click="deleteDownload" />
+      </VCardActions>
+    </div>
   </VCard>
 </template>
+
+<style lang="scss" scoped>
+.downloading-card-background {
+  background-image: linear-gradient(180deg, rgba(31, 41, 55, 47%) 0%, rgb(31, 41, 55) 100%);
+}
+</style>
