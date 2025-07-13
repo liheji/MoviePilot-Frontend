@@ -71,7 +71,7 @@ async function deleteDownload() {
 </script>
 
 <template>
-  <VCard v-if="cardState" :key="props.info?.hash" class="flex flex-col h-full" rounded="0" min-height="150">
+  <VCard v-if="cardState" :key="props.info?.hash" class="flex flex-col h-full" min-height="150">
     <template #image>
       <VImg :src="props.info?.media.image" aspect-ratio="2/3" cover @load="imageLoadHandler" position="top">
         <template #placeholder>
