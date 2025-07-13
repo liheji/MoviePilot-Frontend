@@ -1,5 +1,35 @@
 import { ref, watch, onBeforeUnmount, readonly } from 'vue'
 
+/**
+ * 滚动锁定 Composable
+ *
+ * 使用示例：
+ *
+ * // 基本用法
+ * const { isLocked, lockScroll, restoreScroll } = useScrollLock()
+ *
+ * // 带配置的用法
+ * const { isLocked, lockScroll, restoreScroll } = useScrollLock({
+ *   preventTouchScroll: true,
+ *   preserveScrollPosition: true,
+ *   allowScrollSelectors: ['.my-modal', '.scrollable-content'],
+ *   allowScrollContainerSelectors: ['.modal-content'],
+ *   customScrollCheck: (element) => {
+ *     // 自定义逻辑
+ *     return element.classList.contains('allow-scroll')
+ *   }
+ * })
+ *
+ * // 自动监听版本
+ * const { isLocked, lockScroll, restoreScroll } = useScrollLockWithWatch(
+ *   showModal, // 响应式布尔值
+ *   {
+ *     allowScrollSelectors: ['.modal-content'],
+ *     allowScrollContainerSelectors: ['.scrollable-area']
+ *   }
+ * )
+ */
+
 // 滚动锁定配置
 export interface ScrollLockOptions {
   // 是否在组件卸载时自动恢复滚动
@@ -14,10 +44,22 @@ export interface ScrollLockOptions {
     position?: string
     width?: string
   }
+  // 允许滚动的选择器列表（CSS选择器）
+  // 例如：['.my-modal', '.scrollable-content']
+  allowScrollSelectors?: string[]
+  // 允许滚动的容器选择器列表（CSS选择器）
+  // 这些容器内的可滚动元素将被允许滚动
+  // 例如：['.modal-content', '.scroll-container']
+  allowScrollContainerSelectors?: string[]
+  // 自定义滚动检查函数
+  // 返回 true 表示允许滚动，false 表示阻止滚动
+  customScrollCheck?: (element: Element) => boolean
 }
 
 // 默认配置
-const DEFAULT_OPTIONS: Required<ScrollLockOptions> = {
+const DEFAULT_OPTIONS: Required<
+  Omit<ScrollLockOptions, 'allowScrollSelectors' | 'allowScrollContainerSelectors' | 'customScrollCheck'>
+> = {
   autoRestore: true,
   preserveScrollPosition: true,
   preventTouchScroll: true,
@@ -29,7 +71,13 @@ const DEFAULT_OPTIONS: Required<ScrollLockOptions> = {
 }
 
 export function useScrollLock(options: ScrollLockOptions = {}) {
-  const config = { ...DEFAULT_OPTIONS, ...options }
+  const config = {
+    ...DEFAULT_OPTIONS,
+    allowScrollSelectors: options.allowScrollSelectors || [],
+    allowScrollContainerSelectors: options.allowScrollContainerSelectors || [],
+    customScrollCheck: options.customScrollCheck,
+    ...options,
+  }
 
   // 状态管理
   const isLocked = ref(false)
@@ -67,37 +115,74 @@ export function useScrollLock(options: ScrollLockOptions = {}) {
     }
   }
 
+  // 检查元素是否应该允许滚动
+  const shouldAllowScroll = (element: Element): boolean => {
+    // 1. 检查是否匹配允许滚动的选择器
+    for (const selector of config.allowScrollSelectors) {
+      if (element.matches(selector) || element.closest(selector)) {
+        return true
+      }
+    }
+
+    // 2. 检查是否在允许滚动的容器内
+    for (const selector of config.allowScrollContainerSelectors) {
+      const container = element.closest(selector)
+      if (container) {
+        // 检查容器是否可滚动
+        const style = getComputedStyle(container)
+        const isScrollable =
+          container.scrollHeight > container.clientHeight &&
+          style.overflow !== 'hidden' &&
+          (style.overflow === 'auto' ||
+            style.overflow === 'scroll' ||
+            style.overflowY === 'auto' ||
+            style.overflowY === 'scroll')
+        if (isScrollable) {
+          return true
+        }
+      }
+    }
+
+    // 3. 检查是否在弹窗、菜单或其他覆盖层内
+    const isInDialog = element.closest(
+      '.v-dialog, .v-menu, .v-bottom-sheet, .v-snackbar, [role="dialog"], .v-overlay__content',
+    )
+
+    // 4. 检查是否是可滚动的内容区域
+    const isScrollableContent = element.closest(
+      '.v-card-text, .v-list, .v-table__wrapper, .v-data-table__wrapper, .v-sheet, .v-card__content, .v-data-table, .v-table',
+    )
+
+    // 5. 检查是否在可滚动的容器内
+    const scrollableContainer = element.closest('[style*="overflow"], [class*="overflow"]')
+    const isInScrollableContainer =
+      scrollableContainer &&
+      (scrollableContainer.scrollHeight > scrollableContainer.clientHeight ||
+        getComputedStyle(scrollableContainer).overflow !== 'hidden')
+
+    // 6. 使用自定义检查函数
+    if (config.customScrollCheck && config.customScrollCheck(element)) {
+      return true
+    }
+
+    // 如果不在弹窗内且不是可滚动内容且不在可滚动容器内，则不允许滚动
+    return !!(isInDialog || isScrollableContent || isInScrollableContainer)
+  }
+
   // 阻止触摸滚动事件
   const preventTouchScroll = (event: TouchEvent) => {
     if (isLocked.value && config.preventTouchScroll) {
-      // 检查触摸事件的目标元素是否在弹窗内
+      // 检查触摸事件的目标元素
       const target = event.target as Element
       if (target) {
-        // 检查目标元素是否在弹窗、菜单或其他覆盖层内
-        const isInDialog = target.closest(
-          '.v-dialog, .v-menu, .v-bottom-sheet, .v-snackbar, [role="dialog"], .v-overlay__content',
-        )
-
-        // 检查目标元素是否是可滚动的内容区域
-        const isScrollableContent = target.closest(
-          '.v-card-text, .v-list, .v-table__wrapper, .v-data-table__wrapper, .v-sheet, .v-card__content, .v-data-table, .v-table',
-        )
-
-        // 检查目标元素是否在可滚动的容器内
-        const scrollableContainer = target.closest('[style*="overflow"], [class*="overflow"]')
-        const isInScrollableContainer =
-          scrollableContainer &&
-          (scrollableContainer.scrollHeight > scrollableContainer.clientHeight ||
-            getComputedStyle(scrollableContainer).overflow !== 'hidden')
-
-        // 如果不在弹窗内且不是可滚动内容且不在可滚动容器内，则阻止滚动
-        if (!isInDialog && !isScrollableContent && !isInScrollableContainer) {
-          event.preventDefault()
+        // 如果元素应该允许滚动，则不阻止事件
+        if (shouldAllowScroll(target)) {
+          return
         }
-      } else {
-        // 如果无法确定目标元素，则阻止滚动以确保安全
-        event.preventDefault()
       }
+
+      // 否则阻止滚动
+      event.preventDefault()
     }
   }
 

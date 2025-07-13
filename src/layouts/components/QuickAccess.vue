@@ -141,7 +141,9 @@ function getPluginIcon(plugin: Plugin): string {
 
   // 如果是网络图片则使用代理后返回
   if (plugin?.plugin_icon?.startsWith('http'))
-    return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(plugin?.plugin_icon)}&cache=true`
+    return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(
+      plugin?.plugin_icon,
+    )}&cache=true`
 
   return `./plugin_icon/${plugin?.plugin_icon}`
 }
@@ -233,6 +235,12 @@ function handleTouchStart(event: TouchEvent) {
   const target = event.target as HTMLElement
   startedFromBottomArea.value = !!target.closest('.bottom-drag-area')
 
+  // 如果触摸发生在插件网格内，不处理拖拽关闭
+  if (target.closest('.plugin-grid')) {
+    startedFromBottomArea.value = false
+    return
+  }
+
   startY.value = touch.clientY
   lastY.value = touch.clientY
   lastTime.value = Date.now()
@@ -252,6 +260,12 @@ function handleTouchMove(event: TouchEvent) {
 
   // 只有从 bottom-drag-area 开始的触摸才处理上滑关闭
   if (!startedFromBottomArea.value) return
+
+  // 检查当前触摸是否在插件网格内，如果是则不处理拖拽关闭
+  const target = event.target as HTMLElement
+  if (target.closest('.plugin-grid')) {
+    return
+  }
 
   const currentY = touch.clientY
   const currentTime = Date.now()
@@ -561,6 +575,7 @@ function handleBackdropClick(event: MouseEvent) {
   flex: 1;
   flex-direction: column;
   gap: 16px;
+  max-block-size: calc(100vh - 200px); // 确保有最大高度限制
   min-block-size: 0;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none; // IE/Edge
@@ -571,6 +586,7 @@ function handleBackdropClick(event: MouseEvent) {
   // 隐藏滚动条
   scrollbar-width: none; // Firefox
   touch-action: pan-y;
+  will-change: scroll-position;
 
   &::-webkit-scrollbar {
     display: none; // WebKit 浏览器

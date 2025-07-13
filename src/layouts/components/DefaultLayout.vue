@@ -164,7 +164,15 @@ const handleServiceWorkerMessage = (event: MessageEvent) => {
 }
 
 // 使用滚动锁定 composable（自动监听showPluginQuickAccess的变化）
-useScrollLockWithWatch(showPluginQuickAccess)
+useScrollLockWithWatch(showPluginQuickAccess, {
+  preventTouchScroll: true,
+  preserveScrollPosition: true,
+  autoRestore: true,
+  // 允许快速访问面板内的滚动
+  allowScrollSelectors: ['.plugin-quick-access'],
+  // 允许快速访问面板内的可滚动容器
+  allowScrollContainerSelectors: ['.plugin-grid'],
+})
 
 // 检查是否可以使用下拉手势
 const canUsePullGesture = () => {
