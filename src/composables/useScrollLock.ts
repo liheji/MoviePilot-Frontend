@@ -70,6 +70,113 @@ const DEFAULT_OPTIONS: Required<
   },
 }
 
+// 全局状态管理
+const globalLockCount = ref(0)
+const globalOriginalStyles = ref<{
+  body: { [key: string]: string }
+  documentElement: { [key: string]: string }
+  html: { [key: string]: string }
+} | null>(null)
+const globalSavedScrollPosition = ref(0)
+const globalTouchEventListeners = new Set<(event: TouchEvent) => void>()
+
+// 保存全局原始样式（只在第一次锁定时保存）
+const saveGlobalOriginalStyles = () => {
+  if (globalOriginalStyles.value === null) {
+    globalOriginalStyles.value = {
+      body: {
+        overflow: document.body.style.overflow,
+        position: document.body.style.position,
+        top: document.body.style.top,
+        width: document.body.style.width,
+      },
+      documentElement: {
+        overflow: document.documentElement.style.overflow,
+      },
+      html: {
+        overflow: document.documentElement.style.overflow,
+      },
+    }
+  }
+}
+
+// 保存全局滚动位置（只在第一次锁定时保存）
+const saveGlobalScrollPosition = () => {
+  if (globalLockCount.value === 0) {
+    globalSavedScrollPosition.value =
+      window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
+  }
+}
+
+// 应用全局锁定样式
+const applyGlobalLockStyles = (config: any) => {
+  if (globalLockCount.value === 1) {
+    // 第一次锁定时应用样式
+    document.body.style.overflow = config.lockStyles.overflow || 'hidden'
+    document.body.style.position = config.lockStyles.position || 'fixed'
+    document.body.style.width = config.lockStyles.width || '100%'
+    document.documentElement.style.overflow = config.lockStyles.overflow || 'hidden'
+    document.documentElement.classList.add('v-overlay-scroll-blocked')
+
+    // 如果需要保持滚动位置，设置top偏移
+    if (config.preserveScrollPosition) {
+      document.body.style.top = `-${globalSavedScrollPosition.value}px`
+    }
+
+    // 保持navbar的滚动状态 - 添加一个CSS变量来记录滚动位置
+    if (globalSavedScrollPosition.value > 0) {
+      document.documentElement.style.setProperty('--saved-scroll-y', `${globalSavedScrollPosition.value}px`)
+      document.documentElement.classList.add('dialog-scroll-locked')
+    }
+  }
+}
+
+// 恢复全局样式（只在最后一个锁定时恢复）
+const restoreGlobalStyles = (config: any) => {
+  if (globalLockCount.value === 0 && globalOriginalStyles.value) {
+    // 最后一个锁定时恢复样式
+    document.body.style.overflow = globalOriginalStyles.value.body.overflow || ''
+    document.body.style.position = globalOriginalStyles.value.body.position || ''
+    document.body.style.top = globalOriginalStyles.value.body.top || ''
+    document.body.style.width = globalOriginalStyles.value.body.width || ''
+    document.documentElement.style.overflow = globalOriginalStyles.value.documentElement.overflow || ''
+
+    // 移除 CSS 类名
+    document.documentElement.classList.remove('v-overlay-scroll-blocked')
+    document.documentElement.classList.remove('dialog-scroll-locked')
+
+    // 移除CSS变量
+    document.documentElement.style.removeProperty('--saved-scroll-y')
+
+    // 恢复滚动位置
+    if (config.preserveScrollPosition) {
+      window.scrollTo(0, globalSavedScrollPosition.value)
+    }
+
+    // 重置全局状态
+    globalOriginalStyles.value = null
+    globalSavedScrollPosition.value = 0
+  }
+}
+
+// 添加全局触摸事件监听器
+const addGlobalTouchEventListener = (listener: (event: TouchEvent) => void) => {
+  globalTouchEventListeners.add(listener)
+  if (globalTouchEventListeners.size === 1) {
+    // 第一次添加监听器时绑定到document
+    document.addEventListener('touchmove', listener, { passive: false })
+  }
+}
+
+// 移除全局触摸事件监听器
+const removeGlobalTouchEventListener = (listener: (event: TouchEvent) => void) => {
+  globalTouchEventListeners.delete(listener)
+  if (globalTouchEventListeners.size === 0) {
+    // 最后一个监听器被移除时解绑
+    document.removeEventListener('touchmove', listener)
+  }
+}
+
 export function useScrollLock(options: ScrollLockOptions = {}) {
   const config = {
     ...DEFAULT_OPTIONS,
@@ -82,36 +189,12 @@ export function useScrollLock(options: ScrollLockOptions = {}) {
   // 状态管理
   const isLocked = ref(false)
   const savedScrollPosition = ref(0)
-  const originalBodyStyles = ref<{ [key: string]: string }>({})
-  const originalDocumentStyles = ref<{ [key: string]: string }>({})
-  const originalHtmlStyles = ref<{ [key: string]: string }>({})
 
   // 保存当前滚动位置
   const saveScrollPosition = () => {
     if (config.preserveScrollPosition) {
       savedScrollPosition.value =
         window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
-    }
-  }
-
-  // 保存原始样式
-  const saveOriginalStyles = () => {
-    // 保存 body 样式
-    originalBodyStyles.value = {
-      overflow: document.body.style.overflow,
-      position: document.body.style.position,
-      top: document.body.style.top,
-      width: document.body.style.width,
-    }
-
-    // 保存 documentElement 样式
-    originalDocumentStyles.value = {
-      overflow: document.documentElement.style.overflow,
-    }
-
-    // 保存 html 样式
-    originalHtmlStyles.value = {
-      overflow: document.documentElement.style.overflow,
     }
   }
 
@@ -190,35 +273,21 @@ export function useScrollLock(options: ScrollLockOptions = {}) {
   const lockScroll = () => {
     if (isLocked.value) return
 
-    // 保存当前状态
-    saveScrollPosition()
-    saveOriginalStyles()
+    // 增加全局锁定计数
+    globalLockCount.value++
 
-    // 应用锁定样式到 body
-    document.body.style.overflow = config.lockStyles.overflow || 'hidden'
-    document.body.style.position = config.lockStyles.position || 'fixed'
-    document.body.style.width = config.lockStyles.width || '100%'
-
-    // 应用锁定样式到 documentElement
-    document.documentElement.style.overflow = config.lockStyles.overflow || 'hidden'
-
-    // 添加 CSS 类名
-    document.documentElement.classList.add('v-overlay-scroll-blocked')
-
-    // 如果需要保持滚动位置，设置top偏移
-    if (config.preserveScrollPosition) {
-      document.body.style.top = `-${savedScrollPosition.value}px`
+    // 保存当前状态（只在第一次锁定时）
+    if (globalLockCount.value === 1) {
+      saveGlobalOriginalStyles()
+      saveGlobalScrollPosition()
     }
 
-    // 保持navbar的滚动状态 - 添加一个CSS变量来记录滚动位置
-    if (savedScrollPosition.value > 0) {
-      document.documentElement.style.setProperty('--saved-scroll-y', `${savedScrollPosition.value}px`)
-      document.documentElement.classList.add('dialog-scroll-locked')
-    }
+    // 应用锁定样式
+    applyGlobalLockStyles(config)
 
     // 添加触摸事件监听器
     if (config.preventTouchScroll) {
-      document.addEventListener('touchmove', preventTouchScroll, { passive: false })
+      addGlobalTouchEventListener(preventTouchScroll)
     }
 
     isLocked.value = true
@@ -228,29 +297,16 @@ export function useScrollLock(options: ScrollLockOptions = {}) {
   const restoreScroll = () => {
     if (!isLocked.value) return
 
-    // 恢复原始样式
-    document.body.style.overflow = originalBodyStyles.value.overflow || ''
-    document.body.style.position = originalBodyStyles.value.position || ''
-    document.body.style.top = originalBodyStyles.value.top || ''
-    document.body.style.width = originalBodyStyles.value.width || ''
-    document.documentElement.style.overflow = originalDocumentStyles.value.overflow || ''
-
-    // 移除 CSS 类名
-    document.documentElement.classList.remove('v-overlay-scroll-blocked')
-    document.documentElement.classList.remove('dialog-scroll-locked')
-
-    // 移除CSS变量
-    document.documentElement.style.removeProperty('--saved-scroll-y')
+    // 减少全局锁定计数
+    globalLockCount.value--
 
     // 移除触摸事件监听器
     if (config.preventTouchScroll) {
-      document.removeEventListener('touchmove', preventTouchScroll)
+      removeGlobalTouchEventListener(preventTouchScroll)
     }
 
-    // 恢复滚动位置
-    if (config.preserveScrollPosition) {
-      window.scrollTo(0, savedScrollPosition.value)
-    }
+    // 恢复样式（只在最后一个锁定时）
+    restoreGlobalStyles(config)
 
     isLocked.value = false
   }

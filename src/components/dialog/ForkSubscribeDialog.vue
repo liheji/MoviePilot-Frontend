@@ -172,7 +172,6 @@ onMounted(() => {
 <template>
   <DialogWrapper max-width="40rem" scrollable>
     <VCard>
-      <VDialogCloseBtn @click="emit('close')" />
       <VCardText>
         <VCol>
           <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
@@ -285,6 +284,7 @@ onMounted(() => {
           </div>
         </VCol>
       </VCardText>
+      <VDialogCloseBtn @click="emit('close')" />
     </VCard>
   </DialogWrapper>
 </template>
