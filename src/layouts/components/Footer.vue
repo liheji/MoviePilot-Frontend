@@ -318,16 +318,6 @@ const showDynamicButton = computed(() => {
   inline-size: auto;
   min-block-size: 0;
 
-  // 明亮主题下降低透明度，提高文字可读性
-  .v-theme--light & {
-    background-color: rgba(var(--v-theme-surface), 0.8);
-  }
-
-  // 暗色主题保持原有透明度
-  .v-theme--dark & {
-    background-color: rgba(var(--v-theme-surface), 0.3);
-  }
-
   .footer-card-content {
     padding: 3px;
   }
