@@ -31,7 +31,6 @@ const siteSetting = ref<any>({
     COOKIECLOUD_KEY: '',
     COOKIECLOUD_PASSWORD: '',
     COOKIECLOUD_INTERVAL: 0,
-    USER_AGENT: '',
     COOKIECLOUD_ENABLE_LOCAL: false,
     COOKIECLOUD_BLACKLIST: '',
   },
@@ -188,15 +187,6 @@ onMounted(() => {
                   :hint="t('setting.site.syncBlacklistHint')"
                   persistent-hint
                   prepend-inner-icon="mdi-block-helper"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
-                  v-model="siteSetting.CookieCloud.USER_AGENT"
-                  :label="t('setting.site.userAgent')"
-                  :hint="t('setting.site.userAgentHint')"
-                  persistent-hint
-                  prepend-inner-icon="mdi-web"
                 />
               </VCol>
             </VRow>
