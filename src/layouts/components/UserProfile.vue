@@ -481,7 +481,7 @@ onUnmounted(() => {
           </VMenu>
 
           <!-- 👉 FAQ -->
-          <VListItem href="https://wiki.movie-pilot.org" target="_blank" class="mb-1 rounded-lg" hover>
+          <VListItem href="https://movie-pilot.org" target="_blank" class="mb-1 rounded-lg" hover>
             <template #prepend>
               <VIcon icon="mdi-help-circle-outline" />
             </template>
