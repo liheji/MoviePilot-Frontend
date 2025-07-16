@@ -801,6 +801,11 @@ export default {
     resetConfirm: '重置後 {name} 將恢復初始狀態，已下載記錄將被清除，未入庫的內容將會重新下載，是否確認？',
     resetSuccess: '{name} 重置成功！',
     resetFailed: '{name} 重置失敗：{message}',
+    shareStatistics: '分享統計',
+    shareCount: '個分享',
+    totalReuseCount: '次複用',
+    ranking: '排名',
+    noStatisticsData: '暫無分享統計數據',
   },
   recommend: {
     all: '全部',

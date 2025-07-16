@@ -803,6 +803,11 @@ export default {
     resetConfirm: '重置后 {name} 将恢复初始状态，已下载记录将被清除，未入库的内容将会重新下载，是否确认？',
     resetSuccess: '{name} 重置成功！',
     resetFailed: '{name} 重置失败：{message}',
+    shareStatistics: '分享统计',
+    shareCount: '个分享',
+    totalReuseCount: '次复用',
+    ranking: '排名',
+    noStatisticsData: '暂无分享统计数据',
   },
   recommend: {
     all: '全部',

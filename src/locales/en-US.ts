@@ -807,6 +807,11 @@ export default {
       'After reset, {name} will be restored to its initial state, downloaded records will be cleared, and unimported content will be downloaded again. Are you sure?',
     resetSuccess: '{name} has been reset successfully!',
     resetFailed: '{name} reset failed: {message}',
+    shareStatistics: 'Share Statistics',
+    shareCount: 'Shares',
+    totalReuseCount: 'Total Reuse Count',
+    ranking: 'Ranking',
+    noStatisticsData: 'No share statistics data available',
   },
   recommend: {
     all: 'All',
@@ -1781,7 +1786,8 @@ export default {
       shareSuccess: '{name} shared successfully!',
       shareFailed: '{name} share failed: {message}!',
       securityWarning: 'Security Warning',
-      securityWarningMessage: 'Before sharing, please ensure the workflow does not contain sensitive information such as PassKey in RSS links to avoid information leakage.',
+      securityWarningMessage:
+        'Before sharing, please ensure the workflow does not contain sensitive information such as PassKey in RSS links to avoid information leakage.',
     },
     u115Auth: {
       loginTitle: '115 Cloud Login',

@@ -1391,3 +1391,13 @@ export interface TorrentCacheData {
   // 缓存数据
   data: TorrentCacheItem[]
 }
+
+// 订阅分享统计
+export interface SubscribeShareStatistics {
+  // 分享人
+  share_user?: string
+  // 分享数量
+  share_count?: number
+  // 总复用人次
+  total_reuse_count?: number
+}

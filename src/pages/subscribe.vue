@@ -3,6 +3,7 @@ import SubscribeListView from '@/views/subscribe/SubscribeListView.vue'
 import SubscribePopularView from '@/views/subscribe/SubscribePopularView.vue'
 import SubscribeShareView from '@/views/subscribe/SubscribeShareView.vue'
 import SubscribeEditDialog from '@/components/dialog/SubscribeEditDialog.vue'
+import SubscribeShareStatisticsDialog from '@/components/dialog/SubscribeShareStatisticsDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { useDynamicHeaderTab } from '@/composables/useDynamicHeaderTab'
 
@@ -36,6 +37,9 @@ const filterSubscribeDialog = ref(false)
 // 搜索订阅分享弹窗
 const searchShareDialog = ref(false)
 
+// 订阅分享统计弹窗
+const shareStatisticsDialog = ref(false)
+
 // 订阅过滤词
 const subscribeFilter = ref('')
 
@@ -51,6 +55,7 @@ const searchShares = () => {
 // VMenu activator选择器
 const filterActivator = computed(() => '[data-menu-activator="filter-btn"]')
 const searchActivator = computed(() => '[data-menu-activator="search-btn"]')
+const statisticsActivator = computed(() => '[data-menu-activator="statistics-btn"]')
 
 // 使用动态标签页
 const { registerHeaderTab } = useDynamicHeaderTab()
@@ -70,6 +75,17 @@ registerHeaderTab({
         filterSubscribeDialog.value = true
       },
       show: computed(() => activeTab.value === 'mysub'),
+    },
+    {
+      icon: 'mdi-chart-line',
+      variant: 'text',
+      color: 'gray',
+      class: 'settings-icon-button',
+      dataAttr: 'statistics-btn',
+      action: () => {
+        shareStatisticsDialog.value = true
+      },
+      show: computed(() => activeTab.value === 'share'),
     },
     {
       icon: 'mdi-movie-search-outline',
@@ -190,6 +206,13 @@ onMounted(() => {
       :type="subType"
       @save="subscribeEditDialog = false"
       @close="subscribeEditDialog = false"
+    />
+
+    <!-- 订阅分享统计弹窗 -->
+    <SubscribeShareStatisticsDialog
+      v-if="shareStatisticsDialog"
+      v-model="shareStatisticsDialog"
+      @close="shareStatisticsDialog = false"
     />
   </div>
 </template>
