@@ -1078,6 +1078,7 @@ export default {
       dataDir: '数据目录',
       timezone: '时区',
       latest: '最新',
+      supportingSites: '支持站点',
       support: '支援',
       documentation: '文档',
       feedback: '问题反馈',

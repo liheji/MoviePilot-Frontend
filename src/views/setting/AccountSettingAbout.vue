@@ -12,6 +12,9 @@ const systemEnv = ref<any>({})
 // 所有Release
 const allRelease = ref<any>([])
 
+// 支持站点
+const supportingSites = ref<any>({})
+
 // 变更日志对话框
 const releaseDialog = ref(false)
 
@@ -56,6 +59,15 @@ async function queryAllRelease() {
   }
 }
 
+// 查询支持站点
+async function querySupportingSites() {
+  try {
+    supportingSites.value = await api.get('site/supporting')
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // 计算发布时间
 function releaseTime(releaseDate: string) {
   // 上一次更新时间
@@ -65,6 +77,7 @@ function releaseTime(releaseDate: string) {
 onMounted(() => {
   querySystemEnv()
   queryAllRelease()
+  querySupportingSites()
 })
 </script>
 
@@ -153,6 +166,28 @@ onMounted(() => {
                 <span class="flex-grow undefined">
                   <code>{{ systemEnv.TZ }}</code>
                 </span>
+              </dd>
+            </div>
+          </div>
+          <div>
+            <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+              <dt class="block text-sm font-bold">{{ t('setting.about.supportingSites') }}</dt>
+              <dd class="flex text-sm sm:col-span-2 sm:mt-0">
+                <div class="flex flex-wrap gap-2">
+                  <VChip
+                    v-for="(site, domain) in supportingSites"
+                    :key="domain"
+                    variant="outlined"
+                    size="small"
+                    :title="`${site.name} - ${site.url}`"
+                    :href="site.url"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span class="truncate max-w-32">{{ site.name }}</span>
+                    <VIcon icon="mdi-open-in-new" size="12" class="ml-1 flex-shrink-0" />
+                  </VChip>
+                </div>
               </dd>
             </div>
           </div>

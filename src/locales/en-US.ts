@@ -1082,6 +1082,7 @@ export default {
       dataDir: 'Data Directory',
       timezone: 'Timezone',
       latest: 'Latest',
+      supportingSites: 'Supporting Sites',
       support: 'Support',
       documentation: 'Documentation',
       feedback: 'Feedback',

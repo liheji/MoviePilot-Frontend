@@ -1078,6 +1078,7 @@ export default {
       timezone: '時區',
       latest: '最新',
       support: '支援',
+      supportingSites: '支持站點',
       documentation: '文檔',
       feedback: '問題反饋',
       channel: '發布頻道',

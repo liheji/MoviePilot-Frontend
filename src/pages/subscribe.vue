@@ -55,7 +55,6 @@ const searchShares = () => {
 // VMenu activator选择器
 const filterActivator = computed(() => '[data-menu-activator="filter-btn"]')
 const searchActivator = computed(() => '[data-menu-activator="search-btn"]')
-const statisticsActivator = computed(() => '[data-menu-activator="statistics-btn"]')
 
 // 使用动态标签页
 const { registerHeaderTab } = useDynamicHeaderTab()
