@@ -298,6 +298,19 @@ function searchHistory() {
   emit('close')
 }
 
+// 跳转到订阅分享页面
+function searchSubscribeShares() {
+  if (!searchWord.value) return
+  saveRecentSearches(searchWord.value)
+  router.push({
+    path: '/subscribe-share',
+    query: {
+      keyword: searchWord.value,
+    },
+  })
+  emit('close')
+}
+
 // 跳转插件页面
 function showPlugin(pluginId: string) {
   router.push({
@@ -476,6 +489,37 @@ onMounted(() => {
                 <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
                   {{ t('common.search') }} <span class="primary-text font-weight-medium">{{ searchWord }}</span>
                   {{ t('dialog.searchBar.actorSearch') }}
+                </VListItemSubtitle>
+                <template #append>
+                  <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />
+                </template>
+              </VListItem>
+            </template>
+          </VHover>
+
+          <VHover v-if="hasSubscribePermission">
+            <template #default="hover">
+              <VListItem
+                density="comfortable"
+                link
+                rounded="xl"
+                v-bind="hover.props"
+                @click="searchSubscribeShares"
+                class="search-option mx-2 mx-sm-4 my-1"
+              >
+                <template #prepend>
+                  <div class="option-icon-wrapper d-flex align-center justify-center">
+                    <VIcon
+                      icon="mdi-share-variant"
+                      :color="hover.isHovering ? 'primary' : 'medium-emphasis'"
+                      size="small"
+                    />
+                  </div>
+                </template>
+                <VListItemTitle class="font-weight-medium">{{ t('subscribe.searchShares') }}</VListItemTitle>
+                <VListItemSubtitle class="text-body-2 text-medium-emphasis mt-1">
+                  {{ t('common.search') }} <span class="primary-text font-weight-medium">{{ searchWord }}</span>
+                  {{ t('dialog.searchBar.subscribeShareSearch') }}
                 </VListItemSubtitle>
                 <template #append>
                   <VIcon v-if="hover.isHovering" icon="mdi-chevron-right" color="primary" />

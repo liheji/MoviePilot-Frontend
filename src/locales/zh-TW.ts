@@ -1711,6 +1711,7 @@ export default {
       collectionSearch: '相關的系列作品',
       actorSearch: '相關的演員、導演等',
       historySearch: '相關的歷史記錄',
+      subscribeShareSearch: '相關的訂閱分享',
       siteResources: '站點資源',
       searchInSites: '在站點中搜索種子資源',
       relatedResources: '相關資源',

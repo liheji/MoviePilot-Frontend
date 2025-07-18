@@ -28,6 +28,18 @@ const page = ref(1)
 // 搜索关键字
 const keyword = ref(props.keyword)
 
+// 监听 props.keyword 变化
+watch(
+  () => props.keyword,
+  newKeyword => {
+    keyword.value = newKeyword || ''
+    // 重置页码和数据
+    page.value = 1
+    dataList.value = []
+    isRefreshed.value = false
+  },
+)
+
 // 是否加载中
 const loading = ref(false)
 

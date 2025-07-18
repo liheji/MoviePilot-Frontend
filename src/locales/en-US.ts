@@ -1733,6 +1733,7 @@ export default {
       collectionSearch: 'Related series works',
       actorSearch: 'Related actors, directors, etc.',
       historySearch: 'Related history records',
+      subscribeShareSearch: 'Related subscription shares',
       siteResources: 'Site Resources',
       searchInSites: 'Search for torrent resources in sites',
       relatedResources: 'Related Resources',

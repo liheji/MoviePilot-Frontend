@@ -70,6 +70,14 @@ const router = createRouter({
           },
         },
         {
+          path: '/subscribe-share',
+          component: () => import('../pages/subscribe-share.vue'),
+          meta: {
+            keepAlive: true,
+            requiresAuth: true,
+          },
+        },
+        {
           path: '/workflow',
           component: () => import('../pages/workflow.vue'),
           meta: {

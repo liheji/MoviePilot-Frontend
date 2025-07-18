@@ -1712,6 +1712,7 @@ export default {
       collectionSearch: '相关的系列作品',
       actorSearch: '相关的演员、导演等',
       historySearch: '相关的历史记录',
+      subscribeShareSearch: '相关的订阅分享',
       siteResources: '站点资源',
       searchInSites: '在站点中搜索种子资源',
       relatedResources: '相关资源',
