@@ -86,9 +86,6 @@ const saveGlobalOriginalStyles = () => {
     globalOriginalStyles.value = {
       body: {
         overflow: document.body.style.overflow,
-        position: document.body.style.position,
-        top: document.body.style.top,
-        width: document.body.style.width,
       },
       documentElement: {
         overflow: document.documentElement.style.overflow,
@@ -113,21 +110,8 @@ const applyGlobalLockStyles = (config: any) => {
   if (globalLockCount.value === 1) {
     // 第一次锁定时应用样式
     document.body.style.overflow = config.lockStyles.overflow || 'hidden'
-    document.body.style.position = config.lockStyles.position || 'fixed'
-    document.body.style.width = config.lockStyles.width || '100%'
     document.documentElement.style.overflow = config.lockStyles.overflow || 'hidden'
     document.documentElement.classList.add('v-overlay-scroll-blocked')
-
-    // 如果需要保持滚动位置，设置top偏移
-    if (config.preserveScrollPosition) {
-      document.body.style.top = `-${globalSavedScrollPosition.value}px`
-    }
-
-    // 保持navbar的滚动状态 - 添加一个CSS变量来记录滚动位置
-    if (globalSavedScrollPosition.value > 0) {
-      document.documentElement.style.setProperty('--saved-scroll-y', `${globalSavedScrollPosition.value}px`)
-      document.documentElement.classList.add('dialog-scroll-locked')
-    }
   }
 }
 
@@ -136,22 +120,10 @@ const restoreGlobalStyles = (config: any) => {
   if (globalLockCount.value === 0 && globalOriginalStyles.value) {
     // 最后一个锁定时恢复样式
     document.body.style.overflow = globalOriginalStyles.value.body.overflow || ''
-    document.body.style.position = globalOriginalStyles.value.body.position || ''
-    document.body.style.top = globalOriginalStyles.value.body.top || ''
-    document.body.style.width = globalOriginalStyles.value.body.width || ''
     document.documentElement.style.overflow = globalOriginalStyles.value.documentElement.overflow || ''
 
     // 移除 CSS 类名
     document.documentElement.classList.remove('v-overlay-scroll-blocked')
-    document.documentElement.classList.remove('dialog-scroll-locked')
-
-    // 移除CSS变量
-    document.documentElement.style.removeProperty('--saved-scroll-y')
-
-    // 恢复滚动位置
-    if (config.preserveScrollPosition) {
-      window.scrollTo(0, globalSavedScrollPosition.value)
-    }
 
     // 重置全局状态
     globalOriginalStyles.value = null
