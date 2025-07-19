@@ -238,6 +238,7 @@ export function useScrollLock(options: ScrollLockOptions = {}) {
 
       // 否则阻止滚动
       event.preventDefault()
+      event.stopPropagation()
     }
   }
 
