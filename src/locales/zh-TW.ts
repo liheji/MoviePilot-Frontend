@@ -1043,6 +1043,11 @@ export default {
     normal: '正常',
     disabled: '未啟用',
     error: '錯誤',
+    checking: '正在檢查...',
+    complete: '檢查完成',
+    preparing: '準備檢查...',
+    totalModules: '總模組數',
+    recheck: '重新檢查',
   },
   nameTest: {
     recognize: '識別',

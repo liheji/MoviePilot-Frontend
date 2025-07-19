@@ -353,7 +353,7 @@ onMounted(() => {
         <VDialogCloseBtn @click="systemTestDialog = false" />
       </VCardItem>
       <VDivider />
-      <VCardText>
+      <VCardText class="pa-0">
         <ModuleTestView />
       </VCardText>
     </VCard>

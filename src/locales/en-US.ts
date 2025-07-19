@@ -1048,6 +1048,11 @@ export default {
     normal: 'Normal',
     disabled: 'Disabled',
     error: 'Error',
+    checking: 'Checking...',
+    complete: 'Check Complete',
+    preparing: 'Preparing...',
+    totalModules: 'Total Modules',
+    recheck: 'Recheck',
   },
   nameTest: {
     recognize: 'Recognize',

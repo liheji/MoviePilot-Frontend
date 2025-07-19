@@ -1044,6 +1044,11 @@ export default {
     normal: '正常',
     disabled: '未启用',
     error: '错误',
+    checking: '正在检查...',
+    complete: '检查完成',
+    preparing: '准备检查...',
+    totalModules: '总模块数',
+    recheck: '重新检查',
   },
   nameTest: {
     recognize: '识别',
