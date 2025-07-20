@@ -43,16 +43,11 @@ function handleSSEMessage(event: MessageEvent) {
 }
 
 // 使用优化的SSE连接
-const sseConnection = useSSE(
-  `${import.meta.env.VITE_API_BASE_URL}system/message?role=user`,
-  handleSSEMessage,
-  'message-view',
-  {
-    backgroundCloseDelay: 5000,
-    reconnectDelay: 3000,
-    maxReconnectAttempts: 3
-  }
-)
+useSSE(`${import.meta.env.VITE_API_BASE_URL}system/message?role=user`, handleSSEMessage, 'message-view', {
+  backgroundCloseDelay: 5000,
+  reconnectDelay: 3000,
+  maxReconnectAttempts: 3,
+})
 
 // 调用API加载存量消息
 async function loadMessages({ done }: { done: any }) {
@@ -73,10 +68,17 @@ async function loadMessages({ done }: { done: any }) {
     // 已加载过
     isLoaded.value = true
     if (currData.value.length > 0) {
+      // 按时间排序，确保最新的消息在最后
+      currData.value.sort((a, b) => {
+        const timeA = a.reg_time || a.date || ''
+        const timeB = b.reg_time || b.date || ''
+        return compareTime(timeA, timeB)
+      })
+
       // 取最后一条时间为存量消息最新时间
-      lastTime.value = currData.value[currData.value.length - 1].reg_time ?? ''
-      // 倒序
-      currData.value.reverse()
+      lastTime.value =
+        currData.value[currData.value.length - 1].reg_time ?? currData.value[currData.value.length - 1].date ?? ''
+
       // 合并数据
       messages.value = [...currData.value, ...messages.value]
       if (page.value === 1) {
