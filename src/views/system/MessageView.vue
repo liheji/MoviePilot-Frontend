@@ -81,8 +81,8 @@ async function loadMessages({ done }: { done: any }) {
 
       // 合并数据
       messages.value = [...currData.value, ...messages.value]
+      // 首次加载时滚动到底部
       if (page.value === 1) {
-        // 首次加载时滚动到底部
         emit('scroll')
       }
       // 页码+1

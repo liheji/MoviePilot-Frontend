@@ -111,6 +111,10 @@ async function openMessageDialog() {
   setTimeout(async () => {
     await clearAppBadge()
   }, 500)
+  // 延迟滚动到底部，确保弹窗完全打开
+  setTimeout(() => {
+    forceScrollToEnd()
+  }, 600)
 }
 
 // 智能滚动到底部（只有用户在底部附近时才滚动）
@@ -118,6 +122,7 @@ function scrollMessageToEnd() {
   // 使用更长的延迟确保DOM已更新
   setTimeout(() => {
     try {
+      // 查找消息弹窗的滚动容器
       const cardText = document.querySelector('.v-dialog .v-card-text')
       if (cardText) {
         const { scrollTop, scrollHeight, clientHeight } = cardText
@@ -138,6 +143,7 @@ function scrollMessageToEnd() {
 function forceScrollToEnd() {
   setTimeout(() => {
     try {
+      // 查找消息弹窗的滚动容器
       const cardText = document.querySelector('.v-dialog .v-card-text')
       if (cardText) {
         cardText.scrollTop = cardText.scrollHeight
@@ -179,7 +185,6 @@ defineExpose({
 })
 
 onMounted(() => {
-  forceScrollToEnd() // 初始化时强制滚动到底部
   const shortcut = getQueryValue('shortcut')
   if (shortcut) {
     const found = shortcuts.find(item => item.dialog === shortcut)
