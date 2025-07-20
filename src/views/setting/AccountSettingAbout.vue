@@ -180,12 +180,10 @@ onMounted(() => {
                     variant="outlined"
                     size="small"
                     :title="`${site.name} - ${site.url}`"
-                    :href="site.url"
                     target="_blank"
                     rel="noreferrer"
                   >
                     <span class="truncate max-w-32">{{ site.name }}</span>
-                    <VIcon icon="mdi-open-in-new" size="12" class="ml-1 flex-shrink-0" />
                   </VChip>
                 </div>
               </dd>
