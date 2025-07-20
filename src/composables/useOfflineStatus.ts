@@ -4,6 +4,8 @@ import { useOnline } from '@vueuse/core'
 // 全局状态
 const isAppOffline = ref(false)
 const appOfflineReason = ref('')
+const consecutiveNetworkErrors = ref(0)
+const MAX_CONSECUTIVE_ERRORS = 3
 
 // 全局离线状态管理
 export function useGlobalOfflineStatus() {
@@ -19,6 +21,26 @@ export function useGlobalOfflineStatus() {
   const setAppOffline = (offline: boolean, reason?: string) => {
     isAppOffline.value = offline
     appOfflineReason.value = reason || ''
+
+    // 如果设置为在线状态，重置连续错误计数
+    if (!offline) {
+      consecutiveNetworkErrors.value = 0
+    }
+  }
+
+  // 记录网络错误
+  const recordNetworkError = (reason?: string) => {
+    consecutiveNetworkErrors.value++
+
+    // 只有连续出现三次网络错误时才设置为离线模式
+    if (consecutiveNetworkErrors.value >= MAX_CONSECUTIVE_ERRORS) {
+      setAppOffline(true, reason || `连续${MAX_CONSECUTIVE_ERRORS}次网络错误`)
+    }
+  }
+
+  // 重置连续错误计数
+  const resetConsecutiveErrors = () => {
+    consecutiveNetworkErrors.value = 0
   }
 
   // 获取离线消息
@@ -37,7 +59,10 @@ export function useGlobalOfflineStatus() {
     isOffline,
     canPerformNetworkAction,
     setAppOffline,
+    recordNetworkError,
+    resetConsecutiveErrors,
     getOfflineMessage,
+    consecutiveNetworkErrors: computed(() => consecutiveNetworkErrors.value),
   }
 }
 

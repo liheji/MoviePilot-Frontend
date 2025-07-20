@@ -144,9 +144,9 @@ export default {
     restartTip: '重启后，您将被注销并需要重新登录。',
     restartTimeout: '重启超时，系统可能需要更长时间恢复，请稍后手动刷新页面',
     restartFailed: '重启失败，请检查系统状态',
-    offline: '离线模式',
+    offline: '应用已离线',
     offlineMessage: '网络连接已断开，部分功能可能受限',
-    online: '在线模式',
+    online: '应用在线',
     onlineMessage: '网络连接已恢复',
   },
   pwa: {

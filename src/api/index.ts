@@ -39,8 +39,9 @@ const globalOfflineStatus = useGlobalOfflineStatus()
 // 添加响应拦截器
 api.interceptors.response.use(
   response => {
-    // 成功响应时，清除应用离线状态
+    // 成功响应时，清除应用离线状态并重置连续错误计数
     globalOfflineStatus.setAppOffline(false)
+    globalOfflineStatus.resetConsecutiveErrors()
     return response.data
   },
   error => {
@@ -57,7 +58,8 @@ api.interceptors.response.use(
         if (error.code === 'ECONNABORTED') {
           reason = 'Request timeout'
         }
-        globalOfflineStatus.setAppOffline(true, reason)
+        // 记录网络错误，只有连续三次才会设置为离线模式
+        globalOfflineStatus.recordNetworkError(reason)
       }
 
       if (error.code === 'NETWORK_ERROR' || error.code === 'ERR_NETWORK') {

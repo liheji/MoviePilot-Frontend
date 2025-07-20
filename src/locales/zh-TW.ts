@@ -145,9 +145,9 @@ export default {
     restartTip: '重啟後，您將被註銷並需要重新登錄。',
     restartTimeout: '重啟超時，系統可能需要更長時間恢復，請稍後手動刷新頁面',
     restartFailed: '重啟失敗，請檢查系統狀態',
-    offline: '離線模式',
+    offline: '應用已離線',
     offlineMessage: '網絡連接已斷開，部分功能可能受限',
-    online: '在線模式',
+    online: '應用在線',
     onlineMessage: '網絡連接已恢復',
   },
   pwa: {

@@ -144,9 +144,9 @@ export default {
     restartTip: 'After restart, you will be logged out and need to log in again.',
     restartTimeout: 'Restart timeout, the system may need more time to recover, please refresh the page manually later',
     restartFailed: 'Restart failed, please check system status',
-    offline: 'Offline Mode',
+    offline: 'Application Offline',
     offlineMessage: 'Network connection lost, some features may be limited',
-    online: 'Online Mode',
+    online: 'Application Online',
     onlineMessage: 'Network connection restored',
   },
   pwa: {
