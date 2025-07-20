@@ -87,6 +87,12 @@ function saveRuleInfo() {
   emit('done')
 }
 
+// 验证规则ID输入
+function validateRuleId() {
+  // 只允许英文和数字，不允许空格
+  ruleInfo.value.id = ruleInfo.value.id.replace(/[^a-zA-Z0-9]/g, '')
+}
+
 // 按钮点击
 function onClose() {
   emit('close')
@@ -138,6 +144,7 @@ function onClose() {
                   persistent-hint
                   active
                   prepend-inner-icon="mdi-identifier"
+                  @input="validateRuleId"
                 />
               </VCol>
               <VCol cols="12" md="6">
