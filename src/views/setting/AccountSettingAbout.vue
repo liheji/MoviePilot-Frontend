@@ -15,6 +15,35 @@ const allRelease = ref<any>([])
 // 支持站点
 const supportingSites = ref<any>({})
 
+// 支持站点折叠状态
+const sitesExpanded = ref(false)
+
+// 去重后的支持站点
+const uniqueSupportingSites = computed(() => {
+  const sitesMap = new Map()
+
+  Object.entries(supportingSites.value).forEach(([domain, site]: [string, any]) => {
+    if (!sitesMap.has(site.name)) {
+      sitesMap.set(site.name, {
+        name: site.name,
+        urls: [{ domain, url: site.url }],
+      })
+    } else {
+      sitesMap.get(site.name).urls.push({ domain, url: site.url })
+    }
+  })
+
+  return Array.from(sitesMap.values())
+})
+
+// 显示的支持站点（折叠时只显示前5个）
+const displayedSites = computed(() => {
+  if (sitesExpanded.value) {
+    return uniqueSupportingSites.value
+  }
+  return uniqueSupportingSites.value.slice(0, 5)
+})
+
 // 变更日志对话框
 const releaseDialog = ref(false)
 
@@ -66,6 +95,11 @@ async function querySupportingSites() {
   } catch (error) {
     console.log(error)
   }
+}
+
+// 切换站点列表展开状态
+function toggleSitesExpanded() {
+  sitesExpanded.value = !sitesExpanded.value
 }
 
 // 计算发布时间
@@ -173,18 +207,26 @@ onMounted(() => {
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">
               <dt class="block text-sm font-bold">{{ t('setting.about.supportingSites') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
-                <div class="flex flex-wrap gap-2">
-                  <VChip
-                    v-for="(site, domain) in supportingSites"
-                    :key="domain"
-                    variant="outlined"
-                    size="small"
-                    :title="`${site.name} - ${site.url}`"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span class="truncate max-w-32">{{ site.name }}</span>
-                  </VChip>
+                <div class="flex flex-col gap-2">
+                  <div class="flex flex-wrap gap-2">
+                    <VChip v-for="site in displayedSites" :key="site.name" variant="outlined" size="small">
+                      <span class="truncate max-w-32">{{ site.name }}</span>
+                    </VChip>
+                  </div>
+                  <div v-if="uniqueSupportingSites.length > 5" class="flex justify-start">
+                    <VBtn
+                      variant="text"
+                      size="small"
+                      @click="toggleSitesExpanded"
+                      class="text-indigo-500 hover:text-indigo-400"
+                    >
+                      <template #prepend>
+                        <VIcon :icon="sitesExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
+                      </template>
+                      {{ sitesExpanded ? t('setting.about.collapse') : t('setting.about.expand') }}
+                      ({{ uniqueSupportingSites.length }})
+                    </VBtn>
+                  </div>
                 </div>
               </dd>
             </div>

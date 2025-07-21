@@ -1106,6 +1106,8 @@ export default {
       viewChangelog: 'View Changelog',
       changelog: 'Changelog',
       dataDirectory: '/moviepilot',
+      expand: 'Expand',
+      collapse: 'Collapse',
     },
     system: {
       custom: 'Custom',

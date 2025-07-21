@@ -1101,6 +1101,8 @@ export default {
       viewChangelog: '查看變更日誌',
       changelog: '變更日誌',
       dataDirectory: '/moviepilot',
+      expand: '展開',
+      collapse: '收起',
     },
     system: {
       custom: '自定義',
