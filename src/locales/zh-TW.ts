@@ -41,6 +41,7 @@ export default {
     details: '詳情',
     files: '文件',
     share: '分享',
+    subscribe: '訂閱',
     unsubscribe: '取消訂閱',
     media: '媒體',
     unknown: '未知',
@@ -60,6 +61,7 @@ export default {
     networkOffline: '網絡離線',
     serviceAvailable: '服務可用',
     serviceUnavailable: '服務不可用',
+    status: '狀態',
   },
   mediaType: {
     movie: '電影',
@@ -806,6 +808,12 @@ export default {
     totalReuseCount: '次複用',
     ranking: '排名',
     noStatisticsData: '暫無分享統計數據',
+    bestVersion: '洗版中',
+    completed: '訂閱完成',
+    subscribing: '訂閱中',
+    notStarted: '未開始',
+    pending: '待定',
+    paused: '暫停',
   },
   recommend: {
     all: '全部',

@@ -31,6 +31,7 @@ const props = defineProps({
   type: String,
   subid: String,
   keyword: String,
+  statusFilter: String,
 })
 
 // 是否刷新过
@@ -51,22 +52,61 @@ const orderConfig = ref<{ id: number }[]>([])
 // 显示的订阅列表
 const displayList = ref<Subscribe[]>([])
 
+// 根据订阅数据判断订阅状态
+function getSubscribeStatus(subscribe: Subscribe) {
+  // 洗版中
+  if (subscribe.best_version) {
+    return 'best_version'
+  }
+
+  // 根据订阅状态判断
+  if (subscribe.state === 'P') {
+    return 'pending' // 待定
+  } else if (subscribe.state === 'S') {
+    return 'paused' // 暂停
+  }
+
+  // 如果是电影，只有洗版和状态
+  if (subscribe.type === '电影') {
+    return 'all'
+  }
+
+  // 电视剧根据集数情况判断
+  if (subscribe.total_episode && subscribe.total_episode > 0) {
+    const lackEpisode = subscribe.lack_episode || 0
+    const completedEpisode = subscribe.total_episode - lackEpisode
+
+    if (lackEpisode === 0) {
+      return 'completed' // 订阅完成
+    } else if (completedEpisode > 0) {
+      return 'subscribing' // 订阅中
+    } else {
+      return 'not_started' // 未开始
+    }
+  }
+
+  return 'not_started' // 默认未开始
+}
+
 // API请求键值（计算属性）
 const orderRequestKey = computed(() => (props.type === '电影' ? 'SubscribeMovieOrder' : 'SubscribeTvOrder'))
 
 // 监听dataList变化，同步更新displayList
-watch([dataList, () => props.keyword], () => {
+watch([dataList, () => props.keyword, () => props.statusFilter], () => {
   if (superUser)
     displayList.value = dataList.value.filter(
       data =>
-        data.type === props.type && (!props.keyword || data.name.toLowerCase().includes(props.keyword.toLowerCase())),
+        data.type === props.type &&
+        (!props.keyword || data.name.toLowerCase().includes(props.keyword.toLowerCase())) &&
+        (!props.statusFilter || getSubscribeStatus(data) === props.statusFilter),
     )
   else
     displayList.value = dataList.value.filter(
       data =>
         data.type === props.type &&
         data.username === userName &&
-        (!props.keyword || data.name.toLowerCase().includes(props.keyword.toLowerCase())),
+        (!props.keyword || data.name.toLowerCase().includes(props.keyword.toLowerCase())) &&
+        (!props.statusFilter || getSubscribeStatus(data) === props.statusFilter),
     )
   // 排序
   sortSubscribeOrder()
@@ -133,6 +173,22 @@ function historyDone() {
   fetchData()
 }
 
+// 错误描述
+const errorDescription = computed(() => {
+  if ((props.statusFilter && props.statusFilter !== 'all') || props.keyword) {
+    return t('common.tryChangingFilters')
+  }
+  return t('subscribe.noSubscribeData')
+})
+
+// 错误标题
+const errorTitle = computed(() => {
+  if ((props.statusFilter && props.statusFilter !== 'all') || props.keyword) {
+    return t('common.noMatchingData')
+  }
+  return t('common.noData')
+})
+
 onMounted(async () => {
   await fetchData()
   if (props.subid) {
@@ -161,7 +217,6 @@ useDynamicButton({
 </script>
 
 <template>
-  <VPageContentTitle v-if="keyword" :title="`${t('subscribe.filterSubscriptions')}：${keyword}`" />
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
   <draggable
     v-if="displayList.length > 0"
@@ -171,6 +226,7 @@ useDynamicButton({
     item-key="id"
     tag="div"
     :component-data="{ class: 'grid gap-4 grid-subscribe-card px-2' }"
+    :disabled="props.statusFilter !== 'all'"
   >
     <template #item="{ element }">
       <SubscribeCard :key="element.id" :media="element" @remove="fetchData" @save="fetchData" />
@@ -179,8 +235,8 @@ useDynamicButton({
   <NoDataFound
     v-if="displayList.length === 0 && isRefreshed"
     error-code="404"
-    :error-title="t('common.noData')"
-    :error-description="keyword ? t('subscribe.noFilterData') : t('subscribe.noSubscribeData')"
+    :error-title="errorTitle"
+    :error-description="errorDescription"
   />
   <!-- 底部操作按钮 -->
   <Teleport to="body" v-if="route.path.startsWith(`/subscribe/${props.type === '电影' ? 'movie' : 'tv'}`)">

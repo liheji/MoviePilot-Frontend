@@ -41,6 +41,7 @@ export default {
     details: 'Details',
     files: 'Files',
     share: 'Share',
+    subscribe: 'Subscribe',
     unsubscribe: 'Unsubscribe',
     media: 'Media',
     unknown: 'Unknown',
@@ -60,6 +61,7 @@ export default {
     networkOffline: 'Network Offline',
     serviceAvailable: 'Service Available',
     serviceUnavailable: 'Service Unavailable',
+    status: 'Status',
   },
   mediaType: {
     movie: 'Movie',
@@ -812,6 +814,12 @@ export default {
     totalReuseCount: 'Total Reuse Count',
     ranking: 'Ranking',
     noStatisticsData: 'No share statistics data available',
+    bestVersion: 'Version Upgrading',
+    completed: 'Completed',
+    subscribing: 'Subscribing',
+    notStarted: 'Not Started',
+    pending: 'Pending',
+    paused: 'Paused',
   },
   recommend: {
     all: 'All',

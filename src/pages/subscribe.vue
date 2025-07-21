@@ -43,6 +43,9 @@ const shareStatisticsDialog = ref(false)
 // 订阅过滤词
 const subscribeFilter = ref('')
 
+// 订阅状态筛选
+const subscribeStatusFilter = ref<string | null>(null)
+
 // 分享搜索词
 const shareKeyword = ref('')
 
@@ -51,6 +54,41 @@ const searchShares = () => {
   searchShareDialog.value = false
   shareViewKey.value++
 }
+
+// 筛选选项
+const filterOptions = computed(() => {
+  const baseOptions = [
+    { value: 'all', label: t('common.all'), icon: 'mdi-format-list-bulleted' },
+    { value: 'best_version', label: t('subscribe.bestVersion'), icon: 'mdi-refresh', color: 'warning' },
+  ]
+
+  // 电影只显示基本选项和状态选项
+  if (subType === '电影') {
+    return [
+      ...baseOptions,
+      { value: 'pending', label: t('subscribe.pending'), icon: 'mdi-help-circle', color: 'secondary' },
+      { value: 'paused', label: t('subscribe.paused'), icon: 'mdi-pause-circle', color: 'error' },
+    ]
+  }
+
+  // 电视剧显示所有选项
+  return [
+    ...baseOptions,
+    { value: 'not_started', label: t('subscribe.notStarted'), icon: 'mdi-clock-outline', color: 'secondary' },
+    { value: 'subscribing', label: t('subscribe.subscribing'), icon: 'mdi-download', color: 'info' },
+    { value: 'pending', label: t('subscribe.pending'), icon: 'mdi-help-circle', color: 'secondary' },
+    { value: 'paused', label: t('subscribe.paused'), icon: 'mdi-pause-circle', color: 'error' },
+    { value: 'completed', label: t('subscribe.completed'), icon: 'mdi-check-circle', color: 'success' },
+  ]
+})
+
+// 计算筛选按钮颜色
+const filterButtonColor = computed(() => {
+  if (subscribeFilter.value || (subscribeStatusFilter.value && subscribeStatusFilter.value !== 'all')) {
+    return 'primary'
+  }
+  return 'gray'
+})
 
 // VMenu activator选择器
 const filterActivator = computed(() => '[data-menu-activator="filter-btn"]')
@@ -67,7 +105,7 @@ registerHeaderTab({
     {
       icon: 'mdi-filter-multiple-outline',
       variant: 'text',
-      color: computed(() => (subscribeFilter.value ? 'primary' : 'gray')),
+      color: filterButtonColor,
       class: 'settings-icon-button',
       dataAttr: 'filter-btn',
       action: () => {
@@ -125,7 +163,12 @@ onMounted(() => {
       <VWindowItem value="mysub">
         <transition name="fade-slide" appear>
           <div>
-            <SubscribeListView :type="subType" :subid="subId" :keyword="subscribeFilter" />
+            <SubscribeListView
+              :type="subType"
+              :subid="subId"
+              :keyword="subscribeFilter"
+              :status-filter="subscribeStatusFilter ?? ''"
+            />
           </div>
         </transition>
       </VWindowItem>
@@ -149,7 +192,7 @@ onMounted(() => {
     <Teleport to="body" v-if="filterSubscribeDialog">
       <VMenu
         v-model="filterSubscribeDialog"
-        width="20rem"
+        width="25rem"
         :close-on-content-click="false"
         :activator="filterActivator"
         location="bottom end"
@@ -163,7 +206,25 @@ onMounted(() => {
             <VDialogCloseBtn @click="filterSubscribeDialog = false" />
           </VCardItem>
           <VCardText>
-            <VTextField v-model="subscribeFilter" :label="t('subscribe.name')" clearable density="comfortable" />
+            <VRow>
+              <!-- 名称筛选 -->
+              <VCol cols="6">
+                <VTextField v-model="subscribeFilter" :label="t('subscribe.name')" clearable density="comfortable" />
+              </VCol>
+
+              <!-- 状态筛选 -->
+              <VCol cols="6">
+                <VSelect
+                  v-model="subscribeStatusFilter"
+                  :items="filterOptions"
+                  item-title="label"
+                  item-value="value"
+                  :label="t('common.status')"
+                  density="comfortable"
+                  clearable
+                />
+              </VCol>
+            </VRow>
           </VCardText>
         </VCard>
       </VMenu>
