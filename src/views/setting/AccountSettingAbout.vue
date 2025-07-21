@@ -208,24 +208,26 @@ onMounted(() => {
               <dt class="block text-sm font-bold">{{ t('setting.about.supportingSites') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <div class="flex flex-col gap-2">
-                  <div class="flex flex-wrap gap-2 mt-1">
+                  <div class="flex flex-wrap gap-2 mt-1 ms-1">
                     <VChip v-for="site in displayedSites" :key="site.name" variant="outlined" size="small">
                       <span class="truncate max-w-32">{{ site.name }}</span>
                     </VChip>
-                  </div>
-                  <div v-if="uniqueSupportingSites.length > 5" class="flex justify-start">
-                    <VBtn
-                      variant="text"
+                    <VChip
+                      v-if="!sitesExpanded && uniqueSupportingSites.length > 5"
+                      variant="tonal"
                       size="small"
                       @click="toggleSitesExpanded"
-                      class="text-indigo-500 hover:text-indigo-400"
                     >
-                      <template #prepend>
-                        <VIcon :icon="sitesExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
-                      </template>
-                      {{ sitesExpanded ? t('setting.about.collapse') : t('setting.about.expand') }}
-                      ({{ uniqueSupportingSites.length }})
-                    </VBtn>
+                      <span> {{ uniqueSupportingSites.length }}+ ...</span>
+                    </VChip>
+                    <VChip
+                      v-if="sitesExpanded && uniqueSupportingSites.length > 5"
+                      variant="tonal"
+                      size="small"
+                      @click="toggleSitesExpanded"
+                    >
+                      <span>< {{ t('setting.about.collapse') }}</span>
+                    </VChip>
                   </div>
                 </div>
               </dd>
