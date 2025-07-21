@@ -208,7 +208,7 @@ onMounted(() => {
               <dt class="block text-sm font-bold">{{ t('setting.about.supportingSites') }}</dt>
               <dd class="flex text-sm sm:col-span-2 sm:mt-0">
                 <div class="flex flex-col gap-2">
-                  <div class="flex flex-wrap gap-2">
+                  <div class="flex flex-wrap gap-2 mt-1">
                     <VChip v-for="site in displayedSites" :key="site.name" variant="outlined" size="small">
                       <span class="truncate max-w-32">{{ site.name }}</span>
                     </VChip>
