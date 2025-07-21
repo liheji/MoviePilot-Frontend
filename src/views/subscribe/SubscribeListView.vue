@@ -226,7 +226,7 @@ useDynamicButton({
     item-key="id"
     tag="div"
     :component-data="{ class: 'grid gap-4 grid-subscribe-card px-2' }"
-    :disabled="props.statusFilter !== 'all'"
+    :disabled="props.keyword || (props.statusFilter && props.statusFilter !== 'all')"
   >
     <template #item="{ element }">
       <SubscribeCard :key="element.id" :media="element" @remove="fetchData" @save="fetchData" />
