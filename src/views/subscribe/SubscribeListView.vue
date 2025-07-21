@@ -98,7 +98,7 @@ watch([dataList, () => props.keyword, () => props.statusFilter], () => {
       data =>
         data.type === props.type &&
         (!props.keyword || data.name.toLowerCase().includes(props.keyword.toLowerCase())) &&
-        (!props.statusFilter || getSubscribeStatus(data) === props.statusFilter),
+        (!props.statusFilter || props.statusFilter === 'all' || getSubscribeStatus(data) === props.statusFilter),
     )
   else
     displayList.value = dataList.value.filter(
@@ -106,7 +106,7 @@ watch([dataList, () => props.keyword, () => props.statusFilter], () => {
         data.type === props.type &&
         data.username === userName &&
         (!props.keyword || data.name.toLowerCase().includes(props.keyword.toLowerCase())) &&
-        (!props.statusFilter || getSubscribeStatus(data) === props.statusFilter),
+        (!props.statusFilter || props.statusFilter === 'all' || getSubscribeStatus(data) === props.statusFilter),
     )
   // 排序
   sortSubscribeOrder()
