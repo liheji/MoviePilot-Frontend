@@ -190,10 +190,23 @@ async function doDelete() {
                       <span class="text-body-1"> {{ props.workflow?.share_user }}</span>
                     </VListItemTitle>
                   </VListItem>
-                  <VListItem class="ps-0" v-if="props.workflow?.timer">
+                  <VListItem class="ps-0" v-if="props.workflow?.trigger_type || props.workflow?.timer">
                     <VListItemTitle class="text-center text-md-left">
-                      <span class="font-weight-medium">{{ t('workflow.timer') }}：</span>
-                      <span class="text-body-1"> {{ props.workflow?.timer }}</span>
+                      <span class="font-weight-medium">{{ t('workflow.trigger') }}：</span>
+                      <span class="text-body-1">
+                        <span v-if="props.workflow?.trigger_type === 'timer' || !props.workflow?.trigger_type">
+                          <VIcon icon="mdi-clock-outline" size="small" class="me-1" />
+                          {{ props.workflow?.timer }}
+                        </span>
+                        <span v-else-if="props.workflow?.trigger_type === 'event'">
+                          <VIcon icon="mdi-calendar-check" size="small" class="me-1" />
+                          {{ props.workflow?.event_type }}
+                        </span>
+                        <span v-else-if="props.workflow?.trigger_type === 'manual'">
+                          <VIcon icon="mdi-hand-pointing-up" size="small" class="me-1" />
+                          {{ t('workflow.manualTrigger') }}
+                        </span>
+                      </span>
                     </VListItemTitle>
                   </VListItem>
                   <VListItem class="ps-0" v-if="parsedWorkflow?.actions">

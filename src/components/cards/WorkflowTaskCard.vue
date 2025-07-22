@@ -168,7 +168,7 @@ const resolveStatusVariant = (status: string | undefined) => {
   if (status === 'S') return { color: 'success', text: t('workflow.task.status.success') }
   else if (status === 'R') return { color: 'primary', text: t('workflow.task.status.running') }
   else if (status === 'F') return { color: 'error', text: t('workflow.task.status.failed') }
-  else if (status === 'P') return { color: 'secondary', text: t('workflow.task.status.paused') }
+  else if (status === 'P') return { color: 'warning', text: t('workflow.task.status.paused') }
   else return { color: 'info', text: t('workflow.task.status.waiting') }
 }
 
@@ -272,15 +272,28 @@ const resolveProgress = (item: Workflow) => {
         </VCardItem>
         <VDivider />
         <VCardText class="pa-3">
-          <div class="d-flex flex-column gap-y-2">
+          <div class="d-flex flex-column gap-y-3">
             <div class="d-flex flex-wrap gap-x-3">
               <div class="flex-1">
-                <div class="mb-1">{{ t('workflow.task.info.timer') }}</div>
-                <h5 class="text-lg">{{ workflow?.timer }}</h5>
+                <div class="mb-1">{{ t('workflow.task.info.trigger') }}</div>
+                <h5>
+                  <span v-if="workflow?.trigger_type === 'timer' || !workflow?.trigger_type">
+                    <VIcon icon="mdi-clock-outline" size="small" class="me-1" />
+                    {{ workflow?.timer }}
+                  </span>
+                  <span v-else-if="workflow?.trigger_type === 'event'">
+                    <VIcon icon="mdi-calendar-check" size="small" class="me-1" />
+                    {{ workflow?.event_type }}
+                  </span>
+                  <span v-else-if="workflow?.trigger_type === 'manual'">
+                    <VIcon icon="mdi-hand-pointing-up" size="small" class="me-1" />
+                    {{ t('workflow.task.info.manualTrigger') }}
+                  </span>
+                </h5>
               </div>
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.status') }}</div>
-                <h5 class="text-lg" :class="`text-${resolveStatusVariant(workflow?.state).color}`">
+                <h5 :class="`text-${resolveStatusVariant(workflow?.state).color}`">
                   {{ resolveStatusVariant(workflow?.state).text }}
                 </h5>
               </div>
@@ -289,14 +302,14 @@ const resolveProgress = (item: Workflow) => {
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.actionCount') }}</div>
                 <div>
-                  <VAvatar size="28" color="primary" variant="tonal">
-                    <span class="text-sm">{{ workflow?.actions?.length }}</span>
+                  <VAvatar size="24" color="primary" variant="tonal">
+                    <span class="text-xs">{{ workflow?.actions?.length }}</span>
                   </VAvatar>
                 </div>
               </div>
               <div class="flex-1">
                 <div class="mb-1">{{ t('workflow.task.info.runCount') }}</div>
-                <h5 class="text-lg">{{ workflow?.run_count }}</h5>
+                <h5>{{ workflow?.run_count }}</h5>
               </div>
             </div>
             <div class="d-flex flex-wrap gap-x-3">

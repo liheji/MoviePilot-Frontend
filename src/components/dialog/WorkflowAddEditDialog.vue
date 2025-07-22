@@ -33,8 +33,66 @@ const workflowForm = ref<Workflow>(
     name: undefined,
     timer: undefined,
     description: undefined,
+    trigger_type: 'timer',
+    event_type: undefined,
     state: 'P',
     run_count: 0,
+  },
+)
+
+// 监听props变化，处理存量数据
+watch(
+  () => props.workflow,
+  newWorkflow => {
+    if (newWorkflow) {
+      // 如果trigger_type为空，默认为timer
+      if (!newWorkflow.trigger_type) {
+        newWorkflow.trigger_type = 'timer'
+      }
+      workflowForm.value = { ...newWorkflow }
+    }
+  },
+  { immediate: true },
+)
+
+// 事件类型列表
+const eventTypes = ref<Array<{ title: string; value: string }>>([])
+
+// 触发类型选项
+const triggerTypeOptions = computed(() => [
+  {
+    title: t('dialog.workflowAddEdit.triggerTypeTimer'),
+    value: 'timer',
+    prependIcon: 'mdi-clock-outline',
+  },
+  {
+    title: t('dialog.workflowAddEdit.triggerTypeEvent'),
+    value: 'event',
+    prependIcon: 'mdi-calendar-check',
+  },
+  {
+    title: t('dialog.workflowAddEdit.triggerTypeManual'),
+    value: 'manual',
+    prependIcon: 'mdi-hand-pointing-up',
+  },
+])
+
+// 加载事件类型列表
+async function loadEventTypes() {
+  try {
+    eventTypes.value = await api.get('workflow/event_types')
+  } catch (error) {
+    console.error('Failed to load event types:', error)
+  }
+}
+
+// 监听触发类型变化
+watch(
+  () => workflowForm.value.trigger_type,
+  newType => {
+    if (newType !== 'event') {
+      workflowForm.value.event_type = undefined
+    }
   },
 )
 
@@ -43,10 +101,27 @@ const $toast = useToast()
 
 // 调用API 新增任务
 async function addWorkflow() {
-  if (!workflowForm.value.name || !workflowForm.value.timer) {
+  if (!workflowForm.value.name) {
     $toast.error(t('dialog.workflowAddEdit.nameRequired'))
     return
   }
+
+  if (!workflowForm.value.trigger_type) {
+    $toast.error(t('dialog.workflowAddEdit.triggerRequired'))
+    return
+  }
+
+  // 根据触发类型验证必填字段
+  if (workflowForm.value.trigger_type === 'timer' && !workflowForm.value.timer) {
+    $toast.error(t('dialog.workflowAddEdit.timerRequired'))
+    return
+  }
+
+  if (workflowForm.value.trigger_type === 'event' && !workflowForm.value.event_type) {
+    $toast.error(t('dialog.workflowAddEdit.eventTypeRequired'))
+    return
+  }
+
   startNProgress()
   try {
     const result: { [key: string]: string } = await api.post('workflow/', workflowForm.value)
@@ -64,10 +139,27 @@ async function addWorkflow() {
 
 // 调用API 编辑任务
 async function editWorkflow() {
-  if (!workflowForm.value.name || !workflowForm.value.timer) {
+  if (!workflowForm.value.name) {
     $toast.error(t('dialog.workflowAddEdit.nameRequired'))
     return
   }
+
+  if (!workflowForm.value.trigger_type) {
+    $toast.error(t('dialog.workflowAddEdit.triggerRequired'))
+    return
+  }
+
+  // 根据触发类型验证必填字段
+  if (workflowForm.value.trigger_type === 'timer' && !workflowForm.value.timer) {
+    $toast.error(t('dialog.workflowAddEdit.timerRequired'))
+    return
+  }
+
+  if (workflowForm.value.trigger_type === 'event' && !workflowForm.value.event_type) {
+    $toast.error(t('dialog.workflowAddEdit.eventTypeRequired'))
+    return
+  }
+
   startNProgress()
   try {
     const result: { [key: string]: string } = await api.put(`workflow/${workflowForm.value.id}`, workflowForm.value)
@@ -82,6 +174,11 @@ async function editWorkflow() {
   }
   doneNProgress()
 }
+
+// 组件挂载时加载事件类型
+onMounted(() => {
+  loadEventTypes()
+})
 </script>
 
 <template>
@@ -109,6 +206,25 @@ async function editWorkflow() {
               />
             </VCol>
             <VCol cols="12">
+              <VSelect
+                v-model="workflowForm.trigger_type"
+                :label="t('dialog.workflowAddEdit.triggerType')"
+                :items="triggerTypeOptions"
+                item-title="title"
+                item-value="value"
+                :rules="[requiredValidator]"
+                prepend-inner-icon="mdi-run"
+              >
+                <template #item="{ item, props: itemProps }">
+                  <VListItem v-bind="itemProps">
+                    <template #prepend>
+                      <VIcon :icon="item.raw.prependIcon" />
+                    </template>
+                  </VListItem>
+                </template>
+              </VSelect>
+            </VCol>
+            <VCol v-if="workflowForm.trigger_type === 'timer'" cols="12">
               <VCronField
                 v-model="workflowForm.timer"
                 :label="t('dialog.workflowAddEdit.schedule')"
@@ -117,6 +233,19 @@ async function editWorkflow() {
                 persistent-hint
                 :hint="t('dialog.workflowAddEdit.cronExprDesc')"
                 prepend-inner-icon="mdi-clock-outline"
+              />
+            </VCol>
+            <VCol v-if="workflowForm.trigger_type === 'event'" cols="12">
+              <VSelect
+                v-model="workflowForm.event_type"
+                :label="t('dialog.workflowAddEdit.eventType')"
+                :items="eventTypes"
+                item-title="title"
+                item-value="value"
+                :rules="[requiredValidator]"
+                persistent-hint
+                :hint="t('dialog.workflowAddEdit.eventTypePlaceholder')"
+                prepend-inner-icon="mdi-calendar-check"
               />
             </VCol>
             <VCol cols="12">
