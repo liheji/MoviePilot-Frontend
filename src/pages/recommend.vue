@@ -127,9 +127,11 @@ async function loadExtraRecommendSources() {
     if (extraRecommendSources.value.length > 0) {
       extraRecommendSources.value.map(source => {
         if (!viewList.some(item => item.apipath === source.api_path)) {
+          const querySeparator = source.api_path.includes('?') ? '&' : '?';
+          const linkUrl = `/browse/${source.api_path}${querySeparator}title=${encodeURIComponent(source.name)}`;
           viewList.push({
             apipath: source.api_path,
-            linkurl: `/browse/${source.api_path}&title=${source.name}`,
+            linkurl: linkUrl,
             title: source.name,
             type: source.type,
           })
