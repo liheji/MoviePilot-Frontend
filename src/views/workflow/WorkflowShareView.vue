@@ -41,6 +41,18 @@ const isRefreshed = ref(false)
 const dataList = ref<WorkflowShare[]>([])
 const currData = ref<WorkflowShare[]>([])
 
+// 事件类型列表
+const eventTypes = ref<Array<{ title: string; value: string }>>([])
+
+// 加载事件类型列表
+async function loadEventTypes() {
+  try {
+    eventTypes.value = await api.get('workflow/event_types')
+  } catch (error) {
+    console.error('Failed to load event types:', error)
+  }
+}
+
 // 拼装参数
 function getParams() {
   let params = {
@@ -121,6 +133,7 @@ function removeData(id: string) {
 }
 
 onActivated(() => {
+  loadEventTypes()
   fetchData({ done: () => {} })
 })
 </script>
@@ -133,7 +146,12 @@ onActivated(() => {
     <template #empty />
     <div v-if="dataList.length > 0" class="grid gap-4 grid-workflow-share-card" tabindex="0">
       <div v-for="data in dataList" :key="data.id">
-        <WorkflowShareCard :workflow="data" @delete="removeData(data.id || '')" @update="emit('update')" />
+        <WorkflowShareCard
+          :workflow="data"
+          :event-types="eventTypes"
+          @delete="removeData(data.id || '')"
+          @update="emit('update')"
+        />
       </div>
     </div>
     <NoDataFound

@@ -6,6 +6,10 @@ import ForkWorkflowDialog from '../dialog/ForkWorkflowDialog.vue'
 // 输入参数
 const props = defineProps({
   workflow: Object as PropType<WorkflowShare>,
+  eventTypes: {
+    type: Array as PropType<Array<{ title: string; value: string }>>,
+    default: () => [],
+  },
 })
 
 // 定义删除事件
@@ -135,6 +139,7 @@ function doDelete() {
       v-if="forkWorkflowDialog"
       v-model="forkWorkflowDialog"
       :workflow="props.workflow"
+      :event-types="props.eventTypes"
       @close="forkWorkflowDialog = false"
       @fork="finishForkWorkflow"
       @delete="doDelete"

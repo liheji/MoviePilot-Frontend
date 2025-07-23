@@ -26,6 +26,18 @@ const addDialog = ref(false)
 // 所有任务
 const workflowList = ref<Workflow[]>([])
 
+// 事件类型列表
+const eventTypes = ref<Array<{ title: string; value: string }>>([])
+
+// 加载事件类型列表
+async function loadEventTypes() {
+  try {
+    eventTypes.value = await api.get('workflow/event_types')
+  } catch (error) {
+    console.error('Failed to load event types:', error)
+  }
+}
+
 // 加载数据
 async function fetchData() {
   try {
@@ -51,6 +63,7 @@ useDynamicButton({
 })
 
 onMounted(() => {
+  loadEventTypes()
   fetchData()
 })
 
@@ -62,7 +75,7 @@ onActivated(() => {
   <div>
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
     <div v-if="workflowList.length > 0 && isRefreshed" class="grid gap-4 grid-workflow-card px-2">
-      <WorkflowTaskCard v-for="item in workflowList" :key="item.id" :workflow="item" @refresh="fetchData" />
+      <WorkflowTaskCard v-for="item in workflowList" :key="item.id" :workflow="item" :event-types="eventTypes" @refresh="fetchData" />
     </div>
     <NoDataFound
       v-if="workflowList.length === 0 && isRefreshed"

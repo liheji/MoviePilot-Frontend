@@ -16,6 +16,10 @@ const props = defineProps({
     required: true,
     type: Object as PropType<Workflow>,
   },
+  eventTypes: {
+    type: Array as PropType<Array<{ title: string; value: string }>>,
+    default: () => [],
+  },
 })
 
 // 定义事件
@@ -38,6 +42,12 @@ const shareDialog = ref(false)
 
 // 加载中
 const loading = ref(false)
+
+// 根据事件类型值获取显示文本
+const getEventTypeText = (eventTypeValue: string) => {
+  const eventType = props.eventTypes.find(item => item.value === eventTypeValue)
+  return eventType ? eventType.title : eventTypeValue
+}
 
 // 编辑任务
 function handleEdit(item: Workflow) {
@@ -305,7 +315,7 @@ const resolveProgress = (item: Workflow) => {
                   </span>
                   <span v-else-if="workflow?.trigger_type === 'event'">
                     <VIcon icon="mdi-calendar-check" size="small" class="me-1" />
-                    {{ workflow?.event_type }}
+                    {{ getEventTypeText(workflow?.event_type || '') }}
                   </span>
                   <span v-else-if="workflow?.trigger_type === 'manual'">
                     <VIcon icon="mdi-hand-pointing-up" size="small" class="me-1" />
