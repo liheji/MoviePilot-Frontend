@@ -165,11 +165,36 @@ async function handleReset(item: Workflow) {
 
 // 计算状态颜色
 const resolveStatusVariant = (status: string | undefined) => {
-  if (status === 'S') return { color: 'success', text: t('workflow.task.status.success') }
-  else if (status === 'R') return { color: 'primary', text: t('workflow.task.status.running') }
-  else if (status === 'F') return { color: 'error', text: t('workflow.task.status.failed') }
-  else if (status === 'P') return { color: 'warning', text: t('workflow.task.status.paused') }
-  else return { color: 'info', text: t('workflow.task.status.waiting') }
+  if (status === 'S')
+    return {
+      color: 'success',
+      bgColor: 'linear-gradient(to bottom right, rgba(76, 175, 80, 0.9), rgba(76, 175, 80, 0.7))',
+      text: t('workflow.task.status.success'),
+    }
+  else if (status === 'R')
+    return {
+      color: 'primary',
+      bgColor: 'linear-gradient(to bottom right, rgba(33, 150, 243, 0.9), rgba(33, 150, 243, 0.7))',
+      text: t('workflow.task.status.running'),
+    }
+  else if (status === 'F')
+    return {
+      color: 'error',
+      bgColor: 'linear-gradient(to bottom right, rgba(244, 67, 54, 0.9), rgba(244, 67, 54, 0.7))',
+      text: t('workflow.task.status.failed'),
+    }
+  else if (status === 'P')
+    return {
+      color: 'warning',
+      bgColor: 'linear-gradient(to bottom right, rgba(255, 152, 0, 0.9), rgba(255, 152, 0, 0.7))',
+      text: t('workflow.task.status.paused'),
+    }
+  else
+    return {
+      color: 'info',
+      bgColor: 'linear-gradient(to bottom right, rgba(33, 150, 243, 0.9), rgba(33, 150, 243, 0.7))',
+      text: t('workflow.task.status.waiting'),
+    }
 }
 
 // 计算当前动作占比
@@ -190,11 +215,9 @@ const resolveProgress = (item: Workflow) => {
         :class="{ 'transition transform-cpu duration-300 -translate-y-1': hover.isHovering }"
       >
         <VCardItem
-          class="px-2"
-          :class="{
-            'py-0': workflow?.description,
-            'py-2': !workflow?.description,
-            [`bg-${resolveStatusVariant(workflow?.state).color}`]: true,
+          class="px-2 py-2"
+          :style="{
+            background: resolveStatusVariant(workflow?.state).bgColor,
           }"
         >
           <template #prepend>
@@ -209,9 +232,8 @@ const resolveProgress = (item: Workflow) => {
             </VAvatar>
           </template>
           <VCardTitle class="text-white text-lg">
-            {{ workflow?.name }}
+            <span :title="workflow?.description">{{ workflow?.name }}</span>
           </VCardTitle>
-          <VCardSubtitle class="text-white">{{ workflow?.description }}</VCardSubtitle>
           <template #append>
             <IconBtn>
               <VIcon icon="mdi-dots-vertical" />
