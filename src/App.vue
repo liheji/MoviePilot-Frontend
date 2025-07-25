@@ -11,6 +11,7 @@ import { preloadImage } from './@core/utils/image'
 import { globalLoadingStateManager } from '@/utils/loadingStateManager'
 import { addBackgroundTimer, removeBackgroundTimer } from '@/utils/backgroundManager'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt.vue'
+import { themeManager } from '@/utils/themeManager'
 
 // 生效主题
 const { global: globalTheme } = useTheme()
@@ -211,6 +212,9 @@ onMounted(async () => {
 
   // 初始化data-theme属性
   updateHtmlThemeAttribute(globalTheme.name.value)
+
+  // 初始化主题管理器 - 统一处理主题初始化
+  await themeManager.setTheme(themeValue)
 
   // 监听主题变化
   watch(

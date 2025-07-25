@@ -14,6 +14,7 @@ import { getCurrentLocale, setI18nLanguage } from '@/plugins/i18n'
 import { saveLocalTheme } from '@/@core/utils/theme'
 import type { ThemeSwitcherTheme } from '@layouts/types'
 import { useConfirm } from '@/composables/useConfirm'
+import { themeManager } from '@/utils/themeManager'
 
 // 认证 Store
 const authStore = useAuthStore()
@@ -226,22 +227,30 @@ const themes: ThemeSwitcherTheme[] = [
 const editorTheme = computed(() => (currentThemeName.value === 'light' ? 'github' : 'monokai'))
 
 // 更新主题
-function updateTheme() {
+async function updateTheme() {
   const autoTheme = checkPrefersColorSchemeIsDark() ? 'dark' : 'light'
   const theme = currentThemeName.value === 'auto' ? autoTheme : currentThemeName.value
+
+  // 设置Vuetify主题
   globalTheme.name.value = theme
+
+  // 统一处理主题切换 - 主题管理器会自动处理CSS加载和错误
+  await themeManager.setTheme(currentThemeName.value)
+
   // 保存原始主题设置，而不是计算后的值
   savedTheme.value = currentThemeName.value
   // 保存主题到本地
   saveLocalTheme(currentThemeName.value, globalTheme)
-  // 刷新页面
-  location.reload()
 }
 
 // 切换主题
-function changeTheme(theme: string) {
+async function changeTheme(theme: string) {
   currentThemeName.value = theme
   showThemeMenu.value = false
+
+  // 立即更新主题（不再刷新页面）
+  await updateTheme()
+
   // 保存主题到服务端
   try {
     api.post('/user/config/Layout', {
@@ -288,12 +297,16 @@ async function saveCustomCSS() {
 // 监听主题变化
 watch(
   () => currentThemeName.value,
-  () => updateTheme(),
+  async () => {
+    await updateTheme()
+  },
 )
 
 // 监听系统主题变化
 try {
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async () => {
+    await updateTheme()
+  })
 } catch (e) {
   console.error(t('theme.deviceNotSupport'))
 }
