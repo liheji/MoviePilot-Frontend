@@ -203,7 +203,7 @@ onMounted(async () => {
                 prepend-inner-icon="mdi-rss"
               />
             </VCol>
-            <VCol cols="12" md="3">
+            <VCol cols="6" md="3">
               <VTextField
                 v-model="siteForm.timeout"
                 :label="t('site.fields.timeout')"
