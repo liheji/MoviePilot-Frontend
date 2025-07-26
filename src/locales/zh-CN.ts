@@ -1565,8 +1565,8 @@ export default {
       bestVersionRuleGroupHint: '按选定的过滤规则组对洗版订阅进行过滤',
       timedSearch: '订阅定时搜索',
       timedSearchHint: '每隔24小时全站搜索，以补全订阅可能漏掉的资源',
-      checkLocalMedia: '检查本地媒体库资源',
-      checkLocalMediaHint: '检查存储盘是否存在资源，以避免重复下载',
+      checkLocalMedia: '检查文件系统资源',
+      checkLocalMediaHint: '扫描存储目录中是否已存在相应资源文件，以避免重复下载；不管是否开启都会检查媒体服务器',
       modes: {
         auto: '自动',
         rss: '站点RSS',

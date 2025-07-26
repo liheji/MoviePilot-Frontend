@@ -1586,8 +1586,8 @@ export default {
       bestVersionRuleGroupHint: 'Filter version upgrade subscriptions based on selected filter rule groups',
       timedSearch: 'Subscription Scheduled Search',
       timedSearchHint: 'Search all sites every 24 hours to supplement resources that may be missed by subscription',
-      checkLocalMedia: 'Check Local Media Library',
-      checkLocalMediaHint: 'Check if resources exist on storage disk to avoid duplicate downloads',
+      checkLocalMedia: 'Check File System Resources',
+      checkLocalMediaHint: 'Scan the storage directory for existing resource files to avoid duplicate downloads; regardless of whether it is enabled, the media server will be checked',
       modes: {
         auto: 'Auto',
         rss: 'Site RSS',

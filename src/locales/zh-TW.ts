@@ -1563,8 +1563,8 @@ export default {
       bestVersionRuleGroupHint: '按選定的過濾規則組對洗版訂閱進行過濾',
       timedSearch: '訂閱定時搜索',
       timedSearchHint: '每隔24小時全站搜索，以補全訂閱可能漏掉的資源',
-      checkLocalMedia: '檢查本地媒體庫資源',
-      checkLocalMediaHint: '檢查存儲盤是否存在資源，以避免重複下載',
+      checkLocalMedia: '檢查文件系統資源',
+      checkLocalMediaHint: '掃描存儲目錄中是否已存在相應資源文件，以避免重複下載；不管是否開啟都會檢查媒體伺服器',
       modes: {
         auto: '自動',
         rss: '站點RSS',
