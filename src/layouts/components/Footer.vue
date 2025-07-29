@@ -254,7 +254,7 @@ const showDynamicButton = computed(() => {
 
   // 透明主题下的特殊样式
   .v-theme--transparent & {
-    backdrop-filter: blur(var(--transparent-blur, 10px));
+    backdrop-filter: blur(var(--transparent-blur-heavy, 16px));
     background-color: rgba(var(--v-theme-surface), var(--transparent-opacity-heavy, 0.5));
   }
 

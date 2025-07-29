@@ -60,8 +60,8 @@ code {
       }
 
       .v-theme--transparent & {
-        backdrop-filter: blur(var(--transparent-blur-light, 10px));
-        background: rgba(var(--v-theme-background), var(--transparent-opacity-light, 0.3));
+        backdrop-filter: blur(var(--transparent-blur-heavy, 16px));
+        background: rgba(var(--v-theme-background), var(--transparent-opacity-heavy, 0.5));
       }
     }
   }
