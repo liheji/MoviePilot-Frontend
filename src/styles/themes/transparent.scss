@@ -1,5 +1,12 @@
 // 透明主题专用样式
 html[data-theme="transparent"] {
+  // 定义透明度变量
+  --transparent-opacity: 0.3;
+  --transparent-opacity-light: 0.2;
+  --transparent-opacity-heavy: 0.5;
+  --transparent-blur: 10px;
+  --transparent-blur-heavy: 16px;
+
   // 应用、布局、主内容区域
   .v-application, .v-layout, .v-main, .layout-page-content {
     background: transparent;
@@ -7,21 +14,21 @@ html[data-theme="transparent"] {
   
   // 侧边导航栏
   .layout-vertical-nav {
-    backdrop-filter: blur(16px);
-    background-color: rgba(var(--v-theme-surface), 0.2);
+    backdrop-filter: blur(var(--transparent-blur-heavy));
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity-light));
     border-inline-end: 1px solid rgba(var(--v-theme-on-surface), 0.05);
   }
 
   // 列表
   .v-list {
-    backdrop-filter: blur(10px);
-    background-color: rgba(var(--v-theme-surface), 0.3);
+    backdrop-filter: blur(var(--transparent-blur));
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
   }
   
   // 卡片
   .v-card:not(.no-blur) {
-    backdrop-filter: blur(10px);
-    background-color: rgba(var(--v-theme-surface), 0.3);
+    backdrop-filter: blur(var(--transparent-blur));
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
 
     .v-list {
       backdrop-filter: none;
@@ -31,8 +38,8 @@ html[data-theme="transparent"] {
 
   // 工具栏
   .v-toolbar {
-    backdrop-filter: blur(10px);
-    background-color: rgba(var(--v-theme-surface), 0.3);
+    backdrop-filter: blur(var(--transparent-blur));
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
   }
   
   // 表格
@@ -41,20 +48,20 @@ html[data-theme="transparent"] {
     background-color: rgba(var(--v-theme-surface), 0);
 
     .v-table__wrapper > table > thead {
-      background-color: rgba(var(--v-theme-surface), 0.3);
+      background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
     }
   }
   
   // 页脚
   .v-footer {
-    backdrop-filter: blur(10px);
-    background-color: rgba(var(--v-theme-surface), 0.3);
+    backdrop-filter: blur(var(--transparent-blur));
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
   }
 
   // Sheet
   .v-sheet {
-    backdrop-filter: blur(10px);
-    background-color: rgba(var(--v-theme-surface), 0.3);
+    backdrop-filter: blur(var(--transparent-blur));
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
   }
   
   // 页面容器
@@ -74,13 +81,13 @@ html[data-theme="transparent"] {
 
   // 折叠面板
   .v-expansion-panel {
-    backdrop-filter: blur(10px);
-    background-color: rgba(var(--v-theme-surface), 0.3);
+    backdrop-filter: blur(var(--transparent-blur));
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
   }
 
   // 加载占位
   .v-skeleton-loader {
-    background-color: rgba(var(--v-theme-surface), 0.3);
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
   }
 
   // 输入框和搜索框
@@ -91,20 +98,20 @@ html[data-theme="transparent"] {
   // 弹出层内容
   .v-overlay__content {
     border-radius: 12px !important;
-    backdrop-filter: blur(10px) !important;
-
-    .v-list {
-      backdrop-filter: blur(10px);
-      background-color: rgb(var(--v-theme-surface), 0.5) !important;
-    }
+    backdrop-filter: blur(var(--transparent-blur)) !important;
 
     .v-card:not(.bg-primary) {
-      backdrop-filter: blur(10px);
-      background-color: rgb(var(--v-theme-surface), 0.5) !important;
+      backdrop-filter: blur(var(--transparent-blur));
+      background-color: rgba(var(--v-theme-surface), var(--transparent-opacity-heavy)) !important;
+    }
+
+    .v-list {
+      backdrop-filter: blur(var(--transparent-blur));
+      background-color: rgba(var(--v-theme-surface), var(--transparent-opacity-heavy)) !important;
     }
 
     .v-table__wrapper table thead {
-      background-color: rgba(var(--v-theme-surface), 0.3);
+      background-color: rgba(var(--v-theme-surface), var(--transparent-opacity));
     }
   }
 } 

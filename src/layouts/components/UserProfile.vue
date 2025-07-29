@@ -46,6 +46,33 @@ const showLanguageMenu = ref(false)
 // 自定义CSS
 const customCSS = ref('')
 
+// 透明度相关
+const transparencyOpacity = ref(parseFloat(localStorage.getItem('transparency-opacity') || '0.3'))
+const transparencyBlur = ref(parseFloat(localStorage.getItem('transparency-blur') || '10'))
+const transparencyLevel = ref(localStorage.getItem('transparency-level') || 'medium')
+const isTransparentTheme = computed(() => currentThemeName.value === 'transparent')
+const showTransparencyDialog = ref(false)
+
+// 预设值配置
+const transparencyPresets = {
+  low: { opacity: 0.1, blur: 5 },
+  medium: { opacity: 0.3, blur: 10 },
+  high: { opacity: 0.6, blur: 15 },
+}
+
+// 判断当前值是否匹配预设值
+const currentPresetLevel = computed(() => {
+  for (const [level, preset] of Object.entries(transparencyPresets)) {
+    if (
+      Math.abs(transparencyOpacity.value - preset.opacity) < 0.01 &&
+      Math.abs(transparencyBlur.value - preset.blur) < 0.1
+    ) {
+      return level
+    }
+  }
+  return null
+})
+
 // 重启轮询控制标识
 const restartPollingId = ref<number | null>(null)
 const isRestarting = ref(false)
@@ -251,6 +278,11 @@ async function changeTheme(theme: string) {
   // 立即更新主题（不再刷新页面）
   await updateTheme()
 
+  // 如果是透明主题，应用透明度设置
+  if (theme === 'transparent') {
+    applyTransparencySettings()
+  }
+
   // 保存主题到服务端
   try {
     api.post('/user/config/Layout', {
@@ -294,11 +326,78 @@ async function saveCustomCSS() {
   }
 }
 
+// 应用透明度设置
+function applyTransparencySettings() {
+  const root = document.documentElement
+
+  // 设置CSS变量
+  root.style.setProperty('--transparent-opacity', transparencyOpacity.value.toString())
+  root.style.setProperty('--transparent-opacity-light', (transparencyOpacity.value * 0.67).toString())
+  root.style.setProperty('--transparent-opacity-heavy', (transparencyOpacity.value * 1.67).toString())
+  root.style.setProperty('--transparent-blur', `${transparencyBlur.value}px`)
+  root.style.setProperty('--transparent-blur-heavy', `${transparencyBlur.value * 1.6}px`)
+
+  // 保存到本地存储
+  localStorage.setItem('transparency-opacity', transparencyOpacity.value.toString())
+  localStorage.setItem('transparency-blur', transparencyBlur.value.toString())
+}
+
+// 调整透明度预设
+function adjustTransparency(level: string) {
+  transparencyLevel.value = level
+  localStorage.setItem('transparency-level', level)
+
+  // 设置预设值
+  switch (level) {
+    case 'low':
+      transparencyOpacity.value = 0.1
+      transparencyBlur.value = 5
+      break
+    case 'medium':
+      transparencyOpacity.value = 0.3
+      transparencyBlur.value = 10
+      break
+    case 'high':
+      transparencyOpacity.value = 0.6
+      transparencyBlur.value = 15
+      break
+  }
+
+  applyTransparencySettings()
+}
+
+// 透明度变化处理
+function onOpacityChange() {
+  applyTransparencySettings()
+  // 清除预设级别，因为用户手动调整了
+  transparencyLevel.value = ''
+}
+
+// 模糊度变化处理
+function onBlurChange() {
+  applyTransparencySettings()
+  // 清除预设级别，因为用户手动调整了
+  transparencyLevel.value = ''
+}
+
+// 重置透明度设置
+function resetTransparencySettings() {
+  transparencyOpacity.value = 0.3
+  transparencyBlur.value = 10
+  transparencyLevel.value = 'medium'
+  applyTransparencySettings()
+}
+
 // 监听主题变化
 watch(
   () => currentThemeName.value,
   async () => {
     await updateTheme()
+
+    // 如果切换到透明主题，应用透明度设置
+    if (currentThemeName.value === 'transparent') {
+      applyTransparencySettings()
+    }
   },
 )
 
@@ -351,6 +450,11 @@ const getThemeIcon = computed(() => {
 
 onMounted(() => {
   getCustomCSS()
+
+  // 初始化透明度设置
+  if (isTransparentTheme.value) {
+    applyTransparencySettings()
+  }
 })
 
 // 组件卸载时清理轮询
@@ -456,6 +560,20 @@ onUnmounted(() => {
                 </template>
                 <VListItemTitle>{{ t('theme.custom') }}</VListItemTitle>
               </VListItem>
+
+              <!-- 透明度调整 - 仅在透明主题下显示 -->
+              <template v-if="isTransparentTheme">
+                <VDivider class="my-2" />
+                <VListItem @click="showTransparencyDialog = true">
+                  <template #prepend>
+                    <VIcon icon="mdi-opacity" />
+                  </template>
+                  <VListItemTitle>{{ t('theme.transparencyAdjust') }}</VListItemTitle>
+                  <template #append>
+                    <VIcon icon="mdi-chevron-right" size="small" />
+                  </template>
+                </VListItem>
+              </template>
             </VList>
           </VMenu>
 
@@ -549,6 +667,98 @@ onUnmounted(() => {
             <VIcon icon="mdi-content-save" />
           </template>
           {{ t('common.save') }}
+        </VBtn>
+      </VCardText>
+    </VCard>
+  </DialogWrapper>
+
+  <!-- 透明度调整对话框 -->
+  <DialogWrapper v-if="showTransparencyDialog" v-model="showTransparencyDialog" max-width="30rem">
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-opacity" class="me-2" />
+          {{ t('theme.transparencyAdjust') }}
+        </VCardTitle>
+        <VDialogCloseBtn @click="showTransparencyDialog = false" />
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <div class="space-y-6">
+          <!-- 透明度滑动条 -->
+          <div>
+            <div class="d-flex align-center justify-space-between mb-2">
+              <span class="text-body-2">{{ t('theme.transparencyOpacity') }}</span>
+              <span class="text-caption">{{ Math.round(transparencyOpacity * 100) }}%</span>
+            </div>
+            <VSlider
+              v-model="transparencyOpacity"
+              :min="0"
+              :max="1"
+              :step="0.01"
+              color="primary"
+              @update:model-value="onOpacityChange"
+            />
+          </div>
+
+          <!-- 模糊度滑动条 -->
+          <div>
+            <div class="d-flex align-center justify-space-between mb-2">
+              <span class="text-body-2">{{ t('theme.transparencyBlur') }}</span>
+              <span class="text-caption">{{ transparencyBlur }}px</span>
+            </div>
+            <VSlider
+              v-model="transparencyBlur"
+              :min="0"
+              :max="30"
+              :step="1"
+              color="primary"
+              @update:model-value="onBlurChange"
+            />
+          </div>
+
+          <!-- 预设按钮 -->
+          <div>
+            <span class="text-body-2 d-block mb-2">{{ t('common.preset') }}</span>
+            <VBtnGroup density="compact" variant="outlined" class="w-full">
+              <VBtn
+                size="small"
+                :color="currentPresetLevel === 'low' ? 'primary' : undefined"
+                @click="adjustTransparency('low')"
+                class="flex-1"
+              >
+                {{ t('theme.transparencyLow') }}
+              </VBtn>
+              <VBtn
+                size="small"
+                :color="currentPresetLevel === 'medium' ? 'primary' : undefined"
+                @click="adjustTransparency('medium')"
+                class="flex-1"
+              >
+                {{ t('theme.transparencyMedium') }}
+              </VBtn>
+              <VBtn
+                size="small"
+                :color="currentPresetLevel === 'high' ? 'primary' : undefined"
+                @click="adjustTransparency('high')"
+                class="flex-1"
+              >
+                {{ t('theme.transparencyHigh') }}
+              </VBtn>
+            </VBtnGroup>
+          </div>
+        </div>
+      </VCardText>
+      <VDivider />
+      <VCardText class="text-center">
+        <VBtn @click="resetTransparencySettings" variant="outlined" class="me-2">
+          <template #prepend>
+            <VIcon icon="mdi-refresh" />
+          </template>
+          {{ t('theme.transparencyReset') }}
+        </VBtn>
+        <VBtn @click="showTransparencyDialog = false" color="primary">
+          {{ t('common.confirm') }}
         </VBtn>
       </VCardText>
     </VCard>
