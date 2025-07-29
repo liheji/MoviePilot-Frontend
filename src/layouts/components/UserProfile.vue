@@ -335,6 +335,7 @@ function applyTransparencySettings() {
   root.style.setProperty('--transparent-opacity-light', (transparencyOpacity.value * 0.67).toString())
   root.style.setProperty('--transparent-opacity-heavy', (transparencyOpacity.value * 1.67).toString())
   root.style.setProperty('--transparent-blur', `${transparencyBlur.value}px`)
+  root.style.setProperty('--transparent-blur-light', `${transparencyBlur.value * 0.6}px`)
   root.style.setProperty('--transparent-blur-heavy', `${transparencyBlur.value * 1.6}px`)
 
   // 保存到本地存储

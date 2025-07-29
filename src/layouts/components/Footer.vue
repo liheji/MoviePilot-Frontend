@@ -252,6 +252,12 @@ const showDynamicButton = computed(() => {
   pointer-events: auto;
   transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 
+  // 透明主题下的特殊样式
+  .v-theme--transparent & {
+    backdrop-filter: blur(var(--transparent-blur, 10px));
+    background-color: rgba(var(--v-theme-surface), var(--transparent-opacity-heavy, 0.5));
+  }
+
   &.shift-left {
     transform: translateX(0);
   }
