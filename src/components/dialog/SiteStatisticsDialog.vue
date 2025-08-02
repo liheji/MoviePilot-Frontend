@@ -184,7 +184,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <DialogWrapper max-width="50rem" :fullscreen="display.smAndDown.value">
+  <DialogWrapper max-width="50rem" :fullscreen="display.smAndDown.value" scrollable>
     <VCard>
       <!-- 标题栏 -->
       <VCardItem class="py-3">
@@ -293,7 +293,7 @@ onMounted(() => {
     </VCard>
 
     <!-- 详情弹窗 -->
-    <DialogWrapper v-model="detailDialog" :max-width="display.mdAndUp.value ? 600 : '95%'">
+    <DialogWrapper v-model="detailDialog" :max-width="display.mdAndUp.value ? 600 : '95%'" scrollable>
       <VCard v-if="selectedSite">
         <VCardItem class="py-3">
           <template #prepend>
@@ -303,7 +303,7 @@ onMounted(() => {
           <VDialogCloseBtn @click="detailDialog = false" />
         </VCardItem>
         <VDivider />
-        <VCardText class="pa-4">
+        <VCardText>
           <div v-if="getSiteStats(selectedSite.domain)">
             <div class="mb-4">
               <h5 class="text-h6 mb-2">{{ t('site.statistics') }}</h5>
@@ -375,11 +375,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.site-statistics-content {
-  max-block-size: 70vh;
-  overflow-y: auto;
-}
-
 .statistics-overview {
   background: linear-gradient(135deg, var(--v-theme-surface) 0%, var(--v-theme-surface-variant) 100%);
   border-block-end: 1px solid var(--v-border-color);
@@ -470,10 +465,5 @@ onMounted(() => {
 
 .time-record-item {
   transition: all 0.2s ease;
-}
-
-.time-record-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
-  transform: translateY(-1px);
 }
 </style>
