@@ -187,7 +187,7 @@ onMounted(() => {
   <DialogWrapper max-width="50rem" :fullscreen="display.smAndDown.value" scrollable>
     <VCard>
       <!-- 标题栏 -->
-      <VCardItem class="py-3">
+      <VCardItem>
         <VDialogCloseBtn @click="closeDialog" />
         <template #prepend>
           <VIcon icon="mdi-chart-line" class="me-2" />
