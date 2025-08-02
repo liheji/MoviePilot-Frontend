@@ -290,8 +290,8 @@ onBeforeMount(() => {
   <DialogWrapper scrollable eager max-width="80rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem>
-        <VCardTitle
-          >{{ t('dialog.siteUserData.title') }} - {{ props.site?.name }}
+        <VCardTitle>
+          {{ t('dialog.siteUserData.title') }} - {{ props.site?.name }}
           <IconBtn @click.stop="refreshSiteData" color="info"><VIcon icon="mdi-refresh" /></IconBtn>
         </VCardTitle>
         <VDialogCloseBtn @click="emit('close')" />

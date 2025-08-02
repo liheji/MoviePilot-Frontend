@@ -5,6 +5,7 @@ import type { Site, SiteUserData } from '@/api/types'
 import SiteCard from '@/components/cards/SiteCard.vue'
 import NoDataFound from '@/components/NoDataFound.vue'
 import SiteAddEditDialog from '@/components/dialog/SiteAddEditDialog.vue'
+import SiteStatisticsDialog from '@/components/dialog/SiteStatisticsDialog.vue'
 import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
@@ -38,6 +39,9 @@ const loading = ref(false)
 
 // 新增站点对话框
 const siteAddDialog = ref(false)
+
+// 统计信息对话框
+const siteStatsDialog = ref(false)
 
 // 筛选相关
 const filterMenu = ref(false)
@@ -235,44 +239,54 @@ useDynamicButton({
     <!-- 页面标题和筛选按钮 -->
     <div class="d-flex justify-space-between align-center mb-4">
       <VPageContentTitle :title="t('navItems.siteManager')" class="mb-0" />
-      <!-- 筛选按钮 -->
-      <VMenu v-model="filterMenu" offset-y :close-on-content-click="false" location="bottom end">
-        <template #activator="{ props }">
-          <VBtn
-            v-bind="props"
-            :icon="display.smAndDown.value"
-            :variant="filterOption === 'all' ? 'text' : 'tonal'"
-            :color="currentFilter?.color"
-          >
-            <VIcon :icon="currentFilter?.icon || 'mdi-filter'" />
-            <span v-if="!display.smAndDown.value" class="ml-2">
-              {{ currentFilter?.label }}
-            </span>
-            <VIcon v-if="!display.smAndDown.value" icon="mdi-chevron-down" class="ml-1" />
-          </VBtn>
-        </template>
-
-        <!-- 筛选菜单 -->
-        <VCard min-width="200">
-          <VList class="px-2">
-            <VListSubheader>{{ t('common.filter') }}</VListSubheader>
-            <VListItem
-              v-for="option in filterOptions"
-              :key="option.value"
-              :active="filterOption === option.value"
-              @click="selectFilter(option.value)"
+      <!-- 右侧按钮组 -->
+      <div class="d-flex align-center gap-2">
+        <!-- 统计信息按钮 -->
+        <VBtn :icon="display.smAndDown.value" variant="text" color="info" @click="siteStatsDialog = true">
+          <VIcon icon="mdi-chart-line" />
+          <span v-if="!display.smAndDown.value" class="ml-2">
+            {{ t('site.statistics') }}
+          </span>
+        </VBtn>
+        <!-- 筛选按钮 -->
+        <VMenu v-model="filterMenu" offset-y :close-on-content-click="false" location="bottom end">
+          <template #activator="{ props }">
+            <VBtn
+              v-bind="props"
+              :icon="display.smAndDown.value"
+              :variant="filterOption === 'all' ? 'text' : 'tonal'"
+              :color="currentFilter?.color"
             >
-              <template #prepend>
-                <VIcon :icon="option.icon" :color="option.color" />
-              </template>
-              <VListItemTitle>{{ option.label }}</VListItemTitle>
-              <template #append>
-                <VIcon v-if="filterOption === option.value" icon="mdi-check" color="primary" />
-              </template>
-            </VListItem>
-          </VList>
-        </VCard>
-      </VMenu>
+              <VIcon :icon="currentFilter?.icon || 'mdi-filter'" />
+              <span v-if="!display.smAndDown.value" class="ml-2">
+                {{ currentFilter?.label }}
+              </span>
+              <VIcon v-if="!display.smAndDown.value" icon="mdi-chevron-down" class="ml-1" />
+            </VBtn>
+          </template>
+
+          <!-- 筛选菜单 -->
+          <VCard min-width="200">
+            <VList class="px-2">
+              <VListSubheader>{{ t('common.filter') }}</VListSubheader>
+              <VListItem
+                v-for="option in filterOptions"
+                :key="option.value"
+                :active="filterOption === option.value"
+                @click="selectFilter(option.value)"
+              >
+                <template #prepend>
+                  <VIcon :icon="option.icon" :color="option.color" />
+                </template>
+                <VListItemTitle>{{ option.label }}</VListItemTitle>
+                <template #append>
+                  <VIcon v-if="filterOption === option.value" icon="mdi-check" color="primary" />
+                </template>
+              </VListItem>
+            </VList>
+          </VCard>
+        </VMenu>
+      </div>
     </div>
 
     <LoadingBanner v-if="!isRefreshed" class="mt-12" />
@@ -326,4 +340,7 @@ useDynamicButton({
     @save="onSiteSave"
     @close="siteAddDialog = false"
   />
+
+  <!-- 统计信息弹窗 -->
+  <SiteStatisticsDialog v-if="siteStatsDialog" v-model="siteStatsDialog" :sites="siteList" />
 </template>
