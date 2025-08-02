@@ -10,6 +10,7 @@ import api from '@/api'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 import { useDynamicHeaderTab } from '@/composables/useDynamicHeaderTab'
+import { getItemColor, initializeItemColors } from '@/utils/colorUtils'
 
 const display = useDisplay()
 
@@ -44,6 +45,17 @@ const extraDiscoverSources = ref<DiscoverSource[]>([])
 // 排序对话框
 const orderConfigDialog = ref(false)
 
+// 为每个项目生成随机颜色
+const itemColors = ref<{ [key: string]: string }>({})
+
+// 初始化颜色
+function initializeColors() {
+  initializeItemColors(discoverTabs.value, item => item.mediaid_prefix)
+  discoverTabs.value.forEach(item => {
+    itemColors.value[item.mediaid_prefix] = getItemColor(item.mediaid_prefix)
+  })
+}
+
 // 初始化发现标签
 function initDiscoverTabs() {
   const tabs = getDiscoverTabs()
@@ -70,6 +82,10 @@ async function loadExtraDiscoverSources() {
         continue
       }
       discoverTabs.value.push(source)
+      // 为新增的数据源生成颜色
+      if (!itemColors.value[source.mediaid_prefix]) {
+        itemColors.value[source.mediaid_prefix] = getItemColor(source.mediaid_prefix)
+      }
     }
   } catch (error) {
     console.log(error)
@@ -145,6 +161,7 @@ registerHeaderTab({
 
 onBeforeMount(async () => {
   initDiscoverTabs()
+  initializeColors()
   await loadOrderConfig()
   await loadExtraDiscoverSources()
   sortSubscribeOrder()
@@ -225,9 +242,14 @@ onActivated(async () => {
             :component-data="{ 'class': 'settings-grid' }"
           >
             <template #item="{ element }">
-              <VCard variant="text" class="setting-item enabled">
-                <div class="setting-item-inner cursor-move text-center">
+              <VCard
+                variant="text"
+                class="setting-item enabled"
+                :style="{ '--item-color': itemColors[element.mediaid_prefix] }"
+              >
+                <div class="setting-item-inner">
                   <span class="setting-label">{{ element.name }}</span>
+                  <VIcon icon="mdi-drag" class="drag-icon cursor-move" />
                 </div>
               </VCard>
             </template>
@@ -269,8 +291,11 @@ onActivated(async () => {
 }
 
 .setting-label {
+  flex: 1;
   color: rgba(var(--v-theme-on-surface), 0.8);
   font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.2;
   transition: color 0.2s ease;
 }
 
@@ -287,8 +312,7 @@ onActivated(async () => {
 
   &::before {
     position: absolute;
-    background-color: transparent;
-    background-color: rgb(var(--v-theme-primary));
+    background-color: var(--item-color, #4caf50);
     block-size: 100%;
     content: '';
     inline-size: 4px;
@@ -298,16 +322,15 @@ onActivated(async () => {
   }
 
   &:hover {
-    border-color: rgba(var(--v-theme-on-surface), 0.15);
-    background-color: rgba(var(--v-theme-surface-variant), 0.6);
+    transform: translateY(-2px);
   }
 
   &.enabled {
-    border-color: rgba(var(--v-theme-primary), 0.5);
-    background-color: rgba(var(--v-theme-primary), 0.05);
+    border-color: rgba(var(--v-theme-primary), 0.3);
+    background-color: rgba(var(--v-theme-primary), 0.1);
 
     .setting-label {
-      color: rgb(var(--v-theme-primary));
+      color: rgba(var(--v-theme-primary), 0.9);
       font-weight: 500;
     }
   }
@@ -316,9 +339,22 @@ onActivated(async () => {
 .setting-item-inner {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .setting-check {
-  margin-inline-end: 8px;
+  flex-shrink: 0;
+}
+
+.drag-icon {
+  flex-shrink: 0;
+  color: rgba(var(--v-theme-on-surface), 0.5);
+  cursor: move;
+}
+
+@media (width <= 600px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

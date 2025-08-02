@@ -10,6 +10,7 @@ import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 import { VCardActions } from 'vuetify/components'
 import { usePWA } from '@/composables/usePWA'
+import { getItemColor, initializeItemColors } from '@/utils/colorUtils'
 
 // 国际化
 const { t } = useI18n()
@@ -161,6 +162,18 @@ const pluginDashboardRefreshStatus = ref<{ [key: string]: boolean }>({})
 // 弹窗
 const dialog = ref(false)
 
+// 为每个项目生成随机颜色
+const itemColors = ref<{ [key: string]: string }>({})
+
+// 初始化颜色
+function initializeColors() {
+  initializeItemColors(dashboardConfigs.value, item => buildPluginDashboardId(item.id, item.key))
+  dashboardConfigs.value.forEach(item => {
+    const itemId = buildPluginDashboardId(item.id, item.key)
+    itemColors.value[itemId] = getItemColor(itemId)
+  })
+}
+
 // 使用动态按钮钩子
 useDynamicButton({
   icon: 'mdi-view-dashboard-edit',
@@ -286,6 +299,11 @@ async function getPluginDashboard(id: string, key: string) {
           dashboardConfigs.value[index] = res
         } else {
           dashboardConfigs.value.push(res)
+          // 为新增的插件仪表板生成颜色
+          const pluginDashboardId = buildPluginDashboardId(id, key)
+          if (!itemColors.value[pluginDashboardId]) {
+            itemColors.value[pluginDashboardId] = getItemColor(pluginDashboardId)
+          }
           // 排序
           sortDashboardConfigs()
         }
@@ -322,6 +340,7 @@ function dragOrderEnd() {
 
 onBeforeMount(async () => {
   await loadDashboardConfig()
+  initializeColors()
   getPluginDashboardMeta()
 })
 
@@ -390,6 +409,7 @@ onDeactivated(() => {
             :class="{
               'enabled': enableConfig[buildPluginDashboardId(item.id, item.key)],
             }"
+            :style="{ '--item-color': itemColors[buildPluginDashboardId(item.id, item.key)] }"
             @click="
               enableConfig[buildPluginDashboardId(item.id, item.key)] =
                 !enableConfig[buildPluginDashboardId(item.id, item.key)]
@@ -444,8 +464,11 @@ onDeactivated(() => {
 }
 
 .setting-label {
+  flex: 1;
   color: rgba(var(--v-theme-on-surface), 0.8);
   font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.2;
   transition: color 0.2s ease;
 }
 
@@ -462,7 +485,7 @@ onDeactivated(() => {
 
   &::before {
     position: absolute;
-    background-color: transparent;
+    background-color: var(--item-color, #4caf50);
     block-size: 100%;
     content: '';
     inline-size: 4px;
@@ -472,16 +495,15 @@ onDeactivated(() => {
   }
 
   &:hover {
-    border-color: rgba(var(--v-theme-on-surface), 0.15);
-    background-color: rgba(var(--v-theme-surface-variant), 0.6);
+    transform: translateY(-2px);
   }
 
   &.enabled {
-    border-color: rgba(var(--v-theme-primary), 0.5);
-    background-color: rgba(var(--v-theme-primary), 0.05);
+    border-color: rgba(var(--v-theme-primary), 0.3);
+    background-color: rgba(var(--v-theme-primary), 0.1);
 
     .setting-label {
-      color: rgb(var(--v-theme-primary));
+      color: rgba(var(--v-theme-primary), 0.9);
       font-weight: 500;
     }
   }
@@ -490,9 +512,16 @@ onDeactivated(() => {
 .setting-item-inner {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .setting-check {
-  margin-inline-end: 8px;
+  flex-shrink: 0;
+}
+
+@media (width <= 600px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

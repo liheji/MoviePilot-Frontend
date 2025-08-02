@@ -5,6 +5,7 @@ import MediaCardSlideView from '@/views/discover/MediaCardSlideView.vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 import { useDynamicHeaderTab } from '@/composables/useDynamicHeaderTab'
+import { getItemColor, initializeItemColors } from '@/utils/colorUtils'
 
 const display = useDisplay()
 
@@ -114,6 +115,17 @@ const enableConfig = ref<{ [key: string]: boolean }>({
   ...Object.fromEntries(viewList.map(item => [item.title, true])),
 })
 
+// 为每个项目生成随机颜色
+const itemColors = ref<{ [key: string]: string }>({})
+
+// 初始化颜色
+function initializeColors() {
+  initializeItemColors(viewList, item => item.title)
+  viewList.forEach(item => {
+    itemColors.value[item.title] = getItemColor(item.title)
+  })
+}
+
 // 弹窗
 const dialog = ref(false)
 
@@ -127,8 +139,8 @@ async function loadExtraRecommendSources() {
     if (extraRecommendSources.value.length > 0) {
       extraRecommendSources.value.map(source => {
         if (!viewList.some(item => item.apipath === source.api_path)) {
-          const querySeparator = source.api_path.includes('?') ? '&' : '?';
-          const linkUrl = `/browse/${source.api_path}${querySeparator}title=${encodeURIComponent(source.name)}`;
+          const querySeparator = source.api_path.includes('?') ? '&' : '?'
+          const linkUrl = `/browse/${source.api_path}${querySeparator}title=${encodeURIComponent(source.name)}`
           viewList.push({
             apipath: source.api_path,
             linkurl: linkUrl,
@@ -221,10 +233,17 @@ registerHeaderTab({
 
 onBeforeMount(async () => {
   await loadConfig()
+  initializeColors()
 })
 
 onMounted(async () => {
   await loadExtraRecommendSources()
+  // 为新增的数据源也生成颜色
+  extraRecommendSources.value.forEach(source => {
+    if (!itemColors.value[source.name]) {
+      itemColors.value[source.name] = getItemColor(source.name)
+    }
+  })
 })
 
 onActivated(async () => {
@@ -275,8 +294,8 @@ onActivated(async () => {
               class="setting-item"
               :class="{
                 'enabled': enableConfig[item.title],
-                [item.type]: true,
               }"
+              :style="{ '--item-color': itemColors[item.title] }"
               @click="enableConfig[item.title] = !enableConfig[item.title]"
             >
               <div class="setting-item-inner">
@@ -394,7 +413,7 @@ onActivated(async () => {
 
   &::before {
     position: absolute;
-    background-color: transparent;
+    background-color: var(--item-color, #4caf50);
     block-size: 100%;
     content: '';
     inline-size: 4px;
@@ -402,19 +421,6 @@ onActivated(async () => {
     inset-inline-start: 0;
     transition: background-color 0.3s ease;
   }
-
-  &.电影::before {
-    background-color: #4caf50;
-  } // Green
-  &.电视剧::before {
-    background-color: #2196f3;
-  } // Blue
-  &.动漫::before {
-    background-color: #ff9800;
-  } // Orange
-  &.排行榜::before {
-    background-color: #9c27b0;
-  } // Purple
 
   &.enabled {
     border-color: rgba(var(--v-theme-primary), 0.3);
@@ -452,7 +458,7 @@ onActivated(async () => {
 
 @media (width <= 600px) {
   .settings-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>
