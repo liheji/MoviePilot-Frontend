@@ -673,7 +673,7 @@ onMounted(() => {
     </DialogWrapper>
 
     <!-- 筛选弹窗 -->
-    <DialogWrapper v-model="filterMenuOpen" max-width="25rem" max-height="85vh" location="center">
+    <DialogWrapper v-model="filterMenuOpen" max-width="25rem" max-height="85vh" location="center" scrollable>
       <VCard>
         <VCardTitle class="py-3 d-flex align-center">
           <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
