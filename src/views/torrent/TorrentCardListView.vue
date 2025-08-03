@@ -693,7 +693,7 @@ const handleSortIconClick = () => {
   </DialogWrapper>
 
   <!-- 筛选弹窗 -->
-  <DialogWrapper v-model="filterMenuOpen" max-width="25rem" location="center" max-height="85vh">
+  <DialogWrapper v-model="filterMenuOpen" max-width="25rem" location="center" max-height="85vh" scrollable>
     <VCard>
       <VCardTitle class="py-3 d-flex align-center">
         <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
