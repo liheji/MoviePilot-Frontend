@@ -57,7 +57,7 @@ jobs:
           name: ${{ env.frontend_version }}
           draft: false
           prerelease: false
-          make_latest: false
+          make_latest: true
           files: |
             dist.zip
         env:
