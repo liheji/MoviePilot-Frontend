@@ -72,20 +72,18 @@ async function drawImages(imageList: string[]) {
   if (!canvas) return getDefaultImage()
 
   // 画布参数
-  const POSTER_WIDTH = (canvas.width - 32) / 4
-  const POSTER_HEIGHT = canvas.height * 0.75 - 8
-  const MARGIN_WIDTH = 4
-  const MARGIN_HEIGHT = 4
-  const REFLECTION_HEIGHT = POSTER_HEIGHT / 2
-  const REFLECTION_SHOW_HEIGHT = canvas.height / 4
+  const POSTER_WIDTH = (canvas.width - 40) / 4  // 左右边框8px + 3个间隔24px = 40px
+  const POSTER_HEIGHT = 256  // 上方海报高256
+  const MARGIN_WIDTH = 8  // 左右间隔为8
+  const MARGIN_HEIGHT = 4  // 海报和倒影之间的间隔为4
+  const REFLECTION_HEIGHT = canvas.height - POSTER_HEIGHT - MARGIN_HEIGHT  // 下方倒影使用剩余全部高度
 
   // 获取画布上下文
   const ctx = canvas.getContext('2d')
   if (!ctx) return getDefaultImage()
 
-  // 设置背景色为黑色
-  ctx.fillStyle = '#000000'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  // 设置背景色为透明
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
 
   // 绘制图片
   async function drawImageWithReflection(imgSrc: string, index: number) {
@@ -104,12 +102,12 @@ async function drawImages(imageList: string[]) {
     } catch (error) {
       console.error(error)
       ctx.fillStyle = '#e5e7eb'
-      ctx.fillRect(MARGIN_WIDTH * index + POSTER_WIDTH * (index - 1), MARGIN_HEIGHT, POSTER_WIDTH, POSTER_HEIGHT)
+      ctx.fillRect(MARGIN_WIDTH * index + POSTER_WIDTH * (index - 1), 0, POSTER_WIDTH, POSTER_HEIGHT)
       return
     }
 
     const x = MARGIN_WIDTH * index + POSTER_WIDTH * (index - 1)
-    const y = MARGIN_HEIGHT
+    const y = 0  // 海报紧贴顶部
 
     ctx.drawImage(img, x, y, POSTER_WIDTH, POSTER_HEIGHT)
 
@@ -123,17 +121,18 @@ async function drawImages(imageList: string[]) {
       img.width,
       img.height,
       x,
-      REFLECTION_SHOW_HEIGHT - REFLECTION_HEIGHT,
+      0,
       POSTER_WIDTH,
       REFLECTION_HEIGHT,
     )
 
-    const gradient = ctx.createLinearGradient(0, REFLECTION_SHOW_HEIGHT - REFLECTION_HEIGHT, 0, REFLECTION_HEIGHT)
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT))
 
     gradient.addColorStop(0, 'rgba(0, 0, 0, 1)')
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.3)')
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)')
+    ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = gradient
-    ctx.fillRect(x, 0, POSTER_WIDTH, REFLECTION_SHOW_HEIGHT)
+    ctx.fillRect(x, 0, POSTER_WIDTH, REFLECTION_HEIGHT)
 
     ctx.restore()
   }
@@ -166,7 +165,7 @@ onMounted(async () => {
         @click="goPlay"
       >
         <template #image>
-          <canvas ref="canvasRef" class="w-full h-full hidden" />
+          <canvas ref="canvasRef" width="640" height="360" class="w-full h-full hidden" />
           <VImg :src="imgUrl" aspect-ratio="2/3" cover @load="imageLoadHandler" @error="imageErrorHandler">
             <template #placeholder>
               <div class="w-full h-full">
