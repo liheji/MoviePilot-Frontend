@@ -130,7 +130,8 @@ async function drawImages(imageList: string[]) {
     const gradient = ctx.createLinearGradient(0, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT + REFLECTION_HEIGHT), 0, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT))
 
     gradient.addColorStop(0, 'rgba(0, 0, 0, 1)')
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.3)')
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)')
+    ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = gradient
     ctx.fillRect(x, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT + REFLECTION_HEIGHT), POSTER_WIDTH, REFLECTION_HEIGHT)
 
