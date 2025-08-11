@@ -166,7 +166,7 @@ onMounted(async () => {
         @click="goPlay"
       >
         <template #image>
-          <canvas ref="canvasRef" class="w-full h-full hidden" />
+          <canvas ref="canvasRef" width="640" height="360" class="w-full h-full hidden" />
           <VImg :src="imgUrl" aspect-ratio="2/3" cover @load="imageLoadHandler" @error="imageErrorHandler">
             <template #placeholder>
               <div class="w-full h-full">
