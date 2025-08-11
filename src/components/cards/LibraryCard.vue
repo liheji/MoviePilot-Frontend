@@ -83,9 +83,8 @@ async function drawImages(imageList: string[]) {
   const ctx = canvas.getContext('2d')
   if (!ctx) return getDefaultImage()
 
-  // 设置背景色为黑色
-  ctx.fillStyle = '#000000'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  // 设置背景色为透明
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
 
   // 绘制图片
   async function drawImageWithReflection(imgSrc: string, index: number) {
