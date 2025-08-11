@@ -77,7 +77,6 @@ async function drawImages(imageList: string[]) {
   const MARGIN_WIDTH = 8  // 左右间隔为8
   const MARGIN_HEIGHT = 4  // 海报和倒影之间的间隔为4
   const REFLECTION_HEIGHT = canvas.height - POSTER_HEIGHT - MARGIN_HEIGHT  // 下方倒影使用剩余全部高度
-  const REFLECTION_SHOW_HEIGHT = REFLECTION_HEIGHT
 
   // 获取画布上下文
   const ctx = canvas.getContext('2d')
