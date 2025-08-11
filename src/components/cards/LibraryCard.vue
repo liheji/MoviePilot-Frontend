@@ -121,18 +121,18 @@ async function drawImages(imageList: string[]) {
       img.width,
       img.height,
       x,
-      canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT + REFLECTION_HEIGHT),  // 倒影位置在海报下方，考虑画布翻转
+      0,
       POSTER_WIDTH,
       REFLECTION_HEIGHT,
     )
 
-    const gradient = ctx.createLinearGradient(0, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT + REFLECTION_HEIGHT), 0, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT))
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT))
 
     gradient.addColorStop(0, 'rgba(0, 0, 0, 1)')
     gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)')
     ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = gradient
-    ctx.fillRect(x, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT + REFLECTION_HEIGHT), POSTER_WIDTH, REFLECTION_HEIGHT)
+    ctx.fillRect(x, 0, POSTER_WIDTH, REFLECTION_HEIGHT)
 
     ctx.restore()
   }
