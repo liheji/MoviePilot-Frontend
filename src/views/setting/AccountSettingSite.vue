@@ -37,6 +37,8 @@ const siteSetting = ref<any>({
   Site: {
     SITEDATA_REFRESH_INTERVAL: 0,
     SITE_MESSAGE: false,
+    BROWSER_EMULATION: 'playwright',
+    FLARESOLVERR_URL: '',
   },
 })
 
@@ -59,6 +61,12 @@ const SiteDataRefreshIntervalItems = [
   { title: t('setting.site.syncInterval.daily'), value: 24 },
   { title: t('setting.site.syncInterval.weekly'), value: 168 },
   { title: t('setting.site.syncInterval.never'), value: 0 },
+]
+
+// 站点访问仿真方式
+const BrowserEmulationItems = [
+  { title: 'Playwright', value: 'playwright' },
+  { title: 'FlareSolverr', value: 'flaresolverr' },
 ]
 
 // 重置站点
@@ -206,7 +214,7 @@ onMounted(() => {
   </VRow>
   <VRow>
     <VCol cols="12">
-      <VCard :title="t('setting.site.siteDataRefresh')">
+      <VCard :title="t('setting.site.siteOptions')">
         <VCardText>
           <VForm>
             <VRow>
@@ -218,6 +226,28 @@ onMounted(() => {
                   :hint="t('setting.site.siteDataRefreshIntervalHint')"
                   persistent-hint
                   prepend-inner-icon="mdi-refresh"
+                />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <VSelect
+                  v-model="siteSetting.Site.BROWSER_EMULATION"
+                  :items="BrowserEmulationItems"
+                  :label="t('setting.site.browserEmulation')"
+                  :hint="t('setting.site.browserEmulationHint')"
+                  persistent-hint
+                  prepend-inner-icon="mdi-web"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="siteSetting.Site.FLARESOLVERR_URL"
+                  v-show="siteSetting.Site.BROWSER_EMULATION == 'flaresolverr'"
+                  :label="t('setting.site.flaresolverrUrl')"
+                  :placeholder="'http://127.0.0.1:8191'"
+                  :hint="t('setting.site.flaresolverrUrlHint')"
+                  persistent-hint
+                  prepend-inner-icon="mdi-server"
                 />
               </VCol>
             </VRow>
