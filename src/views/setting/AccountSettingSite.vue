@@ -239,10 +239,9 @@ onMounted(() => {
                   prepend-inner-icon="mdi-web"
                 />
               </VCol>
-              <VCol cols="12" md="6">
+              <VCol cols="12" md="6" v-if="siteSetting.Site.BROWSER_EMULATION == 'flaresolverr'">
                 <VTextField
                   v-model="siteSetting.Site.FLARESOLVERR_URL"
-                  v-show="siteSetting.Site.BROWSER_EMULATION == 'flaresolverr'"
                   :label="t('setting.site.flaresolverrUrl')"
                   :placeholder="'http://127.0.0.1:8191'"
                   :hint="t('setting.site.flaresolverrUrlHint')"
