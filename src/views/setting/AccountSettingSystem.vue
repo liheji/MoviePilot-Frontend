@@ -819,7 +819,7 @@ onDeactivated(() => {
                     persistent-hint
                   />
                 </VCol>
-                <VCol v-if="SystemSettings.Basic.DB_TYPE === 'postgresql'" cols="12" md="6">
+                <VCol v-if="SystemSettings.Basic.DB_TYPE === 'sqlite'" cols="12" md="6">
                   <VSwitch
                     v-model="SystemSettings.Advanced.DB_WAL_ENABLE"
                     :label="t('setting.system.dbWalEnable')"
