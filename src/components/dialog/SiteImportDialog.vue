@@ -12,6 +12,9 @@ const { t } = useI18n()
 // 显示器宽度
 const display = useDisplay()
 
+// 提示框
+const $toast = useToast()
+
 // 输入参数
 const props = defineProps({
   modelValue: {
@@ -23,8 +26,7 @@ const props = defineProps({
 // 注册事件
 const emit = defineEmits(['update:modelValue', 'import-success'])
 
-// 提示框
-const $toast = useToast()
+
 
 // 是否拖拽中
 const isDragging = ref(false)

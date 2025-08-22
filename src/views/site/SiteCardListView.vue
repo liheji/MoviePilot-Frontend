@@ -11,9 +11,13 @@ import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 import { usePWA } from '@/composables/usePWA'
+import { useToast } from 'vue-toastification'
 
 // 国际化
 const { t } = useI18n()
+
+// 提示框
+const $toast = useToast()
 
 // 路由
 const route = useRoute()
@@ -260,15 +264,9 @@ async function exportSites() {
     URL.revokeObjectURL(url)
     
     // 显示成功提示
-    const { t } = useI18n()
-    const { useToast } = await import('vue-toastification')
-    const $toast = useToast()
     $toast.success(t('site.messages.exportSuccess'))
   } catch (error) {
     console.error('Export sites failed:', error)
-    const { t } = useI18n()
-    const { useToast } = await import('vue-toastification')
-    const $toast = useToast()
     $toast.error(t('site.messages.exportFailed'))
   }
 }
