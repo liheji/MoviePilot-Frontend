@@ -6,13 +6,18 @@ import SiteCard from '@/components/cards/SiteCard.vue'
 import NoDataFound from '@/components/NoDataFound.vue'
 import SiteAddEditDialog from '@/components/dialog/SiteAddEditDialog.vue'
 import SiteStatisticsDialog from '@/components/dialog/SiteStatisticsDialog.vue'
+import SiteImportDialog from '@/components/dialog/SiteImportDialog.vue'
 import { useDisplay } from 'vuetify'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 import { usePWA } from '@/composables/usePWA'
+import { useToast } from 'vue-toastification'
 
 // 国际化
 const { t } = useI18n()
+
+// 提示框
+const $toast = useToast()
 
 // 路由
 const route = useRoute()
@@ -42,6 +47,9 @@ const siteAddDialog = ref(false)
 
 // 统计信息对话框
 const siteStatsDialog = ref(false)
+
+// 导入站点对话框
+const siteImportDialog = ref(false)
 
 // 筛选相关
 const filterMenu = ref(false)
@@ -212,6 +220,57 @@ function selectFilter(value: string) {
   filterMenu.value = false
 }
 
+// 导出站点数据
+async function exportSites() {
+  try {
+    // 获取所有站点数据
+    const sites = await api.get('site/')
+    
+    // 创建导出数据，只包含必要的字段
+    const exportData = sites.map((site: Site) => ({
+      name: site.name,
+      domain: site.domain,
+      url: site.url,
+      rss: site.rss,
+      downloader: site.downloader,
+      cookie: site.cookie,
+      apikey: site.apikey,
+      token: site.token,
+      ua: site.ua,
+      proxy: site.proxy,
+      filter: site.filter,
+      render: site.render,
+      public: site.public,
+      note: site.note,
+      timeout: site.timeout,
+      limit_interval: site.limit_interval,
+      limit_count: site.limit_count,
+      limit_seconds: site.limit_seconds,
+      is_active: site.is_active,
+      pri: site.pri
+    }))
+    
+    // 创建Blob对象
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+    
+    // 创建下载链接
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `sites_export_${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    
+    // 显示成功提示
+    $toast.success(t('site.messages.exportSuccess'))
+  } catch (error) {
+    console.error('Export sites failed:', error)
+    $toast.error(t('site.messages.exportFailed'))
+  }
+}
+
 // 加载时获取数据
 onBeforeMount(() => {
   fetchData()
@@ -241,6 +300,20 @@ useDynamicButton({
       <VPageContentTitle :title="t('navItems.siteManager')" class="mb-0" />
       <!-- 右侧按钮组 -->
       <div class="d-flex align-center gap-2">
+        <!-- 导入按钮 -->
+        <VBtn :icon="display.smAndDown.value" variant="text" color="success" @click="siteImportDialog = true">
+          <VIcon icon="mdi-upload" />
+          <span v-if="!display.smAndDown.value" class="ml-2">
+            {{ t('site.actions.import') }}
+          </span>
+        </VBtn>
+        <!-- 导出按钮 -->
+        <VBtn :icon="display.smAndDown.value" variant="text" color="primary" @click="exportSites">
+          <VIcon icon="mdi-download" />
+          <span v-if="!display.smAndDown.value" class="ml-2">
+            {{ t('site.actions.export') }}
+          </span>
+        </VBtn>
         <!-- 统计信息按钮 -->
         <VBtn :icon="display.smAndDown.value" variant="text" color="info" @click="siteStatsDialog = true">
           <VIcon icon="mdi-chart-line" />
@@ -343,4 +416,7 @@ useDynamicButton({
 
   <!-- 统计信息弹窗 -->
   <SiteStatisticsDialog v-if="siteStatsDialog" v-model="siteStatsDialog" :sites="siteList" />
+  
+  <!-- 导入站点弹窗 -->
+  <SiteImportDialog v-if="siteImportDialog" v-model="siteImportDialog" @import-success="fetchData" />
 </template>
