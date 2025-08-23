@@ -1033,8 +1033,8 @@ export default {
     actions: {
       add: 'Add Site',
       edit: 'Edit Site',
-      import: 'Batch Import',
-      export: 'Batch Export',
+      import: 'Import',
+      export: 'Export',
       startImport: 'Start Import',
     },
     messages: {
@@ -1047,6 +1047,7 @@ export default {
       importSuccess: 'Successfully imported {count} sites',
       importFailed: 'Failed to import sites',
       importPartialFailed: 'Import completed, {success} successful, {failed} failed',
+      importAllFailed: 'Import failed, all {count} sites failed to import',
       noDataToImport: 'No data to import',
       noValidData: 'No valid data',
       someInvalidData: 'Some data is invalid, valid data: {valid}/{total}',
@@ -1055,9 +1056,17 @@ export default {
       parseFileError: 'Failed to parse file, please check file format',
       previewData: 'Preview data ({count} sites)',
       importing: 'Importing... ({progress}%)',
+      importErrors: 'Import encountered {count} errors',
     },
     errors: {
       loadDownloader: 'Failed to load downloader settings',
+      title: 'Import Error Details',
+      failed: 'Import Failed',
+      details: 'Error Details',
+    },
+    results: {
+      successTitle: 'Successfully Imported Sites',
+      success: 'Import Success',
     },
     testConnectivity: 'Test Connectivity',
     testing: 'Testing ...',

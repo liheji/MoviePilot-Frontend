@@ -1028,8 +1028,8 @@ export default {
     actions: {
       add: '新增站點',
       edit: '編輯站點',
-      import: '批量導入',
-      export: '批量導出',
+      import: '導入',
+      export: '導出',
       startImport: '開始導入',
     },
     messages: {
@@ -1042,6 +1042,7 @@ export default {
       importSuccess: '成功導入 {count} 個站點',
       importFailed: '站點導入失敗',
       importPartialFailed: '導入完成，成功 {success} 個，失敗 {failed} 個',
+      importAllFailed: '導入失敗，{count} 個站點全部導入失敗',
       noDataToImport: '沒有數據可導入',
       noValidData: '沒有有效的數據',
       someInvalidData: '部分數據無效，有效數據 {valid}/{total} 個',
@@ -1050,9 +1051,17 @@ export default {
       parseFileError: '文件解析失敗，請檢查文件格式',
       previewData: '預覽數據 ({count} 個站點)',
       importing: '正在導入... ({progress}%)',
+      importErrors: '導入過程中出現 {count} 個錯誤',
     },
     errors: {
       loadDownloader: '加載下載器設置失敗',
+      title: '導入錯誤詳情',
+      failed: '導入失敗',
+      details: '錯誤詳情',
+    },
+    results: {
+      successTitle: '成功導入的站點',
+      success: '導入成功',
     },
     testConnectivity: '測試連通性',
     testing: '測試中 ...',

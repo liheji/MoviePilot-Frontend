@@ -1029,8 +1029,8 @@ export default {
     actions: {
       add: '新增站点',
       edit: '编辑站点',
-      import: '批量导入',
-      export: '批量导出',
+      import: '导入',
+      export: '导出',
       startImport: '开始导入',
     },
     messages: {
@@ -1043,6 +1043,7 @@ export default {
       importSuccess: '成功导入 {count} 个站点',
       importFailed: '站点导入失败',
       importPartialFailed: '导入完成，成功 {success} 个，失败 {failed} 个',
+      importAllFailed: '导入失败，{count} 个站点全部导入失败',
       noDataToImport: '没有数据可导入',
       noValidData: '没有有效的数据',
       someInvalidData: '部分数据无效，有效数据 {valid}/{total} 个',
@@ -1051,9 +1052,17 @@ export default {
       parseFileError: '文件解析失败，请检查文件格式',
       previewData: '预览数据 ({count} 个站点)',
       importing: '正在导入... ({progress}%)',
+      importErrors: '导入过程中出现 {count} 个错误',
     },
     errors: {
       loadDownloader: '加载下载器设置失败',
+      title: '导入错误详情',
+      failed: '导入失败',
+      details: '错误详情',
+    },
+    results: {
+      successTitle: '成功导入的站点',
+      success: '导入成功',
     },
     testConnectivity: '测试连通性',
     testing: '测试中 ...',

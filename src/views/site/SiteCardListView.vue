@@ -224,8 +224,8 @@ function selectFilter(value: string) {
 async function exportSites() {
   try {
     // 获取所有站点数据
-    const sites = await api.get('site/')
-    
+    const sites: Site[] = await api.get('site/')
+
     // 创建导出数据，只包含必要的字段
     const exportData = sites.map((site: Site) => ({
       name: site.name,
@@ -247,12 +247,12 @@ async function exportSites() {
       limit_count: site.limit_count,
       limit_seconds: site.limit_seconds,
       is_active: site.is_active,
-      pri: site.pri
+      pri: site.pri,
     }))
-    
+
     // 创建Blob对象
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
-    
+
     // 创建下载链接
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -262,7 +262,7 @@ async function exportSites() {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-    
+
     // 显示成功提示
     $toast.success(t('site.messages.exportSuccess'))
   } catch (error) {
@@ -302,14 +302,14 @@ useDynamicButton({
       <div class="d-flex align-center gap-2">
         <!-- 导入按钮 -->
         <VBtn :icon="display.smAndDown.value" variant="text" color="success" @click="siteImportDialog = true">
-          <VIcon icon="mdi-upload" />
+          <VIcon icon="mdi-import" />
           <span v-if="!display.smAndDown.value" class="ml-2">
             {{ t('site.actions.import') }}
           </span>
         </VBtn>
         <!-- 导出按钮 -->
-        <VBtn :icon="display.smAndDown.value" variant="text" color="primary" @click="exportSites">
-          <VIcon icon="mdi-download" />
+        <VBtn :icon="display.smAndDown.value" variant="text" color="warning" @click="exportSites">
+          <VIcon icon="mdi-export" />
           <span v-if="!display.smAndDown.value" class="ml-2">
             {{ t('site.actions.export') }}
           </span>
@@ -416,7 +416,7 @@ useDynamicButton({
 
   <!-- 统计信息弹窗 -->
   <SiteStatisticsDialog v-if="siteStatsDialog" v-model="siteStatsDialog" :sites="siteList" />
-  
+
   <!-- 导入站点弹窗 -->
   <SiteImportDialog v-if="siteImportDialog" v-model="siteImportDialog" @import-success="fetchData" />
 </template>
