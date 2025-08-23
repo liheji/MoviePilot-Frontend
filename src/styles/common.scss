@@ -4,6 +4,16 @@
 @tailwind utilities;
 
 
+@supports (-webkit-touch-callout: none) {
+  html.v-overlay-scroll-blocked {
+    position: inherit;
+  }
+}
+
+body {
+  overscroll-behavior: none;
+}
+
 @mixin hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
