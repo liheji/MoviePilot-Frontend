@@ -3,7 +3,7 @@ import api from '@/api'
 import type { Site, Plugin, Subscribe } from '@/api/types'
 import { getNavMenus, getSettingTabs } from '@/router/i18n-menu'
 import { NavMenu } from '@/@layouts/types'
-import { useUserStore } from '@/stores'
+import { useUserStore, useGlobalSettingsStore } from '@/stores'
 import SearchSiteDialog from '@/components/dialog/SearchSiteDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
@@ -25,6 +25,10 @@ const router = useRouter()
 
 // 用户 Store
 const userStore = useUserStore()
+
+// 全局设置 Store
+const globalSettingsStore = useGlobalSettingsStore()
+const globalSettings = globalSettingsStore.globalSettings
 
 // 超级用户
 const superUser = userStore.superUser
@@ -61,6 +65,11 @@ const hasManagePermission = computed(() => {
     },
     'manage',
   )
+})
+
+// 是否显示合集搜索项（当SEARCH_SOURCE包含themoviedb时显示）
+const showCollectionSearch = computed(() => {
+  return globalSettings.SEARCH_SOURCE?.includes('themoviedb') || false
 })
 
 // 所有订阅数据
@@ -435,7 +444,7 @@ onMounted(() => {
             </template>
           </VHover>
 
-          <VHover>
+          <VHover v-if="showCollectionSearch">
             <template #default="hover">
               <VListItem
                 density="comfortable"
