@@ -9,6 +9,8 @@ import { useUserStore } from '@/stores'
 import { useDynamicButton } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
 import { usePWA } from '@/composables/usePWA'
+import { useToast } from 'vue-toastification'
+import { useConfirm } from '@/composables/useConfirm'
 
 // 国际化
 const { t } = useI18n()
@@ -21,6 +23,12 @@ const { appMode } = usePWA()
 
 // 用户 Store
 const userStore = useUserStore()
+
+// 提示框
+const $toast = useToast()
+
+// 确认框
+const createConfirm = useConfirm()
 
 // 从 Store 中获取用户信息
 const superUser = userStore.superUser
@@ -51,6 +59,10 @@ const orderConfig = ref<{ id: number }[]>([])
 
 // 显示的订阅列表
 const displayList = ref<Subscribe[]>([])
+
+// 批量管理相关状态
+const isBatchMode = ref(false)
+const selectedSubscribes = ref<number[]>([])
 
 // 根据订阅数据判断订阅状态
 function getSubscribeStatus(subscribe: Subscribe) {
@@ -173,6 +185,160 @@ function historyDone() {
   fetchData()
 }
 
+// 批量管理相关函数
+// 切换批量模式
+function toggleBatchMode() {
+  isBatchMode.value = !isBatchMode.value
+  if (!isBatchMode.value) {
+    selectedSubscribes.value = []
+  }
+}
+
+// 全选/取消全选
+function toggleSelectAll() {
+  if (selectedSubscribes.value.length === displayList.value.length) {
+    selectedSubscribes.value = []
+  } else {
+    selectedSubscribes.value = displayList.value.map(item => item.id)
+  }
+}
+
+// 选择单个订阅
+function toggleSelectSubscribe(id: number) {
+  const index = selectedSubscribes.value.indexOf(id)
+  if (index > -1) {
+    selectedSubscribes.value.splice(index, 1)
+  } else {
+    selectedSubscribes.value.push(id)
+  }
+}
+
+// 批量删除订阅
+async function batchDeleteSubscribes() {
+  if (selectedSubscribes.value.length === 0) {
+    $toast.warning(t('subscribe.noSelectedItems'))
+    return
+  }
+
+  const isConfirmed = await createConfirm({
+    title: t('common.confirm'),
+    content: t('subscribe.batchDeleteConfirm', { count: selectedSubscribes.value.length }),
+  })
+
+  if (!isConfirmed) return
+
+  try {
+    loading.value = true
+    const promises = selectedSubscribes.value.map(id => api.delete(`subscribe/${id}`))
+    const results = await Promise.allSettled(promises)
+
+    const successCount = results.filter(result => result.status === 'fulfilled').length
+    const failedCount = results.length - successCount
+
+    if (successCount > 0) {
+      $toast.success(t('subscribe.batchDeleteSuccess', { count: successCount }))
+    }
+    if (failedCount > 0) {
+      $toast.error(t('subscribe.batchDeleteFailed', { count: failedCount }))
+    }
+
+    // 刷新数据
+    await fetchData()
+    // 退出批量模式
+    isBatchMode.value = false
+    selectedSubscribes.value = []
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('subscribe.batchDeleteError'))
+  } finally {
+    loading.value = false
+  }
+}
+
+// 批量启用订阅
+async function batchEnableSubscribes() {
+  if (selectedSubscribes.value.length === 0) {
+    $toast.warning(t('subscribe.noSelectedItems'))
+    return
+  }
+
+  const isConfirmed = await createConfirm({
+    title: t('common.confirm'),
+    content: t('subscribe.batchEnableConfirm', { count: selectedSubscribes.value.length }),
+  })
+
+  if (!isConfirmed) return
+
+  try {
+    loading.value = true
+    const promises = selectedSubscribes.value.map(id => api.put(`subscribe/status/${id}?state=R`))
+    const results = await Promise.allSettled(promises)
+
+    const successCount = results.filter(result => result.status === 'fulfilled').length
+    const failedCount = results.length - successCount
+
+    if (successCount > 0) {
+      $toast.success(t('subscribe.batchEnableSuccess', { count: successCount }))
+    }
+    if (failedCount > 0) {
+      $toast.error(t('subscribe.batchEnableFailed', { count: failedCount }))
+    }
+
+    // 刷新数据
+    await fetchData()
+    // 退出批量模式
+    isBatchMode.value = false
+    selectedSubscribes.value = []
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('subscribe.batchEnableError'))
+  } finally {
+    loading.value = false
+  }
+}
+
+// 批量暂停订阅
+async function batchPauseSubscribes() {
+  if (selectedSubscribes.value.length === 0) {
+    $toast.warning(t('subscribe.noSelectedItems'))
+    return
+  }
+
+  const isConfirmed = await createConfirm({
+    title: t('common.confirm'),
+    content: t('subscribe.batchPauseConfirm', { count: selectedSubscribes.value.length }),
+  })
+
+  if (!isConfirmed) return
+
+  try {
+    loading.value = true
+    const promises = selectedSubscribes.value.map(id => api.put(`subscribe/status/${id}?state=S`))
+    const results = await Promise.allSettled(promises)
+
+    const successCount = results.filter(result => result.status === 'fulfilled').length
+    const failedCount = results.length - successCount
+
+    if (successCount > 0) {
+      $toast.success(t('subscribe.batchPauseSuccess', { count: successCount }))
+    }
+    if (failedCount > 0) {
+      $toast.error(t('subscribe.batchPauseFailed', { count: failedCount }))
+    }
+
+    // 刷新数据
+    await fetchData()
+    // 退出批量模式
+    isBatchMode.value = false
+    selectedSubscribes.value = []
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('subscribe.batchPauseError'))
+  } finally {
+    loading.value = false
+  }
+}
+
 // 错误描述
 const errorDescription = computed(() => {
   if ((props.statusFilter && props.statusFilter !== 'all') || props.keyword) {
@@ -199,6 +365,14 @@ onMounted(async () => {
       sub.page_open = true
     }
   }
+
+  // 监听批量管理模式切换事件
+  window.addEventListener('toggle-batch-mode', toggleBatchMode)
+})
+
+onUnmounted(() => {
+  // 移除事件监听器
+  window.removeEventListener('toggle-batch-mode', toggleBatchMode)
 })
 
 onActivated(async () => {
@@ -218,6 +392,63 @@ useDynamicButton({
 
 <template>
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
+
+  <!-- 批量管理工具栏 -->
+  <div v-if="isBatchMode" class="mb-4 px-2">
+    <VCard class="pa-4">
+      <div class="d-flex align-center justify-space-between">
+        <div class="d-flex align-center">
+          <VCheckbox
+            :model-value="selectedSubscribes.length === displayList.length"
+            :indeterminate="selectedSubscribes.length > 0 && selectedSubscribes.length < displayList.length"
+            @update:model-value="toggleSelectAll"
+            hide-details
+            class="me-4"
+          />
+          <span class="text-body-1 font-weight-medium">
+            {{ t('subscribe.selectedCount', { count: selectedSubscribes.length, total: displayList.length }) }}
+          </span>
+        </div>
+        <div class="d-flex gap-2">
+          <VBtn
+            color="success"
+            variant="outlined"
+            size="small"
+            :disabled="selectedSubscribes.length === 0"
+            @click="batchEnableSubscribes"
+          >
+            <VIcon icon="mdi-play" class="me-sm-1" />
+            <span class="d-none d-sm-inline">{{ t('subscribe.batchEnable') }}</span>
+          </VBtn>
+          <VBtn
+            color="info"
+            variant="outlined"
+            size="small"
+            :disabled="selectedSubscribes.length === 0"
+            @click="batchPauseSubscribes"
+          >
+            <VIcon icon="mdi-pause" class="me-sm-1" />
+            <span class="d-none d-sm-inline">{{ t('subscribe.batchPause') }}</span>
+          </VBtn>
+          <VBtn
+            color="error"
+            variant="outlined"
+            size="small"
+            :disabled="selectedSubscribes.length === 0"
+            @click="batchDeleteSubscribes"
+          >
+            <VIcon icon="mdi-delete" class="me-sm-1" />
+            <span class="d-none d-sm-inline">{{ t('subscribe.batchDelete') }}</span>
+          </VBtn>
+          <VBtn color="secondary" variant="outlined" size="small" @click="toggleBatchMode">
+            <VIcon icon="mdi-close" class="me-sm-1" />
+            <span class="d-none d-sm-inline">{{ t('common.cancel') }}</span>
+          </VBtn>
+        </div>
+      </div>
+    </VCard>
+  </div>
+
   <draggable
     v-if="displayList.length > 0"
     v-model="displayList"
@@ -226,10 +457,18 @@ useDynamicButton({
     item-key="id"
     tag="div"
     :component-data="{ class: 'grid gap-4 grid-subscribe-card px-2' }"
-    :disabled="props.keyword || (props.statusFilter && props.statusFilter !== 'all')"
+    :disabled="props.keyword || (props.statusFilter && props.statusFilter !== 'all') || isBatchMode"
   >
     <template #item="{ element }">
-      <SubscribeCard :key="element.id" :media="element" @remove="fetchData" @save="fetchData" />
+      <SubscribeCard
+        :key="element.id"
+        :media="element"
+        :batch-mode="isBatchMode"
+        :selected="selectedSubscribes.includes(element.id)"
+        @remove="fetchData"
+        @save="fetchData"
+        @select="toggleSelectSubscribe(element.id)"
+      />
     </template>
   </draggable>
   <NoDataFound

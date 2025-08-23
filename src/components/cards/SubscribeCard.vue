@@ -21,6 +21,14 @@ const { t } = useI18n()
 // 输入参数
 const props = defineProps({
   media: Object as PropType<Subscribe>,
+  batchMode: {
+    type: Boolean,
+    default: false,
+  },
+  selected: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 // 从 provide 中获取全局设置
@@ -29,7 +37,7 @@ const globalSettingsStore = useGlobalSettingsStore()
 const globalSettings = globalSettingsStore.globalSettings
 
 // 定义触发的自定义事件
-const emit = defineEmits(['remove', 'save'])
+const emit = defineEmits(['remove', 'save', 'select'])
 
 // 确认框
 const createConfirm = useConfirm()
@@ -297,6 +305,17 @@ function onSubscribeEditRemove() {
   subscribeEditDialog.value = false
   emit('remove')
 }
+
+// 处理卡片点击事件
+function handleCardClick() {
+  if (props.batchMode) {
+    // 批量模式下触发选择事件
+    emit('select')
+  } else {
+    // 非批量模式下打开编辑弹窗
+    editSubscribeDialog()
+  }
+}
 </script>
 
 <template>
@@ -308,6 +327,7 @@ function onSubscribeEditRemove() {
           :class="{
             'transition transform-cpu duration-300 -translate-y-1': hover.isHovering,
             'outline-dashed outline-1': props.media?.best_version && imageLoaded,
+            'outline-dotted outline-pink-500 outline-2': props.batchMode && props.selected,
           }"
         >
           <VCard
@@ -319,8 +339,8 @@ function onSubscribeEditRemove() {
             }"
             rounded="0"
             min-height="150"
-            @click="editSubscribeDialog"
-            :ripple="false"
+            @click="handleCardClick"
+            :ripple="!props.batchMode"
           >
             <div class="me-n3 absolute top-1 right-4">
               <IconBtn>

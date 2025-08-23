@@ -114,6 +114,18 @@ registerHeaderTab({
       show: computed(() => activeTab.value === 'mysub'),
     },
     {
+      icon: 'mdi-checkbox-multiple-marked-outline',
+      variant: 'text',
+      color: 'gray',
+      class: 'settings-icon-button',
+      action: () => {
+        // 触发批量管理模式
+        const event = new CustomEvent('toggle-batch-mode')
+        window.dispatchEvent(event)
+      },
+      show: computed(() => activeTab.value === 'mysub'),
+    },
+    {
       icon: 'mdi-chart-line',
       variant: 'text',
       color: 'gray',
