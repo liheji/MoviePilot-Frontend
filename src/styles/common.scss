@@ -15,6 +15,27 @@ body {
   overscroll-behavior: none;
 }
 
+// 防止弹窗滚动穿透
+.v-dialog {
+  .v-overlay__content {
+    overscroll-behavior: contain;
+  }
+  
+  .v-card {
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+  
+  .v-card-text {
+    overscroll-behavior: contain;
+  }
+}
+
+// 防止滚动穿透的通用样式
+.v-overlay--active {
+  overscroll-behavior: contain;
+}
+
 @mixin hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
