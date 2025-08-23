@@ -46,10 +46,10 @@ $header: ".layout-navbar";
       }
 
       /* ℹ️ Ensure header styles are preserved when dialog is opened,
-        regardless of scroll state
+        but only if window was scrolled before dialog opened
     */
       html.v-overlay-scroll-blocked &.window-scrolled.layout-navbar-fixed,
-      html.dialog-scroll-locked &.layout-navbar-fixed {
+      html.dialog-scroll-locked &.window-scrolled.layout-navbar-fixed {
 
         #{$header} {
           padding-inline: 1rem;

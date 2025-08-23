@@ -17,10 +17,35 @@ export default defineComponent({
     syncRef(isOverlayNavActive, isLayoutOverlayVisible)
 
     const scrollDistance = ref(window.scrollY)
+    const isDialogOpen = ref(false)
+    const wasScrolledBeforeDialog = ref(false)
+
+    // 监听弹窗状态变化
+    const checkDialogState = () => {
+      const wasDialogOpen = isDialogOpen.value
+      isDialogOpen.value =
+        document.documentElement.classList.contains('dialog-scroll-locked') ||
+        document.documentElement.classList.contains('v-overlay-scroll-blocked')
+
+      // 当弹窗刚打开时，记录当前的滚动状态
+      if (!wasDialogOpen && isDialogOpen.value) {
+        wasScrolledBeforeDialog.value = scrollDistance.value > 0
+      }
+    }
 
     onMounted(() => {
       window.addEventListener('scroll', () => {
         scrollDistance.value = window.scrollY
+      })
+
+      // 初始检查弹窗状态
+      checkDialogState()
+
+      // 监听 DOM 变化以检测弹窗状态
+      const observer = new MutationObserver(checkDialogState)
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
       })
     })
 
@@ -88,9 +113,6 @@ export default defineComponent({
         },
       })
 
-      // 检查是否有弹窗打开（通过CSS类名判断）
-      const isDialogOpen = document.documentElement.classList.contains('dialog-scroll-locked')
-
       return h(
         'div',
         {
@@ -99,7 +121,7 @@ export default defineComponent({
             'layout-navbar-fixed',
             mdAndDown.value && 'layout-overlay-nav',
             route.meta.layoutWrapperClasses,
-            (scrollDistance.value || isDialogOpen) && 'window-scrolled',
+            (scrollDistance.value > 0 || (isDialogOpen.value && wasScrolledBeforeDialog.value)) && 'window-scrolled',
           ],
         },
         [verticalNav, h('div', { class: 'layout-content-wrapper' }, [navbar, main, footer]), layoutOverlay],
