@@ -205,7 +205,7 @@ const progressSSE = useProgressSSE(
   `${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`,
   handleProgressMessage,
   'reorganize-progress',
-  progressActive
+  progressActive,
 )
 
 // 使用SSE监听加载进度
@@ -269,7 +269,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DialogWrapper scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="45rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem class="py-2">
         <template #prepend> <VIcon icon="mdi-folder-move" class="me-2" /> </template>
@@ -487,7 +487,7 @@ onUnmounted(() => {
     <!-- 手动整理进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" :value="progressValue" />
     <!-- TMDB ID搜索框 -->
-    <DialogWrapper v-model="mediaSelectorDialog" width="40rem" scrollable max-height="85vh">
+    <VDialog v-model="mediaSelectorDialog" width="40rem" scrollable max-height="85vh">
       <MediaIdSelector
         v-if="mediaSource === 'themoviedb'"
         v-model="transferForm.tmdbid"
@@ -500,6 +500,6 @@ onUnmounted(() => {
         @close="mediaSelectorDialog = false"
         :type="mediaSource"
       />
-    </DialogWrapper>
-  </DialogWrapper>
+    </VDialog>
+  </VDialog>
 </template>

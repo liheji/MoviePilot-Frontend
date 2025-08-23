@@ -63,7 +63,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <DialogWrapper width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
+  <VDialog width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -89,5 +89,5 @@ onMounted(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

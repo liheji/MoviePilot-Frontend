@@ -733,7 +733,7 @@ onDeactivated(() => {
   </VRow>
 
   <!-- 高级系统设置 -->
-  <DialogWrapper
+  <VDialog
     v-if="advancedDialog"
     v-model="advancedDialog"
     scrollable
@@ -1329,5 +1329,5 @@ onDeactivated(() => {
         </VForm>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

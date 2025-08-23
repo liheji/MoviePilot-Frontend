@@ -50,7 +50,7 @@ async function saveSmbConfig() {
 </script>
 
 <template>
-  <DialogWrapper width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
+  <VDialog width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VDialogCloseBtn @click="emit('close')" />
       <VCardItem>
@@ -127,5 +127,5 @@ async function saveSmbConfig() {
         </VBtn>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

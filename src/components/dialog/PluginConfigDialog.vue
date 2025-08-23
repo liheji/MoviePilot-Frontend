@@ -148,7 +148,7 @@ onBeforeMount(async () => {
 })
 </script>
 <template>
-  <DialogWrapper scrollable max-width="60rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="60rem" :fullscreen="!display.mdAndUp.value">
     <!-- Vuetify 渲染模式 -->
     <VCard v-if="renderMode === 'vuetify'" :title="`${props.plugin?.plugin_name} - ${t('dialog.pluginConfig.title')}`">
       <VDialogCloseBtn @click="emit('close')" />
@@ -187,5 +187,5 @@ onBeforeMount(async () => {
 
     <!-- 进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
-  </DialogWrapper>
+  </VDialog>
 </template>

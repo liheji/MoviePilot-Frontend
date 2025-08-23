@@ -350,7 +350,7 @@ const dropdownItems = ref([
     </VHover>
 
     <!-- 重命名对话框 -->
-    <DialogWrapper v-if="renameDialog" v-model="renameDialog" max-width="400">
+    <VDialog v-if="renameDialog" v-model="renameDialog" max-width="400">
       <VCard>
         <VCardItem>
           <template #prepend>
@@ -374,10 +374,10 @@ const dropdownItems = ref([
           <VBtn color="primary" prepend-icon="mdi-check" class="px-5" @click="confirmRename">确认</VBtn>
         </VCardActions>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
 
     <!-- 设置对话框 -->
-    <DialogWrapper
+    <VDialog
       v-if="settingDialog"
       v-model="settingDialog"
       max-width="600"
@@ -480,7 +480,7 @@ const dropdownItems = ref([
           <VBtn color="primary" prepend-icon="mdi-content-save" class="px-5" @click="saveSettings">保存</VBtn>
         </VCardActions>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
   </div>
 </template>
 

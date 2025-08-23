@@ -71,7 +71,7 @@ async function updateSiteCookie() {
 }
 </script>
 <template>
-  <DialogWrapper max-width="30rem" scrollable>
+  <VDialog max-width="30rem" scrollable>
     <!-- Dialog Content -->
     <VCard :title="t('dialog.siteCookieUpdate.title')">
       <VDialogCloseBtn @click="emit('close')" />
@@ -114,5 +114,5 @@ async function updateSiteCookie() {
     </VCard>
     <!-- 进度框 -->
     <ProgressDialog v-if="progressDialog" v-model="progressDialog" :text="progressText" />
-  </DialogWrapper>
+  </VDialog>
 </template>

@@ -156,7 +156,7 @@ async function doDelete() {
 }
 </script>
 <template>
-  <DialogWrapper max-width="40rem" scrollable>
+  <VDialog max-width="40rem" scrollable>
     <VCard>
       <VCardText>
         <VCol>
@@ -266,7 +266,7 @@ async function doDelete() {
       </VCardText>
       <VDialogCloseBtn @click="emit('close')" />
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>
 
 <style lang="scss">

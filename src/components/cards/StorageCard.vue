@@ -220,7 +220,7 @@ function onClose() {
       @close="smbConfigDialog = false"
       @done="handleDone"
     />
-    <DialogWrapper
+    <VDialog
       v-if="customConfigDialog"
       v-model="customConfigDialog"
       scrollable
@@ -263,6 +263,6 @@ function onClose() {
           </VBtn>
         </VCardActions>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
   </div>
 </template>

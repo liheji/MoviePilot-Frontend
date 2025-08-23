@@ -24,7 +24,7 @@ function handleImport() {
 </script>
 
 <template>
-  <DialogWrapper width="40rem" scrollable max-height="85vh">
+  <VDialog width="40rem" scrollable max-height="85vh">
     <VCard>
       <VCardItem>
         <template #prepend>
@@ -43,5 +43,5 @@ function handleImport() {
         </VBtn>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

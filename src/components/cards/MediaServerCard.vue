@@ -204,7 +204,7 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <DialogWrapper
+    <VDialog
       v-if="mediaServerInfoDialog"
       v-model="mediaServerInfoDialog"
       scrollable
@@ -506,6 +506,6 @@ onMounted(() => {
           </VBtn>
         </VCardActions>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
   </div>
 </template>

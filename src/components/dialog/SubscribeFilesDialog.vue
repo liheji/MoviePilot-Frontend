@@ -85,7 +85,7 @@ onBeforeMount(() => {
 })
 </script>
 <template>
-  <DialogWrapper scrollable max-width="80rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="80rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem class="my-2">
         <VDialogCloseBtn @click="emit('close')" />
@@ -206,7 +206,7 @@ onBeforeMount(() => {
         </div>
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>
 
 <style lang="scss" scoped>

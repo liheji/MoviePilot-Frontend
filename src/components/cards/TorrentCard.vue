@@ -278,7 +278,7 @@ onMounted(() => {
     </VCard>
 
     <!-- 更多来源对话框 -->
-    <DialogWrapper v-model="showMoreTorrents" max-width="25rem" location="center">
+    <VDialog v-model="showMoreTorrents" max-width="25rem" location="center">
       <VCard>
         <VCardTitle class="py-3 d-flex align-center">
           <span>其他来源</span>
@@ -361,7 +361,7 @@ onMounted(() => {
           </VList>
         </VCardText>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
 
     <AddDownloadDialog
       v-if="addDownloadDialog"
@@ -418,7 +418,7 @@ onMounted(() => {
 }
 
 .chip-web-source {
-  background-color: #8000FF;
+  background-color: #8000ff;
   color: white;
 }
 

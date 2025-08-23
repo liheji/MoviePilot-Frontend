@@ -215,10 +215,7 @@ const defaultColor = '#2196F3'
 // 计算过滤表单是否全部为空
 const isFilterFormEmpty = computed(() => {
   return (
-    !filterForm.name &&
-    filterForm.author.length === 0 &&
-    filterForm.label.length === 0 &&
-    filterForm.repo.length === 0
+    !filterForm.name && filterForm.author.length === 0 && filterForm.label.length === 0 && filterForm.repo.length === 0
   )
 })
 
@@ -1552,7 +1549,7 @@ function onDragStartPlugin(evt: any) {
   />
 
   <!-- 插件搜索窗口 -->
-  <DialogWrapper
+  <VDialog
     v-if="SearchDialog"
     v-model="SearchDialog"
     scrollable
@@ -1611,20 +1608,20 @@ function onDragStartPlugin(evt: any) {
         </VVirtualScroll>
       </VList>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 
   <!-- 安装插件进度框 -->
-  <DialogWrapper v-if="progressDialog" v-model="progressDialog" :scrim="false" width="25rem">
+  <VDialog v-if="progressDialog" v-model="progressDialog" :scrim="false" width="25rem">
     <VCard color="primary">
       <VCardText class="text-center">
         {{ progressText }}
         <VProgressLinear indeterminate color="white" class="mb-0 mt-1" />
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 
   <!-- 新建文件夹对话框 -->
-  <DialogWrapper v-if="newFolderDialog" v-model="newFolderDialog" max-width="400">
+  <VDialog v-if="newFolderDialog" v-model="newFolderDialog" max-width="400">
     <VCard>
       <VDialogCloseBtn @click="newFolderDialog = false" />
       <VCardItem>
@@ -1646,5 +1643,5 @@ function onDragStartPlugin(evt: any) {
         }}</VBtn>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

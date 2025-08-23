@@ -216,7 +216,7 @@ onActivated(async () => {
       </VWindowItem>
     </VWindow>
     <!-- 弹窗，根据配置生成选项 -->
-    <DialogWrapper
+    <VDialog
       v-if="orderConfigDialog"
       v-model="orderConfigDialog"
       max-width="35rem"
@@ -265,7 +265,7 @@ onActivated(async () => {
           </VBtn>
         </VCardActions>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
     <!-- 快速滚动到顶部按钮 -->
     <Teleport to="body" v-if="route.path === '/discover'">
       <VScrollToTopBtn />

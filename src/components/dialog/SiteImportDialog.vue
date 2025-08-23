@@ -222,7 +222,7 @@ watch(selectedFile, async newFile => {
 </script>
 
 <template>
-  <DialogWrapper scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem class="py-2">
         <template #prepend>
@@ -383,7 +383,7 @@ watch(selectedFile, async newFile => {
         </div>
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>
 
 <style scoped>

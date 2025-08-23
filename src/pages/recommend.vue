@@ -269,13 +269,7 @@ onActivated(async () => {
     </div>
 
     <!-- 设置面板 -->
-    <DialogWrapper
-      v-model="dialog"
-      width="35rem"
-      class="settings-dialog"
-      scrollable
-      :fullscreen="!display.mdAndUp.value"
-    >
+    <VDialog v-model="dialog" width="35rem" class="settings-dialog" scrollable :fullscreen="!display.mdAndUp.value">
       <VCard class="settings-card">
         <VCardItem class="settings-card-header">
           <VCardTitle>
@@ -327,7 +321,7 @@ onActivated(async () => {
           </VBtn>
         </VCardActions>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
 
     <!-- 快速滚动到顶部按钮 -->
     <Teleport to="body" v-if="route.path === '/recommend'">

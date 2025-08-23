@@ -154,7 +154,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DialogWrapper scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
     <VCard class="mx-auto" width="100%">
       <VCardItem>
         <VCardTitle>{{ t('dialog.transferQueue.title') }}</VCardTitle>
@@ -203,5 +203,5 @@ onUnmounted(() => {
         </VWindow>
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

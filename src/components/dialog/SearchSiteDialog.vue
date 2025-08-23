@@ -56,7 +56,7 @@ const filteredSites = computed(() => {
 </script>
 <template>
   <!-- Site Selection Dialog -->
-  <DialogWrapper max-width="40rem" fullscreen-mobile>
+  <VDialog max-width="40rem" fullscreen-mobile>
     <VCard class="site-dialog">
       <VCardItem>
         <template #prepend>
@@ -169,7 +169,7 @@ const filteredSites = computed(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>
 <style scoped>
 .site-checkbox-wrapper {

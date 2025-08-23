@@ -147,7 +147,7 @@ const { stop: stopRefresh } = useConditionalDataRefresh(
   loadDownloaderInfo,
   shouldRefresh, // 响应式条件：只有当allowRefresh为true且downloader启用时才运行
   3000, // 3秒间隔
-  true // 立即执行一次
+  true, // 立即执行一次
 )
 
 onUnmounted(() => {
@@ -196,7 +196,7 @@ onUnmounted(() => {
       </VCard>
     </VHover>
 
-    <DialogWrapper
+    <VDialog
       v-if="downloaderInfoDialog"
       v-model="downloaderInfoDialog"
       scrollable
@@ -383,6 +383,6 @@ onUnmounted(() => {
           </VBtn>
         </VCardActions>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
   </div>
 </template>

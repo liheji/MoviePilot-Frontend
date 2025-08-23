@@ -182,7 +182,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <DialogWrapper scrollable :close-on-back="false" eager max-width="30rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable :close-on-back="false" eager max-width="30rem" :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem>
         <template #prepend>
@@ -269,5 +269,5 @@ onMounted(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

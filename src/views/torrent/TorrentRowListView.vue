@@ -597,7 +597,7 @@ onMounted(() => {
     </VCard>
 
     <!-- 全部筛选弹窗 -->
-    <DialogWrapper
+    <VDialog
       v-model="allFilterMenuOpen"
       max-width="50rem"
       location="center"
@@ -670,10 +670,10 @@ onMounted(() => {
           </div>
         </VCardText>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
 
     <!-- 筛选弹窗 -->
-    <DialogWrapper v-model="filterMenuOpen" max-width="25rem" max-height="85vh" location="center" scrollable>
+    <VDialog v-model="filterMenuOpen" max-width="25rem" max-height="85vh" location="center" scrollable>
       <VCard>
         <VCardTitle class="py-3 d-flex align-center">
           <VIcon :icon="getFilterIcon(currentFilter)" class="me-2"></VIcon>
@@ -715,7 +715,7 @@ onMounted(() => {
           </VBtn>
         </VCardActions>
       </VCard>
-    </DialogWrapper>
+    </VDialog>
 
     <!-- 资源列表容器 -->
     <VCard class="resource-list-container">

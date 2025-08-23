@@ -132,7 +132,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <DialogWrapper max-width="35rem" scrollable>
+  <VDialog max-width="35rem" scrollable>
     <VCard>
       <VCardItem class="py-2">
         <template #prepend>
@@ -209,5 +209,5 @@ onMounted(() => {
         </VBtn>
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

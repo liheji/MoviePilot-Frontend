@@ -170,7 +170,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <DialogWrapper max-width="40rem" scrollable>
+  <VDialog max-width="40rem" scrollable>
     <VCard>
       <VCardText>
         <VCol>
@@ -286,5 +286,5 @@ onMounted(() => {
       </VCardText>
       <VDialogCloseBtn @click="emit('close')" />
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

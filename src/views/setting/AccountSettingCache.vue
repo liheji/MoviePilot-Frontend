@@ -11,7 +11,6 @@ import { usePWA } from '@/composables/usePWA'
 // 国际化
 const { t } = useI18n()
 
-
 // PWA模式检测
 const { appMode } = usePWA()
 
@@ -423,7 +422,7 @@ onMounted(() => {
   </VCard>
 
   <!-- 重新识别对话框 -->
-  <DialogWrapper v-model="reidentifyDialog" scrollable max-width="35rem">
+  <VDialog v-model="reidentifyDialog" scrollable max-width="35rem">
     <VCard>
       <VCardItem class="py-2">
         <template #prepend>
@@ -469,5 +468,5 @@ onMounted(() => {
         </VBtn>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

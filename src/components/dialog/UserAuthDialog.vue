@@ -4,7 +4,6 @@ import api from '@/api'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 
-
 // 多语言支持
 const { t } = useI18n()
 
@@ -134,7 +133,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DialogWrapper width="40rem" scrollable>
+  <VDialog width="40rem" scrollable>
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -179,5 +178,5 @@ onMounted(async () => {
         </VBtn>
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>

@@ -650,7 +650,7 @@ onUnmounted(() => {
   <!-- 用户认证对话框 -->
   <UserAuthDialog v-if="siteAuthDialog" v-model="siteAuthDialog" @done="siteAuthDone" @close="siteAuthDialog = false" />
   <!-- 自定义 CSS -->
-  <DialogWrapper v-if="cssDialog" v-model="cssDialog" max-width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
+  <VDialog v-if="cssDialog" v-model="cssDialog" max-width="50rem" scrollable :fullscreen="!display.mdAndUp.value">
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -671,10 +671,10 @@ onUnmounted(() => {
         </VBtn>
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 
   <!-- 透明度调整对话框 -->
-  <DialogWrapper v-if="showTransparencyDialog" v-model="showTransparencyDialog" max-width="30rem">
+  <VDialog v-if="showTransparencyDialog" v-model="showTransparencyDialog" max-width="30rem">
     <VCard>
       <VCardItem>
         <VCardTitle>
@@ -763,7 +763,7 @@ onUnmounted(() => {
         </VBtn>
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>
 
 <style lang="scss" scoped>

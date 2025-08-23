@@ -205,7 +205,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <DialogWrapper max-width="50rem" :fullscreen="display.smAndDown.value" scrollable>
+  <VDialog max-width="50rem" :fullscreen="display.smAndDown.value" scrollable>
     <VCard>
       <!-- 标题栏 -->
       <VCardItem>
@@ -302,7 +302,7 @@ onMounted(() => {
     </VCard>
 
     <!-- 详情弹窗 -->
-    <DialogWrapper v-model="detailDialog" :max-width="display.mdAndUp.value ? 600 : '95%'" scrollable>
+    <VDialog v-model="detailDialog" :max-width="display.mdAndUp.value ? 600 : '95%'" scrollable>
       <VCard v-if="selectedSite">
         <VCardItem class="py-3">
           <template #prepend>
@@ -379,8 +379,8 @@ onMounted(() => {
           </div>
         </VCardText>
       </VCard>
-    </DialogWrapper>
-  </DialogWrapper>
+    </VDialog>
+  </VDialog>
 </template>
 
 <style scoped>

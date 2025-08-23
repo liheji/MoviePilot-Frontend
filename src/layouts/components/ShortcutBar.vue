@@ -265,7 +265,7 @@ onMounted(() => {
     </VCard>
   </VMenu>
   <!-- 名称测试弹窗 -->
-  <DialogWrapper
+  <VDialog
     v-if="nameTestDialog"
     v-model="nameTestDialog"
     max-width="45rem"
@@ -285,9 +285,9 @@ onMounted(() => {
         <NameTestView />
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
   <!-- 网络测试弹窗 -->
-  <DialogWrapper
+  <VDialog
     v-if="netTestDialog"
     v-model="netTestDialog"
     max-width="35rem"
@@ -307,9 +307,9 @@ onMounted(() => {
         <NetTestView />
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
   <!-- 实时日志弹窗 -->
-  <DialogWrapper
+  <VDialog
     v-if="loggingDialog"
     v-model="loggingDialog"
     scrollable
@@ -335,9 +335,9 @@ onMounted(() => {
         <LoggingView logfile="moviepilot.log" />
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
   <!-- 过滤规则弹窗 -->
-  <DialogWrapper
+  <VDialog
     v-if="ruleTestDialog"
     v-model="ruleTestDialog"
     max-width="35rem"
@@ -357,9 +357,9 @@ onMounted(() => {
         <RuleTestView />
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
   <!-- 系统健康检查弹窗 -->
-  <DialogWrapper
+  <VDialog
     v-if="systemTestDialog"
     v-model="systemTestDialog"
     max-width="35rem"
@@ -379,9 +379,9 @@ onMounted(() => {
         <ModuleTestView />
       </VCardText>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
   <!-- 消息中心弹窗 -->
-  <DialogWrapper
+  <VDialog
     v-if="messageDialog"
     v-model="messageDialog"
     max-width="50rem"
@@ -424,5 +424,5 @@ onMounted(() => {
         </div>
       </VCardActions>
     </VCard>
-  </DialogWrapper>
+  </VDialog>
 </template>
