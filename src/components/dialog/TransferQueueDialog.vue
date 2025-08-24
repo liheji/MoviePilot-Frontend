@@ -6,6 +6,7 @@ import { FileItem, TransferQueue } from '@/api/types'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { useBackgroundOptimization } from '@/composables/useBackgroundOptimization'
+import CryptoJS from 'crypto-js'
 
 // 多语言支持
 const { t } = useI18n()
@@ -181,9 +182,10 @@ function startCurrentFileProgress(filePath: string) {
   }
 
   if (filePath) {
-    const encodedPath = encodeURIComponent(filePath)
+    // filePath计算md5
+    const filePathMd5 = CryptoJS.MD5(filePath).toString()
     currentFileProgressSSE = useProgressSSE(
-      `${import.meta.env.VITE_API_BASE_URL}system/progress/${encodedPath}`,
+      `${import.meta.env.VITE_API_BASE_URL}system/progress/${filePathMd5}`,
       handleCurrentFileProgressMessage,
       'transfer-queue-current-file-progress',
       progressActive,
