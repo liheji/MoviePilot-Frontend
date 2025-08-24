@@ -45,6 +45,9 @@ const progressActive = ref(false)
 // 活动标签
 const activeTab = ref('')
 
+// 定时器引用
+const queueTimer = ref<NodeJS.Timeout | null>(null)
+
 // 状态标签
 const stateDict: { [key: string]: string } = {
   'waiting': t('dialog.transferQueue.waitingState'),
@@ -89,6 +92,16 @@ async function get_transfer_queue() {
     dataList.value = await api.get('transfer/queue')
     if (dataList.value.length > 0) {
       if (!activeTab.value || activeTasks.value?.length == 0) activeTab.value = dataList.value[0].media.title_year || ''
+
+      // 如果有数据且SSE未启动，则启动SSE监听
+      if (!progressActive.value) {
+        startLoadingProgress()
+      }
+    } else {
+      // 如果没有数据，停止SSE监听
+      if (progressActive.value) {
+        stopLoadingProgress()
+      }
     }
   } catch (error) {
     console.error(error)
@@ -214,12 +227,36 @@ function stopLoadingProgress() {
   stopCurrentFileProgress()
 }
 
-onMounted(() => {
+// 启动定时获取队列
+function startQueueTimer() {
+  // 清除可能存在的定时器
+  if (queueTimer.value) {
+    clearInterval(queueTimer.value)
+  }
+
+  // 立即执行一次
   get_transfer_queue()
-  startLoadingProgress()
+
+  // 设置3秒定时器
+  queueTimer.value = setInterval(() => {
+    get_transfer_queue()
+  }, 3000)
+}
+
+// 停止定时获取队列
+function stopQueueTimer() {
+  if (queueTimer.value) {
+    clearInterval(queueTimer.value)
+    queueTimer.value = null
+  }
+}
+
+onMounted(() => {
+  startQueueTimer()
 })
 
 onUnmounted(() => {
+  stopQueueTimer()
   stopLoadingProgress()
 })
 </script>
