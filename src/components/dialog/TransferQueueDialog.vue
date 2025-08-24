@@ -328,6 +328,7 @@ onUnmounted(() => {
                     :model-value="getFileProgress(task.fileitem.path).value"
                     color="success"
                     class="mb-1"
+                    :height="3"
                   />
                   <div class="text-xs text-medium-emphasis text-center">
                     {{ getFileProgress(task.fileitem.path).value.toFixed(1) }}%
