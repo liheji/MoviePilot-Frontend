@@ -165,8 +165,9 @@ function handleCurrentFileProgressMessage(event: MessageEvent) {
 }
 
 // 使用优化的进度SSE连接 - 整体进度
+const overallProgressUrl = `${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`
 const overallProgressSSE = useProgressSSE(
-  `${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`,
+  overallProgressUrl,
   handleOverallProgressMessage,
   'transfer-queue-overall-progress',
   progressActive,
@@ -184,10 +185,14 @@ function startCurrentFileProgress(filePath: string) {
   if (filePath) {
     // filePath计算md5
     const filePathMd5 = CryptoJS.MD5(filePath).toString()
+    // 使用包含文件路径的唯一监听器ID，避免SSE管理器复用连接导致的消息串流
+    const uniqueListenerId = `transfer-queue-current-file-progress-${filePathMd5}`
+    const currentFileProgressUrl = `${import.meta.env.VITE_API_BASE_URL}system/progress/${filePathMd5}`
+
     currentFileProgressSSE = useProgressSSE(
-      `${import.meta.env.VITE_API_BASE_URL}system/progress/${filePathMd5}`,
+      currentFileProgressUrl,
       handleCurrentFileProgressMessage,
-      'transfer-queue-current-file-progress',
+      uniqueListenerId,
       progressActive,
     )
     currentFileProgressSSE.start()

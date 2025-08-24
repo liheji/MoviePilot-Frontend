@@ -119,11 +119,12 @@ export class SSEManager {
 
       this.eventSource.onmessage = event => {
         // 分发消息给所有监听器
-        this.listeners.forEach(listener => {
+        this.listeners.forEach((listener, listenerId) => {
           try {
+            // 为每个监听器提供独立的错误处理
             listener(event)
           } catch (error) {
-            console.error('SSE: 监听器错误', error)
+            console.error(`SSE: 监听器错误 [${listenerId}]`, error)
           }
         })
       }
@@ -245,12 +246,37 @@ class SSEManagerSingleton {
 
   /**
    * 获取或创建SSE管理器
+   * @param url SSE连接URL
+   * @param options SSE选项
+   * @returns SSE管理器实例
    */
   getManager(url: string, options?: ConstructorParameters<typeof SSEManager>[1]): SSEManager {
-    if (!this.managers.has(url)) {
-      this.managers.set(url, new SSEManager(url, options))
+    // 使用完整的URL作为key，确保不同路径的SSE连接不会复用
+    const managerKey = url
+    if (!this.managers.has(managerKey)) {
+      this.managers.set(managerKey, new SSEManager(url, options))
     }
-    return this.managers.get(url)!
+    return this.managers.get(managerKey)!
+  }
+
+  /**
+   * 获取或创建独立的SSE管理器（为每个监听器创建独立连接）
+   * @param url SSE连接URL
+   * @param listenerId 监听器ID
+   * @param options SSE选项
+   * @returns SSE管理器实例
+   */
+  getIndependentManager(
+    url: string,
+    listenerId: string,
+    options?: ConstructorParameters<typeof SSEManager>[1],
+  ): SSEManager {
+    // 使用URL + 监听器ID作为key，确保每个监听器都有独立的连接
+    const managerKey = `${url}::${listenerId}`
+    if (!this.managers.has(managerKey)) {
+      this.managers.set(managerKey, new SSEManager(url, options))
+    }
+    return this.managers.get(managerKey)!
   }
 
   /**
