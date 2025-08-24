@@ -20,22 +20,14 @@ const emit = defineEmits(['close'])
 // 数据列表
 const dataList = ref<TransferQueue[]>([])
 
-// 整体进度相关
+// 整体进度相关 - 根据完成的文件计算
 const overallProgress = ref({
-  enable: false,
   value: 0,
   text: t('dialog.transferQueue.processing'),
-  data: {
-    current: '',
-    finished: [] as string[],
-  },
 })
 
-// 当前文件进度相关
-const currentFileProgress = ref({
-  enable: false,
-  value: 0,
-})
+// 文件进度映射
+const fileProgressMap = ref<Map<string, { enable: boolean; value: number }>>(new Map())
 
 // 数据可刷新标志
 const refreshFlag = ref(false)
@@ -87,6 +79,22 @@ const activeTasks = computed(() => {
   return dataList.value.find(item => item.media.title_year === activeTab.value)?.tasks
 })
 
+// 计算整体进度
+const overallProgressComputed = computed(() => {
+  if (dataList.value.length === 0) return 0
+
+  const allTasks = dataList.value.flatMap(item => item.tasks)
+  const totalTasks = allTasks.length
+  const completedTasks = allTasks.filter(task => task.state === 'completed').length
+
+  return totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
+})
+
+// 获取文件进度
+function getFileProgress(filePath: string) {
+  return fileProgressMap.value.get(filePath) || { enable: false, value: 0 }
+}
+
 // 调用API获取队列信息
 async function get_transfer_queue() {
   try {
@@ -119,119 +127,87 @@ async function remove_queue_task(fileitem: FileItem) {
   }
 }
 
-// 整体进度SSE消息处理函数
-function handleOverallProgressMessage(event: MessageEvent) {
-  try {
-    const progress = JSON.parse(event.data)
-    if (progress) {
-      overallProgress.value = {
-        enable: progress.enable || false,
-        value: progress.value || 0,
-        text: progress.text || t('dialog.transferQueue.processing'),
-        data: {
-          current: progress.data?.current || '',
-          finished: progress.data?.finished || [],
-        },
+// 文件进度SSE消息处理函数
+function createFileProgressHandler(filePath: string) {
+  return function handleFileProgressMessage(event: MessageEvent) {
+    try {
+      const progress = JSON.parse(event.data)
+      if (progress) {
+        fileProgressMap.value.set(filePath, {
+          enable: progress.enable || false,
+          value: progress.value || 0,
+        })
       }
-
-      // 如果进度完成或禁用，刷新队列数据
-      if (!progress.enable || progress.value >= 100) {
-        if (refreshFlag.value) {
-          refreshFlag.value = false
-          get_transfer_queue()
-        }
-      } else {
-        refreshFlag.value = true
-      }
+    } catch (error) {
+      console.error('解析文件进度消息失败:', error)
     }
-  } catch (error) {
-    console.error('解析整体进度消息失败:', error)
   }
 }
 
-// 当前文件进度SSE消息处理函数
-function handleCurrentFileProgressMessage(event: MessageEvent) {
-  try {
-    const progress = JSON.parse(event.data)
-    if (progress) {
-      currentFileProgress.value = {
-        enable: progress.enable || false,
-        value: progress.value || 0,
-      }
-    }
-  } catch (error) {
-    console.error('解析当前文件进度消息失败:', error)
+// 文件进度SSE连接映射
+const fileProgressSSEMap = ref<Map<string, any>>(new Map())
+
+// 启动文件进度监听
+function startFileProgress(filePath: string) {
+  if (fileProgressSSEMap.value.has(filePath)) {
+    return // 已经存在连接
   }
+
+  // filePath计算md5
+  const filePathMd5 = CryptoJS.MD5(filePath).toString()
+  // 使用包含文件路径的唯一监听器ID
+  const uniqueListenerId = `transfer-queue-file-progress-${filePathMd5}`
+  const fileProgressUrl = `${import.meta.env.VITE_API_BASE_URL}system/progress/${filePathMd5}`
+
+  const fileProgressSSE = useProgressSSE(
+    fileProgressUrl,
+    createFileProgressHandler(filePath),
+    uniqueListenerId,
+    progressActive,
+  )
+
+  fileProgressSSE.start()
+  fileProgressSSEMap.value.set(filePath, fileProgressSSE)
 }
 
-// 使用优化的进度SSE连接 - 整体进度
-const overallProgressUrl = `${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`
-const overallProgressSSE = useProgressSSE(
-  overallProgressUrl,
-  handleOverallProgressMessage,
-  'transfer-queue-overall-progress',
-  progressActive,
-)
-
-// 当前文件进度SSE连接
-let currentFileProgressSSE: any = null
-
-// 启动当前文件进度监听
-function startCurrentFileProgress(filePath: string) {
-  if (currentFileProgressSSE) {
-    currentFileProgressSSE.stop()
-  }
-
-  if (filePath) {
-    // filePath计算md5
-    const filePathMd5 = CryptoJS.MD5(filePath).toString()
-    // 使用包含文件路径的唯一监听器ID，避免SSE管理器复用连接导致的消息串流
-    const uniqueListenerId = `transfer-queue-current-file-progress-${filePathMd5}`
-    const currentFileProgressUrl = `${import.meta.env.VITE_API_BASE_URL}system/progress/${filePathMd5}`
-
-    currentFileProgressSSE = useProgressSSE(
-      currentFileProgressUrl,
-      handleCurrentFileProgressMessage,
-      uniqueListenerId,
-      progressActive,
-    )
-    currentFileProgressSSE.start()
-  }
+// 停止所有文件进度监听
+function stopAllFileProgress() {
+  fileProgressSSEMap.value.forEach((sse, filePath) => {
+    sse.stop()
+  })
+  fileProgressSSEMap.value.clear()
+  fileProgressMap.value.clear()
 }
 
-// 停止当前文件进度监听
-function stopCurrentFileProgress() {
-  if (currentFileProgressSSE) {
-    currentFileProgressSSE.stop()
-    currentFileProgressSSE = null
-  }
-}
-
-// 监听当前文件变化，自动切换进度监听
+// 监听队列变化，自动管理文件进度SSE
 watch(
-  () => overallProgress.value.data.current,
-  newCurrentFile => {
-    if (newCurrentFile) {
-      startCurrentFileProgress(newCurrentFile)
-    } else {
-      stopCurrentFileProgress()
-      currentFileProgress.value = { enable: false, value: 0 }
-    }
+  dataList,
+  newDataList => {
+    // 停止所有现有的文件进度监听
+    stopAllFileProgress()
+
+    // 为所有正在运行的文件启动进度监听
+    newDataList.forEach(item => {
+      item.tasks.forEach(task => {
+        if (task.state === 'running') {
+          startFileProgress(task.fileitem.path)
+        }
+      })
+    })
   },
+  { deep: true },
 )
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
   overallProgress.value.text = t('dialog.transferQueue.processing')
   progressActive.value = true
-  overallProgressSSE.start()
 }
 
 // 停止监听加载进度
 function stopLoadingProgress() {
   progressActive.value = false
-  overallProgressSSE.stop()
-  stopCurrentFileProgress()
+  stopAllFileProgress()
 }
 
 // 启动定时获取队列
@@ -277,10 +253,10 @@ onUnmounted(() => {
       <VDialogCloseBtn @click="emit('close')" />
 
       <!-- 整体进度显示 -->
-      <VProgressLinear v-if="dataList.length > 0" :value="overallProgress.value" color="primary" :height="2" />
+      <VProgressLinear v-if="dataList.length > 0" :value="overallProgressComputed" color="primary" :height="2" />
       <VDivider v-else />
-      <div v-if="overallProgress.enable && overallProgress.value > 0" class="pt-2 text-center">
-        <div class="text-sm font-medium">（{{ overallProgress.value.toFixed(1) }}%）{{ overallProgress.text }}</div>
+      <div v-if="dataList.length > 0 && overallProgressComputed > 0" class="pt-2 text-center">
+        <div class="text-sm font-medium">（{{ overallProgressComputed.toFixed(1) }}%）{{ overallProgress.text }}</div>
       </div>
 
       <VCardText v-if="dataList.length === 0" class="text-center">
@@ -310,14 +286,16 @@ onUnmounted(() => {
                   </VChip>
                 </VListItemSubtitle>
 
-                <!-- 当前文件进度显示 -->
-                <div
-                  v-if="overallProgress.data.current === task.fileitem.path && currentFileProgress.enable"
-                  class="mt-2"
-                >
-                  <VProgressLinear :value="currentFileProgress.value" color="success" :height="1" class="mb-1" />
+                <!-- 文件进度显示 -->
+                <div v-if="task.state === 'running' && getFileProgress(task.fileitem.path).enable" class="mt-2">
+                  <VProgressLinear
+                    :value="getFileProgress(task.fileitem.path).value"
+                    color="success"
+                    :height="1"
+                    class="mb-1"
+                  />
                   <div class="text-xs text-medium-emphasis text-center">
-                    {{ currentFileProgress.value.toFixed(1) }}%
+                    {{ getFileProgress(task.fileitem.path).value.toFixed(1) }}%
                   </div>
                 </div>
                 <template #append>
@@ -325,7 +303,7 @@ onUnmounted(() => {
                     size="small"
                     icon="mdi-cancel"
                     @click="remove_queue_task(task.fileitem)"
-                    :disabled="overallProgress.data.current === task.fileitem.path"
+                    :disabled="task.state === 'running'"
                   />
                 </template>
               </VListItem>
