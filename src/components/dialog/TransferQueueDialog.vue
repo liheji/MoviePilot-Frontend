@@ -277,7 +277,7 @@ onUnmounted(() => {
       <VDialogCloseBtn @click="emit('close')" />
 
       <!-- 整体进度显示 -->
-      <VProgressLinear v-if="dataList.length > 0" :value="overallProgressComputed" color="primary" />
+      <VProgressLinear v-if="dataList.length > 0" :model-value="overallProgressComputed" color="primary" />
       <VDivider v-else />
 
       <VCardText v-if="dataList.length === 0" class="text-center">
@@ -309,7 +309,11 @@ onUnmounted(() => {
 
                 <!-- 文件进度显示 -->
                 <div v-if="task.state === 'running' && getFileProgress(task.fileitem.path).enable" class="mt-2">
-                  <VProgressLinear :value="getFileProgress(task.fileitem.path).value" color="success" class="mb-1" />
+                  <VProgressLinear
+                    :model-value="getFileProgress(task.fileitem.path).value"
+                    color="success"
+                    class="mb-1"
+                  />
                   <div class="text-xs text-medium-emphasis text-center">
                     {{ getFileProgress(task.fileitem.path).value.toFixed(1) }}%
                   </div>
