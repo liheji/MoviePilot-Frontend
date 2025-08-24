@@ -183,16 +183,37 @@ function stopAllFileProgress() {
 watch(
   dataList,
   newDataList => {
-    // 停止所有现有的文件进度监听
-    stopAllFileProgress()
-
-    // 为所有正在运行的文件启动进度监听
+    // 获取当前正在运行的文件路径集合
+    const currentRunningFiles = new Set<string>()
     newDataList.forEach(item => {
       item.tasks.forEach(task => {
         if (task.state === 'running') {
-          startFileProgress(task.fileitem.path)
+          currentRunningFiles.add(task.fileitem.path)
         }
       })
+    })
+
+    // 获取当前已建立SSE连接的文件路径集合
+    const currentSSEFiles = new Set(fileProgressSSEMap.value.keys())
+
+    // 停止不再需要的SSE连接
+    currentSSEFiles.forEach(filePath => {
+      if (!currentRunningFiles.has(filePath)) {
+        const sse = fileProgressSSEMap.value.get(filePath)
+        if (sse) {
+          sse.stop()
+          fileProgressSSEMap.value.delete(filePath)
+        }
+        // 清除对应的进度数据
+        fileProgressMap.value.delete(filePath)
+      }
+    })
+
+    // 为新的运行中文件建立SSE连接
+    currentRunningFiles.forEach(filePath => {
+      if (!fileProgressSSEMap.value.has(filePath)) {
+        startFileProgress(filePath)
+      }
     })
   },
   { deep: true },
@@ -207,7 +228,10 @@ function startLoadingProgress() {
 // 停止监听加载进度
 function stopLoadingProgress() {
   progressActive.value = false
-  stopAllFileProgress()
+  // 只有在没有数据时才停止所有文件进度监听
+  if (dataList.value.length === 0) {
+    stopAllFileProgress()
+  }
 }
 
 // 启动定时获取队列
