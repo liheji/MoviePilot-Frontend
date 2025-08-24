@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { formatFileSize } from '@/@core/utils/formatters'
 import api from '@/api'
 import { FileItem, TransferQueue } from '@/api/types'
@@ -18,11 +19,22 @@ const emit = defineEmits(['close'])
 // 数据列表
 const dataList = ref<TransferQueue[]>([])
 
-// 整理进度文本
-const progressText = ref(t('dialog.transferQueue.processing'))
+// 整体进度相关
+const overallProgress = ref({
+  enable: false,
+  value: 0,
+  text: t('dialog.transferQueue.processing'),
+  data: {
+    current: '',
+    finished: [] as string[],
+  },
+})
 
-// 整理进度
-const progressValue = ref(0)
+// 当前文件进度相关
+const currentFileProgress = ref({
+  enable: false,
+  value: 0,
+})
 
 // 数据可刷新标志
 const refreshFlag = ref(false)
@@ -93,54 +105,113 @@ async function remove_queue_task(fileitem: FileItem) {
   }
 }
 
-// 进度SSE消息处理函数
-function handleProgressMessage(event: MessageEvent) {
-  const progress = JSON.parse(event.data)
-  if (progress) {
-    if (!progress.enable) {
-      progressText.value = t('dialog.transferQueue.processing')
-      progressValue.value = 0
-      if (refreshFlag.value) {
-        refreshFlag.value = false
-        get_transfer_queue()
+// 整体进度SSE消息处理函数
+function handleOverallProgressMessage(event: MessageEvent) {
+  try {
+    const progress = JSON.parse(event.data)
+    if (progress) {
+      overallProgress.value = {
+        enable: progress.enable || false,
+        value: progress.value || 0,
+        text: progress.text || t('dialog.transferQueue.processing'),
+        data: {
+          current: progress.data?.current || '',
+          finished: progress.data?.finished || [],
+        },
       }
-      return
-    }
-    progressText.value = progress.text
-    progressValue.value = progress.value
-    if (progress.value >= 100 && refreshFlag.value) {
-      refreshFlag.value = false
-      get_transfer_queue()
-    } else {
-      if (progress.value > 0 && refreshFlag.value && progress.text?.includes('整理完成')) {
-        refreshFlag.value = false
-        get_transfer_queue()
+
+      // 如果进度完成或禁用，刷新队列数据
+      if (!progress.enable || progress.value >= 100) {
+        if (refreshFlag.value) {
+          refreshFlag.value = false
+          get_transfer_queue()
+        }
       } else {
         refreshFlag.value = true
       }
     }
+  } catch (error) {
+    console.error('解析整体进度消息失败:', error)
   }
 }
 
-// 使用优化的进度SSE连接
-const progressSSE = useProgressSSE(
+// 当前文件进度SSE消息处理函数
+function handleCurrentFileProgressMessage(event: MessageEvent) {
+  try {
+    const progress = JSON.parse(event.data)
+    if (progress) {
+      currentFileProgress.value = {
+        enable: progress.enable || false,
+        value: progress.value || 0,
+      }
+    }
+  } catch (error) {
+    console.error('解析当前文件进度消息失败:', error)
+  }
+}
+
+// 使用优化的进度SSE连接 - 整体进度
+const overallProgressSSE = useProgressSSE(
   `${import.meta.env.VITE_API_BASE_URL}system/progress/filetransfer`,
-  handleProgressMessage,
-  'transfer-queue-progress',
+  handleOverallProgressMessage,
+  'transfer-queue-overall-progress',
   progressActive,
+)
+
+// 当前文件进度SSE连接
+let currentFileProgressSSE: any = null
+
+// 启动当前文件进度监听
+function startCurrentFileProgress(filePath: string) {
+  if (currentFileProgressSSE) {
+    currentFileProgressSSE.stop()
+  }
+
+  if (filePath) {
+    const encodedPath = encodeURIComponent(filePath)
+    currentFileProgressSSE = useProgressSSE(
+      `${import.meta.env.VITE_API_BASE_URL}system/progress/${encodedPath}`,
+      handleCurrentFileProgressMessage,
+      'transfer-queue-current-file-progress',
+      progressActive,
+    )
+    currentFileProgressSSE.start()
+  }
+}
+
+// 停止当前文件进度监听
+function stopCurrentFileProgress() {
+  if (currentFileProgressSSE) {
+    currentFileProgressSSE.stop()
+    currentFileProgressSSE = null
+  }
+}
+
+// 监听当前文件变化，自动切换进度监听
+watch(
+  () => overallProgress.value.data.current,
+  newCurrentFile => {
+    if (newCurrentFile) {
+      startCurrentFileProgress(newCurrentFile)
+    } else {
+      stopCurrentFileProgress()
+      currentFileProgress.value = { enable: false, value: 0 }
+    }
+  },
 )
 
 // 使用SSE监听加载进度
 function startLoadingProgress() {
-  progressText.value = t('dialog.transferQueue.processing')
+  overallProgress.value.text = t('dialog.transferQueue.processing')
   progressActive.value = true
-  progressSSE.start()
+  overallProgressSSE.start()
 }
 
 // 停止监听加载进度
 function stopLoadingProgress() {
   progressActive.value = false
-  progressSSE.stop()
+  overallProgressSSE.stop()
+  stopCurrentFileProgress()
 }
 
 onMounted(() => {
@@ -154,25 +225,25 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <VDialog scrollable max-width="50rem" :fullscreen="!display.mdAndUp.value">
+  <VDialog scrollable max-width="60rem" :fullscreen="!display.mdAndUp.value">
     <VCard class="mx-auto" width="100%">
       <VCardItem>
         <VCardTitle>{{ t('dialog.transferQueue.title') }}</VCardTitle>
       </VCardItem>
       <VDialogCloseBtn @click="emit('close')" />
-      <VDivider />
-      <VProgressLinear
-        v-if="dataList.length > 0 && progressValue > 0"
-        :value="progressValue"
-        color="primary"
-        indeterminate
-        :height="2"
-      />
-      <VCardItem v-if="dataList.length > 0 && progressValue > 0" class="text-center pt-2">
-        <span class="text-sm">{{ progressText }}</span>
-      </VCardItem>
-      <VCardText v-if="dataList.length === 0" class="text-center"> {{ t('dialog.transferQueue.noTasks') }} </VCardText>
-      <VCardText>
+
+      <!-- 整体进度显示 -->
+      <VProgressLinear v-if="dataList.length > 0" :value="overallProgress.value" color="primary" :height="2" />
+      <VDivider v-else />
+      <div v-if="overallProgress.enable && overallProgress.value > 0" class="pt-2 text-center">
+        <div class="text-sm font-medium">（{{ overallProgress.value.toFixed(1) }}%）{{ overallProgress.text }}</div>
+      </div>
+
+      <VCardText v-if="dataList.length === 0" class="text-center">
+        {{ t('dialog.transferQueue.noTasks') }}
+      </VCardText>
+
+      <VCardText v-if="dataList.length > 0">
         <VTabs v-model="activeTab" show-arrows class="v-tabs-pill" stacked>
           <VTab
             v-for="media in mediaList"
@@ -186,16 +257,32 @@ onUnmounted(() => {
         <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
           <VWindowItem v-for="media in mediaList" :value="media.title_year">
             <VList>
-              <VListItem v-for="task in activeTasks">
+              <VListItem v-for="task in activeTasks" :key="task.fileitem.path">
                 <VListItemTitle>{{ task.fileitem.name }}</VListItemTitle>
-                <VListItemSubtitle>
+                <VListItemSubtitle class="py-1">
                   {{ t('dialog.transferQueue.sizeTitle') }}：{{ formatFileSize(task.fileitem.size || 0) }}
-                  <VChip size="small" :color="getStateColor(task.state)" class="ms-2">
+                  <VChip size="small" :color="getStateColor(task.state)" class="mx-2">
                     {{ stateDict[task.state] }}
                   </VChip>
                 </VListItemSubtitle>
+
+                <!-- 当前文件进度显示 -->
+                <div
+                  v-if="overallProgress.data.current === task.fileitem.path && currentFileProgress.enable"
+                  class="mt-2"
+                >
+                  <VProgressLinear :value="currentFileProgress.value" color="success" :height="1" class="mb-1" />
+                  <div class="text-xs text-medium-emphasis text-center">
+                    {{ currentFileProgress.value.toFixed(1) }}%
+                  </div>
+                </div>
                 <template #append>
-                  <IconBtn size="small" icon="mdi-cancel" @click="remove_queue_task(task.fileitem)" />
+                  <IconBtn
+                    size="small"
+                    icon="mdi-cancel"
+                    @click="remove_queue_task(task.fileitem)"
+                    :disabled="overallProgress.data.current === task.fileitem.path"
+                  />
                 </template>
               </VListItem>
             </VList>

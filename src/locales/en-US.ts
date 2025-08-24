@@ -2090,6 +2090,10 @@ export default {
       startAll: 'Start All',
       refresh: 'Refresh',
       close: 'Close',
+      processingFile: 'Processing',
+      overallProgress: 'Overall Progress',
+      currentFileProgress: 'Current File Progress',
+      processingStatus: 'Processing',
     },
     reorganize: {
       title: 'Organize',

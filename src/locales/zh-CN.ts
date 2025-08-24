@@ -2064,6 +2064,10 @@ export default {
       startAll: '全部开始',
       refresh: '刷新',
       close: '关闭',
+      processingFile: '正在整理',
+      overallProgress: '整体进度',
+      currentFileProgress: '当前文件进度',
+      processingStatus: '整理中',
     },
     reorganize: {
       title: '整理',
