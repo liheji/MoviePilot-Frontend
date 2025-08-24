@@ -339,7 +339,7 @@ onUnmounted(() => {
                     size="small"
                     icon="mdi-cancel"
                     @click="remove_queue_task(task.fileitem)"
-                    :disabled="task.state === 'running'"
+                    :disabled="task.state === 'completed'"
                   />
                 </template>
               </VListItem>
