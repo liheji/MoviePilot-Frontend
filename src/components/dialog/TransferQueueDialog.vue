@@ -58,9 +58,18 @@ function getStateColor(state: string) {
   else return 'error'
 }
 
-// 从dataList中提取所有的媒体信息
+// 从dataList中提取所有的媒体信息，合并相同title_year的记录
 const mediaList = computed(() => {
-  return dataList.value.map(item => item.media)
+  const mediaMap = new Map<string, any>()
+
+  dataList.value.forEach(item => {
+    const titleYear = item.media.title_year || ''
+    if (!mediaMap.has(titleYear)) {
+      mediaMap.set(titleYear, item.media)
+    }
+  })
+
+  return Array.from(mediaMap.values())
 })
 
 // 按media计算总数和完成数，返回 x/x
@@ -74,10 +83,16 @@ function getMediaCount(title_year: string) {
   return `${completed} / ${total}`
 }
 
-// 根据媒体信息获取对应的整理任务
+// 根据媒体信息获取对应的整理任务，合并相同title_year的所有任务
 const activeTasks = computed(() => {
-  return dataList.value.find(item => item.media.title_year === activeTab.value)?.tasks
+  const tasks = dataList.value.filter(item => item.media.title_year === activeTab.value).flatMap(item => item.tasks)
+  return tasks
 })
+
+// 根据媒体title_year获取对应的任务列表
+function getTasksByMedia(title_year: string) {
+  return dataList.value.filter(item => item.media.title_year === title_year).flatMap(item => item.tasks)
+}
 
 // 计算整体进度
 const overallProgressComputed = computed(() => {
@@ -298,7 +313,7 @@ onUnmounted(() => {
         <VWindow v-model="activeTab" class="mt-5 disable-tab-transition" :touch="false">
           <VWindowItem v-for="media in mediaList" :value="media.title_year">
             <VList>
-              <VListItem v-for="task in activeTasks" :key="task.fileitem.path">
+              <VListItem v-for="task in getTasksByMedia(media.title_year || '')" :key="task.fileitem.path">
                 <VListItemTitle>{{ task.fileitem.name }}</VListItemTitle>
                 <VListItemSubtitle class="py-1">
                   {{ t('dialog.transferQueue.sizeTitle') }}：{{ formatFileSize(task.fileitem.size || 0) }}
