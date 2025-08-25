@@ -520,7 +520,7 @@ export interface SiteUserData {
   // 用户名
   username?: string
   // 用户ID
-  userid?: number
+  userid?: string
   // 用户等级
   user_level?: string
   // 加入时间
