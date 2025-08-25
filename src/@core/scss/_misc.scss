@@ -45,7 +45,7 @@ code {
       inset-block-start: 0;
       inset-inline: 0;
       pointer-events: none;
-      transition: all 0.3s ease-in-out;
+      transition: padding 0.3s ease-in-out;
       
       .v-theme--light & {
         background: rgba(var(--v-theme-surface), 0.6);

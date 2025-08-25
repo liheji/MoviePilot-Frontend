@@ -23,9 +23,7 @@ export default defineComponent({
     // 监听弹窗状态变化
     const checkDialogState = () => {
       const wasDialogOpen = isDialogOpen.value
-      isDialogOpen.value =
-        document.documentElement.classList.contains('dialog-scroll-locked') ||
-        document.documentElement.classList.contains('v-overlay-scroll-blocked')
+      isDialogOpen.value = document.documentElement.classList.contains('v-overlay-scroll-blocked')
 
       // 当弹窗刚打开时，记录当前的滚动状态
       if (!wasDialogOpen && isDialogOpen.value) {
@@ -121,7 +119,7 @@ export default defineComponent({
             'layout-navbar-fixed',
             mdAndDown.value && 'layout-overlay-nav',
             route.meta.layoutWrapperClasses,
-            (scrollDistance.value > 0 || (isDialogOpen.value && wasScrolledBeforeDialog.value)) && 'window-scrolled',
+            (scrollDistance.value > 5 || (isDialogOpen.value && wasScrolledBeforeDialog.value)) && 'window-scrolled',
           ],
         },
         [verticalNav, h('div', { class: 'layout-content-wrapper' }, [navbar, main, footer]), layoutOverlay],

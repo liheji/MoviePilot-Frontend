@@ -6,8 +6,9 @@
 
 html {
   background: rgb(var(--v-theme-background));
-  min-block-size: calc(100% + env(safe-area-inset-top) + env(safe-area-inset-bottom));
-  overflow-y: overlay;
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  overflow-y: hidden;
 }
 
 body {
@@ -40,8 +41,8 @@ body,
 
   // TODO: Use grid gutter variable here;
   padding-block: 1.5rem;
-  padding-inline: 0.5rem;
   padding-block-start: calc(env(safe-area-inset-top) + 4.5rem);
+  padding-inline: 0.5rem;
 
   // display: flex;display
 

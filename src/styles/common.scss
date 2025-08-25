@@ -3,15 +3,15 @@
 @tailwind components;
 @tailwind utilities;
 
-
-@supports (-webkit-touch-callout: none) {
-  html.v-overlay-scroll-blocked {
-    position: inherit;
-  }
+html.v-overlay-scroll-blocked {
+  position: static;
 }
 
-body {
-  overscroll-behavior: none;
+html.v-overlay-scroll-blocked body {
+  position: fixed;
+  overflow: hidden;
+  inset: 0;
+  inset-block-start: var(--v-body-scroll-y);
 }
 
 @mixin hide-scrollbar {
