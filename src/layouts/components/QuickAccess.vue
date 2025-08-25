@@ -7,6 +7,7 @@ import { useRecentPlugins } from '@/composables/useRecentPlugins'
 import PluginDataDialog from '@/components/dialog/PluginDataDialog.vue'
 import { VCard } from 'vuetify/components'
 import { getDominantColor } from '@/@core/utils/image'
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
 
 // 国际化
 const { t } = useI18n()
@@ -212,11 +213,18 @@ watch(
     if (visible) {
       fetchPluginsWithPage()
       loadRecentPlugins()
-      // 添加v-overlay-scroll-blocked类到html元素
-      document.documentElement.classList.add('v-overlay-scroll-blocked')
+      // 禁用背景滚动，但允许面板内部滚动
+      // 注意：参数是要允许滚动的目标元素，即面板本身
+      const panelElement = document.querySelector('.plugin-quick-access')
+      if (panelElement) {
+        disableBodyScroll(panelElement as HTMLElement)
+      }
     } else {
-      // 移除v-overlay-scroll-blocked类
-      document.documentElement.classList.remove('v-overlay-scroll-blocked')
+      // 恢复背景滚动
+      const panelElement = document.querySelector('.plugin-quick-access')
+      if (panelElement) {
+        enableBodyScroll(panelElement as HTMLElement)
+      }
     }
   },
   { immediate: true },
@@ -229,9 +237,12 @@ onMounted(() => {
   }
 })
 
-// 组件卸载时确保移除v-overlay-scroll-blocked类
+// 组件卸载时确保恢复背景滚动
 onUnmounted(() => {
-  document.documentElement.classList.remove('v-overlay-scroll-blocked')
+  const panelElement = document.querySelector('.plugin-quick-access')
+  if (panelElement) {
+    enableBodyScroll(panelElement as HTMLElement)
+  }
 })
 
 // 处理触摸开始
