@@ -651,8 +651,7 @@ onMounted(() => {
           <VIcon :color="ignoreCase ? 'primary' : 'error'" icon="mdi-format-letter-case" />
         </IconBtn>
         <IconBtn v-if="!isFile" @click="changeSelectMode">
-          <VIcon color="primary" v-if="selectMode"> mdi-selection-remove </VIcon>
-          <VIcon color="primary" v-else>mdi-select</VIcon>
+          <VIcon color="primary" :icon="selectMode ? 'mdi-selection-remove' : 'mdi-select'" />
         </IconBtn>
         <IconBtn v-if="isFile" @click="recognize(inProps.item.path || '')">
           <VIcon color="primary"> mdi-text-recognition </VIcon>
