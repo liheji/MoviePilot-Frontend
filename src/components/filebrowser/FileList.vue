@@ -115,34 +115,26 @@ const dropdownItems = ref<{ [key: string]: any }[]>([])
 // 进度是否激活
 const progressActive = ref(false)
 
-// 目录过滤
-const dirs = computed(() =>
-  items.value.filter(item => {
-    if (item.type !== 'dir') return false
-    if (!filter.value) return true
+// 通用过滤
+const getFilteredItems = (type: 'dir' | 'file') => {
+  const filterValue = filter.value
+  if (!filterValue) {
+    return items.value.filter(item => item.type === type)
+  }
 
-    if (ignoreCase.value) {
-      return item.name.toLowerCase().includes(filter.value.toLowerCase())
-    } else {
-      return item.name.includes(filter.value)
-    }
-  }),
-)
+  if (ignoreCase.value) {
+    const lowerCaseFilter = filterValue.toLowerCase()
+    return items.value.filter(item => item.type === type && item.name.toLowerCase().includes(lowerCaseFilter))
+  } else {
+    return items.value.filter(item => item.type === type && item.name.includes(filterValue))
+  }
+}
+
+// 目录过滤
+const dirs = computed(() => getFilteredItems('dir'))
 
 // 文件过滤
-const files = computed(() =>
-  items.value.filter(item => {
-    if (item.type !== 'file') return false
-    if (!filter.value) return true
-
-    if (ignoreCase.value) {
-      return item.name.toLowerCase().includes(filter.value.toLowerCase())
-    } else {
-      return item.name.includes(filter.value)
-    }
-  }),
-)
-
+const files = computed(() => getFilteredItems('file'))
 // 是否文件
 const isFile = computed(() => inProps.item.type == 'file')
 
