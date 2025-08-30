@@ -82,6 +82,9 @@ const items = ref<FileItem[]>([])
 // 过滤条件
 const filter = ref('')
 
+// 是否忽略大小写
+const ignoreCase = ref(true)
+
 // 重命名弹窗
 const renamePopper = ref(false)
 
@@ -113,10 +116,32 @@ const dropdownItems = ref<{ [key: string]: any }[]>([])
 const progressActive = ref(false)
 
 // 目录过滤
-const dirs = computed(() => items.value.filter(item => item.type === 'dir' && item.name.includes(filter.value)))
+const dirs = computed(() =>
+  items.value.filter(item => {
+    if (item.type !== 'dir') return false
+    if (!filter.value) return true
+
+    if (ignoreCase.value) {
+      return item.name.toLowerCase().includes(filter.value.toLowerCase())
+    } else {
+      return item.name.includes(filter.value)
+    }
+  }),
+)
 
 // 文件过滤
-const files = computed(() => items.value.filter(item => item.type === 'file' && item.name.includes(filter.value)))
+const files = computed(() =>
+  items.value.filter(item => {
+    if (item.type !== 'file') return false
+    if (!filter.value) return true
+
+    if (ignoreCase.value) {
+      return item.name.toLowerCase().includes(filter.value.toLowerCase())
+    } else {
+      return item.name.includes(filter.value)
+    }
+  }),
+)
 
 // 是否文件
 const isFile = computed(() => inProps.item.type == 'file')
@@ -622,6 +647,9 @@ onMounted(() => {
           rounded
         />
         <VSpacer v-if="isFile" />
+        <IconBtn v-if="!isFile" @click="ignoreCase = !ignoreCase">
+          <VIcon :color="ignoreCase ? 'primary' : 'error'" icon="mdi-format-letter-case" />
+        </IconBtn>
         <IconBtn v-if="!isFile" @click="changeSelectMode">
           <VIcon color="primary" v-if="selectMode"> mdi-selection-remove </VIcon>
           <VIcon color="primary" v-else>mdi-select</VIcon>
