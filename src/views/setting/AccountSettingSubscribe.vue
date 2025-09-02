@@ -54,12 +54,20 @@ const rssIntervalItems = [
   { title: t('setting.subscribe.intervals.day1'), value: 1440 },
 ]
 
+// 订阅搜索时间间隔选择项（小时）
+const subscribeSearchIntervalItems = [
+  { title: t('setting.subscribe.intervals.day1'), value: 24 },
+  { title: t('setting.subscribe.intervals.day3'), value: 72 },
+  { title: t('setting.subscribe.intervals.week1'), value: 168 },
+]
+
 // 系统设置项
 const SystemSettings = ref<any>({
   // 基础设置
   Basic: {
     SUBSCRIBE_MODE: 'auto',
     SUBSCRIBE_SEARCH: false,
+    SUBSCRIBE_SEARCH_INTERVAL: 24,
     SUBSCRIBE_RSS_INTERVAL: 30,
     LOCAL_EXISTS_SEARCH: false,
   },
@@ -250,6 +258,16 @@ onMounted(() => {
                   :label="t('setting.subscribe.timedSearch')"
                   :hint="t('setting.subscribe.timedSearchHint')"
                   persistent-hint
+                />
+              </VCol>
+              <VCol v-if="SystemSettings.Basic.SUBSCRIBE_SEARCH" cols="12" md="6">
+                <VSelect
+                  v-model="SystemSettings.Basic.SUBSCRIBE_SEARCH_INTERVAL"
+                  :items="subscribeSearchIntervalItems"
+                  :label="t('setting.subscribe.searchInterval')"
+                  :hint="t('setting.subscribe.searchIntervalHint')"
+                  persistent-hint
+                  prepend-inner-icon="mdi-timer"
                 />
               </VCol>
               <VCol cols="12" md="6">

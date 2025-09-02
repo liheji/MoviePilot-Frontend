@@ -1669,7 +1669,11 @@ export default {
       bestVersionRuleGroup: 'Version Upgrade Priority Rule Group',
       bestVersionRuleGroupHint: 'Filter version upgrade subscriptions based on selected filter rule groups',
       timedSearch: 'Subscription Scheduled Search',
-      timedSearchHint: 'Search all sites every 24 hours to supplement resources that may be missed by subscription',
+      timedSearchHint:
+        'Search all sites at specified intervals to supplement resources that may be missed by subscription',
+      searchInterval: 'Subscription Search Interval',
+      searchIntervalHint:
+        'Set the time interval for subscription search, only effective when subscription scheduled search is enabled',
       checkLocalMedia: 'Check File System Resources',
       checkLocalMediaHint:
         'Scan the storage directory for existing resource files to avoid duplicate downloads; regardless of whether it is enabled, the media server will be checked',
@@ -1685,6 +1689,8 @@ export default {
         hour1: '1 hour',
         hour12: '12 hours',
         day1: '1 day',
+        day3: '3 days',
+        week1: '1 week',
       },
       saveSuccess: 'Subscription sites saved successfully',
       saveFailed: 'Failed to save subscription sites!',
