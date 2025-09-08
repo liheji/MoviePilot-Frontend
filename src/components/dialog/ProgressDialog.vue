@@ -10,8 +10,8 @@ const props = defineProps({
 </script>
 <template>
   <!-- Progress Dialog -->
-  <VDialog :scrim="false" width="25rem">
-    <VCard elevation="3" color="primary">
+  <VDialog :opacity="0" width="25rem">
+    <VCard color="primary">
       <VCardText class="text-center">
         {{ props.text || t('dialog.progress.processing') }}
         <VProgressLinear color="white" class="mb-0 mt-1" :model-value="props.value" indeterminate />
