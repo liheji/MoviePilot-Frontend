@@ -7,6 +7,15 @@ import { useUserStore } from '@/stores'
 import { filterMenusByPermission } from '@/utils/permission'
 import { usePWA } from '@/composables/usePWA'
 
+// 是否显示的输入参数
+defineProps({
+  showNav: {
+    type: Boolean,
+    default: true,
+  },
+})
+
+
 const display = useDisplay()
 // PWA模式检测
 const { appMode } = usePWA()
@@ -160,7 +169,7 @@ const showDynamicButton = computed(() => {
 </script>
 
 <template>
-  <Teleport v-if="appMode" to="body">
+  <Teleport v-if="appMode && showNav" to="body">
     <div class="footer-nav-container">
       <VCard elevation="3" class="footer-nav-card border" rounded="pill" :class="{ 'shift-left': showDynamicButton }">
         <VCardText class="footer-card-content">
