@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN" style="
-    overflow: hidden auto;
+    overflow: hidden;
     min-block-size: 100vh;
     min-block-size: 100dvh;
     --safe-area-inset-bottom: env(safe-area-inset-bottom);
@@ -95,9 +95,7 @@
   <link rel="preload" href="/logo.png" as="image" />
   <link rel="modulepreload" href="/src/main.ts" />
 
-  <!-- 内联关键CSS -->
   <style>
-    /* 关键路径CSS - 从loader.css内联 */
     #loading-bg {
       position: fixed;
       z-index: 99999;
@@ -115,14 +113,12 @@
       transition: opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease;
     }
 
-    /* 添加logo完成动画 - 放大虚化效果 */
     .loading-complete .loading-logo {
       filter: blur(10px);
       opacity: 0;
       transform: scale(1.5);
     }
 
-    /* 添加加载背景消失动画 - 放大虚化效果 */
     .loading-complete {
       filter: blur(15px);
       opacity: 0;
@@ -141,7 +137,6 @@
       transition: opacity 0.6s ease;
     }
 
-    /* 完成时隐藏加载动画 */
     .loading-complete .loading {
       opacity: 0;
     }
@@ -197,7 +192,6 @@
     }
   </style>
 
-  <!-- 初始化脚本 -->
   <script>
     // 检测系统主题是否为深色模式
     function checkPrefersColorSchemeIsDark() {
