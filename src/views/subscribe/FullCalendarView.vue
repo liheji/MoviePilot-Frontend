@@ -120,8 +120,9 @@ async function getSubscribes() {
     loading.value = true
     const subscribes: Subscribe[] = await api.get('subscribe/')
     loading.value = false
-    const subEvents = await Promise.all(subscribes.map(async sub => eventsHander(sub)))
-    calendarOptions.value.events = subEvents.flat().filter(event => event.start) as EventSourceInput
+    const subEvents = await Promise.allSettled(subscribes.map(async sub => eventsHander(sub)))
+    const succEvents = subEvents.filter(result => result.status === 'fulfilled').map(result => result.value)
+    calendarOptions.value.events = succEvents.flat().filter(event => event.start) as EventSourceInput
     isLoaded.value = true
   } catch (error) {
     console.error(error)
