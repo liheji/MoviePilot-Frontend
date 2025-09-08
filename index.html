@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN" style="
-    overflow: hidden;
+    overflow: hidden auto;
     min-block-size: 100vh;
     min-block-size: 100dvh;
     --safe-area-inset-bottom: env(safe-area-inset-bottom);
@@ -96,6 +96,13 @@
   <link rel="modulepreload" href="/src/main.ts" />
 
   <style>
+    #app {
+      block-size: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
     #loading-bg {
       position: fixed;
       z-index: 99999;
