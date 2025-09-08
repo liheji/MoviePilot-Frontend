@@ -386,7 +386,7 @@ onMounted(() => {
 
     <!-- 👉 Footer -->
     <template #footer>
-      <Footer />
+      <Footer v-show="!showPluginQuickAccess" />
     </template>
   </VerticalNavLayout>
 
