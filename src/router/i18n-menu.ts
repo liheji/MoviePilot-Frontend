@@ -1,8 +1,13 @@
 import { useI18n } from 'vue-i18n'
+import { useGlobalSettingsStore } from '@/stores'
 
 // 构建路由菜单，每次调用时使用当前的语言环境
 export function getNavMenus() {
   const { t } = useI18n()
+  const globalSettingsStore = useGlobalSettingsStore()
+
+  // 检查是否为高级模式
+  const isAdvancedMode = globalSettingsStore.get('ADVANCED_MODE') !== false
 
   return [
     {
@@ -127,14 +132,18 @@ export function getNavMenus() {
       admin: true,
       permission: 'admin',
     },
-    {
-      title: t('navItems.settings'),
-      icon: 'mdi-cog-outline',
-      to: '/setting',
-      header: t('menu.system'),
-      admin: true,
-      permission: 'admin',
-    },
+    ...(isAdvancedMode
+      ? [
+          {
+            title: t('navItems.settings'),
+            icon: 'mdi-cog-outline',
+            to: '/setting',
+            header: t('menu.system'),
+            admin: true,
+            permission: 'admin',
+          },
+        ]
+      : []),
   ]
 }
 

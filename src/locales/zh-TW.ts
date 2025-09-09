@@ -49,6 +49,8 @@ export default {
     itemsPerPage: '每頁條數',
     pageText: '{0}-{1} 共 {2} 條',
     noDataText: '沒有數據',
+    next: '下一步',
+    previous: '上一步',
     loadingText: '加載中...',
     networkRequired: '此功能需要網絡連接',
     networkDisconnected: '網絡連接已斷開',

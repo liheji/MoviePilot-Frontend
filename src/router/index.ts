@@ -209,6 +209,13 @@ const router = createRouter({
           component: () => import('../pages/login.vue'),
         },
         {
+          path: 'setup-wizard',
+          component: () => import('../views/setting/SetupWizard.vue'),
+          meta: {
+            requiresAuth: true,
+          },
+        },
+        {
           path: '/:pathMatch(.*)*',
           component: () => import('../pages/[...all].vue'),
         },

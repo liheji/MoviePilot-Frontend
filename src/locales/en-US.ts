@@ -49,6 +49,8 @@ export default {
     itemsPerPage: 'Items per page',
     pageText: '{0}-{1} of {2}',
     noDataText: 'No data',
+    next: 'Next',
+    previous: 'Previous',
     loadingText: 'Loading...',
     networkRequired: 'This feature requires network connection',
     networkDisconnected: 'Network connection lost',
