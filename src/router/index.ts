@@ -210,7 +210,7 @@ const router = createRouter({
         },
         {
           path: 'setup-wizard',
-          component: () => import('../views/setting/SetupWizard.vue'),
+          component: () => import('../pages/setup.vue'),
           meta: {
             requiresAuth: true,
           },

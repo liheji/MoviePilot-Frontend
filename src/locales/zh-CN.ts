@@ -2854,27 +2854,27 @@ export default {
     failed: '配置向导失败，请重试',
     complete: '完成配置',
     step1: {
-      title: '基础参数配置',
+      title: '基础',
       description: '设置访问域名、背景壁纸和识别数据源',
     },
     step2: {
-      title: '存储目录配置',
+      title: '存储目录',
       description: '配置下载目录和媒体库目录',
     },
     step3: {
-      title: '下载器配置',
+      title: '下载器',
       description: '配置下载器（可选）',
     },
     step4: {
-      title: '媒体服务器配置',
+      title: '媒体服务器',
       description: '配置媒体服务器（可选）',
     },
     step5: {
-      title: '通知配置',
+      title: '通知',
       description: '配置通知渠道（可选）',
     },
     step6: {
-      title: '资源偏好配置',
+      title: '资源偏好',
       description: '设置资源下载偏好',
     },
     basic: {
