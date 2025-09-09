@@ -330,14 +330,12 @@ onMounted(() => {
     <!-- 全屏头部 -->
     <div class="setup-wizard-header">
       <div class="d-flex align-center justify-space-between">
-        <div class="d-flex align-center">
-          <VBtn icon="mdi-arrow-left" variant="text" @click="router.push('/setting')" class="me-3" />
+        <div class="d-flex align-center text-center mx-auto">
           <div>
-            <h1 class="text-h4 font-weight-bold">{{ t('setupWizard.title') }}</h1>
+            <h1 class="text-h3 font-weight-bold text-moviepilot mb-3">{{ t('setupWizard.title') }}</h1>
             <p class="text-body-1 text-medium-emphasis">{{ t('setupWizard.subtitle') }}</p>
           </div>
         </div>
-        <VBtn icon="mdi-close" variant="text" @click="router.push('/setting')" />
       </div>
     </div>
 
@@ -525,8 +523,7 @@ onMounted(() => {
 
                     <!-- 下载器配置 -->
                     <VCol v-if="wizardData.downloader.type" cols="12">
-                      <VCard variant="outlined">
-                        <VCardTitle class="text-h6">{{ t('setupWizard.downloader.config') }}</VCardTitle>
+                      <VCard>
                         <VCardText>
                           <VForm>
                             <VRow v-if="wizardData.downloader.type === 'qbittorrent'">
@@ -775,7 +772,7 @@ onMounted(() => {
                                   width="48"
                                   class="mx-auto mb-2"
                                 />
-                                <div class="text-h6">TrimeMedia</div>
+                                <div class="text-h6">飞牛影视</div>
                               </VCardText>
                             </VCard>
                           </VCol>
@@ -785,8 +782,7 @@ onMounted(() => {
 
                     <!-- 媒体服务器配置 -->
                     <VCol v-if="wizardData.mediaServer.type" cols="12">
-                      <VCard variant="outlined">
-                        <VCardTitle class="text-h6">{{ t('setupWizard.mediaServer.config') }}</VCardTitle>
+                      <VCard>
                         <VCardText>
                           <VForm>
                             <VRow v-if="wizardData.mediaServer.type === 'emby'">
@@ -1195,8 +1191,7 @@ onMounted(() => {
 
                     <!-- 通知配置 -->
                     <VCol v-if="wizardData.notification.type" cols="12">
-                      <VCard variant="outlined">
-                        <VCardTitle class="text-h6">{{ t('setupWizard.notification.config') }}</VCardTitle>
+                      <VCard>
                         <VCardText>
                           <VForm>
                             <VRow>
@@ -1534,7 +1529,7 @@ onMounted(() => {
 
                     <!-- 预设规则选择 -->
                     <VCol cols="12">
-                      <VCard variant="outlined">
+                      <VCard>
                         <VCardTitle class="text-h6">{{ t('setupWizard.preferences.presetRules') }}</VCardTitle>
                         <VCardText>
                           <VRow>
@@ -1584,7 +1579,7 @@ onMounted(() => {
 
                     <!-- 详细配置 -->
                     <VCol cols="12">
-                      <VCard variant="outlined">
+                      <VCard>
                         <VCardTitle class="text-h6">{{ t('setupWizard.preferences.detailedConfig') }}</VCardTitle>
                         <VCardText>
                           <VRow>
@@ -1645,7 +1640,7 @@ onMounted(() => {
 
                     <!-- 预设规则选择 -->
                     <VCol cols="12">
-                      <VCard variant="outlined">
+                      <VCard>
                         <VCardTitle class="text-h6">{{ t('setupWizard.preferences.presetRules') }}</VCardTitle>
                         <VCardText>
                           <VRow>
@@ -1695,7 +1690,7 @@ onMounted(() => {
 
                     <!-- 详细配置 -->
                     <VCol cols="12">
-                      <VCard variant="outlined">
+                      <VCard>
                         <VCardTitle class="text-h6">{{ t('setupWizard.preferences.detailedConfig') }}</VCardTitle>
                         <VCardText>
                           <VRow>
@@ -1741,9 +1736,14 @@ onMounted(() => {
 
           <!-- 操作按钮 -->
           <VCardActions class="justify-space-between">
-            <VBtn :disabled="currentStep === 1" prepend-icon="mdi-chevron-left" @click="prevStep">
-              {{ t('common.previous') }}
-            </VBtn>
+            <div class="d-flex gap-2">
+              <VBtn v-if="currentStep !== 1" prepend-icon="mdi-chevron-left" @click="prevStep">
+                {{ t('common.previous') }}
+              </VBtn>
+              <VBtn v-else color="primary" prepend-icon="mdi-keyboard-return" @click="router.push('/')">
+                {{ t('common.skip') }}
+              </VBtn>
+            </div>
 
             <div class="d-flex gap-2">
               <VBtn v-if="currentStep < totalSteps" color="primary" append-icon="mdi-chevron-right" @click="nextStep">
@@ -1788,7 +1788,7 @@ onMounted(() => {
   padding: 20px;
   margin-block: 0;
   margin-inline: auto;
-  max-inline-size: 1200px;
+  max-inline-size: 800px;
 }
 
 .cursor-pointer {

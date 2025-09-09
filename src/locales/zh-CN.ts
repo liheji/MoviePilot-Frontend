@@ -51,6 +51,7 @@ export default {
     noDataText: '没有数据',
     next: '下一步',
     previous: '上一步',
+    skip: '跳过',
     loadingText: '加载中...',
     networkRequired: '此功能需要网络连接',
     networkDisconnected: '网络连接已断开',
@@ -2848,8 +2849,8 @@ export default {
     pluginCount: '{count} 个插件',
   },
   setupWizard: {
-    title: '配置向导',
-    subtitle: '快速配置 MoviePilot 的基础设置',
+    title: '欢迎使用 MoviePilot ！',
+    subtitle: '按向导完成配置，即刻开始使用。',
     completed: '配置向导完成！',
     failed: '配置向导失败，请重试',
     complete: '完成配置',

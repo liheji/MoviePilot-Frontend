@@ -51,6 +51,7 @@ export default {
     noDataText: '沒有數據',
     next: '下一步',
     previous: '上一步',
+    skip: '跳過',
     loadingText: '加載中...',
     networkRequired: '此功能需要網絡連接',
     networkDisconnected: '網絡連接已斷開',
@@ -2847,8 +2848,8 @@ export default {
     pluginCount: '{count} 個插件',
   },
   setupWizard: {
-    title: '設定精靈',
-    subtitle: '快速設定 MoviePilot 的基礎設定',
+    title: '歡迎使用 MoviePilot ！',
+    subtitle: '按向導完成配置，即刻開始使用。',
     completed: '設定精靈完成！',
     failed: '設定精靈失敗，請重試',
     complete: '完成設定',

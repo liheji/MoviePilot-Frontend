@@ -51,6 +51,7 @@ export default {
     noDataText: 'No data',
     next: 'Next',
     previous: 'Previous',
+    skip: 'Skip',
     loadingText: 'Loading...',
     networkRequired: 'This feature requires network connection',
     networkDisconnected: 'Network connection lost',
@@ -2881,8 +2882,8 @@ export default {
     pluginCount: '{count} Plugins',
   },
   setupWizard: {
-    title: 'Setup Wizard',
-    subtitle: 'Quickly configure MoviePilot basic settings',
+    title: 'Welcome to MoviePilot!',
+    subtitle: 'Complete the configuration by the wizard, and start using it immediately.',
     completed: 'Setup Wizard completed!',
     failed: 'Setup Wizard failed, please try again',
     complete: 'Complete Configuration',
