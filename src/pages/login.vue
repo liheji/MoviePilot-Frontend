@@ -117,12 +117,17 @@ async function subscribeForPushNotifications() {
 
 // 登录后处理
 async function afterLogin(superuser: boolean, userPayload: userState, filteredMenus: any[]) {
-  // 如果有原始路径，优先跳转到原始路径
-  if (authStore.originalPath && authStore.originalPath !== '/') {
-    router.push(authStore.originalPath)
+  // 如果需要显示设置向导，跳转到设置向导页面
+  if (userPayload.wizard) {
+    router.push('/setup-wizard')
   } else {
-    // 跳转到第一个有权限的菜单
-    router.push(filteredMenus[0].to)
+    // 如果有原始路径，优先跳转到原始路径
+    if (authStore.originalPath && authStore.originalPath !== '/') {
+      router.push(authStore.originalPath)
+    } else {
+      // 跳转到第一个有权限的菜单
+      router.push(filteredMenus[0].to)
+    }
   }
 
   // 订阅推送通知
@@ -165,6 +170,7 @@ function login() {
         avatar: response.avatar,
         level: response.level,
         permissions: response.permissions,
+        wizard: response.wizard,
       }
 
       // 在保存用户信息之前检查权限

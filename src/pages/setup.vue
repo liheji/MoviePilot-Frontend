@@ -66,27 +66,36 @@ const wizardData = ref({
 
 // 步骤标题
 const stepTitles = [
-  t('setupWizard.step1.title'),
-  t('setupWizard.step2.title'),
-  t('setupWizard.step3.title'),
-  t('setupWizard.step4.title'),
-  t('setupWizard.step5.title'),
-  t('setupWizard.step6.title'),
+  t('setupWizard.basic.title'),
+  t('setupWizard.storage.title'),
+  t('setupWizard.downloader.title'),
+  t('setupWizard.mediaServer.title'),
+  t('setupWizard.notification.title'),
+  t('setupWizard.preferences.title'),
 ]
 
 // 步骤描述
 const stepDescriptions = [
-  t('setupWizard.step1.description'),
-  t('setupWizard.step2.description'),
-  t('setupWizard.step3.description'),
-  t('setupWizard.step4.description'),
-  t('setupWizard.step5.description'),
-  t('setupWizard.step6.description'),
+  t('setupWizard.basic.description'),
+  t('setupWizard.storage.description'),
+  t('setupWizard.downloader.description'),
+  t('setupWizard.mediaServer.description'),
+  t('setupWizard.notification.description'),
+  t('setupWizard.preferences.description'),
 ]
 
 // 密码可见性控制
 const isPasswordVisible = ref(false)
 const isConfirmPasswordVisible = ref(false)
+
+// 连通性测试状态
+const connectivityTest = ref({
+  isTesting: false,
+  testMessage: '',
+  testProgress: 0,
+  testResult: null as 'success' | 'error' | null,
+  showResult: false,
+})
 
 // 整理方式选项
 const transferTypeItems = [
@@ -192,11 +201,200 @@ function selectPreset(preset: string) {
   }
 }
 
+// 连通性测试函数
+async function testConnectivity(step: number) {
+  connectivityTest.value.isTesting = true
+  connectivityTest.value.testMessage = ''
+  connectivityTest.value.testProgress = 0
+  connectivityTest.value.testResult = null
+  connectivityTest.value.showResult = false
+
+  try {
+    let testResult: { success: boolean; message: string | null } = { success: false, message: null }
+
+    switch (step) {
+      case 2: // 存储目录测试
+        testResult = await testStorageConnectivity()
+        break
+      case 3: // 下载器测试
+        testResult = await testDownloaderConnectivity()
+        break
+      case 4: // 媒体服务器测试
+        testResult = await testMediaServerConnectivity()
+        break
+      case 5: // 消息通知测试
+        testResult = await testNotificationConnectivity()
+        break
+    }
+
+    // 设置测试结果
+    connectivityTest.value.isTesting = false
+    connectivityTest.value.testResult = testResult.success ? 'success' : 'error'
+    connectivityTest.value.showResult = true
+
+    // 根据结果显示不同的消息
+    if (testResult.success) {
+      connectivityTest.value.testMessage = t('setupWizard.connectivityTestSuccess')
+    } else {
+      // 显示API返回的具体错误原因
+      connectivityTest.value.testMessage = testResult.message || t('setupWizard.connectivityTestFailed')
+    }
+
+    // 成功时2秒后隐藏结果，失败时保持显示直到用户操作
+    if (testResult.success) {
+      setTimeout(() => {
+        connectivityTest.value.showResult = false
+        connectivityTest.value.testResult = null
+      }, 2000)
+    }
+
+    return testResult.success
+  } catch (error) {
+    console.error('Connectivity test failed:', error)
+    connectivityTest.value.isTesting = false
+    connectivityTest.value.testResult = 'error'
+    connectivityTest.value.showResult = true
+    connectivityTest.value.testMessage = (error as Error).message || t('setupWizard.connectivityTestFailed')
+    return false
+  }
+}
+
+// 存储目录连通性测试
+async function testStorageConnectivity() {
+  try {
+    connectivityTest.value.testProgress = 30
+    connectivityTest.value.testMessage = t('setupWizard.testingStorage')
+
+    // 等待设置生效
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    connectivityTest.value.testProgress = 60
+    connectivityTest.value.testMessage = t('setupWizard.checkingStorage')
+
+    // 调用存储测试API
+    const result = await api.get('system/storagetest')
+    connectivityTest.value.testProgress = 100
+
+    if (result.data?.success) {
+      return { success: true, message: null }
+    } else {
+      return { success: false, message: result.data?.message || t('setupWizard.storageTestFailed') }
+    }
+  } catch (error) {
+    console.error('Storage test failed:', error)
+    return { success: false, message: (error as Error).message || t('setupWizard.storageTestFailed') }
+  }
+}
+
+// 下载器连通性测试
+async function testDownloaderConnectivity() {
+  try {
+    connectivityTest.value.testProgress = 30
+    connectivityTest.value.testMessage = t('setupWizard.testingDownloader')
+
+    // 等待设置生效
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    connectivityTest.value.testProgress = 60
+    connectivityTest.value.testMessage = t('setupWizard.checkingDownloader')
+
+    // 调用下载器测试API
+    const moduleid = wizardData.value.downloader.type
+    if (!moduleid) {
+      return { success: false, message: t('setupWizard.downloaderNotSelected') }
+    }
+
+    const result: { [key: string]: any } = await api.get(`system/moduletest/${moduleid}`)
+    connectivityTest.value.testProgress = 100
+
+    if (result.data?.success) {
+      return { success: true, message: null }
+    } else {
+      return { success: false, message: result.data?.message || t('setupWizard.downloaderTestFailed') }
+    }
+  } catch (error) {
+    console.error('Downloader test failed:', error)
+    return { success: false, message: (error as Error).message || t('setupWizard.downloaderTestFailed') }
+  }
+}
+
+// 媒体服务器连通性测试
+async function testMediaServerConnectivity() {
+  try {
+    connectivityTest.value.testProgress = 30
+    connectivityTest.value.testMessage = t('setupWizard.testingMediaServer')
+
+    // 等待设置生效
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    connectivityTest.value.testProgress = 60
+    connectivityTest.value.testMessage = t('setupWizard.checkingMediaServer')
+
+    // 调用媒体服务器测试API
+    const moduleid = wizardData.value.mediaServer.type
+    if (!moduleid) {
+      return { success: false, message: t('setupWizard.mediaServerNotSelected') }
+    }
+
+    const result: { [key: string]: any } = await api.get(`system/moduletest/${moduleid}`)
+    connectivityTest.value.testProgress = 100
+
+    if (result.data?.success) {
+      return { success: true, message: null }
+    } else {
+      return { success: false, message: result.data?.message || t('setupWizard.mediaServerTestFailed') }
+    }
+  } catch (error) {
+    console.error('Media server test failed:', error)
+    return { success: false, message: (error as Error).message || t('setupWizard.mediaServerTestFailed') }
+  }
+}
+
+// 消息通知连通性测试
+async function testNotificationConnectivity() {
+  try {
+    connectivityTest.value.testProgress = 30
+    connectivityTest.value.testMessage = t('setupWizard.testingNotification')
+
+    // 等待设置生效
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    connectivityTest.value.testProgress = 60
+    connectivityTest.value.testMessage = t('setupWizard.checkingNotification')
+
+    // 调用通知测试API
+    const moduleid = wizardData.value.notification.type
+    if (!moduleid) {
+      return { success: false, message: t('setupWizard.notificationNotSelected') }
+    }
+
+    const result: { [key: string]: any } = await api.get(`system/moduletest/${moduleid}`)
+    connectivityTest.value.testProgress = 100
+
+    if (result.data?.success) {
+      return { success: true, message: null }
+    } else {
+      return { success: false, message: result.data?.message || t('setupWizard.notificationTestFailed') }
+    }
+  } catch (error) {
+    console.error('Notification test failed:', error)
+    return { success: false, message: (error as Error).message || t('setupWizard.notificationTestFailed') }
+  }
+}
+
 // 下一步
 async function nextStep() {
   if (currentStep.value < totalSteps) {
     // 保存当前步骤的设置
     await saveCurrentStepSettings()
+
+    // 对于需要测试的步骤，进行连通性测试
+    if ([2, 3, 4, 5].includes(currentStep.value)) {
+      const testResult = await testConnectivity(currentStep.value)
+      if (!testResult) {
+        return
+      }
+    }
 
     currentStep.value++
   }
@@ -1907,22 +2105,83 @@ onMounted(async () => {
             </VStepperWindowItem>
           </VStepperWindow>
 
+          <!-- 连通性测试进度条 -->
+          <VCard v-if="connectivityTest.isTesting || connectivityTest.showResult" variant="outlined" class="mx-4 mb-4">
+            <VCardText class="text-center py-4">
+              <!-- 测试中 -->
+              <div v-if="connectivityTest.isTesting">
+                <VIcon icon="mdi-cog-sync" class="rotating mb-2" color="primary" size="24" />
+                <div class="text-body-2 mb-2">{{ connectivityTest.testMessage }}</div>
+                <VProgressLinear
+                  v-model="connectivityTest.testProgress"
+                  color="primary"
+                  height="6"
+                  rounded
+                  class="mb-2"
+                />
+                <div class="text-caption text-medium-emphasis">{{ Math.round(connectivityTest.testProgress) }}%</div>
+              </div>
+
+              <!-- 测试结果 -->
+              <div v-else-if="connectivityTest.showResult">
+                <VIcon
+                  :icon="connectivityTest.testResult === 'success' ? 'mdi-check-circle' : 'mdi-alert-circle'"
+                  :color="connectivityTest.testResult === 'success' ? 'success' : 'error'"
+                  size="24"
+                  class="mb-2"
+                />
+                <div
+                  :class="connectivityTest.testResult === 'success' ? 'text-success' : 'text-error'"
+                  class="text-body-2 mb-2 font-weight-medium"
+                >
+                  {{ connectivityTest.testMessage }}
+                </div>
+                <div v-if="connectivityTest.testResult === 'error'" class="text-caption text-medium-emphasis">
+                  {{ t('setupWizard.testFailedHint') }}
+                </div>
+              </div>
+            </VCardText>
+          </VCard>
+
           <!-- 操作按钮 -->
           <VCardActions class="justify-space-between">
             <div class="d-flex gap-2">
-              <VBtn v-if="currentStep !== 1" prepend-icon="mdi-chevron-left" @click="prevStep">
+              <VBtn
+                v-if="currentStep !== 1"
+                prepend-icon="mdi-chevron-left"
+                @click="prevStep"
+                :disabled="connectivityTest.isTesting"
+              >
                 {{ t('common.previous') }}
               </VBtn>
-              <VBtn v-else color="primary" prepend-icon="mdi-keyboard-return" @click="router.push('/')">
+              <VBtn
+                v-else
+                color="primary"
+                prepend-icon="mdi-keyboard-return"
+                @click="router.push('/')"
+                :disabled="connectivityTest.isTesting"
+              >
                 {{ t('common.skip') }}
               </VBtn>
             </div>
 
             <div class="d-flex gap-2">
-              <VBtn v-if="currentStep < totalSteps" color="primary" append-icon="mdi-chevron-right" @click="nextStep">
-                {{ t('common.next') }}
+              <VBtn
+                v-if="currentStep < totalSteps"
+                color="primary"
+                append-icon="mdi-chevron-right"
+                @click="nextStep"
+                :disabled="connectivityTest.isTesting"
+              >
+                {{ connectivityTest.isTesting ? t('setupWizard.testing') : t('common.next') }}
               </VBtn>
-              <VBtn v-else color="success" prepend-icon="mdi-check" @click="completeWizard">
+              <VBtn
+                v-else
+                color="success"
+                prepend-icon="mdi-check"
+                @click="completeWizard"
+                :disabled="connectivityTest.isTesting"
+              >
                 {{ t('setupWizard.complete') }}
               </VBtn>
             </div>
@@ -1985,5 +2244,20 @@ onMounted(async () => {
 
 .v-card--variant-tonal.v-theme--dark {
   background-color: rgb(var(--v-theme-primary), 0.2);
+}
+
+/* 旋转动画 */
+.rotating {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

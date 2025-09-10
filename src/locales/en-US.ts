@@ -2892,31 +2892,21 @@ export default {
     completed: 'Setup Wizard completed!',
     failed: 'Setup Wizard failed, please try again',
     complete: 'Complete Configuration',
-    step1: {
-      title: 'Basic',
-      description: 'Set access domain, background wallpaper and recognition data source',
-    },
-    step2: {
-      title: 'Storage Directory',
-      description: 'Configure download directory and media library directory',
-    },
-    step3: {
-      title: 'Downloader',
-      description: 'Configure downloader (optional)',
-    },
-    step4: {
-      title: 'Media Server',
-      description: 'Configure media server (optional)',
-    },
-    step5: {
-      title: 'Notification',
-      description: 'Configure notification channels (optional)',
-    },
-    step6: {
-      title: 'Resource Preferences',
-      description: 'Set resource download preferences',
-    },
+    testing: 'Testing',
+    connectivityTestSuccess: 'Connectivity test passed',
+    connectivityTestFailed: 'Connectivity test failed',
+    testingStorage: 'Testing storage',
+    checkingStorage: 'Checking storage connectivity',
+    testingDownloader: 'Testing downloader',
+    checkingDownloader: 'Checking downloader connectivity',
+    testingMediaServer: 'Testing media server',
+    checkingMediaServer: 'Checking media server connectivity',
+    testingNotification: 'Testing notification',
+    checkingNotification: 'Checking notification connectivity',
+    testFailedHint: 'Please check if the configuration is correct, you can retest after modification',
     basic: {
+      title: 'Basic Settings',
+      description: 'Set access domain, username/password and network configuration',
       appDomain: 'App Domain',
       appDomainHint: 'Used to add quick jump links when sending notifications',
       wallpaper: 'Background Wallpaper',
@@ -2927,6 +2917,8 @@ export default {
       apiTokenHint: 'System automatically generated API access token',
     },
     storage: {
+      title: 'Storage Configuration',
+      description: 'Configure download directory and media library directory',
       info: 'Storage Configuration',
       infoDesc: 'Configure local storage directories for download and media library management',
       downloadPath: 'Download Directory',
@@ -2935,6 +2927,8 @@ export default {
       libraryPathHint: 'Set the storage path for media files',
     },
     downloader: {
+      title: 'Downloader Configuration',
+      description: 'Configure downloader (optional)',
       info: 'Downloader Configuration',
       infoDesc: 'Configure downloader for automatic resource download (optional)',
       type: 'Downloader Type',
@@ -2949,6 +2943,8 @@ export default {
       downloadPath: 'Download Path',
     },
     mediaServer: {
+      title: 'Media Server',
+      description: 'Configure media server (optional)',
       info: 'Media Server Configuration',
       infoDesc: 'Configure media server for media library management (optional)',
       type: 'Media Server Type',
@@ -2963,6 +2959,8 @@ export default {
       token: 'Access Token',
     },
     notification: {
+      title: 'Notification Settings',
+      description: 'Configure notification channels (optional)',
       info: 'Notification Configuration',
       infoDesc: 'Configure notification channels for receiving system messages (optional)',
       type: 'Notification Type',
@@ -2980,6 +2978,8 @@ export default {
       receiverEmail: 'Receiver Email',
     },
     preferences: {
+      title: 'Resource Preferences',
+      description: 'Set resource download preferences',
       info: 'Resource Preferences',
       infoDesc:
         'Set resource download preferences, the system will automatically select the best resources based on these preferences',

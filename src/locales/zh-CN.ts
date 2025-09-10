@@ -2859,31 +2859,21 @@ export default {
     completed: '配置向导完成！',
     failed: '配置向导失败，请重试',
     complete: '完成配置',
-    step1: {
-      title: '基础',
-      description: '设置访问域名、背景壁纸和识别数据源',
-    },
-    step2: {
-      title: '存储目录',
-      description: '配置下载目录和媒体库目录',
-    },
-    step3: {
-      title: '下载器',
-      description: '配置下载器（可选）',
-    },
-    step4: {
-      title: '媒体服务器',
-      description: '配置媒体服务器（可选）',
-    },
-    step5: {
-      title: '通知',
-      description: '配置通知渠道（可选）',
-    },
-    step6: {
-      title: '资源偏好',
-      description: '设置资源下载偏好',
-    },
+    testing: '正在测试',
+    connectivityTestSuccess: '连通性测试通过',
+    connectivityTestFailed: '连通性测试失败',
+    testingStorage: '正在测试存储目录',
+    checkingStorage: '检查存储目录连通性',
+    testingDownloader: '正在测试下载器',
+    checkingDownloader: '检查下载器连通性',
+    testingMediaServer: '正在测试媒体服务器',
+    checkingMediaServer: '检查媒体服务器连通性',
+    testingNotification: '正在测试消息通知',
+    checkingNotification: '检查消息通知连通性',
+    testFailedHint: '请检查配置是否正确，修改后可以重新测试',
     basic: {
+      title: '基础设置',
+      description: '设置访问域名、用户名密码和网络配置',
       appDomain: '访问域名',
       appDomainHint: '用于发送通知时，添加快捷跳转地址',
       wallpaper: '背景壁纸',
@@ -2894,6 +2884,8 @@ export default {
       apiTokenHint: '系统自动生成的 API 访问令牌',
     },
     storage: {
+      title: '存储配置',
+      description: '配置下载目录和媒体库目录',
       info: '存储配置说明',
       infoDesc: '配置本地存储目录，用于下载和媒体库管理',
       downloadPath: '下载目录',
@@ -2902,6 +2894,8 @@ export default {
       libraryPathHint: '设置媒体文件的存储路径',
     },
     downloader: {
+      title: '下载器配置',
+      description: '配置下载器（可选）',
       info: '下载器配置说明',
       infoDesc: '配置下载器用于自动下载资源（可选）',
       type: '下载器类型',
@@ -2916,6 +2910,8 @@ export default {
       downloadPath: '下载路径',
     },
     mediaServer: {
+      title: '媒体服务器',
+      description: '配置媒体服务器（可选）',
       info: '媒体服务器配置说明',
       infoDesc: '配置媒体服务器用于媒体库管理（可选）',
       type: '媒体服务器类型',
@@ -2930,6 +2926,8 @@ export default {
       token: '访问令牌',
     },
     notification: {
+      title: '通知设置',
+      description: '配置通知渠道（可选）',
       info: '通知配置说明',
       infoDesc: '配置通知渠道用于接收系统消息（可选）',
       type: '通知类型',
@@ -2947,6 +2945,8 @@ export default {
       receiverEmail: '接收邮箱',
     },
     preferences: {
+      title: '资源偏好',
+      description: '设置资源下载偏好',
       info: '资源偏好说明',
       infoDesc: '设置资源下载的偏好，系统将根据这些偏好自动选择最佳资源',
       quality: '质量偏好',

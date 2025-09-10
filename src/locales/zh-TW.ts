@@ -2858,31 +2858,21 @@ export default {
     completed: '設定精靈完成！',
     failed: '設定精靈失敗，請重試',
     complete: '完成設定',
-    step1: {
-      title: '基礎',
-      description: '設定存取網域、背景桌布和識別資料來源',
-    },
-    step2: {
-      title: '儲存目錄',
-      description: '設定下載目錄和媒體庫目錄',
-    },
-    step3: {
-      title: '下載器',
-      description: '設定下載器（可選）',
-    },
-    step4: {
-      title: '媒體伺服器',
-      description: '設定媒體伺服器（可選）',
-    },
-    step5: {
-      title: '通知',
-      description: '設定通知管道（可選）',
-    },
-    step6: {
-      title: '資源偏好',
-      description: '設定資源下載偏好',
-    },
+    testing: '正在測試',
+    connectivityTestSuccess: '連通性測試通過',
+    connectivityTestFailed: '連通性測試失敗',
+    testingStorage: '正在測試存儲目錄',
+    checkingStorage: '檢查存儲目錄連通性',
+    testingDownloader: '正在測試下載器',
+    checkingDownloader: '檢查下載器連通性',
+    testingMediaServer: '正在測試媒體服務器',
+    checkingMediaServer: '檢查媒體服務器連通性',
+    testingNotification: '正在測試消息通知',
+    checkingNotification: '檢查消息通知連通性',
+    testFailedHint: '請檢查配置是否正確，修改後可以重新測試',
     basic: {
+      title: '基礎設定',
+      description: '設定存取網域、用戶名密碼和網路配置',
       appDomain: '存取網域',
       appDomainHint: '用於發送通知時，新增快速跳轉位址',
       wallpaper: '背景桌布',
@@ -2893,6 +2883,8 @@ export default {
       apiTokenHint: '系統自動產生的 API 存取權杖',
     },
     storage: {
+      title: '儲存配置',
+      description: '設定下載目錄和媒體庫目錄',
       info: '儲存設定說明',
       infoDesc: '設定本機儲存目錄，用於下載和媒體庫管理',
       downloadPath: '下載目錄',
@@ -2901,6 +2893,8 @@ export default {
       libraryPathHint: '設定媒體檔案的儲存路徑',
     },
     downloader: {
+      title: '下載器配置',
+      description: '設定下載器（可選）',
       info: '下載器設定說明',
       infoDesc: '設定下載器用於自動下載資源（可選）',
       type: '下載器類型',
@@ -2915,6 +2909,8 @@ export default {
       downloadPath: '下載路徑',
     },
     mediaServer: {
+      title: '媒體伺服器',
+      description: '設定媒體伺服器（可選）',
       info: '媒體伺服器設定說明',
       infoDesc: '設定媒體伺服器用於媒體庫管理（可選）',
       type: '媒體伺服器類型',
@@ -2929,6 +2925,8 @@ export default {
       token: '存取權杖',
     },
     notification: {
+      title: '通知設定',
+      description: '設定通知管道（可選）',
       info: '通知設定說明',
       infoDesc: '設定通知管道用於接收系統訊息（可選）',
       type: '通知類型',
@@ -2946,6 +2944,8 @@ export default {
       receiverEmail: '接收信箱',
     },
     preferences: {
+      title: '資源偏好',
+      description: '設定資源下載偏好',
       info: '資源偏好說明',
       infoDesc: '設定資源下載的偏好，系統將根據這些偏好自動選擇最佳資源',
       quality: '品質偏好',
