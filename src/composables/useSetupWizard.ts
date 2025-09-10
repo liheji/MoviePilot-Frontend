@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import api from '@/api'
 import { copyToClipboard } from '@/@core/utils/navigator'
+import { User } from '@/api/types'
 
 export interface WizardData {
   basic: {
@@ -823,21 +824,13 @@ export function useSetupWizard() {
   // 完成向导
   async function completeWizard() {
     try {
-      // 如果输入了密码，验证密码一致性
-      if (wizardData.value.basic.password) {
-        if (wizardData.value.basic.password !== wizardData.value.basic.confirmPassword) {
-          $toast.error(t('dialog.userAddEdit.passwordMismatch'))
-          return
-        }
-        // 更新用户密码
-        await updateUserPassword()
-      }
-
-      // 保存最后一步的设置（资源偏好）
-      await savePreferenceSettings()
+      // 先处理下一步
+      await nextStep()
+      // 保存设置向导完成状态
+      await saveSetupWizardState()
 
       $toast.success(t('setupWizard.completed'))
-      router.push('/setting')
+      router.push('/')
     } catch (error) {
       console.error('Setup wizard failed:', error)
       $toast.error(t('setupWizard.failed'))
@@ -849,9 +842,7 @@ export function useSetupWizard() {
     if (wizardData.value.basic.username && wizardData.value.basic.password) {
       try {
         // 获取当前用户信息
-        const response = await api.get('user/')
-        const existingUsers = response.data || []
-        const currentUser = existingUsers.find((user: any) => user.name === wizardData.value.basic.username)
+        const currentUser: User = await api.get('user/current')
 
         if (currentUser) {
           // 更新现有用户的密码
@@ -894,9 +885,22 @@ export function useSetupWizard() {
         GITHUB_TOKEN: wizardData.value.basic.githubToken,
       }
 
-      const response = await api.post('system/env', basicSettings)
-      if (response.data?.success) {
+      // 保存基础设置
+      const response: { [key: string]: any } = await api.post('system/env', basicSettings)
+      if (response.success) {
         $toast.success(t('setupWizard.basicSettingsSaved'))
+      } else {
+        return
+      }
+
+      // 如果输入了密码，验证密码一致性
+      if (wizardData.value.basic.password) {
+        if (wizardData.value.basic.password !== wizardData.value.basic.confirmPassword) {
+          $toast.error(t('dialog.userAddEdit.passwordMismatch'))
+          return
+        }
+        // 更新用户密码
+        await updateUserPassword()
       }
     } catch (error) {
       console.error('Save basic settings failed:', error)
@@ -937,8 +941,8 @@ export function useSetupWizard() {
         library_category_folder: true,
       }
 
-      const response = await api.post('system/setting/Directories', [directory])
-      if (response.data?.success) {
+      const response: { [key: string]: any } = await api.post('system/setting/Directories', [directory])
+      if (response.success) {
         $toast.success(t('setupWizard.storageSettingsSaved'))
       }
     } catch (error) {
@@ -959,8 +963,8 @@ export function useSetupWizard() {
           config: wizardData.value.downloader.config,
         }
 
-        const response = await api.post('system/setting/Downloaders', [downloader])
-        if (response.data?.success) {
+        const response: { [key: string]: any } = await api.post('system/setting/Downloaders', [downloader])
+        if (response.success) {
           $toast.success(t('setupWizard.downloaderSettingsSaved'))
         }
       } catch (error) {
@@ -984,8 +988,8 @@ export function useSetupWizard() {
           config: wizardData.value.mediaServer.config,
         }
 
-        const response = await api.post('system/setting/MediaServers', [mediaServer])
-        if (response.data?.success) {
+        const response: { [key: string]: any } = await api.post('system/setting/MediaServers', [mediaServer])
+        if (response.success) {
           $toast.success(t('setupWizard.mediaServerSettingsSaved'))
         }
       } catch (error) {
@@ -1009,8 +1013,8 @@ export function useSetupWizard() {
           config: wizardData.value.notification.config,
         }
 
-        const response = await api.post('system/setting/Notifications', [notification])
-        if (response.data?.success) {
+        const response: { [key: string]: any } = await api.post('system/setting/Notifications', [notification])
+        if (response.success) {
           $toast.success(t('setupWizard.notificationSettingsSaved'))
         }
       } catch (error) {
@@ -1034,13 +1038,26 @@ export function useSetupWizard() {
         RESOLUTION_PREFERENCE: wizardData.value.preferences.resolution,
       }
 
-      const response = await api.post('system/env', preferenceSettings)
-      if (response.data?.success) {
+      const response: { [key: string]: any } = await api.post('system/env', preferenceSettings)
+      if (response.success) {
         $toast.success(t('setupWizard.preferenceSettingsSaved'))
       }
     } catch (error) {
       console.error('Save preference settings failed:', error)
       $toast.error(t('setupWizard.savePreferenceSettingsFailed'))
+    }
+  }
+
+  // 保存设置向导完成状态
+  async function saveSetupWizardState() {
+    try {
+      const response: { [key: string]: any } = await api.post('system/setting/SetupWizardState', '1')
+      if (response.success) {
+        console.log('Setup wizard state saved successfully')
+      }
+    } catch (error) {
+      console.error('Save setup wizard state failed:', error)
+      // 这里不显示错误提示，因为向导状态保存失败不应该阻止用户完成向导
     }
   }
 
@@ -1064,6 +1081,11 @@ export function useSetupWizard() {
         }
         if (result.data.SUPERUSER) {
           wizardData.value.basic.username = result.data.SUPERUSER
+        }
+
+        // 如果没有API Token，则创建一个随机的
+        if (!wizardData.value.basic.apiToken) {
+          createRandomString()
         }
       }
     } catch (error) {
@@ -1163,11 +1185,6 @@ export function useSetupWizard() {
     await loadMediaServerSettings()
     await loadNotificationSettings()
     await loadPreferenceSettings()
-
-    // 如果没有API Token，则创建一个随机的
-    if (!wizardData.value.basic.apiToken) {
-      createRandomString()
-    }
   }
 
   return {

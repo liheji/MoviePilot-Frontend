@@ -170,7 +170,7 @@ function login() {
         avatar: response.avatar,
         level: response.level,
         permissions: response.permissions,
-        wizard: response.wizard,
+        wizard: response.widzard,
       }
 
       // 在保存用户信息之前检查权限
