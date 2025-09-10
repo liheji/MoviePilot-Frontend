@@ -3,11 +3,59 @@ import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
 
 const { t } = useI18n()
-const { wizardData, createRandomString, copyValue } = useSetupWizard()
+const { wizardData, createRandomString, copyValue, validateCurrentStep } = useSetupWizard()
 
 // 密码可见性控制
 const isPasswordVisible = ref(false)
 const isConfirmPasswordVisible = ref(false)
+
+// 验证状态
+const validation = computed(() => validateCurrentStep())
+const hasErrors = computed(() => !validation.value.isValid)
+
+// 密码相关验证
+const passwordError = computed(() => {
+  if (!wizardData.value.basic.password) return false
+  return wizardData.value.basic.password.length < 6
+})
+
+const confirmPasswordError = computed(() => {
+  if (!wizardData.value.basic.password) return false
+  if (!wizardData.value.basic.confirmPassword) return true
+  return wizardData.value.basic.password !== wizardData.value.basic.confirmPassword
+})
+
+const passwordErrorMessage = computed(() => {
+  if (passwordError.value) return t('dialog.userAddEdit.passwordMinLength')
+  return ''
+})
+
+const confirmPasswordErrorMessage = computed(() => {
+  if (!wizardData.value.basic.password) return ''
+  if (!wizardData.value.basic.confirmPassword) return t('dialog.userAddEdit.confirmPasswordRequired')
+  if (confirmPasswordError.value) return t('dialog.userAddEdit.passwordMismatch')
+  return ''
+})
+
+// API Token验证
+const apiTokenError = computed(() => {
+  return !wizardData.value.basic.apiToken && hasErrors.value
+})
+
+const apiTokenErrorMessage = computed(() => {
+  if (apiTokenError.value) return t('setupWizard.basic.apiTokenRequired')
+  return ''
+})
+
+// 用户名验证（虽然是只读的，但为了完整性）
+const usernameError = computed(() => {
+  return !wizardData.value.basic.username && hasErrors.value
+})
+
+const usernameErrorMessage = computed(() => {
+  if (usernameError.value) return t('dialog.userAddEdit.usernameRequired')
+  return ''
+})
 </script>
 
 <template>
@@ -32,10 +80,12 @@ const isConfirmPasswordVisible = ref(false)
           <VTextField
             v-model="wizardData.basic.username"
             :label="t('user.username')"
-            :hint="t('user.usernameHint')"
+            :hint="t('setupWizard.basic.currentUserHint')"
             persistent-hint
             prepend-inner-icon="mdi-account"
-            :rules="[(v: string) => !!v || t('user.usernameRequired')]"
+            readonly
+            :error="usernameError"
+            :error-messages="usernameError ? [usernameErrorMessage] : []"
           />
         </VCol>
         <VCol cols="12" md="6">
@@ -43,12 +93,14 @@ const isConfirmPasswordVisible = ref(false)
             v-model="wizardData.basic.password"
             :type="isPasswordVisible ? 'text' : 'password'"
             :label="t('user.password')"
-            :hint="t('user.passwordHint')"
+            :hint="t('setupWizard.basic.passwordOptionalHint')"
             persistent-hint
             prepend-inner-icon="mdi-lock"
             :append-inner-icon="isPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
             @click:append-inner="isPasswordVisible = !isPasswordVisible"
-            :rules="[(v: string) => !!v || t('user.passwordRequired'), (v: string) => v.length >= 6 || t('user.passwordMinLength')]"
+            :error="passwordError"
+            :error-messages="passwordError ? [passwordErrorMessage] : []"
+            clearable
           />
         </VCol>
         <VCol cols="12" md="6">
@@ -56,15 +108,15 @@ const isConfirmPasswordVisible = ref(false)
             v-model="wizardData.basic.confirmPassword"
             :type="isConfirmPasswordVisible ? 'text' : 'password'"
             :label="t('user.confirmPassword')"
-            :hint="t('user.confirmPasswordHint')"
+            :hint="t('setupWizard.basic.confirmPasswordHint')"
             persistent-hint
             prepend-inner-icon="mdi-lock-check"
             :append-inner-icon="isConfirmPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
             @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
-            :rules="[
-              (v: string) => !!v || t('user.confirmPasswordRequired'),
-              (v: string) => v === wizardData.basic.password || t('user.passwordMismatch')
-            ]"
+            :disabled="!wizardData.basic.password"
+            :error="confirmPasswordError"
+            :error-messages="confirmPasswordError ? [confirmPasswordErrorMessage] : []"
+            clearable
           />
         </VCol>
         <VCol cols="12" md="6">
@@ -98,7 +150,8 @@ const isConfirmPasswordVisible = ref(false)
             @click:append-inner="
               wizardData.basic.apiToken ? copyValue(wizardData.basic.apiToken) : createRandomString()
             "
-            readonly
+            :error="apiTokenError"
+            :error-messages="apiTokenError ? [apiTokenErrorMessage] : []"
           />
         </VCol>
       </VRow>

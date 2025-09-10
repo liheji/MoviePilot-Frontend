@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
 
 const { t } = useI18n()
-const { wizardData, selectNotification } = useSetupWizard()
+const { wizardData, selectNotification, validationErrors } = useSetupWizard()
 </script>
 
 <template>
@@ -34,12 +34,7 @@ const { wizardData, selectNotification } = useSetupWizard()
                   @click="selectNotification('wechat')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/wechat.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/wechat.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">微信</div>
                   </VCardText>
                 </VCard>
@@ -52,12 +47,7 @@ const { wizardData, selectNotification } = useSetupWizard()
                   @click="selectNotification('telegram')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/telegram.webp"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/telegram.webp" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Telegram</div>
                   </VCardText>
                 </VCard>
@@ -70,12 +60,7 @@ const { wizardData, selectNotification } = useSetupWizard()
                   @click="selectNotification('slack')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/slack.webp"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/slack.webp" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Slack</div>
                   </VCardText>
                 </VCard>
@@ -88,12 +73,7 @@ const { wizardData, selectNotification } = useSetupWizard()
                   @click="selectNotification('synologychat')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/synologychat.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/synologychat.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Synology Chat</div>
                   </VCardText>
                 </VCard>
@@ -106,12 +86,7 @@ const { wizardData, selectNotification } = useSetupWizard()
                   @click="selectNotification('vocechat')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/vocechat.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/vocechat.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">VoceChat</div>
                   </VCardText>
                 </VCard>
@@ -139,13 +114,10 @@ const { wizardData, selectNotification } = useSetupWizard()
             <VCardText>
               <VForm>
                 <VRow>
-                  <VCol cols="12" md="6">
-                    <VSwitch v-model="wizardData.notification.enabled" :label="t('notification.enabled')" />
-                  </VCol>
                   <VCol cols="12">
                     <VAutocomplete
                       v-model="wizardData.notification.switchs"
-                      :items="[]"
+                      :items="[] as string[]"
                       :label="t('notification.type')"
                       :hint="t('notification.typeHint')"
                       multiple
@@ -163,8 +135,11 @@ const { wizardData, selectNotification } = useSetupWizard()
                       :label="t('notification.name')"
                       :placeholder="t('notification.name')"
                       :hint="t('notification.nameHint')"
+                      :error="validationErrors.notification.name"
+                      :error-messages="validationErrors.notification.name ? [t('notification.nameRequired')] : []"
                       persistent-hint
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -172,8 +147,13 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.WECHAT_CORPID"
                       :label="t('notification.wechat.corpId')"
                       :hint="t('notification.wechat.corpIdHint')"
+                      :error="validationErrors.notification.WECHAT_CORPID"
+                      :error-messages="
+                        validationErrors.notification.WECHAT_CORPID ? [t('notification.wechat.corpIdRequired')] : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-domain"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -181,8 +161,13 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.WECHAT_APP_ID"
                       :label="t('notification.wechat.appId')"
                       :hint="t('notification.wechat.appIdHint')"
+                      :error="validationErrors.notification.WECHAT_APP_ID"
+                      :error-messages="
+                        validationErrors.notification.WECHAT_APP_ID ? [t('notification.wechat.appIdRequired')] : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-application"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -190,8 +175,15 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.WECHAT_APP_SECRET"
                       :label="t('notification.wechat.appSecret')"
                       :hint="t('notification.wechat.appSecretHint')"
+                      :error="validationErrors.notification.WECHAT_APP_SECRET"
+                      :error-messages="
+                        validationErrors.notification.WECHAT_APP_SECRET
+                          ? [t('notification.wechat.appSecretRequired')]
+                          : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-key"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -239,8 +231,11 @@ const { wizardData, selectNotification } = useSetupWizard()
                       :label="t('notification.name')"
                       :placeholder="t('notification.name')"
                       :hint="t('notification.nameHint')"
+                      :error="validationErrors.notification.name"
+                      :error-messages="validationErrors.notification.name ? [t('notification.nameRequired')] : []"
                       persistent-hint
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -248,8 +243,13 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.TELEGRAM_TOKEN"
                       :label="t('notification.telegram.token')"
                       :hint="t('notification.telegram.tokenHint')"
+                      :error="validationErrors.notification.TELEGRAM_TOKEN"
+                      :error-messages="
+                        validationErrors.notification.TELEGRAM_TOKEN ? [t('notification.telegram.tokenRequired')] : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-key"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -257,8 +257,15 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.TELEGRAM_CHAT_ID"
                       :label="t('notification.telegram.chatId')"
                       :hint="t('notification.telegram.chatIdHint')"
+                      :error="validationErrors.notification.TELEGRAM_CHAT_ID"
+                      :error-messages="
+                        validationErrors.notification.TELEGRAM_CHAT_ID
+                          ? [t('notification.telegram.chatIdRequired')]
+                          : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-chat"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -299,8 +306,11 @@ const { wizardData, selectNotification } = useSetupWizard()
                       :label="t('notification.name')"
                       :placeholder="t('notification.name')"
                       :hint="t('notification.nameHint')"
+                      :error="validationErrors.notification.name"
+                      :error-messages="validationErrors.notification.name ? [t('notification.nameRequired')] : []"
                       persistent-hint
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -309,8 +319,15 @@ const { wizardData, selectNotification } = useSetupWizard()
                       :label="t('notification.slack.oauthToken')"
                       :placeholder="t('notification.slack.oauthTokenPlaceholder')"
                       :hint="t('notification.slack.oauthTokenHint')"
+                      :error="validationErrors.notification.SLACK_OAUTH_TOKEN"
+                      :error-messages="
+                        validationErrors.notification.SLACK_OAUTH_TOKEN
+                          ? [t('notification.slack.oauthTokenRequired')]
+                          : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-key"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -329,8 +346,13 @@ const { wizardData, selectNotification } = useSetupWizard()
                       :label="t('notification.slack.channel')"
                       :placeholder="t('notification.slack.channelPlaceholder')"
                       :hint="t('notification.slack.channelHint')"
+                      :error="validationErrors.notification.SLACK_CHANNEL"
+                      :error-messages="
+                        validationErrors.notification.SLACK_CHANNEL ? [t('notification.slack.channelRequired')] : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-pound"
+                      required
                     />
                   </VCol>
                 </VRow>
@@ -341,8 +363,11 @@ const { wizardData, selectNotification } = useSetupWizard()
                       :label="t('notification.name')"
                       :placeholder="t('notification.name')"
                       :hint="t('notification.nameHint')"
+                      :error="validationErrors.notification.name"
+                      :error-messages="validationErrors.notification.name ? [t('notification.nameRequired')] : []"
                       persistent-hint
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -350,8 +375,15 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.SYNOLOGYCHAT_WEBHOOK"
                       :label="t('notification.synologychat.webhook')"
                       :hint="t('notification.synologychat.webhookHint')"
+                      :error="validationErrors.notification.SYNOLOGYCHAT_WEBHOOK"
+                      :error-messages="
+                        validationErrors.notification.SYNOLOGYCHAT_WEBHOOK
+                          ? [t('notification.synologychat.webhookRequired')]
+                          : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-webhook"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -371,8 +403,11 @@ const { wizardData, selectNotification } = useSetupWizard()
                       :label="t('notification.name')"
                       :placeholder="t('notification.name')"
                       :hint="t('notification.nameHint')"
+                      :error="validationErrors.notification.name"
+                      :error-messages="validationErrors.notification.name ? [t('notification.nameRequired')] : []"
                       persistent-hint
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -380,8 +415,13 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.VOCECHAT_HOST"
                       :label="t('notification.vocechat.host')"
                       :hint="t('notification.vocechat.hostHint')"
+                      :error="validationErrors.notification.VOCECHAT_HOST"
+                      :error-messages="
+                        validationErrors.notification.VOCECHAT_HOST ? [t('notification.vocechat.hostRequired')] : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-server"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -389,8 +429,15 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.VOCECHAT_API_KEY"
                       :label="t('notification.vocechat.apiKey')"
                       :hint="t('notification.vocechat.apiKeyHint')"
+                      :error="validationErrors.notification.VOCECHAT_API_KEY"
+                      :error-messages="
+                        validationErrors.notification.VOCECHAT_API_KEY
+                          ? [t('notification.vocechat.apiKeyRequired')]
+                          : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-key"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -411,8 +458,11 @@ const { wizardData, selectNotification } = useSetupWizard()
                       :label="t('notification.name')"
                       :placeholder="t('notification.name')"
                       :hint="t('notification.nameHint')"
+                      :error="validationErrors.notification.name"
+                      :error-messages="validationErrors.notification.name ? [t('notification.nameRequired')] : []"
                       persistent-hint
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -420,8 +470,15 @@ const { wizardData, selectNotification } = useSetupWizard()
                       v-model="wizardData.notification.config.WEBPUSH_USERNAME"
                       :label="t('notification.webpush.username')"
                       :hint="t('notification.webpush.usernameHint')"
+                      :error="validationErrors.notification.WEBPUSH_USERNAME"
+                      :error-messages="
+                        validationErrors.notification.WEBPUSH_USERNAME
+                          ? [t('notification.webpush.usernameRequired')]
+                          : []
+                      "
                       persistent-hint
                       prepend-inner-icon="mdi-account"
+                      required
                     />
                   </VCol>
                 </VRow>

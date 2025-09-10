@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
 
 const { t } = useI18n()
-const { wizardData, selectMediaServer } = useSetupWizard()
+const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
 </script>
 
 <template>
@@ -34,12 +34,7 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                   @click="selectMediaServer('emby')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/emby.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/emby.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Emby</div>
                   </VCardText>
                 </VCard>
@@ -52,12 +47,7 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                   @click="selectMediaServer('jellyfin')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/jellyfin.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/jellyfin.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Jellyfin</div>
                   </VCardText>
                 </VCard>
@@ -70,12 +60,7 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                   @click="selectMediaServer('plex')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/plex.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/plex.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Plex</div>
                   </VCardText>
                 </VCard>
@@ -88,12 +73,7 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                   @click="selectMediaServer('trimemedia')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/trimemedia.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/trimemedia.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">飞牛影视</div>
                   </VCardText>
                 </VCard>
@@ -114,9 +94,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       :label="t('common.name')"
                       :placeholder="t('mediaserver.nameRequired')"
                       :hint="t('mediaserver.serverAlias')"
+                      :error="validationErrors.mediaServer.name"
+                      :error-messages="validationErrors.mediaServer.name ? [t('mediaserver.nameRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -125,9 +108,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       :label="t('mediaserver.host')"
                       :placeholder="t('mediaserver.hostPlaceholder')"
                       :hint="t('mediaserver.hostHint')"
+                      :error="validationErrors.mediaServer.host"
+                      :error-messages="validationErrors.mediaServer.host ? [t('mediaserver.hostRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-server"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -146,9 +132,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       v-model="wizardData.mediaServer.config.apikey"
                       :label="t('mediaserver.apiKey')"
                       :hint="t('mediaserver.embyApiKeyHint')"
+                      :error="validationErrors.mediaServer.apikey"
+                      :error-messages="validationErrors.mediaServer.apikey ? [t('mediaserver.apiKeyRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-key"
+                      required
                     />
                   </VCol>
                   <VCol cols="12">
@@ -174,9 +163,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       :label="t('common.name')"
                       :placeholder="t('mediaserver.nameRequired')"
                       :hint="t('mediaserver.serverAlias')"
+                      :error="validationErrors.mediaServer.name"
+                      :error-messages="validationErrors.mediaServer.name ? [t('mediaserver.nameRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -185,9 +177,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       :label="t('mediaserver.host')"
                       :placeholder="t('mediaserver.hostPlaceholder')"
                       :hint="t('mediaserver.hostHint')"
+                      :error="validationErrors.mediaServer.host"
+                      :error-messages="validationErrors.mediaServer.host ? [t('mediaserver.hostRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-server"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -206,9 +201,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       v-model="wizardData.mediaServer.config.apikey"
                       :label="t('mediaserver.apiKey')"
                       :hint="t('mediaserver.jellyfinApiKeyHint')"
+                      :error="validationErrors.mediaServer.apikey"
+                      :error-messages="validationErrors.mediaServer.apikey ? [t('mediaserver.apiKeyRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-key"
+                      required
                     />
                   </VCol>
                   <VCol cols="12">
@@ -234,9 +232,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       :label="t('common.name')"
                       :placeholder="t('mediaserver.nameRequired')"
                       :hint="t('mediaserver.serverAlias')"
+                      :error="validationErrors.mediaServer.name"
+                      :error-messages="validationErrors.mediaServer.name ? [t('mediaserver.nameRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -245,9 +246,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       :label="t('mediaserver.host')"
                       :placeholder="t('mediaserver.hostPlaceholder')"
                       :hint="t('mediaserver.hostHint')"
+                      :error="validationErrors.mediaServer.host"
+                      :error-messages="validationErrors.mediaServer.host ? [t('mediaserver.hostRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-server"
+                      required
                     />
                   </VCol>
                   <VCol cols="12">
@@ -265,8 +269,11 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                     <VTextField
                       v-model="wizardData.mediaServer.config.username"
                       :label="t('mediaserver.username')"
+                      :error="validationErrors.mediaServer.username"
+                      :error-messages="validationErrors.mediaServer.username ? [t('mediaserver.usernameRequired')] : []"
                       active
                       prepend-inner-icon="mdi-account"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -274,8 +281,11 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       type="password"
                       v-model="wizardData.mediaServer.config.password"
                       :label="t('mediaserver.password')"
+                      :error="validationErrors.mediaServer.password"
+                      :error-messages="validationErrors.mediaServer.password ? [t('mediaserver.passwordRequired')] : []"
                       active
                       prepend-inner-icon="mdi-lock"
+                      required
                     />
                   </VCol>
                   <VCol cols="12">
@@ -301,9 +311,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       :label="t('common.name')"
                       :placeholder="t('mediaserver.nameRequired')"
                       :hint="t('mediaserver.serverAlias')"
+                      :error="validationErrors.mediaServer.name"
+                      :error-messages="validationErrors.mediaServer.name ? [t('mediaserver.nameRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -312,9 +325,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       :label="t('mediaserver.host')"
                       :placeholder="t('mediaserver.hostPlaceholder')"
                       :hint="t('mediaserver.hostHint')"
+                      :error="validationErrors.mediaServer.host"
+                      :error-messages="validationErrors.mediaServer.host ? [t('mediaserver.hostRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-server"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -333,9 +349,12 @@ const { wizardData, selectMediaServer } = useSetupWizard()
                       v-model="wizardData.mediaServer.config.token"
                       :label="t('mediaserver.plexToken')"
                       :hint="t('mediaserver.plexTokenHint')"
+                      :error="validationErrors.mediaServer.token"
+                      :error-messages="validationErrors.mediaServer.token ? [t('mediaserver.tokenRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-key"
+                      required
                     />
                   </VCol>
                   <VCol cols="12">

@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
 
 const { t } = useI18n()
-const { wizardData, selectDownloader } = useSetupWizard()
+const { wizardData, selectDownloader, validationErrors } = useSetupWizard()
 </script>
 
 <template>
@@ -34,12 +34,7 @@ const { wizardData, selectDownloader } = useSetupWizard()
                   @click="selectDownloader('qbittorrent')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/qbittorrent.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/qbittorrent.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">qBittorrent</div>
                   </VCardText>
                 </VCard>
@@ -52,12 +47,7 @@ const { wizardData, selectDownloader } = useSetupWizard()
                   @click="selectDownloader('transmission')"
                 >
                   <VCardText class="text-center">
-                    <VImg
-                      src="/src/assets/images/logos/transmission.png"
-                      height="48"
-                      width="48"
-                      class="mx-auto mb-2"
-                    />
+                    <VImg src="/src/assets/images/logos/transmission.png" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Transmission</div>
                   </VCardText>
                 </VCard>
@@ -78,9 +68,12 @@ const { wizardData, selectDownloader } = useSetupWizard()
                       :label="t('downloader.name')"
                       :placeholder="t('downloader.nameRequired')"
                       :hint="t('downloader.name')"
+                      :error="validationErrors.downloader.name"
+                      :error-messages="validationErrors.downloader.name ? [t('downloader.nameRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -89,9 +82,12 @@ const { wizardData, selectDownloader } = useSetupWizard()
                       :label="t('downloader.host')"
                       placeholder="http(s)://ip:port"
                       :hint="t('downloader.host')"
+                      :error="validationErrors.downloader.host"
+                      :error-messages="validationErrors.downloader.host ? [t('downloader.hostRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-server"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -99,9 +95,12 @@ const { wizardData, selectDownloader } = useSetupWizard()
                       v-model="wizardData.downloader.config.username"
                       :label="t('downloader.username')"
                       :hint="t('downloader.username')"
+                      :error="validationErrors.downloader.username"
+                      :error-messages="validationErrors.downloader.username ? [t('downloader.usernameRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-account"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -110,9 +109,12 @@ const { wizardData, selectDownloader } = useSetupWizard()
                       type="password"
                       :label="t('downloader.password')"
                       :hint="t('downloader.password')"
+                      :error="validationErrors.downloader.password"
+                      :error-messages="validationErrors.downloader.password ? [t('downloader.passwordRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-lock"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -159,9 +161,12 @@ const { wizardData, selectDownloader } = useSetupWizard()
                       :label="t('downloader.name')"
                       :placeholder="t('downloader.nameRequired')"
                       :hint="t('downloader.name')"
+                      :error="validationErrors.downloader.name"
+                      :error-messages="validationErrors.downloader.name ? [t('downloader.nameRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-label"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -170,9 +175,12 @@ const { wizardData, selectDownloader } = useSetupWizard()
                       :label="t('downloader.host')"
                       placeholder="http(s)://ip:port"
                       :hint="t('downloader.host')"
+                      :error="validationErrors.downloader.host"
+                      :error-messages="validationErrors.downloader.host ? [t('downloader.hostRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-server"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -180,9 +188,12 @@ const { wizardData, selectDownloader } = useSetupWizard()
                       v-model="wizardData.downloader.config.username"
                       :label="t('downloader.username')"
                       :hint="t('downloader.username')"
+                      :error="validationErrors.downloader.username"
+                      :error-messages="validationErrors.downloader.username ? [t('downloader.usernameRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-account"
+                      required
                     />
                   </VCol>
                   <VCol cols="12" md="6">
@@ -191,9 +202,12 @@ const { wizardData, selectDownloader } = useSetupWizard()
                       type="password"
                       :label="t('downloader.password')"
                       :hint="t('downloader.password')"
+                      :error="validationErrors.downloader.password"
+                      :error-messages="validationErrors.downloader.password ? [t('downloader.passwordRequired')] : []"
                       persistent-hint
                       active
                       prepend-inner-icon="mdi-lock"
+                      required
                     />
                   </VCol>
                 </VRow>

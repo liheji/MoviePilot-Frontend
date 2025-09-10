@@ -54,59 +54,134 @@ export interface ConnectivityTestState {
   showResult: boolean
 }
 
+export interface ValidationErrorState {
+  downloader: {
+    name: boolean
+    host: boolean
+    username: boolean
+    password: boolean
+  }
+  mediaServer: {
+    name: boolean
+    host: boolean
+    apikey: boolean
+    token: boolean
+    username: boolean
+    password: boolean
+  }
+  notification: {
+    name: boolean
+    [key: string]: boolean
+  }
+}
+
+// 全局状态，所有组件共享
+const currentStep = ref(1)
+const totalSteps = 6
+
+// 选中的预设规则
+const selectedPreset = ref('')
+
+// 向导数据
+const wizardData = ref<WizardData>({
+  basic: {
+    appDomain: '',
+    apiToken: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    proxyHost: '',
+    githubToken: '',
+  },
+  storage: {
+    downloadPath: '',
+    libraryPath: '',
+    transferType: 'link',
+    overwriteMode: 'never',
+  },
+  downloader: {
+    type: '',
+    name: '',
+    config: {},
+  },
+  mediaServer: {
+    type: '',
+    name: '',
+    config: {},
+    sync_libraries: [],
+  },
+  notification: {
+    type: '',
+    name: '',
+    enabled: false,
+    config: {},
+    switchs: [],
+  },
+  preferences: {
+    quality: '4K',
+    subtitle: 'chinese',
+    resolution: '2160p',
+  },
+})
+
+// 连通性测试状态
+const connectivityTest = ref<ConnectivityTestState>({
+  isTesting: false,
+  testMessage: '',
+  testProgress: 0,
+  testResult: null,
+  showResult: false,
+})
+
+// 验证错误状态
+const validationErrors = ref<ValidationErrorState>({
+  downloader: {
+    name: false,
+    host: false,
+    username: false,
+    password: false,
+  },
+  mediaServer: {
+    name: false,
+    host: false,
+    apikey: false,
+    token: false,
+    username: false,
+    password: false,
+  },
+  notification: {
+    name: false,
+  },
+})
+
 export function useSetupWizard() {
   const { t } = useI18n()
   const router = useRouter()
   const $toast = useToast()
 
-  // 当前步骤
-  const currentStep = ref(1)
-  const totalSteps = 6
-
-  // 选中的预设规则
-  const selectedPreset = ref('')
-
-  // 向导数据
-  const wizardData = ref<WizardData>({
-    basic: {
-      appDomain: '',
-      apiToken: '',
-      username: '',
-      password: '',
-      confirmPassword: '',
-      proxyHost: '',
-      githubToken: '',
-    },
-    storage: {
-      downloadPath: '',
-      libraryPath: '',
-      transferType: 'link',
-      overwriteMode: 'never',
-    },
+  // 类型到模块ID的映射关系
+  const typeToModuleMapping = {
+    // 下载器映射
     downloader: {
-      type: '',
-      name: '',
-      config: {},
+      'qbittorrent': 'QbittorrentModule',
+      'transmission': 'TransmissionModule',
     },
+    // 媒体服务器映射
     mediaServer: {
-      type: '',
-      name: '',
-      config: {},
-      sync_libraries: [],
+      'emby': 'EmbyModule',
+      'jellyfin': 'JellyfinModule',
+      'plex': 'PlexModule',
     },
+    // 通知映射
     notification: {
-      type: '',
-      name: '',
-      enabled: false,
-      config: {},
-      switchs: [],
+      'telegram': 'TelegramModule',
+      'wechat': 'WechatModule',
+      'slack': 'SlackModule',
+      'synologychat': 'SynologyChatModule',
+      'vocechat': 'VoceChatModule',
+      'webpush': 'WebPushModule',
     },
-    preferences: {
-      quality: '4K',
-      subtitle: 'chinese',
-      resolution: '2160p',
-    },
-  })
+  }
 
   // 步骤标题
   const stepTitles = computed(() => [
@@ -127,15 +202,6 @@ export function useSetupWizard() {
     t('setupWizard.notification.description'),
     t('setupWizard.preferences.description'),
   ])
-
-  // 连通性测试状态
-  const connectivityTest = ref<ConnectivityTestState>({
-    isTesting: false,
-    testMessage: '',
-    testProgress: 0,
-    testResult: null,
-    showResult: false,
-  })
 
   // 创建随机API Token
   function createRandomString() {
@@ -162,23 +228,50 @@ export function useSetupWizard() {
 
   // 选择下载器
   function selectDownloader(type: string) {
-    wizardData.value.downloader.type = type
-    wizardData.value.downloader.name = `${type} 下载器`
-    wizardData.value.downloader.config = {}
+    if (wizardData.value.downloader.type === type) {
+      // 重复点击已选中的类型，取消选择
+      wizardData.value.downloader.type = ''
+      wizardData.value.downloader.name = ''
+      wizardData.value.downloader.config = {}
+    } else {
+      wizardData.value.downloader.type = type
+      wizardData.value.downloader.name = `${type} 下载器`
+      wizardData.value.downloader.config = {}
+    }
   }
 
   // 选择媒体服务器
   function selectMediaServer(type: string) {
-    wizardData.value.mediaServer.type = type
-    wizardData.value.mediaServer.name = `${type} 服务器`
-    wizardData.value.mediaServer.config = {}
+    if (wizardData.value.mediaServer.type === type) {
+      // 重复点击已选中的类型，取消选择
+      wizardData.value.mediaServer.type = ''
+      wizardData.value.mediaServer.name = ''
+      wizardData.value.mediaServer.config = {}
+      wizardData.value.mediaServer.sync_libraries = []
+    } else {
+      wizardData.value.mediaServer.type = type
+      wizardData.value.mediaServer.name = `${type} 服务器`
+      wizardData.value.mediaServer.config = {}
+      wizardData.value.mediaServer.sync_libraries = []
+    }
   }
 
   // 选择通知
   function selectNotification(type: string) {
-    wizardData.value.notification.type = type
-    wizardData.value.notification.name = `${type} 通知`
-    wizardData.value.notification.config = {}
+    if (wizardData.value.notification.type === type) {
+      // 重复点击已选中的类型，取消选择
+      wizardData.value.notification.type = ''
+      wizardData.value.notification.name = ''
+      wizardData.value.notification.enabled = false
+      wizardData.value.notification.config = {}
+      wizardData.value.notification.switchs = []
+    } else {
+      wizardData.value.notification.type = type
+      wizardData.value.notification.name = `${type} 通知`
+      wizardData.value.notification.enabled = true
+      wizardData.value.notification.config = {}
+      wizardData.value.notification.switchs = []
+    }
   }
 
   // 选择预设规则
@@ -201,6 +294,264 @@ export function useSetupWizard() {
         wizardData.value.preferences.subtitle = 'chinese'
         wizardData.value.preferences.resolution = '1080p'
         break
+    }
+  }
+
+  // 清除验证错误状态
+  function clearValidationErrors() {
+    validationErrors.value.downloader = {
+      name: false,
+      host: false,
+      username: false,
+      password: false,
+    }
+    validationErrors.value.mediaServer = {
+      name: false,
+      host: false,
+      apikey: false,
+      token: false,
+      username: false,
+      password: false,
+    }
+    validationErrors.value.notification = {
+      name: false,
+    }
+  }
+
+  // 验证下载器字段
+  function validateDownloaderFields(): { isValid: boolean; errors: string[] } {
+    const errors: string[] = []
+    clearValidationErrors()
+
+    // 名称必输
+    if (!wizardData.value.downloader.name?.trim()) {
+      errors.push(t('downloader.nameRequired'))
+      validationErrors.value.downloader.name = true
+    }
+
+    // 主机地址必输
+    if (!wizardData.value.downloader.config?.host?.trim()) {
+      errors.push(t('downloader.hostRequired'))
+      validationErrors.value.downloader.host = true
+    }
+
+    // 根据下载器类型验证其他必输项
+    if (wizardData.value.downloader.type === 'qbittorrent' || wizardData.value.downloader.type === 'transmission') {
+      if (!wizardData.value.downloader.config?.username?.trim()) {
+        errors.push(t('downloader.usernameRequired'))
+        validationErrors.value.downloader.username = true
+      }
+      if (!wizardData.value.downloader.config?.password?.trim()) {
+        errors.push(t('downloader.passwordRequired'))
+        validationErrors.value.downloader.password = true
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    }
+  }
+
+  // 验证媒体服务器字段
+  function validateMediaServerFields(): { isValid: boolean; errors: string[] } {
+    const errors: string[] = []
+    clearValidationErrors()
+
+    // 名称必输
+    if (!wizardData.value.mediaServer.name?.trim()) {
+      errors.push(t('mediaserver.nameRequired'))
+      validationErrors.value.mediaServer.name = true
+    }
+
+    // 主机地址必输
+    if (!wizardData.value.mediaServer.config?.host?.trim()) {
+      errors.push(t('mediaserver.hostRequired'))
+      validationErrors.value.mediaServer.host = true
+    }
+
+    // 根据媒体服务器类型验证API密钥或Token
+    if (wizardData.value.mediaServer.type === 'emby' || wizardData.value.mediaServer.type === 'jellyfin') {
+      if (!wizardData.value.mediaServer.config?.apikey?.trim()) {
+        errors.push(t('mediaserver.apiKeyRequired'))
+        validationErrors.value.mediaServer.apikey = true
+      }
+    } else if (wizardData.value.mediaServer.type === 'plex') {
+      if (!wizardData.value.mediaServer.config?.token?.trim()) {
+        errors.push(t('mediaserver.tokenRequired'))
+        validationErrors.value.mediaServer.token = true
+      }
+    } else if (wizardData.value.mediaServer.type === 'trimemedia') {
+      if (!wizardData.value.mediaServer.config?.username?.trim()) {
+        errors.push(t('mediaserver.usernameRequired'))
+        validationErrors.value.mediaServer.username = true
+      }
+      if (!wizardData.value.mediaServer.config?.password?.trim()) {
+        errors.push(t('mediaserver.passwordRequired'))
+        validationErrors.value.mediaServer.password = true
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    }
+  }
+
+  // 验证通知字段
+  function validateNotificationFields(): { isValid: boolean; errors: string[] } {
+    const errors: string[] = []
+    clearValidationErrors()
+
+    // 名称必输
+    if (!wizardData.value.notification.name?.trim()) {
+      errors.push(t('notification.nameRequired'))
+      validationErrors.value.notification.name = true
+    }
+
+    // 根据通知类型验证必输项
+    const config = wizardData.value.notification.config || {}
+    switch (wizardData.value.notification.type) {
+      case 'wechat':
+        if (!config.WECHAT_CORPID?.trim()) {
+          errors.push(t('notification.wechat.corpIdRequired'))
+          validationErrors.value.notification.WECHAT_CORPID = true
+        }
+        if (!config.WECHAT_APP_ID?.trim()) {
+          errors.push(t('notification.wechat.appIdRequired'))
+          validationErrors.value.notification.WECHAT_APP_ID = true
+        }
+        if (!config.WECHAT_APP_SECRET?.trim()) {
+          errors.push(t('notification.wechat.appSecretRequired'))
+          validationErrors.value.notification.WECHAT_APP_SECRET = true
+        }
+        break
+      case 'telegram':
+        if (!config.TELEGRAM_TOKEN?.trim()) {
+          errors.push(t('notification.telegram.tokenRequired'))
+          validationErrors.value.notification.TELEGRAM_TOKEN = true
+        }
+        if (!config.TELEGRAM_CHAT_ID?.trim()) {
+          errors.push(t('notification.telegram.chatIdRequired'))
+          validationErrors.value.notification.TELEGRAM_CHAT_ID = true
+        }
+        break
+      case 'slack':
+        if (!config.SLACK_OAUTH_TOKEN?.trim()) {
+          errors.push(t('notification.slack.oauthTokenRequired'))
+          validationErrors.value.notification.SLACK_OAUTH_TOKEN = true
+        }
+        if (!config.SLACK_CHANNEL?.trim()) {
+          errors.push(t('notification.slack.channelRequired'))
+          validationErrors.value.notification.SLACK_CHANNEL = true
+        }
+        break
+      case 'synologychat':
+        if (!config.SYNOLOGYCHAT_WEBHOOK?.trim()) {
+          errors.push(t('notification.synologychat.webhookRequired'))
+          validationErrors.value.notification.SYNOLOGYCHAT_WEBHOOK = true
+        }
+        break
+      case 'vocechat':
+        if (!config.VOCECHAT_HOST?.trim()) {
+          errors.push(t('notification.vocechat.hostRequired'))
+          validationErrors.value.notification.VOCECHAT_HOST = true
+        }
+        if (!config.VOCECHAT_API_KEY?.trim()) {
+          errors.push(t('notification.vocechat.apiKeyRequired'))
+          validationErrors.value.notification.VOCECHAT_API_KEY = true
+        }
+        break
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    }
+  }
+
+  // 验证当前步骤的必输项
+  function validateCurrentStep(): { isValid: boolean; errors: string[] } {
+    const errors: string[] = []
+
+    switch (currentStep.value) {
+      case 1: // 基础设置
+        if (!wizardData.value.basic.username) {
+          errors.push(t('dialog.userAddEdit.usernameRequired'))
+        }
+        // 密码是可选的，但如果输入了密码则需要验证
+        if (wizardData.value.basic.password) {
+          if (wizardData.value.basic.password.length < 6) {
+            errors.push(t('dialog.userAddEdit.passwordMinLength'))
+          }
+          if (!wizardData.value.basic.confirmPassword) {
+            errors.push(t('dialog.userAddEdit.confirmPasswordRequired'))
+          } else if (wizardData.value.basic.password !== wizardData.value.basic.confirmPassword) {
+            errors.push(t('dialog.userAddEdit.passwordMismatch'))
+          }
+        }
+        if (!wizardData.value.basic.apiToken) {
+          errors.push(t('setupWizard.basic.apiTokenRequired'))
+        }
+        break
+
+      case 2: // 存储设置
+        if (!wizardData.value.storage.downloadPath) {
+          errors.push(t('setupWizard.storage.downloadPathRequired'))
+        }
+        if (!wizardData.value.storage.libraryPath) {
+          errors.push(t('setupWizard.storage.libraryPathRequired'))
+        }
+        break
+
+      case 3: // 下载器设置
+        if (wizardData.value.downloader.type) {
+          // 如果选择了下载器，则验证必输项
+          const validation = validateDownloaderFields()
+          errors.push(...validation.errors)
+        }
+        break
+
+      case 4: // 媒体服务器设置
+        if (wizardData.value.mediaServer.type) {
+          // 如果选择了媒体服务器，则验证必输项
+          const validation = validateMediaServerFields()
+          errors.push(...validation.errors)
+        }
+        break
+
+      case 5: // 通知设置
+        if (wizardData.value.notification.type) {
+          // 如果选择了通知，则验证必输项
+          const validation = validateNotificationFields()
+          errors.push(...validation.errors)
+        }
+        break
+
+      case 6: // 偏好设置
+        // 偏好设置有默认值，不需要验证
+        break
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    }
+  }
+
+  // 检查是否需要进行测试
+  function shouldPerformTest(step: number): boolean {
+    switch (step) {
+      case 2: // 存储目录测试 - 总是需要测试
+        return true
+      case 3: // 下载器测试 - 只有选择了下载器才测试
+        return !!wizardData.value.downloader.type
+      case 4: // 媒体服务器测试 - 只有选择了媒体服务器才测试
+        return !!wizardData.value.mediaServer.type
+      case 5: // 消息通知测试 - 只有选择了通知才测试
+        return !!wizardData.value.notification.type
+      default:
+        return false
     }
   }
 
@@ -238,17 +589,17 @@ export function useSetupWizard() {
       // 根据结果显示不同的消息
       if (testResult.success) {
         connectivityTest.value.testMessage = t('setupWizard.connectivityTestSuccess')
+        $toast.success(t('setupWizard.connectivityTestSuccess'))
       } else {
         // 显示API返回的具体错误原因
         connectivityTest.value.testMessage = testResult.message || t('setupWizard.connectivityTestFailed')
+        $toast.error(testResult.message || t('setupWizard.connectivityTestFailed'))
       }
 
       // 成功时2秒后隐藏结果，失败时保持显示直到用户操作
       if (testResult.success) {
-        setTimeout(() => {
-          connectivityTest.value.showResult = false
-          connectivityTest.value.testResult = null
-        }, 2000)
+        connectivityTest.value.showResult = false
+        connectivityTest.value.testResult = null
       }
 
       return testResult.success
@@ -258,6 +609,7 @@ export function useSetupWizard() {
       connectivityTest.value.testResult = 'error'
       connectivityTest.value.showResult = true
       connectivityTest.value.testMessage = (error as Error).message || t('setupWizard.connectivityTestFailed')
+      $toast.error((error as Error).message || t('setupWizard.connectivityTestFailed'))
       return false
     }
   }
@@ -274,14 +626,14 @@ export function useSetupWizard() {
       connectivityTest.value.testProgress = 60
       connectivityTest.value.testMessage = t('setupWizard.checkingStorage')
 
-      // 调用存储测试API
-      const result = await api.get('system/storagetest')
+      // 调用存储测试API - 使用FileManagerModule
+      const result: { [key: string]: any } = await api.get('system/moduletest/FileManagerModule')
       connectivityTest.value.testProgress = 100
 
-      if (result.data?.success) {
+      if (result.success) {
         return { success: true, message: null }
       } else {
-        return { success: false, message: result.data?.message || t('setupWizard.storageTestFailed') }
+        return { success: false, message: result.message || t('setupWizard.storageTestFailed') }
       }
     } catch (error) {
       console.error('Storage test failed:', error)
@@ -301,19 +653,24 @@ export function useSetupWizard() {
       connectivityTest.value.testProgress = 60
       connectivityTest.value.testMessage = t('setupWizard.checkingDownloader')
 
-      // 调用下载器测试API
-      const moduleid = wizardData.value.downloader.type
-      if (!moduleid) {
+      // 获取正确的模块ID
+      const downloaderType = wizardData.value.downloader.type
+      if (!downloaderType) {
         return { success: false, message: t('setupWizard.downloaderNotSelected') }
+      }
+
+      const moduleid = typeToModuleMapping.downloader[downloaderType as keyof typeof typeToModuleMapping.downloader]
+      if (!moduleid) {
+        return { success: false, message: t('setupWizard.unsupportedDownloaderType', { type: downloaderType }) }
       }
 
       const result: { [key: string]: any } = await api.get(`system/moduletest/${moduleid}`)
       connectivityTest.value.testProgress = 100
 
-      if (result.data?.success) {
+      if (result.success) {
         return { success: true, message: null }
       } else {
-        return { success: false, message: result.data?.message || t('setupWizard.downloaderTestFailed') }
+        return { success: false, message: result.message || t('setupWizard.downloaderTestFailed') }
       }
     } catch (error) {
       console.error('Downloader test failed:', error)
@@ -333,19 +690,24 @@ export function useSetupWizard() {
       connectivityTest.value.testProgress = 60
       connectivityTest.value.testMessage = t('setupWizard.checkingMediaServer')
 
-      // 调用媒体服务器测试API
-      const moduleid = wizardData.value.mediaServer.type
-      if (!moduleid) {
+      // 获取正确的模块ID
+      const mediaServerType = wizardData.value.mediaServer.type
+      if (!mediaServerType) {
         return { success: false, message: t('setupWizard.mediaServerNotSelected') }
+      }
+
+      const moduleid = typeToModuleMapping.mediaServer[mediaServerType as keyof typeof typeToModuleMapping.mediaServer]
+      if (!moduleid) {
+        return { success: false, message: t('setupWizard.unsupportedMediaServerType', { type: mediaServerType }) }
       }
 
       const result: { [key: string]: any } = await api.get(`system/moduletest/${moduleid}`)
       connectivityTest.value.testProgress = 100
 
-      if (result.data?.success) {
+      if (result.success) {
         return { success: true, message: null }
       } else {
-        return { success: false, message: result.data?.message || t('setupWizard.mediaServerTestFailed') }
+        return { success: false, message: result.message || t('setupWizard.mediaServerTestFailed') }
       }
     } catch (error) {
       console.error('Media server test failed:', error)
@@ -365,19 +727,25 @@ export function useSetupWizard() {
       connectivityTest.value.testProgress = 60
       connectivityTest.value.testMessage = t('setupWizard.checkingNotification')
 
-      // 调用通知测试API
-      const moduleid = wizardData.value.notification.type
-      if (!moduleid) {
+      // 获取正确的模块ID
+      const notificationType = wizardData.value.notification.type
+      if (!notificationType) {
         return { success: false, message: t('setupWizard.notificationNotSelected') }
+      }
+
+      const moduleid =
+        typeToModuleMapping.notification[notificationType as keyof typeof typeToModuleMapping.notification]
+      if (!moduleid) {
+        return { success: false, message: t('setupWizard.unsupportedNotificationType', { type: notificationType }) }
       }
 
       const result: { [key: string]: any } = await api.get(`system/moduletest/${moduleid}`)
       connectivityTest.value.testProgress = 100
 
-      if (result.data?.success) {
+      if (result.success) {
         return { success: true, message: null }
       } else {
-        return { success: false, message: result.data?.message || t('setupWizard.notificationTestFailed') }
+        return { success: false, message: result.message || t('setupWizard.notificationTestFailed') }
       }
     } catch (error) {
       console.error('Notification test failed:', error)
@@ -388,11 +756,22 @@ export function useSetupWizard() {
   // 下一步
   async function nextStep() {
     if (currentStep.value < totalSteps) {
+      // 验证当前步骤的必输项
+      const validation = validateCurrentStep()
+      if (!validation.isValid) {
+        // 显示验证错误
+        validation.errors.forEach(error => {
+          $toast.error(error)
+        })
+        return
+      }
+
       // 保存当前步骤的设置
       await saveCurrentStepSettings()
 
-      // 对于需要测试的步骤，进行连通性测试
-      if ([2, 3, 4, 5].includes(currentStep.value)) {
+      // 检查是否需要进行测试
+      const needsTest = shouldPerformTest(currentStep.value)
+      if (needsTest) {
         const testResult = await testConnectivity(currentStep.value)
         if (!testResult) {
           return
@@ -400,6 +779,7 @@ export function useSetupWizard() {
       }
 
       currentStep.value++
+      connectivityTest.value.showResult = false
     }
   }
 
@@ -408,6 +788,7 @@ export function useSetupWizard() {
     if (currentStep.value > 1) {
       currentStep.value--
     }
+    connectivityTest.value.showResult = false
   }
 
   // 保存当前步骤的设置
@@ -442,14 +823,15 @@ export function useSetupWizard() {
   // 完成向导
   async function completeWizard() {
     try {
-      // 验证密码一致性
-      if (wizardData.value.basic.password !== wizardData.value.basic.confirmPassword) {
-        $toast.error(t('user.passwordMismatch'))
-        return
+      // 如果输入了密码，验证密码一致性
+      if (wizardData.value.basic.password) {
+        if (wizardData.value.basic.password !== wizardData.value.basic.confirmPassword) {
+          $toast.error(t('dialog.userAddEdit.passwordMismatch'))
+          return
+        }
+        // 更新用户密码
+        await updateUserPassword()
       }
-
-      // 创建用户（如果还没有创建）
-      await createUser()
 
       // 保存最后一步的设置（资源偏好）
       await savePreferenceSettings()
@@ -462,16 +844,28 @@ export function useSetupWizard() {
     }
   }
 
-  // 创建用户
-  async function createUser() {
+  // 更新用户密码
+  async function updateUserPassword() {
     if (wizardData.value.basic.username && wizardData.value.basic.password) {
       try {
-        // 检查用户是否已存在
+        // 获取当前用户信息
         const response = await api.get('user/')
         const existingUsers = response.data || []
-        const userExists = existingUsers.some((user: any) => user.name === wizardData.value.basic.username)
+        const currentUser = existingUsers.find((user: any) => user.name === wizardData.value.basic.username)
 
-        if (!userExists) {
+        if (currentUser) {
+          // 更新现有用户的密码
+          const userData = {
+            name: wizardData.value.basic.username,
+            password: wizardData.value.basic.password,
+            is_active: currentUser.is_active,
+            is_superuser: currentUser.is_superuser,
+          }
+
+          await api.put(`user/${currentUser.id}`, userData)
+          $toast.success(t('setupWizard.passwordUpdateSuccess'))
+        } else {
+          // 如果用户不存在，创建新用户（通常不会发生）
           const userData = {
             name: wizardData.value.basic.username,
             password: wizardData.value.basic.password,
@@ -480,9 +874,12 @@ export function useSetupWizard() {
           }
 
           await api.post('user/', userData)
+          $toast.success(t('setupWizard.userCreateSuccess'))
         }
       } catch (error) {
-        console.log('Create user failed or user already exists:', error)
+        console.error('Update user password failed:', error)
+        $toast.error(t('setupWizard.passwordUpdateFailed'))
+        throw error
       }
     }
   }
@@ -526,11 +923,18 @@ export function useSetupWizard() {
         download_path: wizardData.value.storage.downloadPath,
         library_path: wizardData.value.storage.libraryPath,
         priority: 0,
-        monitor_type: 'compatibility',
-        media_type: 'movie,tv',
-        media_category: 'default',
+        monitor_type: 'downloader',
+        media_type: '',
+        media_category: '',
+        download_type_folder: true,
+        download_category_folder: true,
         transfer_type: wizardData.value.storage.transferType,
         overwrite_mode: wizardData.value.storage.overwriteMode,
+        renaming: true,
+        scraping: true,
+        notify: true,
+        library_type_folder: true,
+        library_category_folder: true,
       }
 
       const response = await api.post('system/setting/Directories', [directory])
@@ -563,6 +967,9 @@ export function useSetupWizard() {
         console.error('Save downloader settings failed:', error)
         $toast.error(t('setupWizard.saveDownloaderSettingsFailed'))
       }
+    } else {
+      // 没有选择下载器时，清空现有配置
+      console.log('No downloader selected, skipping save')
     }
   }
 
@@ -585,6 +992,9 @@ export function useSetupWizard() {
         console.error('Save media server settings failed:', error)
         $toast.error(t('setupWizard.saveMediaServerSettingsFailed'))
       }
+    } else {
+      // 没有选择媒体服务器时，清空现有配置
+      console.log('No media server selected, skipping save')
     }
   }
 
@@ -607,6 +1017,9 @@ export function useSetupWizard() {
         console.error('Save notification settings failed:', error)
         $toast.error(t('setupWizard.saveNotificationSettingsFailed'))
       }
+    } else {
+      // 没有选择通知时，清空现有配置
+      console.log('No notification selected, skipping save')
     }
   }
 
@@ -648,6 +1061,9 @@ export function useSetupWizard() {
         }
         if (result.data.GITHUB_TOKEN) {
           wizardData.value.basic.githubToken = result.data.GITHUB_TOKEN
+        }
+        if (result.data.SUPERUSER) {
+          wizardData.value.basic.username = result.data.SUPERUSER
         }
       }
     } catch (error) {
@@ -741,13 +1157,17 @@ export function useSetupWizard() {
 
   // 初始化
   async function initialize() {
-    createRandomString()
     await loadSystemSettings()
     await loadStorageSettings()
     await loadDownloaderSettings()
     await loadMediaServerSettings()
     await loadNotificationSettings()
     await loadPreferenceSettings()
+
+    // 如果没有API Token，则创建一个随机的
+    if (!wizardData.value.basic.apiToken) {
+      createRandomString()
+    }
   }
 
   return {
@@ -759,7 +1179,8 @@ export function useSetupWizard() {
     wizardData,
     selectedPreset,
     connectivityTest,
-    
+    validationErrors,
+
     // 方法
     createRandomString,
     copyValue,
@@ -767,6 +1188,11 @@ export function useSetupWizard() {
     selectMediaServer,
     selectNotification,
     selectPreset,
+    validateCurrentStep,
+    validateDownloaderFields,
+    validateMediaServerFields,
+    validateNotificationFields,
+    clearValidationErrors,
     testConnectivity,
     nextStep,
     prevStep,

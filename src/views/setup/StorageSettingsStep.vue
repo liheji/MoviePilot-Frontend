@@ -3,7 +3,11 @@ import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
 
 const { t } = useI18n()
-const { wizardData } = useSetupWizard()
+const { wizardData, validateCurrentStep } = useSetupWizard()
+
+// 验证状态
+const validation = computed(() => validateCurrentStep())
+const hasErrors = computed(() => !validation.value.isValid)
 
 // 整理方式选项
 const transferTypeItems = [
@@ -44,6 +48,10 @@ const overwriteModeItems = [
             persistent-hint
             prepend-inner-icon="mdi-download"
             placeholder="/downloads"
+            :error="!wizardData.storage.downloadPath && hasErrors"
+            :error-messages="
+              !wizardData.storage.downloadPath && hasErrors ? [t('setupWizard.storage.downloadPathRequired')] : []
+            "
           />
         </VCol>
         <VCol cols="12" md="6">
@@ -54,10 +62,14 @@ const overwriteModeItems = [
             persistent-hint
             prepend-inner-icon="mdi-folder-multiple"
             placeholder="/media"
+            :error="!wizardData.storage.libraryPath && hasErrors"
+            :error-messages="
+              !wizardData.storage.libraryPath && hasErrors ? [t('setupWizard.storage.libraryPathRequired')] : []
+            "
           />
         </VCol>
         <VCol cols="12" md="6">
-          <VSelect
+          <VAutocomplete
             v-model="wizardData.storage.transferType"
             :label="t('directory.transferType')"
             :hint="t('directory.transferTypeHint')"
@@ -67,7 +79,7 @@ const overwriteModeItems = [
           />
         </VCol>
         <VCol cols="12" md="6">
-          <VSelect
+          <VAutocomplete
             v-model="wizardData.storage.overwriteMode"
             :label="t('directory.overwriteMode')"
             :hint="t('directory.overwriteModeHint')"

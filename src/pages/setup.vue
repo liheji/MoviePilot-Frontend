@@ -2,7 +2,6 @@
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useToast } from 'vue-toastification'
 import { useSetupWizard } from '@/composables/useSetupWizard'
 import BasicSettingsStep from '@/views/setup/BasicSettingsStep.vue'
 import StorageSettingsStep from '@/views/setup/StorageSettingsStep.vue'
@@ -14,19 +13,9 @@ import ConnectivityTest from '@/views/setup/ConnectivityTest.vue'
 
 const { t } = useI18n()
 const router = useRouter()
-const $toast = useToast()
 
-const {
-  currentStep,
-  totalSteps,
-  stepTitles,
-  stepDescriptions,
-  connectivityTest,
-  nextStep,
-  prevStep,
-  completeWizard,
-  initialize,
-} = useSetupWizard()
+const { currentStep, totalSteps, stepTitles, connectivityTest, nextStep, prevStep, completeWizard, initialize } =
+  useSetupWizard()
 
 // 初始化
 onMounted(async () => {
