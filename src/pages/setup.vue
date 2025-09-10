@@ -156,9 +156,10 @@ onMounted(async () => {
 
 .setup-wizard-header {
   position: sticky;
-  z-index: 1000;
+  z-index: 2000;
   background-color: rgb(var(--v-theme-surface));
   border-block-end: 1px solid rgb(var(--v-theme-outline-variant));
+  box-shadow: 0 0 5px rgba(0, 0, 0, 4%);
   inset-block-start: 0;
   padding-block: 16px;
   padding-inline: 24px;
