@@ -232,12 +232,13 @@ export function useSetupWizard() {
     if (wizardData.value.downloader.type === type) {
       // 重复点击已选中的类型，取消选择
       wizardData.value.downloader.type = ''
-      wizardData.value.downloader.name = ''
-      wizardData.value.downloader.config = {}
     } else {
       wizardData.value.downloader.type = type
-      wizardData.value.downloader.name = `${type} 下载器`
-      wizardData.value.downloader.config = {}
+      // 如果名称为空或为默认名称，则设置默认名称
+      if (!wizardData.value.downloader.name || wizardData.value.downloader.name.includes('下载器')) {
+        wizardData.value.downloader.name = `${type} 下载器`
+      }
+      // 不清空config，保留用户已输入的值
     }
   }
 
@@ -246,14 +247,13 @@ export function useSetupWizard() {
     if (wizardData.value.mediaServer.type === type) {
       // 重复点击已选中的类型，取消选择
       wizardData.value.mediaServer.type = ''
-      wizardData.value.mediaServer.name = ''
-      wizardData.value.mediaServer.config = {}
-      wizardData.value.mediaServer.sync_libraries = []
     } else {
       wizardData.value.mediaServer.type = type
-      wizardData.value.mediaServer.name = `${type} 服务器`
-      wizardData.value.mediaServer.config = {}
-      wizardData.value.mediaServer.sync_libraries = []
+      // 如果名称为空或为默认名称，则设置默认名称
+      if (!wizardData.value.mediaServer.name || wizardData.value.mediaServer.name.includes('服务器')) {
+        wizardData.value.mediaServer.name = `${type} 服务器`
+      }
+      // 不清空config和sync_libraries，保留用户已输入的值
     }
   }
 
@@ -262,16 +262,14 @@ export function useSetupWizard() {
     if (wizardData.value.notification.type === type) {
       // 重复点击已选中的类型，取消选择
       wizardData.value.notification.type = ''
-      wizardData.value.notification.name = ''
-      wizardData.value.notification.enabled = false
-      wizardData.value.notification.config = {}
-      wizardData.value.notification.switchs = []
     } else {
       wizardData.value.notification.type = type
-      wizardData.value.notification.name = `${type} 通知`
+      // 如果名称为空或为默认名称，则设置默认名称
+      if (!wizardData.value.notification.name || wizardData.value.notification.name.includes('通知')) {
+        wizardData.value.notification.name = `${type} 通知`
+      }
       wizardData.value.notification.enabled = true
-      wizardData.value.notification.config = {}
-      wizardData.value.notification.switchs = []
+      // 不清空config和switchs，保留用户已输入的值
     }
   }
 
@@ -924,6 +922,7 @@ export function useSetupWizard() {
       const directory = {
         name: '默认目录',
         storage: 'local',
+        library_storage: 'local',
         download_path: wizardData.value.storage.downloadPath,
         library_path: wizardData.value.storage.libraryPath,
         priority: 0,
@@ -955,12 +954,15 @@ export function useSetupWizard() {
   async function saveDownloaderSettings() {
     if (wizardData.value.downloader.type) {
       try {
+        // 只保存当前选中类型的配置
+        const config = { ...wizardData.value.downloader.config }
+
         const downloader = {
           name: wizardData.value.downloader.name,
           type: wizardData.value.downloader.type,
           default: true,
           enabled: true,
-          config: wizardData.value.downloader.config,
+          config: config,
         }
 
         const response: { [key: string]: any } = await api.post('system/setting/Downloaders', [downloader])
@@ -981,11 +983,16 @@ export function useSetupWizard() {
   async function saveMediaServerSettings() {
     if (wizardData.value.mediaServer.type) {
       try {
+        // 只保存当前选中类型的配置
+        const config = { ...wizardData.value.mediaServer.config }
+        const sync_libraries = [...(wizardData.value.mediaServer.sync_libraries || [])]
+
         const mediaServer = {
           name: wizardData.value.mediaServer.name,
           type: wizardData.value.mediaServer.type,
           enabled: true,
-          config: wizardData.value.mediaServer.config,
+          config: config,
+          sync_libraries: sync_libraries,
         }
 
         const response: { [key: string]: any } = await api.post('system/setting/MediaServers', [mediaServer])
@@ -1006,11 +1013,16 @@ export function useSetupWizard() {
   async function saveNotificationSettings() {
     if (wizardData.value.notification.type) {
       try {
+        // 只保存当前选中类型的配置
+        const config = { ...wizardData.value.notification.config }
+        const switchs = [...(wizardData.value.notification.switchs || [])]
+
         const notification = {
           name: wizardData.value.notification.name,
           type: wizardData.value.notification.type,
-          enabled: true,
-          config: wizardData.value.notification.config,
+          enabled: wizardData.value.notification.enabled,
+          config: config,
+          switchs: switchs,
         }
 
         const response: { [key: string]: any } = await api.post('system/setting/Notifications', [notification])

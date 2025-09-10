@@ -10,9 +10,13 @@ import MediaServerSettingsStep from '@/views/setup/MediaServerSettingsStep.vue'
 import NotificationSettingsStep from '@/views/setup/NotificationSettingsStep.vue'
 import PreferencesSettingsStep from '@/views/setup/PreferencesSettingsStep.vue'
 import ConnectivityTest from '@/views/setup/ConnectivityTest.vue'
+import { useDisplay } from 'vuetify'
 
 const { t } = useI18n()
 const router = useRouter()
+
+// 显示器宽度
+const display = useDisplay()
 
 const { currentStep, totalSteps, stepTitles, connectivityTest, nextStep, prevStep, completeWizard, initialize } =
   useSetupWizard()
@@ -28,20 +32,27 @@ onMounted(async () => {
     <!-- 全屏头部 -->
     <div class="setup-wizard-header">
       <div class="d-flex align-center justify-space-between">
-        <div class="d-flex align-center text-center mx-auto">
+        <!-- 左侧占位 -->
+        <div style="inline-size: 40px"></div>
+
+        <!-- 中间标题 -->
+        <div class="d-flex align-center text-center">
           <div>
             <h1 class="text-h3 font-weight-bold text-moviepilot mb-3">{{ t('setupWizard.title') }}</h1>
             <p class="text-body-1 text-medium-emphasis">{{ t('setupWizard.subtitle') }}</p>
           </div>
         </div>
+
+        <!-- 右侧关闭按钮 -->
+        <VBtn variant="text" icon="mdi-close" @click="router.push('/')" size="small" />
       </div>
     </div>
 
     <!-- 向导内容 -->
-    <div class="setup-wizard-content">
-      <div class="setup-wizard">
+    <VCard max-width="800px" class="mx-auto my-7">
+      <VCardText>
         <!-- 使用 VStepper 组件 -->
-        <VStepper v-model="currentStep" class="elevation-0" flat>
+        <VStepper v-model="currentStep" class="elevation-0" flat alt-labels :mobile="display.smAndDown.value">
           <!-- 步骤标题 -->
           <VStepperHeader class="elevation-0">
             <template v-for="(step, index) in stepTitles" :key="index">
@@ -49,6 +60,7 @@ onMounted(async () => {
                 :value="index + 1"
                 :complete="currentStep > index + 1"
                 :color="currentStep >= index + 1 ? 'primary' : 'default'"
+                complete-icon="mdi-check-circle"
               >
                 <template #title>
                   <span class="text-caption">{{ step }}</span>
@@ -105,15 +117,6 @@ onMounted(async () => {
               >
                 {{ t('common.previous') }}
               </VBtn>
-              <VBtn
-                v-else
-                color="primary"
-                prepend-icon="mdi-keyboard-return"
-                @click="router.push('/')"
-                :disabled="connectivityTest.isTesting"
-              >
-                {{ t('common.skip') }}
-              </VBtn>
             </div>
 
             <div class="d-flex gap-2">
@@ -138,16 +141,15 @@ onMounted(async () => {
             </div>
           </VCardActions>
         </VStepper>
-      </div>
-    </div>
+      </VCardText>
+    </VCard>
   </div>
 </template>
 
 <style scoped>
 .setup-wizard-fullscreen {
   position: fixed;
-  z-index: 9999;
-  background-color: rgb(var(--v-theme-surface));
+  background-color: rgb(var(--v-theme-background));
   inset: 0;
   overflow-y: auto;
 }
@@ -160,17 +162,5 @@ onMounted(async () => {
   inset-block-start: 0;
   padding-block: 16px;
   padding-inline: 24px;
-}
-
-.setup-wizard-content {
-  padding: 24px;
-  min-block-size: calc(100vh - 80px);
-}
-
-.setup-wizard {
-  padding: 20px;
-  margin-block: 0;
-  margin-inline: auto;
-  max-inline-size: 800px;
 }
 </style>

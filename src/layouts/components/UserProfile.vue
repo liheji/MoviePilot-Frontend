@@ -526,7 +526,7 @@ onUnmounted(() => {
             <template #prepend>
               <VIcon :icon="isAdvancedMode ? 'mdi-cog-outline' : 'mdi-wizard-hat'" />
             </template>
-            <VListItemTitle>{{ t('user.systemSettings') }}</VListItemTitle>
+            <VListItemTitle>{{ isAdvancedMode ? t('user.systemSettings') : t('user.wizardSettings') }}</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Site Auth -->

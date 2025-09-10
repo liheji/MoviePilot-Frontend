@@ -371,6 +371,7 @@ export default {
     deleteFailed: '用戶刪除失敗！',
     profile: '個人信息',
     systemSettings: '系統設定',
+    wizardSettings: '設定向導',
     siteAuth: '用戶認證',
     helpDocs: '幫助文檔',
     restart: '重啟',
@@ -2903,7 +2904,7 @@ export default {
       apiTokenRequired: 'API Token 不能為空',
     },
     storage: {
-      title: '儲存配置',
+      title: '儲存',
       description: '設定下載目錄和媒體庫目錄',
       info: '儲存設定說明',
       infoDesc: '設定本機儲存目錄，用於下載和媒體庫管理',
@@ -2915,7 +2916,7 @@ export default {
       libraryPathRequired: '媒體庫目錄不能為空',
     },
     downloader: {
-      title: '下載器配置',
+      title: '下載器',
       description: '設定下載器',
       info: '下載器設定說明',
       infoDesc: '設定下載器用於下載資源，可選擇qBittorrent或Transmission',
@@ -2947,7 +2948,7 @@ export default {
       token: '存取權杖',
     },
     notification: {
-      title: '通知設定',
+      title: '通知',
       description: '設定通知管道',
       info: '通知設定說明',
       infoDesc: '設定通知管道用於接收系統訊息（可選）',

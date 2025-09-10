@@ -41,7 +41,7 @@ const overwriteModeItems = [
           </VAlert>
         </VCol>
         <VCol cols="12" md="6">
-          <VTextField
+          <VPathField
             v-model="wizardData.storage.downloadPath"
             :label="t('setupWizard.storage.downloadPath')"
             :hint="t('setupWizard.storage.downloadPathHint')"
@@ -55,7 +55,7 @@ const overwriteModeItems = [
           />
         </VCol>
         <VCol cols="12" md="6">
-          <VTextField
+          <VPathField
             v-model="wizardData.storage.libraryPath"
             :label="t('setupWizard.storage.libraryPath')"
             :hint="t('setupWizard.storage.libraryPathHint')"
@@ -69,7 +69,7 @@ const overwriteModeItems = [
           />
         </VCol>
         <VCol cols="12" md="6">
-          <VAutocomplete
+          <VSelect
             v-model="wizardData.storage.transferType"
             :label="t('directory.transferType')"
             :hint="t('directory.transferTypeHint')"
@@ -79,7 +79,7 @@ const overwriteModeItems = [
           />
         </VCol>
         <VCol cols="12" md="6">
-          <VAutocomplete
+          <VSelect
             v-model="wizardData.storage.overwriteMode"
             :label="t('directory.overwriteMode')"
             :hint="t('directory.overwriteModeHint')"

@@ -372,6 +372,7 @@ export default {
     deleteFailed: 'Failed to delete user!',
     profile: 'Profile',
     systemSettings: 'System Settings',
+    wizardSettings: 'Setup Wizard',
     siteAuth: 'User Authentication',
     helpDocs: 'Help Documents',
     restart: 'Restart',
@@ -2948,7 +2949,7 @@ export default {
       apiTokenRequired: 'API Token is required',
     },
     storage: {
-      title: 'Storage Configuration',
+      title: 'Storage',
       description: 'Configure download directory and media library directory',
       info: 'Storage Configuration',
       infoDesc: 'Configure local storage directories for download and media library management',
@@ -2960,7 +2961,7 @@ export default {
       libraryPathRequired: 'Media library directory is required',
     },
     downloader: {
-      title: 'Downloader Configuration',
+      title: 'Downloader',
       description: 'Configure downloader',
       info: 'Downloader Configuration',
       infoDesc: 'Configure downloader for resource download, can choose qBittorrent or Transmission',
@@ -2992,7 +2993,7 @@ export default {
       token: 'Access Token',
     },
     notification: {
-      title: 'Notification Settings',
+      title: 'Notification',
       description: 'Configure notification channels',
       info: 'Notification Configuration',
       infoDesc: 'Configure notification channels for receiving system messages (optional)',
