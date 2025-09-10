@@ -21,14 +21,19 @@ const wizardData = ref({
   // 步骤1：基础参数
   basic: {
     appDomain: '',
-    wallpaper: 'tmdb',
-    recognizeSource: 'themoviedb',
     apiToken: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    proxyHost: '',
+    githubToken: '',
   },
   // 步骤2：存储目录
   storage: {
     downloadPath: '',
     libraryPath: '',
+    transferType: 'link',
+    overwriteMode: 'never',
   },
   // 步骤3：下载器
   downloader: {
@@ -79,18 +84,24 @@ const stepDescriptions = [
   t('setupWizard.step6.description'),
 ]
 
-// 壁纸选项
-const wallpaperItems = [
-  { title: t('setting.system.wallpaperItems.tmdb'), value: 'tmdb' },
-  { title: t('setting.system.wallpaperItems.bing'), value: 'bing' },
-  { title: t('setting.system.wallpaperItems.mediaserver'), value: 'mediaserver' },
-  { title: t('setting.system.wallpaperItems.none'), value: '' },
+// 密码可见性控制
+const isPasswordVisible = ref(false)
+const isConfirmPasswordVisible = ref(false)
+
+// 整理方式选项
+const transferTypeItems = [
+  { title: '硬链接', value: 'link' },
+  { title: '软链接', value: 'softlink' },
+  { title: '复制', value: 'copy' },
+  { title: '移动', value: 'move' },
 ]
 
-// 识别源选项
-const recognizeSourceItems = [
-  { title: 'TheMovieDb', value: 'themoviedb' },
-  { title: '豆瓣', value: 'douban' },
+// 覆盖模式选项
+const overwriteModeItems = [
+  { title: '从不覆盖', value: 'never' },
+  { title: '总是覆盖', value: 'always' },
+  { title: '按文件大小', value: 'size' },
+  { title: '仅保留最新', value: 'latest' },
 ]
 
 // 质量偏好选项
@@ -182,8 +193,11 @@ function selectPreset(preset: string) {
 }
 
 // 下一步
-function nextStep() {
+async function nextStep() {
   if (currentStep.value < totalSteps) {
+    // 保存当前步骤的设置
+    await saveCurrentStepSettings()
+
     currentStep.value++
   }
 }
@@ -195,25 +209,48 @@ function prevStep() {
   }
 }
 
+// 保存当前步骤的设置
+async function saveCurrentStepSettings() {
+  try {
+    switch (currentStep.value) {
+      case 1:
+        await saveBasicSettings()
+        break
+      case 2:
+        await saveStorageSettings()
+        break
+      case 3:
+        await saveDownloaderSettings()
+        break
+      case 4:
+        await saveMediaServerSettings()
+        break
+      case 5:
+        await saveNotificationSettings()
+        break
+      case 6:
+        await savePreferenceSettings()
+        break
+    }
+  } catch (error) {
+    console.error('Save current step settings failed:', error)
+    $toast.error(t('setupWizard.saveStepFailed'))
+  }
+}
+
 // 完成向导
 async function completeWizard() {
   try {
-    // 保存基础设置
-    await saveBasicSettings()
+    // 验证密码一致性
+    if (wizardData.value.basic.password !== wizardData.value.basic.confirmPassword) {
+      $toast.error(t('user.passwordMismatch'))
+      return
+    }
 
-    // 保存存储配置
-    await saveStorageSettings()
+    // 创建用户（如果还没有创建）
+    await createUser()
 
-    // 保存下载器配置
-    await saveDownloaderSettings()
-
-    // 保存媒体服务器配置
-    await saveMediaServerSettings()
-
-    // 保存通知配置
-    await saveNotificationSettings()
-
-    // 保存资源偏好
+    // 保存最后一步的设置（资源偏好）
     await savePreferenceSettings()
 
     $toast.success(t('setupWizard.completed'))
@@ -224,104 +261,292 @@ async function completeWizard() {
   }
 }
 
+// 创建用户
+async function createUser() {
+  if (wizardData.value.basic.username && wizardData.value.basic.password) {
+    try {
+      // 检查用户是否已存在
+      const response = await api.get('user/')
+      const existingUsers = response.data || []
+      const userExists = existingUsers.some((user: any) => user.name === wizardData.value.basic.username)
+
+      if (!userExists) {
+        const userData = {
+          name: wizardData.value.basic.username,
+          password: wizardData.value.basic.password,
+          is_active: true,
+          is_superuser: true,
+        }
+
+        await api.post('user/', userData)
+      }
+    } catch (error) {
+      console.log('Create user failed or user already exists:', error)
+    }
+  }
+}
+
 // 保存基础设置
 async function saveBasicSettings() {
-  const basicSettings = {
-    APP_DOMAIN: wizardData.value.basic.appDomain,
-    WALLPAPER: wizardData.value.basic.wallpaper,
-    RECOGNIZE_SOURCE: wizardData.value.basic.recognizeSource,
-    API_TOKEN: wizardData.value.basic.apiToken,
-  }
+  try {
+    const basicSettings = {
+      APP_DOMAIN: wizardData.value.basic.appDomain,
+      API_TOKEN: wizardData.value.basic.apiToken,
+      PROXY_HOST: wizardData.value.basic.proxyHost,
+      GITHUB_TOKEN: wizardData.value.basic.githubToken,
+    }
 
-  await api.post('system/env', basicSettings)
+    const response = await api.post('system/env', basicSettings)
+    if (response.data?.success) {
+      $toast.success(t('setupWizard.basicSettingsSaved'))
+    }
+  } catch (error) {
+    console.error('Save basic settings failed:', error)
+    $toast.error(t('setupWizard.saveBasicSettingsFailed'))
+  }
 }
 
 // 保存存储配置
 async function saveStorageSettings() {
-  // 创建本地存储
-  const storage = {
-    name: '本地存储',
-    type: 'local',
-    config: {},
+  try {
+    // 创建本地存储
+    const storage = {
+      name: '本地存储',
+      type: 'local',
+      config: {},
+    }
+
+    await api.post('system/setting/Storages', [storage])
+
+    // 创建目录配置
+    const directory = {
+      name: '默认目录',
+      storage: 'local',
+      download_path: wizardData.value.storage.downloadPath,
+      library_path: wizardData.value.storage.libraryPath,
+      priority: 0,
+      monitor_type: 'compatibility',
+      media_type: 'movie,tv',
+      media_category: 'default',
+      transfer_type: wizardData.value.storage.transferType,
+      overwrite_mode: wizardData.value.storage.overwriteMode,
+    }
+
+    const response = await api.post('system/setting/Directories', [directory])
+    if (response.data?.success) {
+      $toast.success(t('setupWizard.storageSettingsSaved'))
+    }
+  } catch (error) {
+    console.error('Save storage settings failed:', error)
+    $toast.error(t('setupWizard.saveStorageSettingsFailed'))
   }
-
-  await api.post('system/setting/Storages', [storage])
-
-  // 创建目录配置
-  const directory = {
-    name: '默认目录',
-    storage: 'local',
-    download_path: wizardData.value.storage.downloadPath,
-    library_path: wizardData.value.storage.libraryPath,
-    priority: 0,
-    monitor_type: 'compatibility',
-    media_type: 'movie,tv',
-    media_category: 'default',
-    transfer_type: 'link',
-  }
-
-  await api.post('system/setting/Directories', [directory])
 }
 
 // 保存下载器配置
 async function saveDownloaderSettings() {
   if (wizardData.value.downloader.type) {
-    const downloader = {
-      name: wizardData.value.downloader.name,
-      type: wizardData.value.downloader.type,
-      default: true,
-      enabled: true,
-      config: wizardData.value.downloader.config,
-    }
+    try {
+      const downloader = {
+        name: wizardData.value.downloader.name,
+        type: wizardData.value.downloader.type,
+        default: true,
+        enabled: true,
+        config: wizardData.value.downloader.config,
+      }
 
-    await api.post('system/setting/Downloaders', [downloader])
+      const response = await api.post('system/setting/Downloaders', [downloader])
+      if (response.data?.success) {
+        $toast.success(t('setupWizard.downloaderSettingsSaved'))
+      }
+    } catch (error) {
+      console.error('Save downloader settings failed:', error)
+      $toast.error(t('setupWizard.saveDownloaderSettingsFailed'))
+    }
   }
 }
 
 // 保存媒体服务器配置
 async function saveMediaServerSettings() {
   if (wizardData.value.mediaServer.type) {
-    const mediaServer = {
-      name: wizardData.value.mediaServer.name,
-      type: wizardData.value.mediaServer.type,
-      enabled: true,
-      config: wizardData.value.mediaServer.config,
-    }
+    try {
+      const mediaServer = {
+        name: wizardData.value.mediaServer.name,
+        type: wizardData.value.mediaServer.type,
+        enabled: true,
+        config: wizardData.value.mediaServer.config,
+      }
 
-    await api.post('system/setting/MediaServers', [mediaServer])
+      const response = await api.post('system/setting/MediaServers', [mediaServer])
+      if (response.data?.success) {
+        $toast.success(t('setupWizard.mediaServerSettingsSaved'))
+      }
+    } catch (error) {
+      console.error('Save media server settings failed:', error)
+      $toast.error(t('setupWizard.saveMediaServerSettingsFailed'))
+    }
   }
 }
 
 // 保存通知配置
 async function saveNotificationSettings() {
   if (wizardData.value.notification.type) {
-    const notification = {
-      name: wizardData.value.notification.name,
-      type: wizardData.value.notification.type,
-      enabled: true,
-      config: wizardData.value.notification.config,
-    }
+    try {
+      const notification = {
+        name: wizardData.value.notification.name,
+        type: wizardData.value.notification.type,
+        enabled: true,
+        config: wizardData.value.notification.config,
+      }
 
-    await api.post('system/setting/Notifications', [notification])
+      const response = await api.post('system/setting/Notifications', [notification])
+      if (response.data?.success) {
+        $toast.success(t('setupWizard.notificationSettingsSaved'))
+      }
+    } catch (error) {
+      console.error('Save notification settings failed:', error)
+      $toast.error(t('setupWizard.saveNotificationSettingsFailed'))
+    }
   }
 }
 
 // 保存资源偏好设置
 async function savePreferenceSettings() {
-  // 这里可以根据偏好设置创建相应的过滤规则
-  // 暂时保存到系统设置中
-  const preferenceSettings = {
-    QUALITY_PREFERENCE: wizardData.value.preferences.quality,
-    SUBTITLE_PREFERENCE: wizardData.value.preferences.subtitle,
-    RESOLUTION_PREFERENCE: wizardData.value.preferences.resolution,
-  }
+  try {
+    // 这里可以根据偏好设置创建相应的过滤规则
+    // 暂时保存到系统设置中
+    const preferenceSettings = {
+      QUALITY_PREFERENCE: wizardData.value.preferences.quality,
+      SUBTITLE_PREFERENCE: wizardData.value.preferences.subtitle,
+      RESOLUTION_PREFERENCE: wizardData.value.preferences.resolution,
+    }
 
-  await api.post('system/env', preferenceSettings)
+    const response = await api.post('system/env', preferenceSettings)
+    if (response.data?.success) {
+      $toast.success(t('setupWizard.preferenceSettingsSaved'))
+    }
+  } catch (error) {
+    console.error('Save preference settings failed:', error)
+    $toast.error(t('setupWizard.savePreferenceSettingsFailed'))
+  }
+}
+
+// 加载系统设置
+async function loadSystemSettings() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/env')
+    if (result.success) {
+      // 加载基础设置
+      if (result.data.APP_DOMAIN) {
+        wizardData.value.basic.appDomain = result.data.APP_DOMAIN
+      }
+      if (result.data.API_TOKEN) {
+        wizardData.value.basic.apiToken = result.data.API_TOKEN
+      }
+      if (result.data.PROXY_HOST) {
+        wizardData.value.basic.proxyHost = result.data.PROXY_HOST
+      }
+      if (result.data.GITHUB_TOKEN) {
+        wizardData.value.basic.githubToken = result.data.GITHUB_TOKEN
+      }
+    }
+  } catch (error) {
+    console.log('Load system settings failed:', error)
+  }
+}
+
+// 加载存储设置
+async function loadStorageSettings() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/Directories')
+    if (result.success && result.data?.value && result.data.value.length > 0) {
+      const directory = result.data.value[0]
+      wizardData.value.storage.downloadPath = directory.download_path || ''
+      wizardData.value.storage.libraryPath = directory.library_path || ''
+      wizardData.value.storage.transferType = directory.transfer_type || 'link'
+      wizardData.value.storage.overwriteMode = directory.overwrite_mode || 'never'
+    }
+  } catch (error) {
+    console.log('Load storage settings failed:', error)
+  }
+}
+
+// 加载下载器设置
+async function loadDownloaderSettings() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/Downloaders')
+    if (result.success && result.data?.value && result.data.value.length > 0) {
+      const downloader = result.data.value[0]
+      wizardData.value.downloader.type = downloader.type
+      wizardData.value.downloader.name = downloader.name
+      wizardData.value.downloader.config = downloader.config || {}
+    }
+  } catch (error) {
+    console.log('Load downloader settings failed:', error)
+  }
+}
+
+// 加载媒体服务器设置
+async function loadMediaServerSettings() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/MediaServers')
+    if (result.success && result.data?.value && result.data.value.length > 0) {
+      const mediaServer = result.data.value[0]
+      wizardData.value.mediaServer.type = mediaServer.type
+      wizardData.value.mediaServer.name = mediaServer.name
+      wizardData.value.mediaServer.config = mediaServer.config || {}
+      wizardData.value.mediaServer.sync_libraries = mediaServer.sync_libraries || []
+    }
+  } catch (error) {
+    console.log('Load media server settings failed:', error)
+  }
+}
+
+// 加载通知设置
+async function loadNotificationSettings() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/setting/Notifications')
+    if (result.success && result.data?.value && result.data.value.length > 0) {
+      const notification = result.data.value[0]
+      wizardData.value.notification.type = notification.type
+      wizardData.value.notification.name = notification.name
+      wizardData.value.notification.enabled = notification.enabled
+      wizardData.value.notification.config = notification.config || {}
+      wizardData.value.notification.switchs = notification.switchs || []
+    }
+  } catch (error) {
+    console.log('Load notification settings failed:', error)
+  }
+}
+
+// 加载资源偏好设置
+async function loadPreferenceSettings() {
+  try {
+    const result: { [key: string]: any } = await api.get('system/env')
+    if (result.success) {
+      if (result.data.QUALITY_PREFERENCE) {
+        wizardData.value.preferences.quality = result.data.QUALITY_PREFERENCE
+      }
+      if (result.data.SUBTITLE_PREFERENCE) {
+        wizardData.value.preferences.subtitle = result.data.SUBTITLE_PREFERENCE
+      }
+      if (result.data.RESOLUTION_PREFERENCE) {
+        wizardData.value.preferences.resolution = result.data.RESOLUTION_PREFERENCE
+      }
+    }
+  } catch (error) {
+    console.log('Load preference settings failed:', error)
+  }
 }
 
 // 初始化
-onMounted(() => {
+onMounted(async () => {
   createRandomString()
+  await loadSystemSettings()
+  await loadStorageSettings()
+  await loadDownloaderSettings()
+  await loadMediaServerSettings()
+  await loadNotificationSettings()
+  await loadPreferenceSettings()
 })
 </script>
 
@@ -382,23 +607,62 @@ onMounted(() => {
                       />
                     </VCol>
                     <VCol cols="12" md="6">
-                      <VSelect
-                        v-model="wizardData.basic.wallpaper"
-                        :label="t('setupWizard.basic.wallpaper')"
-                        :hint="t('setupWizard.basic.wallpaperHint')"
+                      <VTextField
+                        v-model="wizardData.basic.username"
+                        :label="t('user.username')"
+                        :hint="t('user.usernameHint')"
                         persistent-hint
-                        :items="wallpaperItems"
-                        prepend-inner-icon="mdi-image"
+                        prepend-inner-icon="mdi-account"
+                        :rules="[(v: string) => !!v || t('user.usernameRequired')]"
                       />
                     </VCol>
                     <VCol cols="12" md="6">
-                      <VSelect
-                        v-model="wizardData.basic.recognizeSource"
-                        :label="t('setupWizard.basic.recognizeSource')"
-                        :hint="t('setupWizard.basic.recognizeSourceHint')"
+                      <VTextField
+                        v-model="wizardData.basic.password"
+                        :type="isPasswordVisible ? 'text' : 'password'"
+                        :label="t('user.password')"
+                        :hint="t('user.passwordHint')"
                         persistent-hint
-                        :items="recognizeSourceItems"
-                        prepend-inner-icon="mdi-database"
+                        prepend-inner-icon="mdi-lock"
+                        :append-inner-icon="isPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                        @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                        :rules="[(v: string) => !!v || t('user.passwordRequired'), (v: string) => v.length >= 6 || t('user.passwordMinLength')]"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="wizardData.basic.confirmPassword"
+                        :type="isConfirmPasswordVisible ? 'text' : 'password'"
+                        :label="t('user.confirmPassword')"
+                        :hint="t('user.confirmPasswordHint')"
+                        persistent-hint
+                        prepend-inner-icon="mdi-lock-check"
+                        :append-inner-icon="isConfirmPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                        @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+                        :rules="[
+                          (v: string) => !!v || t('user.confirmPasswordRequired'),
+                          (v: string) => v === wizardData.basic.password || t('user.passwordMismatch')
+                        ]"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="wizardData.basic.proxyHost"
+                        :label="t('setting.system.proxyHost')"
+                        :hint="t('setting.system.proxyHostHint')"
+                        placeholder="http://127.0.0.1:7890"
+                        persistent-hint
+                        prepend-inner-icon="mdi-server-network"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="wizardData.basic.githubToken"
+                        :label="t('setting.system.githubToken')"
+                        :placeholder="t('setting.system.githubTokenFormat')"
+                        :hint="t('setting.system.githubTokenHint')"
+                        persistent-hint
+                        prepend-inner-icon="mdi-github"
                       />
                     </VCol>
                     <VCol cols="12" md="6">
@@ -453,6 +717,26 @@ onMounted(() => {
                         persistent-hint
                         prepend-inner-icon="mdi-folder-multiple"
                         placeholder="/media"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VSelect
+                        v-model="wizardData.storage.transferType"
+                        :label="t('directory.transferType')"
+                        :hint="t('directory.transferTypeHint')"
+                        persistent-hint
+                        :items="transferTypeItems"
+                        prepend-inner-icon="mdi-swap-horizontal"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VSelect
+                        v-model="wizardData.storage.overwriteMode"
+                        :label="t('directory.overwriteMode')"
+                        :hint="t('directory.overwriteModeHint')"
+                        persistent-hint
+                        :items="overwriteModeItems"
+                        prepend-inner-icon="mdi-file-replace"
                       />
                     </VCol>
                   </VRow>
@@ -1503,117 +1787,6 @@ onMounted(() => {
                               </VCol>
                             </VRow>
                           </VForm>
-                        </VCardText>
-                      </VCard>
-                    </VCol>
-                  </VRow>
-                </VCardText>
-              </VCard>
-            </VStepperWindowItem>
-
-            <!-- 步骤6：资源偏好 -->
-            <VStepperWindowItem :value="6">
-              <VCard variant="outlined">
-                <VCardText>
-                  <div class="text-center mb-6">
-                    <h3 class="text-h4 mb-2">{{ stepTitles[5] }}</h3>
-                    <p class="text-body-1 text-medium-emphasis">{{ stepDescriptions[5] }}</p>
-                  </div>
-                  <VRow>
-                    <VCol cols="12">
-                      <VAlert type="info" variant="tonal" class="mb-4">
-                        <VAlertTitle>{{ t('setupWizard.preferences.info') }}</VAlertTitle>
-                        {{ t('setupWizard.preferences.infoDesc') }}
-                      </VAlert>
-                    </VCol>
-
-                    <!-- 预设规则选择 -->
-                    <VCol cols="12">
-                      <VCard>
-                        <VCardTitle class="text-h6">{{ t('setupWizard.preferences.presetRules') }}</VCardTitle>
-                        <VCardText>
-                          <VRow>
-                            <VCol cols="12" md="4">
-                              <VCard
-                                :color="selectedPreset === '4k' ? 'primary' : 'default'"
-                                :variant="selectedPreset === '4k' ? 'tonal' : 'outlined'"
-                                class="cursor-pointer"
-                                @click="selectPreset('4k')"
-                              >
-                                <VCardText class="text-center">
-                                  <VIcon icon="mdi-4k" size="48" class="mb-2" />
-                                  <div class="text-h6">4K 优先</div>
-                                </VCardText>
-                              </VCard>
-                            </VCol>
-                            <VCol cols="12" md="4">
-                              <VCard
-                                :color="selectedPreset === 'balanced' ? 'primary' : 'default'"
-                                :variant="selectedPreset === 'balanced' ? 'tonal' : 'outlined'"
-                                class="cursor-pointer"
-                                @click="selectPreset('balanced')"
-                              >
-                                <VCardText class="text-center">
-                                  <VIcon icon="mdi-balance-scale" size="48" class="mb-2" />
-                                  <div class="text-h6">平衡模式</div>
-                                </VCardText>
-                              </VCard>
-                            </VCol>
-                            <VCol cols="12" md="4">
-                              <VCard
-                                :color="selectedPreset === 'chinese' ? 'primary' : 'default'"
-                                :variant="selectedPreset === 'chinese' ? 'tonal' : 'outlined'"
-                                class="cursor-pointer"
-                                @click="selectPreset('chinese')"
-                              >
-                                <VCardText class="text-center">
-                                  <VIcon icon="mdi-translate" size="48" class="mb-2" />
-                                  <div class="text-h6">中文字幕</div>
-                                </VCardText>
-                              </VCard>
-                            </VCol>
-                          </VRow>
-                        </VCardText>
-                      </VCard>
-                    </VCol>
-
-                    <!-- 详细配置 -->
-                    <VCol cols="12">
-                      <VCard>
-                        <VCardTitle class="text-h6">{{ t('setupWizard.preferences.detailedConfig') }}</VCardTitle>
-                        <VCardText>
-                          <VRow>
-                            <VCol cols="12" md="4">
-                              <VSelect
-                                v-model="wizardData.preferences.quality"
-                                :label="t('setupWizard.preferences.quality')"
-                                :hint="t('setupWizard.preferences.qualityHint')"
-                                persistent-hint
-                                :items="qualityItems"
-                                prepend-inner-icon="mdi-star"
-                              />
-                            </VCol>
-                            <VCol cols="12" md="4">
-                              <VSelect
-                                v-model="wizardData.preferences.subtitle"
-                                :label="t('setupWizard.preferences.subtitle')"
-                                :hint="t('setupWizard.preferences.subtitleHint')"
-                                persistent-hint
-                                :items="subtitleItems"
-                                prepend-inner-icon="mdi-subtitles"
-                              />
-                            </VCol>
-                            <VCol cols="12" md="4">
-                              <VSelect
-                                v-model="wizardData.preferences.resolution"
-                                :label="t('setupWizard.preferences.resolution')"
-                                :hint="t('setupWizard.preferences.resolutionHint')"
-                                persistent-hint
-                                :items="resolutionItems"
-                                prepend-inner-icon="mdi-monitor"
-                              />
-                            </VCol>
-                          </VRow>
                         </VCardText>
                       </VCard>
                     </VCol>
