@@ -5,7 +5,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
 import api from '@/api'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import UserAuthDialog from '@/components/dialog/UserAuthDialog.vue'
-import { useAuthStore, useUserStore } from '@/stores'
+import { useAuthStore, useUserStore, useGlobalSettingsStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 import { useDisplay, useTheme } from 'vuetify'
 import { SUPPORTED_LOCALES, SupportedLocale } from '@/types/i18n'
@@ -20,6 +20,8 @@ import { themeManager } from '@/utils/themeManager'
 const authStore = useAuthStore()
 // 用户 Store
 const userStore = useUserStore()
+// 全局设置 Store
+const globalSettingsStore = useGlobalSettingsStore()
 // 国际化
 const { t } = useI18n()
 // 显示器
@@ -216,6 +218,11 @@ const superUser = computed(() => userStore.superUser)
 const userName = computed(() => userStore.userName)
 const avatar = computed(() => userStore.avatar || avatar1)
 const userLevel = computed(() => userStore.level)
+
+// 检查是否为高级模式
+const isAdvancedMode = computed(() => {
+  return globalSettingsStore.get('ADVANCED_MODE') !== false
+})
 
 // 主题相关功能
 const { name: themeName, global: globalTheme } = useTheme()
@@ -509,11 +516,17 @@ onUnmounted(() => {
             <VListItemTitle>{{ t('user.profile') }}</VListItemTitle>
           </VListItem>
 
-          <VListItem v-if="superUser" link @click="router.push('/setting')" class="mb-1 rounded-lg" hover>
+          <VListItem
+            v-if="superUser"
+            link
+            @click="isAdvancedMode ? router.push('/setting') : router.push('/setup-wizard')"
+            class="mb-1 rounded-lg"
+            hover
+          >
             <template #prepend>
-              <VIcon icon="mdi-cog-outline" />
+              <VIcon :icon="isAdvancedMode ? 'mdi-cog-outline' : 'mdi-wizard-hat'" />
             </template>
-            <VListItemTitle>{{ t('user.systemSettings') }}</VListItemTitle>
+            <VListItemTitle>{{ isAdvancedMode ? t('user.systemSettings') : t('user.wizardSettings') }}</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Site Auth -->
