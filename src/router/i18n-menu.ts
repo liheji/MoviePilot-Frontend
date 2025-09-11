@@ -195,28 +195,10 @@ export function getSettingTabs() {
       description: t('settingTabs.scheduler.description'),
     },
     {
-      title: t('settingTabs.cache.title'),
-      icon: 'mdi-database',
-      tab: 'cache',
-      description: t('settingTabs.cache.description'),
-    },
-    {
       title: t('settingTabs.notification.title'),
       icon: 'mdi-bell',
       tab: 'notification',
       description: t('settingTabs.notification.description'),
-    },
-    {
-      title: t('settingTabs.words.title'),
-      icon: 'mdi-file-word-box',
-      tab: 'words',
-      description: t('settingTabs.words.description'),
-    },
-    {
-      title: t('settingTabs.about.title'),
-      icon: 'mdi-information',
-      tab: 'about',
-      description: t('settingTabs.about.description'),
     },
   ]
 }

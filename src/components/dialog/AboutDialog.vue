@@ -118,10 +118,7 @@ onMounted(() => {
 <template>
   <div class="px-3">
     <div class="section">
-      <div>
-        <h3 class="heading">{{ t('setting.about.title') }}</h3>
-      </div>
-      <div class="section border-t border-gray-800">
+      <div class="section border-gray-800">
         <dl>
           <div>
             <div class="max-w-6xl py-4 sm:grid sm:grid-cols-3 sm:gap-4">

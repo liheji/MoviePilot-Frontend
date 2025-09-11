@@ -324,10 +324,6 @@ export default {
       title: '通知',
       description: '通知渠道（微信、Telegram、Slack、SynologyChat、VoceChat、WebPush）、消息發送範圍',
     },
-    words: {
-      title: '詞表',
-      description: '自定義識別詞、自定義製作組/字幕組、自定義占位符、文件整理屏蔽詞',
-    },
     about: {
       title: '關於',
       description: '軟件版本',
@@ -374,6 +370,7 @@ export default {
     wizardSettings: '設定向導',
     siteAuth: '用戶認證',
     helpDocs: '幫助文檔',
+    about: '關於',
     restart: '重啟',
     management: '用戶管理',
     noUsers: '沒有用戶',
@@ -497,6 +494,14 @@ export default {
     message: {
       title: '消息',
       subtitle: '消息中心',
+    },
+    words: {
+      title: '詞表',
+      subtitle: '詞表設置',
+    },
+    cache: {
+      title: '緩存',
+      subtitle: '管理緩存',
     },
   },
   workflow: {

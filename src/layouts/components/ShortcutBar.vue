@@ -5,6 +5,8 @@ import LoggingView from '@/views/system/LoggingView.vue'
 import RuleTestView from '@/views/system/RuleTestView.vue'
 import ModuleTestView from '@/views/system/ModuleTestView.vue'
 import MessageView from '@/views/system/MessageView.vue'
+import WordsView from '@/views/system/WordsView.vue'
+import CacheView from '@/views/system/CacheView.vue'
 import api from '@/api'
 import { useDisplay } from 'vuetify'
 import { getQueryValue } from '@/@core/utils'
@@ -40,6 +42,12 @@ const systemTestDialog = ref(false)
 
 // 消息中心弹窗
 const messageDialog = ref(false)
+
+// 词表设置弹窗
+const wordsDialog = ref(false)
+
+// 缓存管理弹窗
+const cacheDialog = ref(false)
 
 // 输入消息
 const user_message = ref('')
@@ -99,6 +107,20 @@ const shortcuts = [
     icon: 'mdi-message',
     dialog: 'message',
     dialogRef: messageDialog,
+  },
+  {
+    title: t('shortcut.words.title'),
+    subtitle: t('shortcut.words.subtitle'),
+    icon: 'mdi-file-word-box',
+    dialog: 'words',
+    dialogRef: wordsDialog,
+  },
+  {
+    title: t('shortcut.cache.title'),
+    subtitle: t('shortcut.cache.subtitle'),
+    icon: 'mdi-database',
+    dialog: 'cache',
+    dialogRef: cacheDialog,
   },
 ]
 
@@ -249,7 +271,15 @@ onMounted(() => {
               flat
               class="pa-2 d-flex align-center cursor-pointer transition-transform duration-300 hover:-translate-y-1 border h-full"
               hover
-              @click="item.dialog === 'message' ? openMessageDialog() : openDialog(item.dialogRef)"
+              @click="
+                item.dialog === 'message'
+                  ? openMessageDialog()
+                  : item.dialog === 'words'
+                  ? openDialog(item.dialogRef)
+                  : item.dialog === 'cache'
+                  ? openDialog(item.dialogRef)
+                  : openDialog(item.dialogRef)
+              "
             >
               <VAvatar variant="text" size="48" rounded="lg">
                 <VIcon color="primary" :icon="item.icon" size="24" />
@@ -423,6 +453,38 @@ onMounted(() => {
           </VBtn>
         </div>
       </VCardActions>
+    </VCard>
+  </VDialog>
+  <!-- 词表设置弹窗 -->
+  <VDialog v-if="wordsDialog" v-model="wordsDialog" max-width="60rem" scrollable :fullscreen="!display.mdAndUp.value">
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-file-word-box" class="me-2" />
+          {{ t('shortcut.words.subtitle') }}
+        </VCardTitle>
+        <VDialogCloseBtn @click="wordsDialog = false" />
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <WordsView />
+      </VCardText>
+    </VCard>
+  </VDialog>
+  <!-- 缓存管理弹窗 -->
+  <VDialog v-if="cacheDialog" v-model="cacheDialog" max-width="90rem" scrollable :fullscreen="!display.mdAndUp.value">
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-database" class="me-2" />
+          {{ t('shortcut.cache.subtitle') }}
+        </VCardTitle>
+        <VDialogCloseBtn @click="cacheDialog = false" />
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <CacheView />
+      </VCardText>
     </VCard>
   </VDialog>
 </template>

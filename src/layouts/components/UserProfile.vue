@@ -5,6 +5,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
 import api from '@/api'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import UserAuthDialog from '@/components/dialog/UserAuthDialog.vue'
+import AboutDialog from '@/components/dialog/AboutDialog.vue'
 import { useAuthStore, useUserStore, useGlobalSettingsStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
 import { useDisplay, useTheme } from 'vuetify'
@@ -54,6 +55,9 @@ const transparencyBlur = ref(parseFloat(localStorage.getItem('transparency-blur'
 const transparencyLevel = ref(localStorage.getItem('transparency-level') || 'medium')
 const isTransparentTheme = computed(() => currentThemeName.value === 'transparent')
 const showTransparencyDialog = ref(false)
+
+// 关于对话框
+const aboutDialog = ref(false)
 
 // 预设值配置
 const transparencyPresets = {
@@ -205,6 +209,11 @@ async function showRestartDialog() {
 // 显示站点认证对话框
 function showSiteAuthDialog() {
   siteAuthDialog.value = true
+}
+
+// 显示关于对话框
+function showAboutDialog() {
+  aboutDialog.value = true
 }
 
 // 用户站点认证成功
@@ -633,6 +642,14 @@ onUnmounted(() => {
             <VListItemTitle>{{ t('user.helpDocs') }}</VListItemTitle>
           </VListItem>
 
+          <!-- 👉 About -->
+          <VListItem @click="showAboutDialog" class="mb-1 rounded-lg" hover>
+            <template #prepend>
+              <VIcon icon="mdi-information-outline" />
+            </template>
+            <VListItemTitle>{{ t('setting.about.title') }}</VListItemTitle>
+          </VListItem>
+
           <!-- Divider -->
           <VDivider v-if="superUser" class="my-3" />
 
@@ -774,6 +791,23 @@ onUnmounted(() => {
         <VBtn @click="showTransparencyDialog = false" color="primary">
           {{ t('common.confirm') }}
         </VBtn>
+      </VCardText>
+    </VCard>
+  </VDialog>
+
+  <!-- 关于对话框 -->
+  <VDialog v-if="aboutDialog" v-model="aboutDialog" max-width="50rem" scrollable>
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-information" class="me-2" />
+          {{ t('setting.about.title') }}
+        </VCardTitle>
+        <VDialogCloseBtn @click="aboutDialog = false" />
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <AboutDialog />
       </VCardText>
     </VCard>
   </VDialog>

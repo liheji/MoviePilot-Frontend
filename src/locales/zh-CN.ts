@@ -323,10 +323,6 @@ export default {
       title: '通知',
       description: '通知渠道（微信、Telegram、Slack、SynologyChat、VoceChat、WebPush）、消息发送范围',
     },
-    words: {
-      title: '词表',
-      description: '自定义识别词、自定义制作组/字幕组、自定义占位符、文件整理屏蔽词',
-    },
     about: {
       title: '关于',
       description: '软件版本',
@@ -373,6 +369,7 @@ export default {
     wizardSettings: '设置向导',
     siteAuth: '用户认证',
     helpDocs: '帮助文档',
+    about: '关于',
     restart: '重启',
     management: '用户管理',
     noUsers: '没有用户',
@@ -510,6 +507,14 @@ export default {
     message: {
       title: '消息',
       subtitle: '消息中心',
+    },
+    words: {
+      title: '词表',
+      subtitle: '词表设置',
+    },
+    cache: {
+      title: '缓存',
+      subtitle: '管理缓存',
     },
   },
   workflow: {

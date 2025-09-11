@@ -324,11 +324,6 @@ export default {
       title: 'Notifications',
       description: 'Notification channels (WeChat, Telegram, Slack, SynologyChat, VoceChat, WebPush), message scope',
     },
-    words: {
-      title: 'Word Lists',
-      description:
-        'Custom recognition words, custom production/subtitle groups, custom placeholders, file organization block words',
-    },
     about: {
       title: 'About',
       description: 'Software version',
@@ -375,6 +370,7 @@ export default {
     wizardSettings: 'Setup Wizard',
     siteAuth: 'User Authentication',
     helpDocs: 'Help Documents',
+    about: 'About',
     restart: 'Restart',
     management: 'User Management',
     noUsers: 'No Users',
@@ -513,6 +509,14 @@ export default {
     message: {
       title: 'Messages',
       subtitle: 'Message Center',
+    },
+    words: {
+      title: 'Words',
+      subtitle: 'Word Settings',
+    },
+    cache: {
+      title: 'Cache',
+      subtitle: 'Manage Cache',
     },
   },
   workflow: {
@@ -1233,7 +1237,8 @@ export default {
       apiTokenLength: 'API Token must be at least 16 characters',
       githubToken: 'Github Token',
       githubTokenFormat: 'ghp_**** or github_pat_****',
-      githubTokenHint: 'Used to increase the rate limit threshold when plugins access Github API，it is recommended to configure, otherwise plugins may not work properly',
+      githubTokenHint:
+        'Used to increase the rate limit threshold when plugins access Github API，it is recommended to configure, otherwise plugins may not work properly',
       ocrHost: 'OCR Server',
       ocrHostHint: 'Used for site check-in, updating site cookies and other captcha recognition',
       advancedSettings: 'Advanced Settings',

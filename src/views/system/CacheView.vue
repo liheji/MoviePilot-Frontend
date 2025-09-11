@@ -232,64 +232,65 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard>
-    <VCardItem>
-      <VCardTitle>{{ t('setting.cache.title') }}</VCardTitle>
-      <VCardSubtitle>{{ t('setting.cache.subtitle') }}</VCardSubtitle>
+  <div>
+    <!-- 工具栏操作按钮 -->
+    <VCard class="mb-4">
+      <VCardItem>
+        <VCardTitle>{{ t('setting.cache.title') }}</VCardTitle>
+        <VCardSubtitle>{{ t('setting.cache.subtitle') }}</VCardSubtitle>
 
-      <template #append>
-        <div class="d-flex gap-2">
-          <VBtn icon color="primary" :loading="loading" @click="refreshCache">
-            <VIcon>mdi-refresh</VIcon>
-            <VTooltip activator="parent" location="bottom">{{ t('setting.cache.refresh') }}</VTooltip>
-          </VBtn>
+        <template #append>
+          <div class="d-flex gap-2">
+            <VBtn icon color="primary" :loading="loading" @click="refreshCache">
+              <VIcon>mdi-refresh</VIcon>
+              <VTooltip activator="parent" location="bottom">{{ t('setting.cache.refresh') }}</VTooltip>
+            </VBtn>
 
-          <VBtn
-            icon
-            color="warning"
-            :loading="loading"
-            :disabled="selectedItems.length === 0"
-            @click="deleteSelectedItems"
-          >
-            <VIcon>mdi-delete-sweep</VIcon>
-            <VTooltip activator="parent" location="bottom"
-              >{{ t('setting.cache.deleteSelected') }} ({{ selectedItems.length }})</VTooltip
+            <VBtn
+              icon
+              color="warning"
+              :loading="loading"
+              :disabled="selectedItems.length === 0"
+              @click="deleteSelectedItems"
             >
-          </VBtn>
+              <VIcon>mdi-delete-sweep</VIcon>
+              <VTooltip activator="parent" location="bottom"
+                >{{ t('setting.cache.deleteSelected') }} ({{ selectedItems.length }})</VTooltip
+              >
+            </VBtn>
 
-          <VBtn icon color="error" :loading="loading" @click="clearAllCache">
-            <VIcon>mdi-delete-variant</VIcon>
-            <VTooltip activator="parent" location="bottom">{{ t('setting.cache.clearAll') }}</VTooltip>
-          </VBtn>
-        </div>
-      </template>
-    </VCardItem>
+            <VBtn icon color="error" :loading="loading" @click="clearAllCache">
+              <VIcon>mdi-delete-variant</VIcon>
+              <VTooltip activator="parent" location="bottom">{{ t('setting.cache.clearAll') }}</VTooltip>
+            </VBtn>
+          </div>
+        </template>
+      </VCardItem>
+    </VCard>
 
     <!-- 筛选框 -->
-    <VCardText>
-      <VRow>
-        <VCol cols="6">
-          <VTextField
-            v-model="titleFilter"
-            :label="t('setting.cache.filterByTitle')"
-            prepend-inner-icon="mdi-magnify"
-            clearable
-            density="compact"
-          />
-        </VCol>
-        <VCol cols="6">
-          <VAutocomplete
-            v-model="siteFilter"
-            :label="t('setting.cache.filterBySite')"
-            :items="siteOptions"
-            prepend-inner-icon="mdi-web"
-            clearable
-            density="compact"
-            :placeholder="t('setting.cache.selectSite')"
-          />
-        </VCol>
-      </VRow>
-    </VCardText>
+    <VRow class="mb-4">
+      <VCol cols="6">
+        <VTextField
+          v-model="titleFilter"
+          :label="t('setting.cache.filterByTitle')"
+          prepend-inner-icon="mdi-magnify"
+          clearable
+          density="compact"
+        />
+      </VCol>
+      <VCol cols="6">
+        <VAutocomplete
+          v-model="siteFilter"
+          :label="t('setting.cache.filterBySite')"
+          :items="siteOptions"
+          prepend-inner-icon="mdi-web"
+          clearable
+          density="compact"
+          :placeholder="t('setting.cache.selectSite')"
+        />
+      </VCol>
+    </VRow>
 
     <!-- 缓存列表 -->
     <VDataTable
@@ -419,54 +420,54 @@ onMounted(() => {
         </div>
       </template>
     </VDataTable>
-  </VCard>
 
-  <!-- 重新识别对话框 -->
-  <VDialog v-model="reidentifyDialog" scrollable max-width="35rem">
-    <VCard>
-      <VCardItem class="py-2">
-        <template #prepend>
-          <VIcon>mdi-text-recognition</VIcon>
-        </template>
-        <VCardTitle>{{ t('setting.cache.reidentifyDialog.title') }}</VCardTitle>
-        <VCardSubtitle>{{ currentReidentifyItem?.title }}</VCardSubtitle>
-      </VCardItem>
-      <VDialogCloseBtn @click="reidentifyDialog = false" />
-      <VDivider />
-      <VCardText>
-        <VRow>
-          <VCol cols="12">
-            <VTextField
-              v-if="globalSettings.RECOGNIZE_SOURCE === 'themoviedb'"
-              v-model="tmdbId"
-              :label="t('setting.cache.reidentifyDialog.tmdbId')"
-              :hint="t('setting.cache.reidentifyDialog.tmdbIdHint')"
-              clearable
-              prepend-inner-icon="mdi-id-card"
-              persistent-hint
-            />
-            <VTextField
-              v-else
-              v-model="doubanId"
-              :label="t('setting.cache.reidentifyDialog.doubanId')"
-              :hint="t('setting.cache.reidentifyDialog.doubanIdHint')"
-              clearable
-              prepend-inner-icon="mdi-id-card"
-              persistent-hint
-            />
-          </VCol>
-        </VRow>
-        <VAlert type="info" variant="tonal" class="mt-4">
-          {{ t('setting.cache.reidentifyDialog.autoHint') }}
-        </VAlert>
-      </VCardText>
+    <!-- 重新识别对话框 -->
+    <VDialog v-model="reidentifyDialog" scrollable max-width="35rem">
+      <VCard>
+        <VCardItem class="py-2">
+          <template #prepend>
+            <VIcon>mdi-text-recognition</VIcon>
+          </template>
+          <VCardTitle>{{ t('setting.cache.reidentifyDialog.title') }}</VCardTitle>
+          <VCardSubtitle>{{ currentReidentifyItem?.title }}</VCardSubtitle>
+        </VCardItem>
+        <VDialogCloseBtn @click="reidentifyDialog = false" />
+        <VDivider />
+        <VCardText>
+          <VRow>
+            <VCol cols="12">
+              <VTextField
+                v-if="globalSettings.RECOGNIZE_SOURCE === 'themoviedb'"
+                v-model="tmdbId"
+                :label="t('setting.cache.reidentifyDialog.tmdbId')"
+                :hint="t('setting.cache.reidentifyDialog.tmdbIdHint')"
+                clearable
+                prepend-inner-icon="mdi-id-card"
+                persistent-hint
+              />
+              <VTextField
+                v-else
+                v-model="doubanId"
+                :label="t('setting.cache.reidentifyDialog.doubanId')"
+                :hint="t('setting.cache.reidentifyDialog.doubanIdHint')"
+                clearable
+                prepend-inner-icon="mdi-id-card"
+                persistent-hint
+              />
+            </VCol>
+          </VRow>
+          <VAlert type="info" variant="tonal" class="mt-4">
+            {{ t('setting.cache.reidentifyDialog.autoHint') }}
+          </VAlert>
+        </VCardText>
 
-      <VCardActions>
-        <VSpacer />
-        <VBtn color="primary" :loading="loading" prepend-icon="mdi-check" @click="performReidentify">
-          {{ t('setting.cache.reidentifyDialog.confirm') }}
-        </VBtn>
-      </VCardActions>
-    </VCard>
-  </VDialog>
+        <VCardActions>
+          <VSpacer />
+          <VBtn color="primary" :loading="loading" prepend-icon="mdi-check" @click="performReidentify">
+            {{ t('setting.cache.reidentifyDialog.confirm') }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+  </div>
 </template>
