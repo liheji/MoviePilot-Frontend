@@ -796,21 +796,7 @@ onUnmounted(() => {
   </VDialog>
 
   <!-- 关于对话框 -->
-  <VDialog v-if="aboutDialog" v-model="aboutDialog" max-width="50rem" scrollable>
-    <VCard>
-      <VCardItem>
-        <VCardTitle>
-          <VIcon icon="mdi-information" class="me-2" />
-          {{ t('setting.about.title') }}
-        </VCardTitle>
-        <VDialogCloseBtn @click="aboutDialog = false" />
-      </VCardItem>
-      <VDivider />
-      <VCardText>
-        <AboutDialog />
-      </VCardText>
-    </VCard>
-  </VDialog>
+  <AboutDialog v-if="aboutDialog" v-model="aboutDialog" @close="aboutDialog = false" />
 </template>
 
 <style lang="scss" scoped>

@@ -42,7 +42,7 @@ onMounted(async () => {
     <div class="setup-wizard-header">
       <div class="d-flex align-center justify-space-between">
         <!-- 左侧占位 -->
-        <div style="inline-size: 72px"></div>
+        <div v-if="display.mdAndUp.value" style="inline-size: 96px"></div>
 
         <!-- 中间标题 -->
         <div class="d-flex align-center text-center">
@@ -53,7 +53,7 @@ onMounted(async () => {
         </div>
 
         <!-- 右侧按钮组 -->
-        <div class="d-flex gap-2">
+        <div v-if="display.mdAndUp.value" class="d-flex gap-2 px-3">
           <VBtn
             variant="text"
             icon="mdi-cog"
@@ -67,8 +67,8 @@ onMounted(async () => {
     </div>
 
     <!-- 向导内容 -->
-    <VCard max-width="800px" class="mx-auto my-7">
-      <VCardText>
+    <VCard max-width="800px" class="mx-auto my-5">
+      <VCardText class="px-1">
         <!-- 加载状态 -->
         <div v-if="isLoading" class="d-flex flex-column align-center justify-center py-16">
           <VProgressCircular indeterminate color="primary" size="64" class="mb-4" />
@@ -185,7 +185,6 @@ onMounted(async () => {
   border-block-end: 1px solid rgb(var(--v-theme-outline-variant));
   box-shadow: 0 0 5px rgba(0, 0, 0, 4%);
   inset-block-start: 0;
-  padding-block: 16px;
-  padding-inline: 24px;
+  padding-block: calc(16px + env(safe-area-inset-top)) 16px;
 }
 </style>

@@ -1699,6 +1699,8 @@ export default {
     cache: {
       title: '缓存管理',
       subtitle: '管理缓存的站点资源',
+      totalCount: '总条数',
+      siteCount: '站点数',
       filterByTitle: '按标题筛选',
       filterBySite: '按站点筛选',
       selectSite: '选择站点',

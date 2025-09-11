@@ -233,13 +233,37 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- 工具栏操作按钮 -->
+    <!-- 工具栏统计信息和操作按钮 -->
     <VCard class="mb-4">
       <VCardItem>
-        <VCardTitle>{{ t('setting.cache.title') }}</VCardTitle>
-        <VCardSubtitle>{{ t('setting.cache.subtitle') }}</VCardSubtitle>
+        <div class="d-flex align-center justify-space-between w-100">
+          <!-- 左侧统计信息 -->
+          <div class="d-flex align-center gap-6">
+            <!-- 统计信息卡片 -->
+            <div class="d-flex gap-4">
+              <VCard variant="tonal" color="primary" class="pa-3">
+                <div class="d-flex align-center gap-2">
+                  <VIcon color="primary">mdi-database</VIcon>
+                  <div>
+                    <div class="text-h6 font-weight-bold">{{ cacheData.count }}</div>
+                    <div class="text-caption text-medium-emphasis">{{ t('setting.cache.totalCount') }}</div>
+                  </div>
+                </div>
+              </VCard>
 
-        <template #append>
+              <VCard variant="tonal" color="success" class="pa-3">
+                <div class="d-flex align-center gap-2">
+                  <VIcon color="success">mdi-web</VIcon>
+                  <div>
+                    <div class="text-h6 font-weight-bold">{{ cacheData.sites }}</div>
+                    <div class="text-caption text-medium-emphasis">{{ t('setting.cache.siteCount') }}</div>
+                  </div>
+                </div>
+              </VCard>
+            </div>
+          </div>
+
+          <!-- 右侧操作按钮 -->
           <div class="d-flex gap-2">
             <VBtn icon color="primary" :loading="loading" @click="refreshCache">
               <VIcon>mdi-refresh</VIcon>
@@ -264,7 +288,7 @@ onMounted(() => {
               <VTooltip activator="parent" location="bottom">{{ t('setting.cache.clearAll') }}</VTooltip>
             </VBtn>
           </div>
-        </template>
+        </div>
       </VCardItem>
     </VCard>
 

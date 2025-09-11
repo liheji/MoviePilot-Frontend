@@ -95,20 +95,6 @@ const shortcuts = [
     dialogRef: netTestDialog,
   },
   {
-    title: t('shortcut.system.title'),
-    subtitle: t('shortcut.system.subtitle'),
-    icon: 'mdi-cog',
-    dialog: 'systemTest',
-    dialogRef: systemTestDialog,
-  },
-  {
-    title: t('shortcut.message.title'),
-    subtitle: t('shortcut.message.subtitle'),
-    icon: 'mdi-message',
-    dialog: 'message',
-    dialogRef: messageDialog,
-  },
-  {
     title: t('shortcut.words.title'),
     subtitle: t('shortcut.words.subtitle'),
     icon: 'mdi-file-word-box',
@@ -121,6 +107,20 @@ const shortcuts = [
     icon: 'mdi-database',
     dialog: 'cache',
     dialogRef: cacheDialog,
+  },
+  {
+    title: t('shortcut.system.title'),
+    subtitle: t('shortcut.system.subtitle'),
+    icon: 'mdi-cog',
+    dialog: 'systemTest',
+    dialogRef: systemTestDialog,
+  },
+  {
+    title: t('shortcut.message.title'),
+    subtitle: t('shortcut.message.subtitle'),
+    icon: 'mdi-message',
+    dialog: 'message',
+    dialogRef: messageDialog,
   },
 ]
 
@@ -388,6 +388,38 @@ onMounted(() => {
       </VCardText>
     </VCard>
   </VDialog>
+  <!-- 词表设置弹窗 -->
+  <VDialog v-if="wordsDialog" v-model="wordsDialog" max-width="60rem" scrollable :fullscreen="!display.mdAndUp.value">
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-file-word-box" class="me-2" />
+          {{ t('shortcut.words.subtitle') }}
+        </VCardTitle>
+        <VDialogCloseBtn @click="wordsDialog = false" />
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <WordsView />
+      </VCardText>
+    </VCard>
+  </VDialog>
+  <!-- 缓存管理弹窗 -->
+  <VDialog v-if="cacheDialog" v-model="cacheDialog" max-width="90rem" scrollable :fullscreen="!display.mdAndUp.value">
+    <VCard>
+      <VCardItem>
+        <VCardTitle>
+          <VIcon icon="mdi-database" class="me-2" />
+          {{ t('shortcut.cache.subtitle') }}
+        </VCardTitle>
+        <VDialogCloseBtn @click="cacheDialog = false" />
+      </VCardItem>
+      <VDivider />
+      <VCardText>
+        <CacheView />
+      </VCardText>
+    </VCard>
+  </VDialog>
   <!-- 系统健康检查弹窗 -->
   <VDialog
     v-if="systemTestDialog"
@@ -453,38 +485,6 @@ onMounted(() => {
           </VBtn>
         </div>
       </VCardActions>
-    </VCard>
-  </VDialog>
-  <!-- 词表设置弹窗 -->
-  <VDialog v-if="wordsDialog" v-model="wordsDialog" max-width="60rem" scrollable :fullscreen="!display.mdAndUp.value">
-    <VCard>
-      <VCardItem>
-        <VCardTitle>
-          <VIcon icon="mdi-file-word-box" class="me-2" />
-          {{ t('shortcut.words.subtitle') }}
-        </VCardTitle>
-        <VDialogCloseBtn @click="wordsDialog = false" />
-      </VCardItem>
-      <VDivider />
-      <VCardText>
-        <WordsView />
-      </VCardText>
-    </VCard>
-  </VDialog>
-  <!-- 缓存管理弹窗 -->
-  <VDialog v-if="cacheDialog" v-model="cacheDialog" max-width="90rem" scrollable :fullscreen="!display.mdAndUp.value">
-    <VCard>
-      <VCardItem>
-        <VCardTitle>
-          <VIcon icon="mdi-database" class="me-2" />
-          {{ t('shortcut.cache.subtitle') }}
-        </VCardTitle>
-        <VDialogCloseBtn @click="cacheDialog = false" />
-      </VCardItem>
-      <VDivider />
-      <VCardText>
-        <CacheView />
-      </VCardText>
     </VCard>
   </VDialog>
 </template>

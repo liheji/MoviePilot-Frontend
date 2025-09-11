@@ -1723,6 +1723,8 @@ export default {
     cache: {
       title: 'Cache Management',
       subtitle: 'Manage torrent cache data',
+      totalCount: 'Total Count',
+      siteCount: 'Site Count',
       filterByTitle: 'Filter by Title',
       filterBySite: 'Filter by Site',
       selectSite: 'Select Site',
