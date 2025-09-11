@@ -33,7 +33,7 @@ onMounted(async () => {
     <div class="setup-wizard-header">
       <div class="d-flex align-center justify-space-between">
         <!-- 左侧占位 -->
-        <div style="inline-size: 40px"></div>
+        <div style="inline-size: 72px"></div>
 
         <!-- 中间标题 -->
         <div class="d-flex align-center text-center">
@@ -43,8 +43,17 @@ onMounted(async () => {
           </div>
         </div>
 
-        <!-- 右侧关闭按钮 -->
-        <VBtn variant="text" icon="mdi-close" @click="router.push('/')" size="small" />
+        <!-- 右侧按钮组 -->
+        <div class="d-flex gap-2">
+          <VBtn
+            variant="text"
+            icon="mdi-cog"
+            @click="router.push('/setting')"
+            size="small"
+            class="text-medium-emphasis"
+          />
+          <VBtn variant="text" icon="mdi-close" @click="router.push('/')" size="small" />
+        </div>
       </div>
     </div>
 
