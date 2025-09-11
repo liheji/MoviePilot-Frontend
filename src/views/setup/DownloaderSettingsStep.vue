@@ -119,15 +119,6 @@ const { wizardData, selectDownloader, validationErrors } = useSetupWizard()
                   </VCol>
                   <VCol cols="12" md="6">
                     <VSwitch
-                      v-model="wizardData.downloader.config.category"
-                      :label="t('downloader.category')"
-                      :hint="t('downloader.category')"
-                      persistent-hint
-                      active
-                    />
-                  </VCol>
-                  <VCol cols="12" md="6">
-                    <VSwitch
                       v-model="wizardData.downloader.config.sequentail"
                       :label="t('downloader.sequentail')"
                       :hint="t('downloader.sequentail')"

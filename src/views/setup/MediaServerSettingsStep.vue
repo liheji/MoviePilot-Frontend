@@ -1,9 +1,71 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
+import api from '@/api'
 
 const { t } = useI18n()
 const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
+
+// 同步媒体库选项
+const librariesOptions = ref<{ title: string; value: string | undefined }[]>([
+  {
+    title: t('common.all'),
+    value: 'all',
+  },
+])
+
+// 调用API查询媒体库
+async function loadLibrary(server: string) {
+  try {
+    console.log('Loading library for server:', server)
+    const result: any[] = await api.get('mediaserver/library', { params: { server } })
+    if (result && result.length > 0) {
+      librariesOptions.value = result.map(item => ({
+        title: item.name,
+        value: item.id?.toString(),
+      }))
+      console.log('Loaded libraries:', librariesOptions.value)
+    } else {
+      librariesOptions.value = []
+      console.log('No libraries found')
+    }
+    librariesOptions.value.unshift({
+      title: t('common.all'),
+      value: 'all',
+    })
+  } catch (e) {
+    console.log('Error loading library:', e)
+  }
+}
+
+// 选择媒体服务器并自动加载媒体库
+async function selectMediaServerWithLibrary(type: string) {
+  selectMediaServer(type)
+  // 如果选择了媒体服务器类型，自动加载媒体库
+  if (type && wizardData.value.mediaServer.name) {
+    await loadLibrary(wizardData.value.mediaServer.name)
+  }
+}
+
+// 组件挂载时检查是否需要加载媒体库
+onMounted(async () => {
+  // 如果已经有媒体服务器配置，自动加载媒体库
+  if (wizardData.value.mediaServer.type && wizardData.value.mediaServer.name) {
+    await loadLibrary(wizardData.value.mediaServer.name)
+  }
+})
+
+// 监听媒体服务器配置变化，自动加载媒体库
+watch(
+  () => [wizardData.value.mediaServer.type, wizardData.value.mediaServer.name],
+  async ([type, name]) => {
+    console.log('Media server changed:', { type, name })
+    if (type && name) {
+      await loadLibrary(name)
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -31,7 +93,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                   :color="wizardData.mediaServer.type === 'emby' ? 'primary' : 'default'"
                   :variant="wizardData.mediaServer.type === 'emby' ? 'tonal' : 'outlined'"
                   class="cursor-pointer"
-                  @click="selectMediaServer('emby')"
+                  @click="selectMediaServerWithLibrary('emby')"
                 >
                   <VCardText class="text-center">
                     <VImg src="/src/assets/images/logos/emby.png" height="48" width="48" class="mx-auto mb-2" />
@@ -44,7 +106,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                   :color="wizardData.mediaServer.type === 'jellyfin' ? 'primary' : 'default'"
                   :variant="wizardData.mediaServer.type === 'jellyfin' ? 'tonal' : 'outlined'"
                   class="cursor-pointer"
-                  @click="selectMediaServer('jellyfin')"
+                  @click="selectMediaServerWithLibrary('jellyfin')"
                 >
                   <VCardText class="text-center">
                     <VImg src="/src/assets/images/logos/jellyfin.png" height="48" width="48" class="mx-auto mb-2" />
@@ -57,7 +119,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                   :color="wizardData.mediaServer.type === 'plex' ? 'primary' : 'default'"
                   :variant="wizardData.mediaServer.type === 'plex' ? 'tonal' : 'outlined'"
                   class="cursor-pointer"
-                  @click="selectMediaServer('plex')"
+                  @click="selectMediaServerWithLibrary('plex')"
                 >
                   <VCardText class="text-center">
                     <VImg src="/src/assets/images/logos/plex.png" height="48" width="48" class="mx-auto mb-2" />
@@ -70,7 +132,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                   :color="wizardData.mediaServer.type === 'trimemedia' ? 'primary' : 'default'"
                   :variant="wizardData.mediaServer.type === 'trimemedia' ? 'tonal' : 'outlined'"
                   class="cursor-pointer"
-                  @click="selectMediaServer('trimemedia')"
+                  @click="selectMediaServerWithLibrary('trimemedia')"
                 >
                   <VCardText class="text-center">
                     <VImg src="/src/assets/images/logos/trimemedia.png" height="48" width="48" class="mx-auto mb-2" />
@@ -144,7 +206,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                     <VAutocomplete
                       v-model="wizardData.mediaServer.sync_libraries"
                       :label="t('mediaserver.syncLibraries')"
-                      :items="[]"
+                      :items="librariesOptions"
                       chips
                       multiple
                       clearable
@@ -153,6 +215,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                       active
                       append-inner-icon="mdi-refresh"
                       prepend-inner-icon="mdi-library"
+                      @click:append-inner="loadLibrary(wizardData.mediaServer.name)"
                     />
                   </VCol>
                 </VRow>
@@ -213,7 +276,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                     <VAutocomplete
                       v-model="wizardData.mediaServer.sync_libraries"
                       :label="t('mediaserver.syncLibraries')"
-                      :items="[]"
+                      :items="librariesOptions"
                       chips
                       multiple
                       clearable
@@ -222,6 +285,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                       active
                       append-inner-icon="mdi-refresh"
                       prepend-inner-icon="mdi-library"
+                      @click:append-inner="loadLibrary(wizardData.mediaServer.name)"
                     />
                   </VCol>
                 </VRow>
@@ -292,7 +356,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                     <VAutocomplete
                       v-model="wizardData.mediaServer.sync_libraries"
                       :label="t('mediaserver.syncLibraries')"
-                      :items="[]"
+                      :items="librariesOptions"
                       chips
                       multiple
                       clearable
@@ -301,6 +365,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                       active
                       append-inner-icon="mdi-refresh"
                       prepend-inner-icon="mdi-library"
+                      @click:append-inner="loadLibrary(wizardData.mediaServer.name)"
                     />
                   </VCol>
                 </VRow>
@@ -361,7 +426,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                     <VAutocomplete
                       v-model="wizardData.mediaServer.sync_libraries"
                       :label="t('mediaserver.syncLibraries')"
-                      :items="[]"
+                      :items="librariesOptions"
                       chips
                       multiple
                       clearable
@@ -370,6 +435,7 @@ const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
                       active
                       append-inner-icon="mdi-refresh"
                       prepend-inner-icon="mdi-library"
+                      @click:append-inner="loadLibrary(wizardData.mediaServer.name)"
                     />
                   </VCol>
                 </VRow>

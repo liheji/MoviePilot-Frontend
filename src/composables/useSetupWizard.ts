@@ -32,6 +32,7 @@ export interface WizardData {
     name: string
     config: any
     sync_libraries: any[]
+    switchs: any[]
   }
   notification: {
     type: string
@@ -110,6 +111,7 @@ const wizardData = ref<WizardData>({
     name: '',
     config: {},
     sync_libraries: [],
+    switchs: [],
   },
   notification: {
     type: '',
@@ -410,6 +412,7 @@ export function useSetupWizard() {
 
     // 根据通知类型验证必输项
     const config = wizardData.value.notification.config || {}
+    alert(wizardData.value.notification.type)
     switch (wizardData.value.notification.type) {
       case 'wechat':
         if (!config.WECHAT_CORPID?.trim()) {
