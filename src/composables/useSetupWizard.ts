@@ -45,6 +45,16 @@ export interface WizardData {
     quality: string
     subtitle: string
     resolution: string
+    personalizationOptions?: {
+      excludeDolbyVision: boolean
+      excludeBluray: boolean
+    }
+    ruleSequences?: Array<{
+      name: string
+      rule_string: string
+      media_type: string
+      category: string
+    }>
   }
 }
 
@@ -80,6 +90,9 @@ export interface ValidationErrorState {
 // 全局状态，所有组件共享
 const currentStep = ref(1)
 const totalSteps = 6
+
+// 加载状态
+const isLoading = ref(false)
 
 // 选中的预设规则
 const selectedPreset = ref('')
@@ -298,6 +311,15 @@ export function useSetupWizard() {
     }
   }
 
+  // 更新偏好设置
+  function updatePreferences(
+    personalizationOptions: { excludeDolbyVision: boolean; excludeBluray: boolean },
+    ruleSequences: Array<{ name: string; rule_string: string; media_type: string; category: string }>,
+  ) {
+    wizardData.value.preferences.personalizationOptions = personalizationOptions
+    wizardData.value.preferences.ruleSequences = ruleSequences
+  }
+
   // 清除验证错误状态
   function clearValidationErrors() {
     validationErrors.value.downloader = {
@@ -412,7 +434,6 @@ export function useSetupWizard() {
 
     // 根据通知类型验证必输项
     const config = wizardData.value.notification.config || {}
-    alert(wizardData.value.notification.type)
     switch (wizardData.value.notification.type) {
       case 'wechat':
         if (!config.WECHAT_CORPID?.trim()) {
@@ -591,11 +612,9 @@ export function useSetupWizard() {
       // 根据结果显示不同的消息
       if (testResult.success) {
         connectivityTest.value.testMessage = t('setupWizard.connectivityTestSuccess')
-        $toast.success(t('setupWizard.connectivityTestSuccess'))
       } else {
         // 显示API返回的具体错误原因
         connectivityTest.value.testMessage = testResult.message || t('setupWizard.connectivityTestFailed')
-        $toast.error(testResult.message || t('setupWizard.connectivityTestFailed'))
       }
 
       // 成功时2秒后隐藏结果，失败时保持显示直到用户操作
@@ -611,7 +630,6 @@ export function useSetupWizard() {
       connectivityTest.value.testResult = 'error'
       connectivityTest.value.showResult = true
       connectivityTest.value.testMessage = (error as Error).message || t('setupWizard.connectivityTestFailed')
-      $toast.error((error as Error).message || t('setupWizard.connectivityTestFailed'))
       return false
     }
   }
@@ -757,29 +775,30 @@ export function useSetupWizard() {
 
   // 下一步
   async function nextStep() {
-    if (currentStep.value < totalSteps) {
-      // 验证当前步骤的必输项
-      const validation = validateCurrentStep()
-      if (!validation.isValid) {
-        // 显示验证错误
-        validation.errors.forEach(error => {
-          $toast.error(error)
-        })
+    // 验证当前步骤的必输项
+    const validation = validateCurrentStep()
+    if (!validation.isValid) {
+      // 显示验证错误
+      validation.errors.forEach(error => {
+        $toast.error(error)
+      })
+      return
+    }
+
+    // 保存当前步骤的设置
+    await saveCurrentStepSettings()
+
+    // 检查是否需要进行测试
+    const needsTest = shouldPerformTest(currentStep.value)
+    if (needsTest) {
+      const testResult = await testConnectivity(currentStep.value)
+      if (!testResult) {
         return
       }
+    }
 
-      // 保存当前步骤的设置
-      await saveCurrentStepSettings()
-
-      // 检查是否需要进行测试
-      const needsTest = shouldPerformTest(currentStep.value)
-      if (needsTest) {
-        const testResult = await testConnectivity(currentStep.value)
-        if (!testResult) {
-          return
-        }
-      }
-
+    // 如果不是最后一步，则前进到下一步
+    if (currentStep.value < totalSteps) {
       currentStep.value++
       connectivityTest.value.showResult = false
     }
@@ -825,7 +844,7 @@ export function useSetupWizard() {
   // 完成向导
   async function completeWizard() {
     try {
-      // 先处理下一步
+      // 先处理下一步（保存当前步骤设置）
       await nextStep()
       // 保存设置向导完成状态
       await saveSetupWizardState()
@@ -855,7 +874,6 @@ export function useSetupWizard() {
           }
 
           await api.put(`user/${currentUser.id}`, userData)
-          $toast.success(t('setupWizard.passwordUpdateSuccess'))
         } else {
           // 如果用户不存在，创建新用户（通常不会发生）
           const userData = {
@@ -866,11 +884,9 @@ export function useSetupWizard() {
           }
 
           await api.post('user/', userData)
-          $toast.success(t('setupWizard.userCreateSuccess'))
         }
       } catch (error) {
         console.error('Update user password failed:', error)
-        $toast.error(t('setupWizard.passwordUpdateFailed'))
         throw error
       }
     }
@@ -888,9 +904,7 @@ export function useSetupWizard() {
 
       // 保存基础设置
       const response: { [key: string]: any } = await api.post('system/env', basicSettings)
-      if (response.success) {
-        $toast.success(t('setupWizard.basicSettingsSaved'))
-      } else {
+      if (!response.success) {
         return
       }
 
@@ -943,10 +957,7 @@ export function useSetupWizard() {
         library_category_folder: true,
       }
 
-      const response: { [key: string]: any } = await api.post('system/setting/Directories', [directory])
-      if (response.success) {
-        $toast.success(t('setupWizard.storageSettingsSaved'))
-      }
+      await api.post('system/setting/Directories', [directory])
     } catch (error) {
       console.error('Save storage settings failed:', error)
       $toast.error(t('setupWizard.saveStorageSettingsFailed'))
@@ -968,10 +979,7 @@ export function useSetupWizard() {
           config: config,
         }
 
-        const response: { [key: string]: any } = await api.post('system/setting/Downloaders', [downloader])
-        if (response.success) {
-          $toast.success(t('setupWizard.downloaderSettingsSaved'))
-        }
+        await api.post('system/setting/Downloaders', [downloader])
       } catch (error) {
         console.error('Save downloader settings failed:', error)
         $toast.error(t('setupWizard.saveDownloaderSettingsFailed'))
@@ -998,10 +1006,7 @@ export function useSetupWizard() {
           sync_libraries: sync_libraries,
         }
 
-        const response: { [key: string]: any } = await api.post('system/setting/MediaServers', [mediaServer])
-        if (response.success) {
-          $toast.success(t('setupWizard.mediaServerSettingsSaved'))
-        }
+        await api.post('system/setting/MediaServers', [mediaServer])
       } catch (error) {
         console.error('Save media server settings failed:', error)
         $toast.error(t('setupWizard.saveMediaServerSettingsFailed'))
@@ -1028,10 +1033,7 @@ export function useSetupWizard() {
           switchs: switchs,
         }
 
-        const response: { [key: string]: any } = await api.post('system/setting/Notifications', [notification])
-        if (response.success) {
-          $toast.success(t('setupWizard.notificationSettingsSaved'))
-        }
+        await api.post('system/setting/Notifications', [notification])
       } catch (error) {
         console.error('Save notification settings failed:', error)
         $toast.error(t('setupWizard.saveNotificationSettingsFailed'))
@@ -1045,17 +1047,27 @@ export function useSetupWizard() {
   // 保存资源偏好设置
   async function savePreferenceSettings() {
     try {
-      // 这里可以根据偏好设置创建相应的过滤规则
-      // 暂时保存到系统设置中
-      const preferenceSettings = {
-        QUALITY_PREFERENCE: wizardData.value.preferences.quality,
-        SUBTITLE_PREFERENCE: wizardData.value.preferences.subtitle,
-        RESOLUTION_PREFERENCE: wizardData.value.preferences.resolution,
-      }
+      // 如果有自定义规则序列，保存到用户过滤规则组
+      if (wizardData.value.preferences.ruleSequences && wizardData.value.preferences.ruleSequences.length > 0) {
+        try {
+          // 保存当前选中的规则组到 UserFilterRuleGroups
+          const filterResponse: { [key: string]: any } = await api.post(
+            'system/setting/UserFilterRuleGroups',
+            wizardData.value.preferences.ruleSequences,
+          )
+          if (filterResponse.success) {
+            // 保存规则组名称到其他设置
+            const ruleGroupNames = wizardData.value.preferences.ruleSequences.map(rule => [rule.name])
 
-      const response: { [key: string]: any } = await api.post('system/env', preferenceSettings)
-      if (response.success) {
-        $toast.success(t('setupWizard.preferenceSettingsSaved'))
+            // 保存到 SubscribeFilterRuleGroups
+            await api.post('system/setting/SubscribeFilterRuleGroups', ruleGroupNames)
+
+            // 保存到 BestVersionFilterRuleGroups
+            await api.post('system/setting/BestVersionFilterRuleGroups', ruleGroupNames)
+          }
+        } catch (error) {
+          console.error('Save rule sequences failed:', error)
+        }
       }
     } catch (error) {
       console.error('Save preference settings failed:', error)
@@ -1172,34 +1184,18 @@ export function useSetupWizard() {
     }
   }
 
-  // 加载资源偏好设置
-  async function loadPreferenceSettings() {
-    try {
-      const result: { [key: string]: any } = await api.get('system/env')
-      if (result.success) {
-        if (result.data.QUALITY_PREFERENCE) {
-          wizardData.value.preferences.quality = result.data.QUALITY_PREFERENCE
-        }
-        if (result.data.SUBTITLE_PREFERENCE) {
-          wizardData.value.preferences.subtitle = result.data.SUBTITLE_PREFERENCE
-        }
-        if (result.data.RESOLUTION_PREFERENCE) {
-          wizardData.value.preferences.resolution = result.data.RESOLUTION_PREFERENCE
-        }
-      }
-    } catch (error) {
-      console.log('Load preference settings failed:', error)
-    }
-  }
-
   // 初始化
   async function initialize() {
-    await loadSystemSettings()
-    await loadStorageSettings()
-    await loadDownloaderSettings()
-    await loadMediaServerSettings()
-    await loadNotificationSettings()
-    await loadPreferenceSettings()
+    isLoading.value = true
+    try {
+      await loadSystemSettings()
+      await loadStorageSettings()
+      await loadDownloaderSettings()
+      await loadMediaServerSettings()
+      await loadNotificationSettings()
+    } finally {
+      isLoading.value = false
+    }
   }
 
   return {
@@ -1212,6 +1208,7 @@ export function useSetupWizard() {
     selectedPreset,
     connectivityTest,
     validationErrors,
+    isLoading,
 
     // 方法
     createRandomString,
@@ -1220,6 +1217,7 @@ export function useSetupWizard() {
     selectMediaServer,
     selectNotification,
     selectPreset,
+    updatePreferences,
     validateCurrentStep,
     validateDownloaderFields,
     validateMediaServerFields,

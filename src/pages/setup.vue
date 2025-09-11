@@ -18,8 +18,17 @@ const router = useRouter()
 // 显示器宽度
 const display = useDisplay()
 
-const { currentStep, totalSteps, stepTitles, connectivityTest, nextStep, prevStep, completeWizard, initialize } =
-  useSetupWizard()
+const {
+  currentStep,
+  totalSteps,
+  stepTitles,
+  connectivityTest,
+  nextStep,
+  prevStep,
+  completeWizard,
+  initialize,
+  isLoading,
+} = useSetupWizard()
 
 // 初始化
 onMounted(async () => {
@@ -60,8 +69,14 @@ onMounted(async () => {
     <!-- 向导内容 -->
     <VCard max-width="800px" class="mx-auto my-7">
       <VCardText>
+        <!-- 加载状态 -->
+        <div v-if="isLoading" class="d-flex flex-column align-center justify-center py-16">
+          <VProgressCircular indeterminate color="primary" size="64" class="mb-4" />
+          <p class="text-body-1 text-medium-emphasis">{{ t('setupWizard.loading') }}</p>
+        </div>
+
         <!-- 使用 VStepper 组件 -->
-        <VStepper v-model="currentStep" class="elevation-0" flat alt-labels :mobile="display.smAndDown.value">
+        <VStepper v-else v-model="currentStep" class="elevation-0" flat alt-labels :mobile="display.smAndDown.value">
           <!-- 步骤标题 -->
           <VStepperHeader class="elevation-0">
             <template v-for="(step, index) in stepTitles" :key="index">

@@ -2881,6 +2881,7 @@ export default {
     completed: '配置向导完成！',
     failed: '配置向导失败，请重试',
     complete: '完成配置',
+    loading: '正在加载配置数据...',
     testing: '正在测试',
     connectivityTestSuccess: '连通性测试通过',
     connectivityTestFailed: '连通性测试失败',
@@ -3011,6 +3012,32 @@ export default {
       resolutionHint: '选择偏好的视频分辨率',
       presetRules: '预设规则',
       detailedConfig: '详细配置',
+      quickPresets: '快速预设',
+      quickPresetsDesc: '选择预设配置，系统将自动应用对应的规则',
+      personalizationOptions: '个性化选项',
+      personalizationOptionsDesc: '根据您的需求调整规则',
+      excludeDolbyVision: '排除杜比视界',
+      excludeDolbyVisionHint: '选中后规则中将排除杜比视界资源',
+      excludeBluray: '排除蓝光原盘',
+      excludeBlurayHint: '选中后规则中将排除蓝光原盘资源',
+      presets: {
+        '4k-enthusiast': {
+          name: '4K发烧友',
+          description: '追求最高画质，优先4K',
+        },
+        'balanced': {
+          name: '平衡模式',
+          description: '画质与存储空间的平衡选择',
+        },
+        'space-saver': {
+          name: '节省空间',
+          description: '优先较小文件，节省存储空间',
+        },
+        'free-priority': {
+          name: '免费优先',
+          description: '优先免费资源，其它的没有要求',
+        },
+      },
     },
   },
 }

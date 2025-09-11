@@ -2869,6 +2869,7 @@ export default {
     completed: '設定精靈完成！',
     failed: '設定精靈失敗，請重試',
     complete: '完成設定',
+    loading: '正在載入配置資料...',
     testing: '正在測試',
     connectivityTestSuccess: '連通性測試通過',
     connectivityTestFailed: '連通性測試失敗',
@@ -2979,6 +2980,32 @@ export default {
       resolutionHint: '選擇偏好的影片解析度',
       presetRules: '預設規則',
       detailedConfig: '詳細設定',
+      quickPresets: '快速預設',
+      quickPresetsDesc: '選擇預設配置，系統將自動應用對應的規則',
+      personalizationOptions: '個性化選項',
+      personalizationOptionsDesc: '根據您的需求調整規則',
+      excludeDolbyVision: '排除杜比視界',
+      excludeDolbyVisionHint: '選中後規則中將排除杜比視界資源',
+      excludeBluray: '排除藍光原盤',
+      excludeBlurayHint: '選中後規則中將排除藍光原盤資源',
+      presets: {
+        '4k-enthusiast': {
+          name: '4K發燒友',
+          description: '追求最高畫質，優先4K',
+        },
+        'balanced': {
+          name: '平衡模式',
+          description: '畫質與儲存空間的平衡選擇',
+        },
+        'space-saver': {
+          name: '節省空間',
+          description: '優先較小檔案，節省儲存空間',
+        },
+        'free-priority': {
+          name: '免費優先',
+          description: '優先免費資源，其它的沒有要求',
+        },
+      },
     },
   },
 }

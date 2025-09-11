@@ -541,10 +541,12 @@ const notificationTypes = [
 
 /* 选中状态的样式 */
 .v-card--variant-tonal.v-theme--light {
+  border: 2px solid rgb(var(--v-theme-primary));
   background-color: rgb(var(--v-theme-primary), 0.12);
 }
 
 .v-card--variant-tonal.v-theme--dark {
+  border: 2px solid rgb(var(--v-theme-primary));
   background-color: rgb(var(--v-theme-primary), 0.2);
 }
 </style>

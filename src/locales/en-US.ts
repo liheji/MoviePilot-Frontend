@@ -2914,6 +2914,7 @@ export default {
     completed: 'Setup Wizard completed!',
     failed: 'Setup Wizard failed, please try again',
     complete: 'Complete Configuration',
+    loading: 'Loading configuration data...',
     testing: 'Testing',
     connectivityTestSuccess: 'Connectivity test passed',
     connectivityTestFailed: 'Connectivity test failed',
@@ -3025,6 +3026,32 @@ export default {
       resolutionHint: 'Select preferred video resolution',
       presetRules: 'Preset Rules',
       detailedConfig: 'Detailed Configuration',
+      quickPresets: 'Quick Presets',
+      quickPresetsDesc: 'Select preset configuration, system will automatically apply corresponding rules',
+      personalizationOptions: 'Personalization Options',
+      personalizationOptionsDesc: 'Adjust rules according to your needs',
+      excludeDolbyVision: 'Exclude Dolby Vision',
+      excludeDolbyVisionHint: 'Exclude Dolby Vision resources from rules when selected',
+      excludeBluray: 'Exclude Blu-ray',
+      excludeBlurayHint: 'Exclude Blu-ray resources from rules when selected',
+      presets: {
+        '4k-enthusiast': {
+          name: '4K Enthusiast',
+          description: 'Pursue the highest quality, prioritize 4K',
+        },
+        'balanced': {
+          name: 'Balanced Mode',
+          description: 'Balance between quality and storage space',
+        },
+        'space-saver': {
+          name: 'Space Saver',
+          description: 'Prioritize smaller files to save storage space',
+        },
+        'free-priority': {
+          name: 'Free Priority',
+          description: 'Prioritize free resources, no other requirements',
+        },
+      },
     },
   },
 }
