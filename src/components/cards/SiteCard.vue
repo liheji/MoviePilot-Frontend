@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
-import noImage from '@images/logos/site.webp'
+import { getLogoUrl } from '@/utils/imageUtils'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import SiteAddEditDialog from '../dialog/SiteAddEditDialog.vue'
@@ -62,7 +62,7 @@ async function getSiteIcon() {
   try {
     siteIcon.value = (await api.get(`site/icon/${cardProps.site?.id}`)).data.icon
     if (!siteIcon.value) {
-      siteIcon.value = noImage
+      siteIcon.value = getLogoUrl('site')
     }
   } catch (error) {
     console.error(error)

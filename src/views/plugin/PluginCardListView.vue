@@ -5,7 +5,7 @@ import api from '@/api'
 import type { Plugin } from '@/api/types'
 import NoDataFound from '@/components/NoDataFound.vue'
 import PluginAppCard from '@/components/cards/PluginAppCard.vue'
-import noImage from '@images/logos/plugin.png'
+import { getLogoUrl } from '@/utils/imageUtils'
 import { useDisplay } from 'vuetify'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { getPluginTabs } from '@/router/i18n-menu'
@@ -675,7 +675,7 @@ function pluginIconError(item: Plugin) {
 // 插件图标地址
 function pluginIcon(item: Plugin) {
   // 如果图片加载错误
-  if (pluginIconLoaded.value[item.id || '0'] === false) return noImage
+  if (pluginIconLoaded.value[item.id || '0'] === false) return getLogoUrl('plugin')
   // 如果是网络图片则使用代理后返回
   if (item?.plugin_icon?.startsWith('http'))
     return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(item?.plugin_icon)}&cache=true`

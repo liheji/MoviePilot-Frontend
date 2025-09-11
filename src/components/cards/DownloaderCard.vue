@@ -4,9 +4,7 @@ import { formatFileSize } from '@/@core/utils/formatters'
 import { DownloaderConf } from '@/api/types'
 import { useToast } from 'vue-toastification'
 import type { DownloaderInfo } from '@/api/types'
-import qbittorrent_image from '@images/logos/qbittorrent.png'
-import transmission_image from '@images/logos/transmission.png'
-import custom_image from '@images/logos/downloader.png'
+import { getLogoUrl } from '@/utils/imageUtils'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 import { downloaderDict } from '@/api/constants'
@@ -128,11 +126,11 @@ function saveDownloaderInfo() {
 const getIcon = computed(() => {
   switch (props.downloader.type) {
     case 'qbittorrent':
-      return qbittorrent_image
+      return getLogoUrl('qbittorrent')
     case 'transmission':
-      return transmission_image
+      return getLogoUrl('transmission')
     default:
-      return custom_image
+      return getLogoUrl('downloader')
   }
 })
 

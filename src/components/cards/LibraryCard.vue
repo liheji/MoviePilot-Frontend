@@ -3,7 +3,7 @@ import type { MediaServerLibrary } from '@/api/types'
 import plex from '@images/misc/plex.png'
 import emby from '@images/misc/emby.png'
 import jellyfin from '@images/misc/jellyfin.png'
-import trimemedia from '@images/logos/trimemedia.png'
+import { getLogoUrl } from '@/utils/imageUtils'
 import { openMediaServerWithAutoDetect } from '@/utils/appDeepLink'
 
 // 输入参数
@@ -40,7 +40,7 @@ function getDefaultImage() {
   if (props.media?.server_type === 'plex') return plex
   else if (props.media?.server_type === 'emby') return emby
   else if (props.media?.server_type === 'jellyfin') return jellyfin
-  else if (props.media?.server_type === 'trimemedia') return trimemedia
+  else if (props.media?.server_type === 'trimemedia') return getLogoUrl('trimemedia')
   else return plex
 }
 
@@ -72,11 +72,11 @@ async function drawImages(imageList: string[]) {
   if (!canvas) return getDefaultImage()
 
   // 画布参数
-  const POSTER_WIDTH = (canvas.width - 40) / 4  // 左右边框8px + 3个间隔24px = 40px
-  const POSTER_HEIGHT = 256  // 上方海报高256
-  const MARGIN_WIDTH = 8  // 左右间隔为8
-  const MARGIN_HEIGHT = 4  // 海报和倒影之间的间隔为4
-  const REFLECTION_HEIGHT = canvas.height - POSTER_HEIGHT - MARGIN_HEIGHT  // 下方倒影使用剩余全部高度
+  const POSTER_WIDTH = (canvas.width - 40) / 4 // 左右边框8px + 3个间隔24px = 40px
+  const POSTER_HEIGHT = 256 // 上方海报高256
+  const MARGIN_WIDTH = 8 // 左右间隔为8
+  const MARGIN_HEIGHT = 4 // 海报和倒影之间的间隔为4
+  const REFLECTION_HEIGHT = canvas.height - POSTER_HEIGHT - MARGIN_HEIGHT // 下方倒影使用剩余全部高度
 
   // 获取画布上下文
   const ctx = canvas.getContext('2d')
@@ -107,30 +107,20 @@ async function drawImages(imageList: string[]) {
     }
 
     const x = MARGIN_WIDTH * index + POSTER_WIDTH * (index - 1)
-    const y = 0  // 海报紧贴顶部
+    const y = 0 // 海报紧贴顶部
 
     ctx.drawImage(img, x, y, POSTER_WIDTH, POSTER_HEIGHT)
 
     ctx.save()
     ctx.translate(0, canvas.height)
     ctx.scale(1, -1)
-    ctx.drawImage(
-      img,
-      0,
-      0,
-      img.width,
-      img.height,
-      x,
-      0,
-      POSTER_WIDTH,
-      REFLECTION_HEIGHT,
-    )
+    ctx.drawImage(img, 0, 0, img.width, img.height, x, 0, POSTER_WIDTH, REFLECTION_HEIGHT)
 
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height - (POSTER_HEIGHT + MARGIN_HEIGHT))
 
     gradient.addColorStop(0, 'rgba(0, 0, 0, 1)')
     gradient.addColorStop(1, 'rgba(0, 0, 0, 0.7)')
-    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalCompositeOperation = 'destination-out'
     ctx.fillStyle = gradient
     ctx.fillRect(x, 0, POSTER_WIDTH, REFLECTION_HEIGHT)
 

@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import api from '@/api'
-import douban from '@images/logos/douban.png'
-import github from '@images/logos/github.png'
-import slack from '@images/logos/slack.webp'
-import telegram from '@images/logos/telegram.webp'
-import tmdb from '@images/logos/tmdb.png'
-import wechat from '@images/logos/wechat.png'
-import fanart from '@images/logos/fanart.webp'
+import { getLogoUrl } from '@/utils/imageUtils'
 import tvdb from '@images/logos/thetvdb.jpeg'
-import python from '@images/logos/python.png'
 import { useI18n } from 'vue-i18n'
 
 // 国际化
@@ -36,7 +29,7 @@ interface Address {
 // 测试集
 const targets = ref<Address[]>([
   {
-    image: tmdb,
+    image: getLogoUrl('tmdb'),
     name: 'api.themoviedb.org',
     url: 'https://api.themoviedb.org/3/movie/550?api_key={TMDBAPIKEY}',
     proxy: true,
@@ -46,7 +39,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: tmdb,
+    image: getLogoUrl('tmdb'),
     name: 'api.tmdb.org',
     url: 'https://api.tmdb.org/3/movie/550?api_key={TMDBAPIKEY}',
     proxy: true,
@@ -56,7 +49,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: tmdb,
+    image: getLogoUrl('tmdb'),
     name: 'www.themoviedb.org',
     url: 'https://www.themoviedb.org',
     proxy: true,
@@ -76,7 +69,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: fanart,
+    image: getLogoUrl('fanart'),
     name: 'webservice.fanart.tv',
     url: 'https://webservice.fanart.tv',
     proxy: true,
@@ -86,7 +79,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: telegram,
+    image: getLogoUrl('telegram'),
     name: 'api.telegram.org',
     url: 'https://api.telegram.org',
     proxy: true,
@@ -96,7 +89,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: wechat,
+    image: getLogoUrl('wechat'),
     name: 'qyapi.weixin.qq.com',
     url: 'https://qyapi.weixin.qq.com/cgi-bin/gettoken',
     proxy: false,
@@ -106,7 +99,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: douban,
+    image: getLogoUrl('douban'),
     name: 'frodo.douban.com',
     url: 'https://frodo.douban.com',
     proxy: false,
@@ -116,7 +109,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: slack,
+    image: getLogoUrl('slack'),
     name: 'slack.com',
     url: 'https://slack.com',
     proxy: false,
@@ -126,7 +119,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: python,
+    image: getLogoUrl('python'),
     name: 'pypi.org',
     url: '{PIP_PROXY}rsa/',
     proxy: true,
@@ -137,7 +130,7 @@ const targets = ref<Address[]>([
     include: 'pypi:repository-version',
   },
   {
-    image: github,
+    image: getLogoUrl('github'),
     name: 'github.com',
     url: '{GITHUB_PROXY}https://github.com/jxxghp/MoviePilot/blob/v2/README.md',
     proxy: true,
@@ -148,7 +141,7 @@ const targets = ref<Address[]>([
     include: 'MoviePilot',
   },
   {
-    image: github,
+    image: getLogoUrl('github'),
     name: 'codeload.github.com',
     url: 'https://codeload.github.com',
     proxy: true,
@@ -158,7 +151,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: github,
+    image: getLogoUrl('github'),
     name: 'api.github.com',
     url: 'https://api.github.com',
     proxy: true,
@@ -168,7 +161,7 @@ const targets = ref<Address[]>([
     btndisable: false,
   },
   {
-    image: github,
+    image: getLogoUrl('github'),
     name: 'raw.githubusercontent.com',
     url: '{GITHUB_PROXY}https://raw.githubusercontent.com/jxxghp/MoviePilot/v2/README.md',
     proxy: true,
@@ -188,7 +181,7 @@ const resolveStatusColor: Status = {
 }
 
 const abortControllers = new Set<AbortController>()
-const isUnmounting = ref(false);
+const isUnmounting = ref(false)
 
 // 调用API测试网络连接
 async function netTest(index: number) {
@@ -229,17 +222,16 @@ async function netTest(index: number) {
 
 // 加载时测试所有连接
 onMounted(async () => {
-  isUnmounting.value = false;
-  for (let i = 0; !isUnmounting.value && i < targets.value.length; i++)
-    await netTest(i)
+  isUnmounting.value = false
+  for (let i = 0; !isUnmounting.value && i < targets.value.length; i++) await netTest(i)
 })
 onBeforeUnmount(() => {
-  isUnmounting.value = true;
+  isUnmounting.value = true
   for (const controller of abortControllers) {
     controller.abort()
   }
   abortControllers.clear()
-});
+})
 </script>
 
 <template>

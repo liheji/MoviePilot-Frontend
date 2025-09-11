@@ -3,7 +3,7 @@ import { useToast } from 'vue-toastification'
 import VersionHistory from '../misc/VersionHistory.vue'
 import api from '@/api'
 import type { Plugin } from '@/api/types'
-import noImage from '@images/logos/plugin.png'
+import { getLogoUrl } from '@/utils/imageUtils'
 import { getDominantColor } from '@/@core/utils/image'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
@@ -103,7 +103,7 @@ async function installPlugin() {
 
 // 计算图标路径
 const iconPath: Ref<string> = computed(() => {
-  if (imageLoadError.value) return noImage
+  if (imageLoadError.value) return getLogoUrl('plugin')
   // 如果是网络图片则使用代理后返回
   if (props.plugin?.plugin_icon?.startsWith('http'))
     return `${import.meta.env.VITE_API_BASE_URL}system/img/1?imgurl=${encodeURIComponent(

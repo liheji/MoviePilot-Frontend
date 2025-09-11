@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
+import { getLogoUrl } from '@/utils/imageUtils'
 
 const { t } = useI18n()
 const { wizardData, selectDownloader, validationErrors } = useSetupWizard()
@@ -34,7 +35,7 @@ const { wizardData, selectDownloader, validationErrors } = useSetupWizard()
                   @click="selectDownloader('qbittorrent')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/qbittorrent.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('qbittorrent')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">qBittorrent</div>
                   </VCardText>
                 </VCard>
@@ -47,7 +48,7 @@ const { wizardData, selectDownloader, validationErrors } = useSetupWizard()
                   @click="selectDownloader('transmission')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/transmission.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('transmission')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Transmission</div>
                   </VCardText>
                 </VCard>

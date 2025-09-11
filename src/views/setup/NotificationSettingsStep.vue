@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
+import { getLogoUrl } from '@/utils/imageUtils'
 
 const { t } = useI18n()
 const { wizardData, selectNotification, validationErrors } = useSetupWizard()
@@ -46,7 +47,7 @@ const notificationTypes = [
                   @click="selectNotification('wechat')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/wechat.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('wechat')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">微信</div>
                   </VCardText>
                 </VCard>
@@ -59,7 +60,7 @@ const notificationTypes = [
                   @click="selectNotification('telegram')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/telegram.webp" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('telegram')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Telegram</div>
                   </VCardText>
                 </VCard>
@@ -72,7 +73,7 @@ const notificationTypes = [
                   @click="selectNotification('slack')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/slack.webp" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('slack')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Slack</div>
                   </VCardText>
                 </VCard>
@@ -85,7 +86,7 @@ const notificationTypes = [
                   @click="selectNotification('synologychat')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/synologychat.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('synologychat')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Synology Chat</div>
                   </VCardText>
                 </VCard>
@@ -98,7 +99,7 @@ const notificationTypes = [
                   @click="selectNotification('vocechat')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/vocechat.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('vocechat')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">VoceChat</div>
                   </VCardText>
                 </VCard>

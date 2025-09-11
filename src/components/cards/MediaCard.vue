@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import noImage from '@images/no-image.jpeg'
-import tmdbImage from '@images/logos/tmdb.png'
-import doubanImage from '@images/logos/douban-black.png'
-import bangumiImage from '@images/logos/bangumi.png'
+import { getLogoUrl } from '@/utils/imageUtils'
 import api from '@/api'
 import { useToast } from 'vue-toastification'
 import { formatSeason, formatRating } from '@/@core/utils/formatters'
@@ -64,9 +62,9 @@ const seasonsSelected = ref<MediaSeason[]>([])
 
 // 来源角标字典
 const sourceIconDict: { [key: string]: any } = {
-  themoviedb: tmdbImage,
-  douban: doubanImage,
-  bangumi: bangumiImage,
+  themoviedb: getLogoUrl('tmdb'),
+  douban: getLogoUrl('douban-black'),
+  bangumi: getLogoUrl('bangumi'),
 }
 
 // 绑定MediaCard元素

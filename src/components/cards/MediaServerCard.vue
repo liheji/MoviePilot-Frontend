@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { MediaServerConf, MediaServerLibrary, MediaStatistic } from '@/api/types'
 import { useToast } from 'vue-toastification'
-import emby_image from '@images/logos/emby.png'
-import jellyfin_image from '@images/logos/jellyfin.png'
-import plex_image from '@images/logos/plex.png'
-import trimemedia_image from '@images/logos/trimemedia.png'
-import custom_image from '@images/logos/mediaserver.png'
+import { getLogoUrl } from '@/utils/imageUtils'
 import api from '@/api'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
@@ -109,15 +105,15 @@ function saveMediaServerInfo() {
 const getIcon = computed(() => {
   switch (props.mediaserver.type) {
     case 'emby':
-      return emby_image
+      return getLogoUrl('emby')
     case 'jellyfin':
-      return jellyfin_image
+      return getLogoUrl('jellyfin')
     case 'trimemedia':
-      return trimemedia_image
+      return getLogoUrl('trimemedia')
     case 'plex':
-      return plex_image
+      return getLogoUrl('plex')
     default:
-      return custom_image
+      return getLogoUrl('mediaserver')
   }
 })
 

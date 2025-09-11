@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { useSetupWizard } from '@/composables/useSetupWizard'
 import api from '@/api'
+import { getLogoUrl } from '@/utils/imageUtils'
 
 const { t } = useI18n()
 const { wizardData, selectMediaServer, validationErrors } = useSetupWizard()
@@ -96,7 +97,7 @@ watch(
                   @click="selectMediaServerWithLibrary('emby')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/emby.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('emby')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Emby</div>
                   </VCardText>
                 </VCard>
@@ -109,7 +110,7 @@ watch(
                   @click="selectMediaServerWithLibrary('jellyfin')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/jellyfin.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('jellyfin')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Jellyfin</div>
                   </VCardText>
                 </VCard>
@@ -122,7 +123,7 @@ watch(
                   @click="selectMediaServerWithLibrary('plex')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/plex.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('plex')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">Plex</div>
                   </VCardText>
                 </VCard>
@@ -135,7 +136,7 @@ watch(
                   @click="selectMediaServerWithLibrary('trimemedia')"
                 >
                   <VCardText class="text-center">
-                    <VImg src="/src/assets/images/logos/trimemedia.png" height="48" width="48" class="mx-auto mb-2" />
+                    <VImg :src="getLogoUrl('trimemedia')" height="48" width="48" class="mx-auto mb-2" />
                     <div class="text-h6">飞牛影视</div>
                   </VCardText>
                 </VCard>

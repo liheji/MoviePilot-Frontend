@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import api from '@/api'
 import type { Plugin } from '@/api/types'
-import noImage from '@images/logos/plugin.png'
+import { getLogoUrl } from '@/utils/imageUtils'
 import { useI18n } from 'vue-i18n'
 import { useRecentPlugins } from '@/composables/useRecentPlugins'
 import PluginDataDialog from '@/components/dialog/PluginDataDialog.vue'
@@ -137,8 +137,8 @@ const componentOpacity = computed(() => {
 
 // 计算插件图标路径
 function getPluginIcon(plugin: Plugin): string {
-  if (!plugin.plugin_icon) return noImage
-  if (pluginIconLoadError.value[plugin.id]) return noImage
+  if (!plugin.plugin_icon) return getLogoUrl('plugin')
+  if (pluginIconLoadError.value[plugin.id]) return getLogoUrl('plugin')
 
   // 如果是网络图片则使用代理后返回
   if (plugin?.plugin_icon?.startsWith('http'))

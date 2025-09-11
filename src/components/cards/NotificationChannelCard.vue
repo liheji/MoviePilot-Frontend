@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { NotificationConf } from '@/api/types'
-import wechat_image from '@images/logos/wechat.png'
-import telegram_image from '@images/logos/telegram.webp'
-import vocechat_image from '@images/logos/vocechat.png'
-import synologychat_image from '@images/logos/synologychat.png'
-import slack_image from '@images/logos/slack.webp'
-import chrome_image from '@images/logos/chrome.png'
-import custom_image from '@images/logos/notification.png'
+import { getLogoUrl } from '@/utils/imageUtils'
 import { useToast } from 'vue-toastification'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
@@ -99,19 +93,19 @@ function saveNotificationInfo() {
 const getIcon = computed(() => {
   switch (props.notification.type) {
     case 'wechat':
-      return wechat_image
+      return getLogoUrl('wechat')
     case 'telegram':
-      return telegram_image
+      return getLogoUrl('telegram')
     case 'vocechat':
-      return vocechat_image
+      return getLogoUrl('vocechat')
     case 'synologychat':
-      return synologychat_image
+      return getLogoUrl('synologychat')
     case 'slack':
-      return slack_image
+      return getLogoUrl('slack')
     case 'webpush':
-      return chrome_image
+      return getLogoUrl('chrome')
     default:
-      return custom_image
+      return getLogoUrl('notification')
   }
 })
 
