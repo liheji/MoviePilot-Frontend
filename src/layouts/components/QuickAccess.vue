@@ -206,6 +206,29 @@ function handleClosePluginDataDialog() {
   currentPlugin.value = null
 }
 
+// 管理滚动状态
+function manageScrollLock() {
+  if (isVisible.value) {
+    // 使用 nextTick 确保 DOM 已经更新
+    nextTick(() => {
+      // 先恢复之前的锁定状态，避免重复锁定
+      const scrollableElement = document.querySelector('.all-plugins-grid')
+      if (scrollableElement) {
+        // 确保元素存在且可见
+        if ((scrollableElement as HTMLElement).offsetHeight > 0) {
+          disableBodyScroll(scrollableElement as HTMLElement)
+        }
+      }
+    })
+  } else {
+    // 恢复背景滚动
+    const scrollableElement = document.querySelector('.all-plugins-grid')
+    if (scrollableElement) {
+      enableBodyScroll(scrollableElement as HTMLElement)
+    }
+  }
+}
+
 // 监听可见性变化，加载数据
 watch(
   () => isVisible.value,
@@ -213,18 +236,9 @@ watch(
     if (visible) {
       fetchPluginsWithPage()
       loadRecentPlugins()
-      // 禁用背景滚动，但允许面板内部滚动
-      // 注意：参数是要允许滚动的目标元素，即面板本身
-      const panelElement = document.querySelector('.plugin-quick-access')
-      if (panelElement) {
-        disableBodyScroll(panelElement as HTMLElement)
-      }
+      manageScrollLock()
     } else {
-      // 恢复背景滚动
-      const panelElement = document.querySelector('.plugin-quick-access')
-      if (panelElement) {
-        enableBodyScroll(panelElement as HTMLElement)
-      }
+      manageScrollLock()
     }
   },
   { immediate: true },
@@ -234,14 +248,15 @@ onMounted(() => {
   if (isVisible.value) {
     fetchPluginsWithPage()
     loadRecentPlugins()
+    manageScrollLock()
   }
 })
 
 // 组件卸载时确保恢复背景滚动
 onUnmounted(() => {
-  const panelElement = document.querySelector('.plugin-quick-access')
-  if (panelElement) {
-    enableBodyScroll(panelElement as HTMLElement)
+  const scrollableElement = document.querySelector('.all-plugins-grid')
+  if (scrollableElement) {
+    enableBodyScroll(scrollableElement as HTMLElement)
   }
 })
 
@@ -441,40 +456,41 @@ function handleBackdropClick(event: MouseEvent) {
           <div class="section-title">{{ t('plugin.allPlugins') }}</div>
         </div>
 
-        <div v-if="pluginsWithPage.length > 0" class="all-plugins-grid">
-          <div
-            v-for="plugin in pluginsWithPage"
-            :key="plugin.id"
-            class="plugin-item"
-            @click="handlePluginClick(plugin)"
-          >
-            <VBadge
-              dot
-              :color="plugin.state ? 'success' : 'secondary'"
-              location="top end"
-              :offset-x="-1"
-              :offset-y="-1"
+        <div v-if="pluginsWithPage.length > 0" class="all-plugins-container">
+          <div class="all-plugins-grid">
+            <div
+              v-for="plugin in pluginsWithPage"
+              :key="plugin.id"
+              class="plugin-item"
+              @click="handlePluginClick(plugin)"
             >
-              <div
-                class="plugin-icon"
-                :style="{
-                  background: `${getPluginBackgroundColor(plugin)}`,
-                }"
+              <VBadge
+                dot
+                :color="plugin.state ? 'success' : 'secondary'"
+                location="top end"
+                :offset-x="-1"
+                :offset-y="-1"
               >
-                <VImg
-                  :src="getPluginIcon(plugin)"
-                  :alt="plugin.plugin_name"
-                  cover
-                  @load="src => handleIconLoaded(src, plugin)"
-                  @error="handleIconError(plugin)"
-                  class="rounded-lg"
-                />
-              </div>
-            </VBadge>
-            <div class="plugin-name">{{ plugin.plugin_name }}</div>
+                <div
+                  class="plugin-icon"
+                  :style="{
+                    background: `${getPluginBackgroundColor(plugin)}`,
+                  }"
+                >
+                  <VImg
+                    :src="getPluginIcon(plugin)"
+                    :alt="plugin.plugin_name"
+                    cover
+                    @load="src => handleIconLoaded(src, plugin)"
+                    @error="handleIconError(plugin)"
+                    class="rounded-lg"
+                  />
+                </div>
+              </VBadge>
+              <div class="plugin-name">{{ plugin.plugin_name }}</div>
+            </div>
           </div>
         </div>
-
         <!-- 空状态（只有在没有插件时显示） -->
         <div v-else-if="pluginsWithPage.length === 0" class="empty-state">
           <VIcon icon="mdi-puzzle-outline" size="48" color="grey" />
@@ -643,10 +659,34 @@ function handleBackdropClick(event: MouseEvent) {
   padding-inline: 0;
 }
 
+.all-plugins-container {
+  display: flex;
+  overflow: hidden;
+  flex: 1;
+  flex-direction: column;
+  min-block-size: 0;
+}
+
 .all-plugins-grid {
   display: grid;
   gap: 4px;
   grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  max-block-size: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none; // IE/Edge
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 8px;
+  padding-inline: 0;
+
+  // 隐藏滚动条
+  scrollbar-width: none; // Firefox
+  touch-action: pan-y;
+  will-change: scroll-position;
+
+  &::-webkit-scrollbar {
+    display: none; // WebKit 浏览器
+  }
 }
 
 .plugin-item {
@@ -698,6 +738,7 @@ function handleBackdropClick(event: MouseEvent) {
   font-size: 12px;
   font-weight: 500;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   line-height: 1.2;
   max-block-size: 2.4em;
   text-align: center;
