@@ -2701,6 +2701,7 @@ export default {
     plexToken: 'X-Plex-Token',
     plexTokenHint: 'X-Plex-Token obtained from Plex request URL in browser F12 -> Network',
     username: 'Username',
+    usernameHint: 'Login username',
     password: 'Password',
     syncLibraries: 'Sync Libraries',
     syncLibrariesHint: 'Only selected libraries will be synchronized',

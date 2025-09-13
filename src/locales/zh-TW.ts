@@ -2660,6 +2660,7 @@ export default {
     passwordRequired: '密碼不能為空',
     plexTokenHint: '瀏覽器F12->網絡，從Plex請求URL中獲取的X-Plex-Token',
     username: '用戶名',
+    usernameHint: '登錄用戶名',
     password: '密碼',
     syncLibraries: '同步媒體庫',
     syncLibrariesHint: '只有選中的媒體庫才會被同步',

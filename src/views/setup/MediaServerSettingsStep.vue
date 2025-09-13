@@ -192,6 +192,16 @@ watch(
                   </VCol>
                   <VCol cols="12" md="6">
                     <VTextField
+                      v-model="wizardData.mediaServer.config.username"
+                      :label="t('mediaserver.username')"
+                      :hint="t('mediaserver.usernameHint')"
+                      persistent-hint
+                      active
+                      prepend-inner-icon="mdi-account"
+                    />
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <VTextField
                       v-model="wizardData.mediaServer.config.apikey"
                       :label="t('mediaserver.apiKey')"
                       :hint="t('mediaserver.embyApiKeyHint')"

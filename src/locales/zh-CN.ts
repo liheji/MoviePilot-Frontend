@@ -2669,6 +2669,7 @@ export default {
     plexToken: 'X-Plex-Token',
     plexTokenHint: '浏览器F12->网络，从Plex请求URL中获取的X-Plex-Token',
     username: '用户名',
+    usernameHint: '登录用户名',
     password: '密码',
     syncLibraries: '同步媒体库',
     syncLibrariesHint: '只有选中的媒体库才会被同步',
