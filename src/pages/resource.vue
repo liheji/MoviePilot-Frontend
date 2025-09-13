@@ -49,7 +49,7 @@ const dataList = ref<Array<Context>>([])
 const isRefreshed = ref(false)
 
 // 加载进度文本
-const progressText = ref('')
+const progressText = ref(t('common.pleaseWait'))
 
 // 加载进度
 const progressValue = ref(0)
