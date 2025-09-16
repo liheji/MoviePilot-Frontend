@@ -2712,6 +2712,9 @@ export default {
       firstAirDateAsc: '首播日期升序',
       voteAverageDesc: '评分降序',
       voteAverageAsc: '评分升序',
+      time: '按时间排序',
+      count: '按热度排序',
+      rating: '按评分排序',
     },
     genreType: {
       action: '动作',

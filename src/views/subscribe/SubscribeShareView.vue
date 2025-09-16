@@ -33,6 +33,7 @@ const filterParams = reactive({
   genre_id: '',
   min_rating: 0,
   max_rating: 10,
+  sort_type: 'time', // 默认按时间排序
 })
 
 // 当前Key（用于重新加载数据）
@@ -137,6 +138,9 @@ function getParams() {
   if (filterParams.max_rating < 10) {
     params.max_rating = filterParams.max_rating
   }
+  if (filterParams.sort_type) {
+    params.sort_type = filterParams.sort_type
+  }
   
   return params
 }
@@ -232,7 +236,7 @@ function removeData(id: number) {
       </VChipGroup>
     </div>
     
-    <div class="flex justify-start align-center">
+    <div class="flex justify-start align-center mb-3">
       <div class="mr-5">
         <VLabel>{{ t('tmdb.rating') }}</VLabel>
       </div>
@@ -250,6 +254,24 @@ function removeData(id: number) {
           <span class="ml-2 text-body-2">- 10</span>
         </template>
       </VSlider>
+    </div>
+    
+    <div class="flex justify-start align-center">
+      <div class="mr-5">
+        <VLabel>{{ t('tmdb.sort') }}</VLabel>
+      </div>
+      <VSelect
+        v-model="filterParams.sort_type"
+        :items="[
+          { title: t('tmdb.sortType.time'), value: 'time' },
+          { title: t('tmdb.sortType.count'), value: 'count' },
+          { title: t('tmdb.sortType.rating'), value: 'rating' }
+        ]"
+        variant="outlined"
+        density="compact"
+        hide-details
+        style="width: 150px;"
+      />
     </div>
   </div>
 
