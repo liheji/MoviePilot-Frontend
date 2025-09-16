@@ -2744,9 +2744,9 @@ export default {
       firstAirDateAsc: 'First Air Date Ascending',
       voteAverageDesc: 'Vote Average Descending',
       voteAverageAsc: 'Vote Average Ascending',
-      time: 'Sort by Time',
-      count: 'Sort by Popularity',
-      rating: 'Sort by Rating',
+      time: 'Latest',
+      count: 'Popular',
+      rating: 'Rating',
     },
     genreType: {
       action: 'Action',

@@ -2698,9 +2698,9 @@ export default {
       firstAirDateAsc: '首播日期升序',
       voteAverageDesc: '評分降序',
       voteAverageAsc: '評分升序',
-      time: '按時間排序',
-      count: '按熱度排序',
-      rating: '按評分排序',
+      time: '最新',
+      count: '熱門',
+      rating: '評分',
     },
     genreType: {
       action: '動作',

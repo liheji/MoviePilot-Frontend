@@ -102,13 +102,17 @@ watch(
 )
 
 // 监听筛选参数变化
-watch(filterParams, () => {
-  // 重置数据
-  dataList.value = []
-  page.value = 1
-  isRefreshed.value = false
-  currentKey.value++
-}, { deep: true })
+watch(
+  filterParams,
+  () => {
+    // 重置数据
+    dataList.value = []
+    page.value = 1
+    isRefreshed.value = false
+    currentKey.value++
+  },
+  { deep: true },
+)
 
 // 是否加载中
 const loading = ref(false)
@@ -127,7 +131,7 @@ function getParams() {
     count: 30,
     name: keyword.value,
   }
-  
+
   // 添加筛选参数
   if (filterParams.genre_id) {
     params.genre_id = parseInt(filterParams.genre_id)
@@ -141,7 +145,7 @@ function getParams() {
   if (filterParams.sort_type) {
     params.sort_type = filterParams.sort_type
   }
-  
+
   return params
 }
 
@@ -223,33 +227,18 @@ function removeData(id: number) {
         <VLabel>{{ t('tmdb.sort') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.sort_type">
-        <VChip
-          :color="filterParams.sort_type == 'time' ? 'primary' : ''"
-          filter
-          tile
-          value="time"
-        >
+        <VChip :color="filterParams.sort_type == 'time' ? 'primary' : ''" filter tile value="time">
           {{ t('tmdb.sortType.time') }}
         </VChip>
-        <VChip
-          :color="filterParams.sort_type == 'count' ? 'primary' : ''"
-          filter
-          tile
-          value="count"
-        >
+        <VChip :color="filterParams.sort_type == 'count' ? 'primary' : ''" filter tile value="count">
           {{ t('tmdb.sortType.count') }}
         </VChip>
-        <VChip
-          :color="filterParams.sort_type == 'rating' ? 'primary' : ''"
-          filter
-          tile
-          value="rating"
-        >
+        <VChip :color="filterParams.sort_type == 'rating' ? 'primary' : ''" filter tile value="rating">
           {{ t('tmdb.sortType.rating') }}
         </VChip>
       </VChipGroup>
     </div>
-    
+
     <div class="flex justify-start align-center mb-3">
       <div class="mr-5">
         <VLabel>{{ t('tmdb.genre') }}</VLabel>
@@ -267,7 +256,7 @@ function removeData(id: number) {
         </VChip>
       </VChipGroup>
     </div>
-    
+
     <div class="flex justify-start align-center mb-3">
       <div class="mr-5">
         <VLabel>{{ t('tmdb.rating') }}</VLabel>
@@ -280,18 +269,21 @@ function removeData(id: number) {
         :step="1"
         class="align-center"
         hide-details
-        style="width: 200px;"
       >
-        <template v-slot:append>
-          <span class="ml-2 text-body-2">- 10</span>
-        </template>
       </VSlider>
     </div>
   </div>
 
   <VPageContentTitle v-if="keyword" :title="`${t('common.search')}：${keyword}`" />
   <LoadingBanner v-if="!isRefreshed" class="mt-12" />
-  <VInfiniteScroll mode="intersect" side="end" :items="dataList" class="overflow-visible px-2" @load="fetchData" :key="currentKey">
+  <VInfiniteScroll
+    mode="intersect"
+    side="end"
+    :items="dataList"
+    class="overflow-visible px-2"
+    @load="fetchData"
+    :key="currentKey"
+  >
     <template #loading />
     <template #empty />
     <div v-if="dataList.length > 0" class="grid gap-4 grid-subscribe-card" tabindex="0">

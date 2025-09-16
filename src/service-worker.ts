@@ -6,7 +6,7 @@ declare let self: ServiceWorkerGlobalScope & {
 }
 
 // 缓存版本控制
-const CACHE_VERSION = 'v12'
+const CACHE_VERSION = 'v13'
 const CACHE_NAMES = {
   appShell: `app-shell-${CACHE_VERSION}`,
   static: `static-resources-${CACHE_VERSION}`,
