@@ -40,6 +40,7 @@ const filterParams = reactive({
   min_rating: 0,
   max_rating: 10,
   min_sub: 1,
+  sort_type: 'count', // 默认按热度排序
 })
 
 // 当前Key（用于重新加载数据）
@@ -122,6 +123,9 @@ function getParams() {
   }
   if (filterParams.min_sub > 1) {
     params.min_sub = filterParams.min_sub
+  }
+  if (filterParams.sort_type) {
+    params.sort_type = filterParams.sort_type
   }
   
   return params
@@ -233,7 +237,7 @@ async function fetchData({ done }: { done: any }) {
       </VSlider>
     </div>
     
-    <div class="flex justify-start align-center">
+    <div class="flex justify-start align-center mb-3">
       <div class="mr-5">
         <VLabel>{{ t('subscribe.minSubscribers') }}</VLabel>
       </div>
@@ -246,6 +250,24 @@ async function fetchData({ done }: { done: any }) {
         single-line
         min="1"
         style="width: 120px;"
+      />
+    </div>
+    
+    <div class="flex justify-start align-center">
+      <div class="mr-5">
+        <VLabel>{{ t('tmdb.sort') }}</VLabel>
+      </div>
+      <VSelect
+        v-model="filterParams.sort_type"
+        :items="[
+          { title: t('tmdb.sortType.time'), value: 'time' },
+          { title: t('tmdb.sortType.count'), value: 'count' },
+          { title: t('tmdb.sortType.rating'), value: 'rating' }
+        ]"
+        variant="outlined"
+        density="compact"
+        hide-details
+        style="width: 150px;"
       />
     </div>
   </div>
