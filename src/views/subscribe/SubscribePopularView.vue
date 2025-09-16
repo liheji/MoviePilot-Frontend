@@ -36,7 +36,7 @@ const currData = ref<MediaInfo[]>([])
 
 // 筛选参数
 const filterParams = reactive({
-  genre_id: '',
+  genre_id: '', // 空字符串表示选中"全部"
   min_rating: 0,
   max_rating: 10,
   min_sub: 1,
@@ -225,6 +225,14 @@ async function fetchData({ done }: { done: any }) {
         <VLabel>{{ t('tmdb.genre') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.genre_id">
+        <VChip
+          :color="filterParams.genre_id == '' ? 'primary' : ''"
+          filter
+          tile
+          value=""
+        >
+          {{ t('common.all') }}
+        </VChip>
         <VChip
           :color="filterParams.genre_id == key ? 'primary' : ''"
           filter

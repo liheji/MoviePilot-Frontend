@@ -30,7 +30,7 @@ const keyword = ref(props.keyword)
 
 // 筛选参数
 const filterParams = reactive({
-  genre_id: '',
+  genre_id: '', // 空字符串表示选中"全部"
   min_rating: 0,
   max_rating: 10,
   sort_type: 'time', // 默认按时间排序
@@ -244,6 +244,14 @@ function removeData(id: number) {
         <VLabel>{{ t('tmdb.genre') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.genre_id">
+        <VChip
+          :color="filterParams.genre_id == '' ? 'primary' : ''"
+          filter
+          tile
+          value=""
+        >
+          {{ t('common.all') }}
+        </VChip>
         <VChip
           :color="filterParams.genre_id == key ? 'primary' : ''"
           filter
