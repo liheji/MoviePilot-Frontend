@@ -247,18 +247,7 @@ function removeData(id: number) {
         style="width: 200px;"
       >
         <template v-slot:append>
-          <VTextField
-            variant="outlined"
-            width="5rem"
-            v-model="filterParams.max_rating"
-            density="compact"
-            type="number"
-            hide-details
-            single-line
-            min="0"
-            max="10"
-            step="0.1"
-          />
+          <span class="ml-2 text-body-2">- 10</span>
         </template>
       </VSlider>
     </div>
