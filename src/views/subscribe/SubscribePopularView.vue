@@ -201,6 +201,38 @@ async function fetchData({ done }: { done: any }) {
   <div class="px-3 mb-4">
     <div class="flex justify-start align-center mb-3">
       <div class="mr-5">
+        <VLabel>{{ t('tmdb.sort') }}</VLabel>
+      </div>
+      <VChipGroup v-model="filterParams.sort_type">
+        <VChip
+          :color="filterParams.sort_type == 'time' ? 'primary' : ''"
+          filter
+          tile
+          value="time"
+        >
+          {{ t('tmdb.sortType.time') }}
+        </VChip>
+        <VChip
+          :color="filterParams.sort_type == 'count' ? 'primary' : ''"
+          filter
+          tile
+          value="count"
+        >
+          {{ t('tmdb.sortType.count') }}
+        </VChip>
+        <VChip
+          :color="filterParams.sort_type == 'rating' ? 'primary' : ''"
+          filter
+          tile
+          value="rating"
+        >
+          {{ t('tmdb.sortType.rating') }}
+        </VChip>
+      </VChipGroup>
+    </div>
+    
+    <div class="flex justify-start align-center mb-3">
+      <div class="mr-5">
         <VLabel>{{ t('tmdb.genre') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.genre_id">
@@ -247,38 +279,6 @@ async function fetchData({ done }: { done: any }) {
           style="width: 120px; margin-left: 20px;"
         />
       </div>
-    </div>
-    
-    <div class="flex justify-start align-center">
-      <div class="mr-5">
-        <VLabel>{{ t('tmdb.sort') }}</VLabel>
-      </div>
-      <VChipGroup v-model="filterParams.sort_type">
-        <VChip
-          :color="filterParams.sort_type == 'time' ? 'primary' : ''"
-          filter
-          tile
-          value="time"
-        >
-          {{ t('tmdb.sortType.time') }}
-        </VChip>
-        <VChip
-          :color="filterParams.sort_type == 'count' ? 'primary' : ''"
-          filter
-          tile
-          value="count"
-        >
-          {{ t('tmdb.sortType.count') }}
-        </VChip>
-        <VChip
-          :color="filterParams.sort_type == 'rating' ? 'primary' : ''"
-          filter
-          tile
-          value="rating"
-        >
-          {{ t('tmdb.sortType.rating') }}
-        </VChip>
-      </VChipGroup>
     </div>
   </div>
 
