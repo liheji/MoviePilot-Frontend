@@ -245,7 +245,7 @@ function removeData(id: number) {
         thumb-label
         max="10"
         min="0"
-        :step="0.1"
+        :step="1"
         class="align-center"
         hide-details
         style="width: 200px;"
@@ -260,18 +260,32 @@ function removeData(id: number) {
       <div class="mr-5">
         <VLabel>{{ t('tmdb.sort') }}</VLabel>
       </div>
-      <VSelect
-        v-model="filterParams.sort_type"
-        :items="[
-          { title: t('tmdb.sortType.time'), value: 'time' },
-          { title: t('tmdb.sortType.count'), value: 'count' },
-          { title: t('tmdb.sortType.rating'), value: 'rating' }
-        ]"
-        variant="outlined"
-        density="compact"
-        hide-details
-        style="width: 150px;"
-      />
+      <VChipGroup v-model="filterParams.sort_type">
+        <VChip
+          :color="filterParams.sort_type == 'time' ? 'primary' : ''"
+          filter
+          tile
+          value="time"
+        >
+          {{ t('tmdb.sortType.time') }}
+        </VChip>
+        <VChip
+          :color="filterParams.sort_type == 'count' ? 'primary' : ''"
+          filter
+          tile
+          value="count"
+        >
+          {{ t('tmdb.sortType.count') }}
+        </VChip>
+        <VChip
+          :color="filterParams.sort_type == 'rating' ? 'primary' : ''"
+          filter
+          tile
+          value="rating"
+        >
+          {{ t('tmdb.sortType.rating') }}
+        </VChip>
+      </VChipGroup>
     </div>
   </div>
 

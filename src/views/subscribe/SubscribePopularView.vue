@@ -219,56 +219,66 @@ async function fetchData({ done }: { done: any }) {
     
     <div class="flex justify-start align-center mb-3">
       <div class="mr-5">
-        <VLabel>{{ t('tmdb.rating') }}</VLabel>
+        <VLabel>{{ t('tmdb.rating') }} & {{ t('subscribe.minSubscribers') }}</VLabel>
       </div>
-      <VSlider
-        v-model="filterParams.min_rating"
-        thumb-label
-        max="10"
-        min="0"
-        :step="0.1"
-        class="align-center"
-        hide-details
-        style="width: 200px;"
-      >
-        <template v-slot:append>
-          <span class="ml-2 text-body-2">- 10</span>
-        </template>
-      </VSlider>
-    </div>
-    
-    <div class="flex justify-start align-center mb-3">
-      <div class="mr-5">
-        <VLabel>{{ t('subscribe.minSubscribers') }}</VLabel>
+      <div class="flex align-center">
+        <VSlider
+          v-model="filterParams.min_rating"
+          thumb-label
+          max="10"
+          min="0"
+          :step="1"
+          class="align-center"
+          hide-details
+          style="width: 200px;"
+        >
+          <template v-slot:append>
+            <span class="ml-2 text-body-2">- 10</span>
+          </template>
+        </VSlider>
+        <VTextField
+          v-model="filterParams.min_sub"
+          variant="outlined"
+          density="compact"
+          type="number"
+          hide-details
+          single-line
+          min="1"
+          style="width: 120px; margin-left: 20px;"
+        />
       </div>
-      <VTextField
-        v-model="filterParams.min_sub"
-        variant="outlined"
-        density="compact"
-        type="number"
-        hide-details
-        single-line
-        min="1"
-        style="width: 120px;"
-      />
     </div>
     
     <div class="flex justify-start align-center">
       <div class="mr-5">
         <VLabel>{{ t('tmdb.sort') }}</VLabel>
       </div>
-      <VSelect
-        v-model="filterParams.sort_type"
-        :items="[
-          { title: t('tmdb.sortType.time'), value: 'time' },
-          { title: t('tmdb.sortType.count'), value: 'count' },
-          { title: t('tmdb.sortType.rating'), value: 'rating' }
-        ]"
-        variant="outlined"
-        density="compact"
-        hide-details
-        style="width: 150px;"
-      />
+      <VChipGroup v-model="filterParams.sort_type">
+        <VChip
+          :color="filterParams.sort_type == 'time' ? 'primary' : ''"
+          filter
+          tile
+          value="time"
+        >
+          {{ t('tmdb.sortType.time') }}
+        </VChip>
+        <VChip
+          :color="filterParams.sort_type == 'count' ? 'primary' : ''"
+          filter
+          tile
+          value="count"
+        >
+          {{ t('tmdb.sortType.count') }}
+        </VChip>
+        <VChip
+          :color="filterParams.sort_type == 'rating' ? 'primary' : ''"
+          filter
+          tile
+          value="rating"
+        >
+          {{ t('tmdb.sortType.rating') }}
+        </VChip>
+      </VChipGroup>
     </div>
   </div>
 
