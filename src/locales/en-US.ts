@@ -872,6 +872,7 @@ export default {
     batchEnableError: 'Batch enable operation failed',
     batchPauseError: 'Batch pause operation failed',
     batchDeleteError: 'Batch delete operation failed',
+    minSubscribers: 'Min Subscribers',
   },
   recommend: {
     all: 'All',

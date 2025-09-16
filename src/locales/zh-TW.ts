@@ -856,6 +856,7 @@ export default {
     batchEnableError: '批量啟用操作失敗',
     batchPauseError: '批量暫停操作失敗',
     batchDeleteError: '批量刪除操作失敗',
+    minSubscribers: '最小訂閱人數',
   },
   recommend: {
     all: '全部',
