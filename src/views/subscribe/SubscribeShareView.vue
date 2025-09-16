@@ -220,6 +220,38 @@ function removeData(id: number) {
   <div class="px-3 mb-4">
     <div class="flex justify-start align-center mb-3">
       <div class="mr-5">
+        <VLabel>{{ t('tmdb.sort') }}</VLabel>
+      </div>
+      <VChipGroup v-model="filterParams.sort_type">
+        <VChip
+          :color="filterParams.sort_type == 'time' ? 'primary' : ''"
+          filter
+          tile
+          value="time"
+        >
+          {{ t('tmdb.sortType.time') }}
+        </VChip>
+        <VChip
+          :color="filterParams.sort_type == 'count' ? 'primary' : ''"
+          filter
+          tile
+          value="count"
+        >
+          {{ t('tmdb.sortType.count') }}
+        </VChip>
+        <VChip
+          :color="filterParams.sort_type == 'rating' ? 'primary' : ''"
+          filter
+          tile
+          value="rating"
+        >
+          {{ t('tmdb.sortType.rating') }}
+        </VChip>
+      </VChipGroup>
+    </div>
+    
+    <div class="flex justify-start align-center mb-3">
+      <div class="mr-5">
         <VLabel>{{ t('tmdb.genre') }}</VLabel>
       </div>
       <VChipGroup v-model="filterParams.genre_id">
@@ -245,7 +277,7 @@ function removeData(id: number) {
         thumb-label
         max="10"
         min="0"
-        :step="0.1"
+        :step="1"
         class="align-center"
         hide-details
         style="width: 200px;"
@@ -254,24 +286,6 @@ function removeData(id: number) {
           <span class="ml-2 text-body-2">- 10</span>
         </template>
       </VSlider>
-    </div>
-    
-    <div class="flex justify-start align-center">
-      <div class="mr-5">
-        <VLabel>{{ t('tmdb.sort') }}</VLabel>
-      </div>
-      <VSelect
-        v-model="filterParams.sort_type"
-        :items="[
-          { title: t('tmdb.sortType.time'), value: 'time' },
-          { title: t('tmdb.sortType.count'), value: 'count' },
-          { title: t('tmdb.sortType.rating'), value: 'rating' }
-        ]"
-        variant="outlined"
-        density="compact"
-        hide-details
-        style="width: 150px;"
-      />
     </div>
   </div>
 
