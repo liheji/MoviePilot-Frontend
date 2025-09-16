@@ -236,33 +236,20 @@ function removeData(id: number) {
       <div class="mr-5">
         <VLabel>{{ t('tmdb.rating') }}</VLabel>
       </div>
-      <div class="flex align-center" style="width: 300px;">
-        <VTextField
-          v-model="filterParams.min_rating"
-          variant="outlined"
-          density="compact"
-          type="number"
-          hide-details
-          single-line
-          min="0"
-          max="10"
-          step="0.1"
-          style="width: 80px;"
-        />
-        <span class="mx-2">-</span>
-        <VTextField
-          v-model="filterParams.max_rating"
-          variant="outlined"
-          density="compact"
-          type="number"
-          hide-details
-          single-line
-          min="0"
-          max="10"
-          step="0.1"
-          style="width: 80px;"
-        />
-      </div>
+      <VSlider
+        v-model="filterParams.min_rating"
+        thumb-label
+        max="10"
+        min="0"
+        :step="0.1"
+        class="align-center"
+        hide-details
+        style="width: 200px;"
+      >
+        <template v-slot:append>
+          <span class="ml-2 text-body-2">- 10</span>
+        </template>
+      </VSlider>
     </div>
   </div>
 
