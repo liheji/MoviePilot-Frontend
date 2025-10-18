@@ -23,6 +23,13 @@ export function kFormatter(num: number) {
     : Math.abs(num).toFixed(0).replace(regex, ',')
 }
 
+// 格式化下载量显示，超过1000显示为x.xk格式
+export function formatDownloadCount(num: number): string {
+  if (!num || num < 1000) return num?.toLocaleString() || '0'
+
+  return `${(num / 1000).toFixed(1)}k`
+}
+
 /**
  * Format and return date in Humanize format
  * Intl docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/format

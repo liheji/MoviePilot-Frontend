@@ -6,6 +6,7 @@ import type { Plugin } from '@/api/types'
 import { isNullOrEmptyObject } from '@core/utils'
 import { getLogoUrl } from '@/utils/imageUtils'
 import { getDominantColor } from '@/@core/utils/image'
+import { formatDownloadCount } from '@/@core/utils/formatters'
 import VersionHistory from '@/components/misc/VersionHistory.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import PluginConfigDialog from '../dialog/PluginConfigDialog.vue'
@@ -492,7 +493,7 @@ watch(
               </div>
               <span v-if="props.count" class="ms-2 flex-shrink-0 download-count items-center align-middle">
                 <VIcon size="small" icon="mdi-download" />
-                <span class="text-sm">{{ props.count?.toLocaleString() }}</span>
+                <span class="text-sm">{{ formatDownloadCount(props.count) }}</span>
               </span>
             </div>
             <div class="absolute bottom-0 right-0">

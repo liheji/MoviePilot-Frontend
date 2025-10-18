@@ -6,6 +6,7 @@ import type { Plugin } from '@/api/types'
 import { getLogoUrl } from '@/utils/imageUtils'
 import { getDominantColor } from '@/@core/utils/image'
 import { isNullOrEmptyObject } from '@/@core/utils'
+import { formatDownloadCount } from '@/@core/utils/formatters'
 import ProgressDialog from '@/components/dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
 
@@ -244,7 +245,7 @@ const dropdownItems = ref([
               </div>
               <div v-if="props.count" class="ms-2 flex-shrink-0 download-count align-middle items-center">
                 <VIcon size="small" icon="mdi-download" />
-                <span class="text-sm">{{ props.count?.toLocaleString() }}</span>
+                <span class="text-sm">{{ formatDownloadCount(props.count) }}</span>
               </div>
             </div>
             <div class="absolute bottom-0 right-0">
@@ -327,7 +328,7 @@ const dropdownItems = ref([
                     }}</VBtn>
                     <div class="text-xs mt-2" v-if="props.count">
                       <VIcon icon="mdi-fire" />{{
-                        t('plugin.totalDownloads', { count: props.count?.toLocaleString() })
+                        t('plugin.totalDownloads', { count: formatDownloadCount(props.count) })
                       }}
                     </div>
                   </div>
