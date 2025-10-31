@@ -31,6 +31,11 @@ const SystemSettings = ref<any>({
     GITHUB_TOKEN: null,
     OCR_HOST: null,
     CUSTOMIZE_WALLPAPER_API_URL: null,
+    AI_AGENT_ENABLE: false,
+    LLM_PROVIDER: 'deepseek',
+    LLM_MODEL: 'deepseek-chat',
+    LLM_API_KEY: null,
+    LLM_BASE_URL: 'https://api.deepseek.com',
   },
   // 高级系统设置
   Advanced: {
@@ -604,6 +609,65 @@ onDeactivated(() => {
                   :hint="t('setting.system.ocrHostHint')"
                   persistent-hint
                   prepend-inner-icon="mdi-text-recognition"
+                />
+              </VCol>
+            </VRow>
+            <VDivider class="my-4" />
+            <VRow>
+              <VCol cols="12">
+                <VListSubheader class="text-lg">{{ t('setting.system.aiAgent') }}</VListSubheader>
+              </VCol>
+              <VCol cols="12" md="6">
+                <VSwitch
+                  v-model="SystemSettings.Basic.AI_AGENT_ENABLE"
+                  :label="t('setting.system.aiAgentEnable')"
+                  :hint="t('setting.system.aiAgentEnableHint')"
+                  persistent-hint
+                />
+              </VCol>
+              <VCol v-if="SystemSettings.Basic.AI_AGENT_ENABLE" cols="12" md="6">
+                <VSelect
+                  v-model="SystemSettings.Basic.LLM_PROVIDER"
+                  :label="t('setting.system.llmProvider')"
+                  :hint="t('setting.system.llmProviderHint')"
+                  persistent-hint
+                  :items="[
+                    { title: 'OpenAI', value: 'openai' },
+                    { title: 'Google', value: 'google' },
+                    { title: 'DeepSeek', value: 'deepseek' },
+                  ]"
+                  prepend-inner-icon="mdi-robot"
+                />
+              </VCol>
+              <VCol v-if="SystemSettings.Basic.AI_AGENT_ENABLE" cols="12" md="6">
+                <VTextField
+                  v-model="SystemSettings.Basic.LLM_MODEL"
+                  :label="t('setting.system.llmModel')"
+                  :hint="t('setting.system.llmModelHint')"
+                  placeholder="gpt-3.5-turbo"
+                  persistent-hint
+                  prepend-inner-icon="mdi-brain"
+                />
+              </VCol>
+              <VCol v-if="SystemSettings.Basic.AI_AGENT_ENABLE" cols="12" md="6">
+                <VTextField
+                  v-model="SystemSettings.Basic.LLM_API_KEY"
+                  :label="t('setting.system.llmApiKey')"
+                  :hint="t('setting.system.llmApiKeyHint')"
+                  :placeholder="t('setting.system.llmApiKeyPlaceholder')"
+                  persistent-hint
+                  type="password"
+                  prepend-inner-icon="mdi-key-variant"
+                />
+              </VCol>
+              <VCol v-if="SystemSettings.Basic.AI_AGENT_ENABLE" cols="12" md="6">
+                <VTextField
+                  v-model="SystemSettings.Basic.LLM_BASE_URL"
+                  :label="t('setting.system.llmBaseUrl')"
+                  :hint="t('setting.system.llmBaseUrlHint')"
+                  placeholder="https://api.deepseek.com"
+                  persistent-hint
+                  prepend-inner-icon="mdi-link"
                 />
               </VCol>
             </VRow>
