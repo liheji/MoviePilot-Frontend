@@ -3,6 +3,7 @@ import type { NavMenu } from '@/@layouts/types'
 import type { PluginSidebarNavItem } from '@/api/types'
 import { pluginSidebarSectionToHeaderKey } from '@/router/i18n-menu'
 import { buildPluginPermissionFeatureKey, filterMenusByPermission } from '@/utils/permission'
+import { isPluginRemoteAvailable } from '@/utils/pluginLite'
 
 export type PluginNavMenuEntry = {
   navMenu: NavMenu & { permission?: string }
@@ -45,6 +46,7 @@ export function filterPluginSidebarNavEntries(
 ): PluginNavMenuEntry[] {
   const out: PluginNavMenuEntry[] = []
   for (const item of items) {
+    if (!isPluginRemoteAvailable(item)) continue
     const section = item.section || 'system'
     const navMenu = navMenuFromPluginSidebarItem(item, t)
     if (!filterMenusByPermission([navMenu], userPermissions).length) {

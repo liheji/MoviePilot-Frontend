@@ -17,6 +17,7 @@ import type { ApiResponse } from '@/api/types'
 import { loadRemoteComponentFromModule, type RemoteModule } from '@/utils/federationLoader'
 import type { MfaMethod } from '@/types/auth'
 import { getLoginVisualProfile } from '@/utils/loginPresentation'
+import { createPluginHost, isPluginRemoteAvailable } from '@/utils/pluginLite'
 
 type LabTapTarget = 'logo' | 'title'
 
@@ -124,6 +125,8 @@ interface LoginAuthProvider {
   plugin_id?: string
   component?: string
   remote?: RemoteModule
+  runtime_status?: 'not_loaded' | 'running' | 'stopped' | 'load_error' | 'lite_incompatible'
+  fingerprint?: string
 }
 
 interface PluginAuthPayload {
@@ -168,8 +171,28 @@ const systemPasskeyProvider = computed(() =>
   authProviders.value.find(provider => provider.type === 'system' && provider.method === 'passkey'),
 )
 const pluginAuthProviders = computed(() =>
-  authProviders.value.filter(provider => provider.type === 'plugin' && provider.remote && provider.enabled !== false),
+  authProviders.value.filter(
+    provider =>
+      provider.type === 'plugin' && provider.remote && provider.enabled !== false && isPluginRemoteAvailable(provider),
+  ),
 )
+const pluginAuthHost = computed(() => {
+  const provider = selectedAuthProvider.value
+  if (!provider?.plugin_id) return null
+
+  return createPluginHost(
+    {
+      fingerprint: provider.fingerprint,
+      id: provider.plugin_id,
+      runtime_status: provider.runtime_status,
+      state: provider.enabled,
+    },
+    {
+      isAdmin: false,
+      surface: 'auth-page',
+    },
+  )
+})
 const showPasskeyLogin = computed(() => !!systemPasskeyProvider.value?.enabled)
 
 // 获取登录表单中的原生账号和密码输入框。
@@ -953,9 +976,10 @@ onUnmounted(() => {
           <component
             v-else-if="RemoteAuthView && selectedAuthProvider"
             :is="RemoteAuthView"
-            :api="api"
+            :api="pluginAuthHost?.api"
+            :host-capabilities="pluginAuthHost?.hostCapabilities"
             :provider="selectedAuthProvider"
-            :plugin-id="selectedAuthProvider.plugin_id"
+            :plugin-id="pluginAuthHost?.pluginId"
             @authenticated="handlePluginAuthenticated"
             @error="handlePluginAuthError"
             @close="closePluginAuth"

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import api from '@/api'
+import type { Plugin } from '@/api/types'
 import { loadRemoteAppPageComponent } from '@/utils/federationLoader'
 import { useToast } from 'vue-toastification'
-import { usePluginNativeSubscribe } from '@/composables/usePluginNativeSubscribe'
+import { useUserStore } from '@/stores'
+import { createPluginHost, isPluginRemoteAvailable } from '@/utils/pluginLite'
 
 const route = useRoute()
 
@@ -12,24 +14,42 @@ const navKey = computed(() => (route.params.navKey as string) || 'main')
 
 const RemoteView = shallowRef<Component | null>(null)
 const loadError = ref(false)
+const activePlugin = ref<Plugin | null>(null)
+const userStore = useUserStore()
+const pluginHost = computed(() =>
+  activePlugin.value
+    ? createPluginHost(activePlugin.value, {
+        isAdmin: userStore.superUser,
+        navKey: navKey.value,
+        surface: 'app-page',
+      })
+    : null,
+)
 
 // 侧栏联邦页面复用主应用 Toast 实例。
 const $toast = useToast()
 provide('moviepilot:toast', $toast)
 
-// 向侧栏全页联邦组件导出主程序原生订阅入口。
-const nativeSubscribe = usePluginNativeSubscribe()
-provide('moviepilot:nativeSubscribe', nativeSubscribe)
-
 watch(
   [pluginId, navKey],
   async ([pid, nk]) => {
     loadError.value = false
+    activePlugin.value = null
     if (!pid) {
       RemoteView.value = null
       return
     }
     try {
+      const installedPlugins = (await api.get('plugin/', {
+        params: { state: 'installed' },
+      })) as Plugin[]
+      const plugin = installedPlugins.find(item => item.id === pid)
+      if (!plugin || !isPluginRemoteAvailable(plugin)) {
+        RemoteView.value = null
+        loadError.value = true
+        return
+      }
+      activePlugin.value = plugin
       RemoteView.value = (await loadRemoteAppPageComponent(pid, nk)) as Component
     } catch (e) {
       console.error(e)
@@ -43,16 +63,14 @@ watch(
 
 <template>
   <div class="plugin-app-page" data-glass-optical-mode="static-material">
-    <VAlert v-if="loadError" type="error" class="ma-4" title="组件加载错误">
-      无法加载插件全页组件。多入口时请暴露 AppPage 或 AppPage{Pascal}（见文档），并确认插件已启用。
-    </VAlert>
+    <VAlert v-if="loadError" type="error" class="ma-4" title="组件加载错误"> 无法加载插件全页组件。 </VAlert>
     <VSkeletonLoader v-else-if="!RemoteView" class="ma-4" type="article, article, article" />
     <component
       v-else
       :is="RemoteView"
       :key="`${pluginId}-${navKey}`"
-      :api="api"
-      :native-subscribe="nativeSubscribe"
+      :api="pluginHost?.api"
+      :host-capabilities="pluginHost?.hostCapabilities"
       :nav-key="navKey"
       :plugin-id="pluginId"
       @action="() => {}"

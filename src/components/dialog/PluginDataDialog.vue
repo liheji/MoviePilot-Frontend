@@ -6,7 +6,8 @@ import api from '@/api'
 import { loadRemoteComponent } from '@/utils/federationLoader'
 import { usePWA } from '@/composables/usePWA'
 import { useToast } from 'vue-toastification'
-import { usePluginNativeSubscribe } from '@/composables/usePluginNativeSubscribe'
+import { useUserStore } from '@/stores'
+import { createPluginHost, isPluginRemoteAvailable } from '@/utils/pluginLite'
 
 // 输入参数
 const props = defineProps({
@@ -32,9 +33,15 @@ const { appMode } = usePWA()
 const $toast = useToast()
 provide('moviepilot:toast', $toast)
 
-// 向联邦插件同时提供 prop 与 inject 形式的主程序原生订阅入口。
-const nativeSubscribe = usePluginNativeSubscribe()
-provide('moviepilot:nativeSubscribe', nativeSubscribe)
+const userStore = useUserStore()
+const pluginHost = computed(() =>
+  props.plugin?.id
+    ? createPluginHost(props.plugin, {
+        isAdmin: userStore.superUser,
+        surface: 'page',
+      })
+    : null,
+)
 
 // 是否刷新
 const isRefreshed = ref(false)
@@ -56,6 +63,9 @@ const dynamicComponent = defineAsyncComponent({
     try {
       if (!props.plugin?.id) {
         throw new Error('插件ID不存在')
+      }
+      if (!isPluginRemoteAvailable(props.plugin)) {
+        throw new Error('插件当前不可加载远程页面')
       }
 
       // 动态加载远程组件
@@ -162,8 +172,9 @@ onMounted(() => {
       <VCardText class="pa-0">
         <component
           :is="dynamicComponent"
-          :api="api"
-          :native-subscribe="nativeSubscribe"
+          :api="pluginHost?.api"
+          :host-capabilities="pluginHost?.hostCapabilities"
+          :plugin-id="pluginHost?.pluginId"
           :show_switch="show_switch"
           @action="handleAction"
           @switch="emit('switch')"

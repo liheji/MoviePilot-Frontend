@@ -50,6 +50,11 @@ const pluginLabels = computed(() => {
     .map(tag => tag.trim())
     .filter(tag => tag.length > 0)
 })
+const runtimeStatusLabel = computed(() => {
+  if (props.plugin?.runtime_status === 'lite_incompatible') return '不兼容 Lite'
+  if (props.plugin?.runtime_status === 'load_error') return '加载失败'
+  return ''
+})
 
 // 图片是否加载完成
 const isImageLoaded = ref(false)
@@ -273,6 +278,15 @@ onUnmounted(() => {
                     {{ tag }}
                   </VChip>
                 </div>
+                <VChip
+                  v-if="runtimeStatusLabel"
+                  class="ms-2 mb-2"
+                  size="x-small"
+                  :color="props.plugin?.runtime_status === 'lite_incompatible' ? 'warning' : 'error'"
+                  variant="flat"
+                >
+                  {{ runtimeStatusLabel }}
+                </VChip>
               </div>
               <div class="relative flex-shrink-0 self-center pb-3">
                 <VAvatar size="48">

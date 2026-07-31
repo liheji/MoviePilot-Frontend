@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import api from '@/api'
 import { DashboardItem } from '@/api/types'
 import DashboardRender from '@/components/render/DashboardRender.vue'
 import { isNullOrEmptyObject } from '@/@core/utils'
 import { loadRemoteComponent } from '@/utils/federationLoader'
 import { useToast } from 'vue-toastification'
-import { usePluginNativeSubscribe } from '@/composables/usePluginNativeSubscribe'
+import { useUserStore } from '@/stores'
+import { createPluginHost, isPluginRemoteAvailable } from '@/utils/pluginLite'
 
 type DashboardComponentLoader = () => Promise<any>
 
@@ -14,9 +14,7 @@ type DashboardComponentLoader = () => Promise<any>
 const $toast = useToast()
 provide('moviepilot:toast', $toast)
 
-// 向仪表板联邦组件导出主程序原生订阅入口。
-const nativeSubscribe = usePluginNativeSubscribe()
-provide('moviepilot:nativeSubscribe', nativeSubscribe)
+const userStore = useUserStore()
 
 const DashboardSkeleton = {
   // 创建无需模板编译的仪表板加载骨架。
@@ -107,6 +105,15 @@ const props = defineProps({
   },
 })
 
+const pluginHost = computed(() =>
+  props.config?.id
+    ? createPluginHost(props.config, {
+        isAdmin: userStore.superUser,
+        surface: 'dashboard',
+      })
+    : null,
+)
+
 const emit = defineEmits(['update:refreshStatus', 'loaded'])
 
 // 当前仪表盘节点是否已经向页面层报告过加载完成。
@@ -121,6 +128,7 @@ const pluginRenderMode = computed(() => props.config?.render_mode || 'vuetify')
 // 加载 Vue 模式的插件仪表盘远程组件，并缓存当前节点的加载 Promise。
 function loadPluginDashboardComponent() {
   if (!props.config?.id) return Promise.reject(new Error('插件ID不存在'))
+  if (!isPluginRemoteAvailable(props.config)) return Promise.reject(new Error('插件当前不可加载仪表盘'))
 
   if (!pluginDashboardComponentLoadPromise) {
     pluginDashboardComponentLoadPromise = loadRemoteComponent(props.config.id, 'Dashboard').catch(error => {
@@ -167,7 +175,12 @@ function isBuiltInDashboardElement() {
 
 // 判断当前配置是否需要等待插件 Vue 远程组件加载。
 function isVuePluginDashboardElement() {
-  return !isBuiltInDashboardElement() && pluginRenderMode.value === 'vue' && !isNullOrEmptyObject(props.config)
+  return (
+    !isBuiltInDashboardElement() &&
+    pluginRenderMode.value === 'vue' &&
+    !isNullOrEmptyObject(props.config) &&
+    isPluginRemoteAvailable(props.config)
+  )
 }
 
 // 向页面层上报当前仪表盘节点已完成首次组件加载。
@@ -231,13 +244,14 @@ onUnmounted(() => {
   <!-- 插件仪表板 -->
   <template v-else-if="!isNullOrEmptyObject(props.config)">
     <!-- Vue 渲染模式 -->
-    <div v-if="pluginRenderMode === 'vue'" class="dashboard-plugin-vue-renderer">
+    <div v-if="isVuePluginDashboardElement()" class="dashboard-plugin-vue-renderer">
       <component
         :is="dynamicPluginComponent"
         :config="props.config"
         :allow-refresh="props.allowRefresh"
-        :api="api"
-        :native-subscribe="nativeSubscribe"
+        :api="pluginHost?.api"
+        :host-capabilities="pluginHost?.hostCapabilities"
+        :plugin-id="pluginHost?.pluginId"
       />
     </div>
     <!-- Vuetify 渲染模式 -->

@@ -96,6 +96,7 @@ export default defineConfig([
     '**/dist/**',
     '**/dev-dist/**',
     '**/coverage/**',
+    '**/.gitnexus/**',
     '**/.worktrees/**',
     '**/vite.config.*.timestamp-*.mjs',
     'public/plugin_icon/**',

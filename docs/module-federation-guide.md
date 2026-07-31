@@ -23,6 +23,7 @@ MoviePilot前端采用模块联邦(Module Federation)技术实现插件的动态
 | Config    | `./Config`       | Config.vue             | 插件配置页面                                  |
 | Dashboard | `./Dashboard`    | Dashboard.vue          | 仪表盘小组件                                  |
 | AppPage   | `./AppPage`      | AppPage.vue            | 主界面侧栏独立全页（主内容区由插件完全绘制）  |
+| AuthPage  | `./AuthPage`     | AuthPage.vue           | 未登录状态的插件认证页面                      |
 | （可选）  | `./AppPage{Xxx}` | 如 AppPageSettings.vue | 多 `nav_key` 时按名优先加载，见下文「多界面」 |
 
 主应用在侧栏全页路由中按 `nav_key` 解析暴露名（如 `AppPageSettings`），再回退 `AppPage` → `Page`；`nav_key` 为 `main` 时仅尝试 `AppPage` → `Page`。
@@ -141,10 +142,8 @@ const props = defineProps({
     type: Object,
     default: () => {},
   },
-  nativeSubscribe: {
-    type: Function,
-    default: null,
-  },
+  hostCapabilities: { type: Array, default: () => [] },
+  pluginId: { type: String, default: '' },
 })
 
 // 页面逻辑代码...
@@ -189,10 +188,8 @@ const props = defineProps({
     type: Object,
     default: () => {},
   },
-  nativeSubscribe: {
-    type: Function,
-    default: null,
-  },
+  hostCapabilities: { type: Array, default: () => [] },
+  pluginId: { type: String, default: '' },
 })
 
 // 配置数据
@@ -248,10 +245,9 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  nativeSubscribe: {
-    type: Function,
-    default: null,
-  },
+  api: { type: Object, default: () => ({}) },
+  hostCapabilities: { type: Array, default: () => [] },
+  pluginId: { type: String, default: '' },
 })
 
 // 仪表板逻辑...
@@ -284,18 +280,18 @@ const props = defineProps({
 
 主应用传入的 props：
 
-| 属性              | 说明                                                  |
-| ----------------- | ----------------------------------------------------- |
-| `api`             | 与 `Page` 相同，用于 `bear` 认证的插件 HTTP 调用      |
-| `nativeSubscribe` | 打开主应用原生订阅交互                                |
-| `navKey`          | 与侧栏声明的 `nav_key` 一致，同一插件多入口时用于区分 |
-| `pluginId`        | 当前插件 ID                                           |
+| 属性               | 说明                                                  |
+| ------------------ | ----------------------------------------------------- |
+| `api`              | 当前插件作用域的 HTTP client                          |
+| `hostCapabilities` | 当前宿主支持的只读能力列表                            |
+| `navKey`           | 与侧栏声明的 `nav_key` 一致，同一插件多入口时用于区分 |
+| `pluginId`         | 当前插件 ID                                           |
 
 ```vue
 <script setup lang="ts">
 const props = defineProps({
   api: { type: Object, default: () => ({}) },
-  nativeSubscribe: { type: Function, default: null },
+  hostCapabilities: { type: Array, default: () => [] },
   navKey: { type: String, default: 'main' },
   pluginId: { type: String, default: '' },
 })
@@ -314,13 +310,25 @@ const emit = defineEmits(['action'])
 
 登录后的联邦组件宿主会向插件开放以下能力：
 
-| 能力             | Page | Config | Dashboard | AppPage | 调用方式                                                         |
-| ---------------- | ---- | ------ | --------- | ------- | ---------------------------------------------------------------- |
-| 认证 API         | ✓    | ✓      | ✓         | ✓       | `api` prop                                                       |
-| 原生订阅交互     | ✓    | ✓      | ✓         | ✓       | `nativeSubscribe` prop 或 `inject('moviepilot:nativeSubscribe')` |
-| 主应用统一 Toast | ✓    | ✓      | ✓         | ✓       | `inject('moviepilot:toast')`                                     |
+| 能力                 | Page | Config | Dashboard | AppPage | AuthPage | 调用方式                     |
+| -------------------- | ---- | ------ | --------- | ------- | -------- | ---------------------------- |
+| 插件作用域 API       | ✓    | ✓      | ✓         | ✓       | ✓        | `api` prop                   |
+| 只读宿主能力声明     | ✓    | ✓      | ✓         | ✓       | ✓        | `hostCapabilities` prop      |
+| 当前插件 ID          | ✓    | ✓      | ✓         | ✓       | ✓        | `pluginId` prop              |
+| 主应用统一 Toast     | ✓    | ✓      | ✓         | ✓       | -        | `inject('moviepilot:toast')` |
 
-`nativeSubscribe` 和 Toast 都由主应用宿主提供。插件不应复制主程序订阅弹窗，也不应自行创建另一套 Toast 容器。插件在旧版主程序或能力不存在的环境中运行时，应保留空值判断和必要的页面内 fallback。
+Lite 的完整能力列表固定为 `auth`、`plugin.api`、`plugin.data`、`plugin.static`、`plugin.dashboard`、`plugin.sidebar`、`site`、`torrent.search`、`download.task`、`message`。`AuthPage` 在未登录状态只获得 `auth` 与 `plugin.api`。插件应在调用前检查 `hostCapabilities`，且不应自行创建另一套 Toast 容器。
+
+插件根目录可增加 `plugin_lite.json`，在任何插件代码导入前声明宿主依赖：
+
+```json
+{
+  "schema_version": 1,
+  "required_host_capabilities": ["plugin.api", "site"]
+}
+```
+
+缺少该文件按空依赖处理。格式错误、未知版本、未知能力，或声明 `media`、`subscribe`、`transfer`、`storage`、`mediaserver`、`workflow`、`agent` 中任一已删除能力时，插件可安装和更新，但会被标记为“不兼容 Lite”并拒绝启用。
 
 ### 5.6 玻璃光学表面
 
@@ -336,40 +344,25 @@ const emit = defineEmits(['action'])
 
 动态模式只在主应用启用玻璃主题和实时光学能力时生效。其他主题、降低动态效果或光学能力不可用时，插件必须保持内容与交互正常，不应依赖动态光学表达业务状态或必要反馈。
 
-### 5.7 调用主应用原生订阅
+### 5.7 使用作用域 API
 
-`Page`、`Config`、`Dashboard` 与 `AppPage` 都会收到 `nativeSubscribe(mediaInfo)` prop。插件传入媒体信息后，电视剧会打开主应用的选季抽屉，电影会进入现有电影订阅流程。宿主也会用 `moviepilot:nativeSubscribe` 键提供同一个方法，深层子组件可以使用 `inject`，无需逐层传递 prop。
+五类远程宿主共用同一个作用域 client。它保留常用的 `request`、`get`、`post`、`put`、`patch`、`delete`、`head` 和 `options` 方法，但不会暴露 Axios 拦截器或全局实例。调用已删除 API 前缀会在浏览器本地被拒绝；管理员访问时，宿主会携带当前插件内容指纹上报不兼容状态。普通 `404`、网络失败和组件渲染错误不会被误判为 Lite 不兼容。
 
-媒体信息必须包含：
+`AuthPage` 只能访问 `auth/*` 和当前插件的 `plugin/<pluginId>/*` 接口。其他远程宿主可以继续访问 Lite 保留的宿主 API；插件自身 API 应使用当前插件 ID 作为路径首段：
 
-- `type`：`电影` / `电视剧`，也兼容 `movie` / `tv`；
-- `title`；
-- 至少一个有效媒体标识：`tmdb_id` / `tmdbid`、`douban_id` / `doubanid`、`bangumi_id` / `bangumiid`、`anilist_id` / `anilistid`，或者 `media_id` 与 `mediaid_prefix` / `source` / `media_source` 的组合。
-
-```vue
-<script setup lang="ts">
-import { inject } from 'vue'
-
-type NativeSubscribeResult =
-  { success: true } | { success: false; code: 'INVALID_MEDIA' | 'PERMISSION_DENIED'; message: string }
-
+```typescript
 const props = defineProps<{
-  nativeSubscribe?: (mediaInfo: Record<string, unknown>) => Promise<NativeSubscribeResult>
+  api: {
+    get<T = unknown>(url: string): Promise<T>
+  }
+  hostCapabilities: readonly string[]
+  pluginId: string
 }>()
 
-const nativeSubscribe = inject('moviepilot:nativeSubscribe', props.nativeSubscribe)
-
-/** 使用主应用订阅交互，宿主不接受时保留插件自己的 fallback。 */
-async function subscribeMedia(mediaInfo: Record<string, unknown>) {
-  const result = await nativeSubscribe?.(mediaInfo)
-  if (!result?.success) {
-    // 插件可在这里执行自己的 fallback；宿主已同时显示明确错误提示。
-  }
+if (props.hostCapabilities.includes('plugin.api')) {
+  const items = await props.api.get(`plugin/${props.pluginId}/history`)
 }
-</script>
 ```
-
-`success: true` 表示主应用已接受调用并启动原生交互，不表示用户已经完成订阅。字段无效或当前用户没有订阅权限时返回 `success: false`，插件可以依据 `code` 执行 fallback。
 
 ### 5.8 调用主应用 Toast
 
@@ -490,7 +483,7 @@ def get_api(self) -> List[Dict[str, Any]]:
     """
     return [
         {
-            "path": "/history",
+            "path": "/MyPlugin/history",
             "endpoint": self.get_history,
             "methods": ["GET"],
             "auth": "bear",  # 认证类型设为bear

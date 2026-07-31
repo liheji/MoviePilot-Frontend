@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
 import type { PluginSidebarNavItem } from '@/api/types'
+import { filterPluginRemoteItems } from '@/utils/pluginLite'
 
 /**
  * 缓存 GET plugin/sidebar_nav 结果，供 DefaultLayout 与 appcenter 等共用，避免重复请求。
@@ -36,7 +37,7 @@ export const usePluginSidebarNavStore = defineStore('pluginSidebarNav', {
         try {
           const res = await api.get('plugin/sidebar_nav')
           if (!this.inflight) return
-          this.items = Array.isArray(res) ? res : []
+          this.items = Array.isArray(res) ? filterPluginRemoteItems(res) : []
           this.loaded = true
           this.inflight = null
           return
