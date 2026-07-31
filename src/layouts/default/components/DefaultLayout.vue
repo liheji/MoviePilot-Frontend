@@ -9,9 +9,8 @@ import ShortcutBar from './ShortcutBar.vue'
 import UserProfile from './UserProfile.vue'
 import QuickAccess from './QuickAccess.vue'
 import HeaderTab from './HeaderTab.vue'
-import AgentAssistantWidget from '@/components/agent/AgentAssistantWidget.vue'
 import ThemeCustomizer from '@/components/theme/ThemeCustomizer.vue'
-import { useGlobalSettingsStore, usePluginSidebarNavStore, useUserStore } from '@/stores'
+import { usePluginSidebarNavStore, useUserStore } from '@/stores'
 import { getNavMenus } from '@/router/i18n-menu'
 import { filterPluginSidebarNavEntries } from '@/utils/pluginSidebarNav'
 import { NavMenu } from '@/@layouts/types'
@@ -51,14 +50,10 @@ const showThemeCustomizer = ref(false)
 // 用户 Store
 const userStore = useUserStore()
 const pluginSidebarNavStore = usePluginSidebarNavStore()
-const globalSettingsStore = useGlobalSettingsStore()
 
 // 获取用户权限信息
 const userPermissions = computed(() => buildUserPermissionContext(userStore.superUser, userStore.permissions))
 const canAdmin = computed(() => hasPermission(userPermissions.value, 'admin'))
-const showAgentAssistant = computed(
-  () => globalSettingsStore.get('AI_AGENT_ENABLE') === true && globalSettingsStore.get('AI_AGENT_HIDE_ENTRY') !== true,
-)
 
 // 开始菜单项
 const startMenus = ref<NavMenu[]>([])
@@ -735,8 +730,6 @@ onMounted(async () => {
   <!-- 👉 Theme Customizer -->
   <ThemeCustomizer v-if="showThemeCustomizer" @close="showThemeCustomizer = false" />
 
-  <!-- 👉 Agent Assistant -->
-  <AgentAssistantWidget v-if="showAgentAssistant" />
 </template>
 
 <style lang="scss" scoped>
