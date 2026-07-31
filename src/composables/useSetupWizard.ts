@@ -48,42 +48,6 @@ export interface WizardData {
     config: any
     switchs: any[]
   }
-  agent: {
-    enabled: boolean
-    global: boolean
-    verbose: boolean
-    provider: string
-    authConnected: boolean
-    model: string
-    thinkingLevel: string
-    apiProtocol: string
-    supportImageInput: boolean
-    supportAudioInput: boolean
-    supportAudioOutput: boolean
-    apiKey: string
-    baseUrl: string
-    useProxy: boolean
-    baseUrlPreset: string
-    maxContextTokens: number
-    userAgent: string
-    temperature: number
-    audioInputProvider: string
-    audioInputApiKey: string
-    audioInputBaseUrl: string
-    audioInputModel: string
-    audioInputLanguage: string
-    audioOutputProvider: string
-    audioOutputApiKey: string
-    audioOutputBaseUrl: string
-    audioOutputModel: string
-    audioOutputVoice: string
-    audioOutputIncludeText: boolean
-    jobInterval: number
-    retryTransfer: boolean
-    recommendEnabled: boolean
-    recommendUserPreference: string
-    recommendMaxItems: number
-  }
   preferences: {
     quality: string
     subtitle: string
@@ -133,47 +97,11 @@ export interface ValidationErrorState {
     name: boolean
     [key: string]: boolean
   }
-  agent: {
-    provider: boolean
-    apiKey: boolean
-    model: boolean
-    maxContextTokens: boolean
-    recommendMaxItems: boolean
-  }
-}
-
-function normalizeThinkingLevelValue(value?: unknown) {
-  const normalized = String(value ?? '')
-    .trim()
-    .toLowerCase()
-  if (!normalized) return ''
-
-  const aliasMap: Record<string, string> = {
-    none: 'off',
-    disabled: 'off',
-    disable: 'off',
-    enabled: 'auto',
-    enable: 'auto',
-    default: 'auto',
-    dynamic: 'auto',
-  }
-
-  return aliasMap[normalized] || normalized
-}
-
-function resolveThinkingLevelValue(data?: Record<string, any>) {
-  const explicit = normalizeThinkingLevelValue(data?.LLM_THINKING_LEVEL)
-  if (explicit) return explicit
-
-  const legacyEffort = normalizeThinkingLevelValue(data?.LLM_REASONING_EFFORT)
-  if (data?.LLM_DISABLE_THINKING === true) return 'off'
-  if (data?.LLM_DISABLE_THINKING === false) return legacyEffort || 'auto'
-  return legacyEffort || 'off'
 }
 
 // 全局状态，所有组件共享
 const currentStep = ref(1)
-const totalSteps = 8
+const totalSteps = 7
 
 // 加载状态
 const isLoading = ref(false)
@@ -240,42 +168,6 @@ const wizardData = ref<WizardData>({
     config: {},
     switchs: [],
   },
-  agent: {
-    enabled: false,
-    global: false,
-    verbose: false,
-    provider: 'deepseek',
-    authConnected: false,
-    model: 'deepseek-chat',
-    thinkingLevel: 'off',
-    apiProtocol: 'auto',
-    supportImageInput: true,
-    supportAudioInput: false,
-    supportAudioOutput: false,
-    apiKey: '',
-    baseUrl: 'https://api.deepseek.com',
-    useProxy: true,
-    baseUrlPreset: '',
-    maxContextTokens: 64,
-    userAgent: '',
-    temperature: 0.3,
-    audioInputProvider: 'openai',
-    audioInputApiKey: '',
-    audioInputBaseUrl: '',
-    audioInputModel: 'gpt-4o-mini-transcribe',
-    audioInputLanguage: 'zh',
-    audioOutputProvider: 'openai',
-    audioOutputApiKey: '',
-    audioOutputBaseUrl: '',
-    audioOutputModel: 'gpt-4o-mini-tts',
-    audioOutputVoice: 'alloy',
-    audioOutputIncludeText: false,
-    jobInterval: 0,
-    retryTransfer: false,
-    recommendEnabled: false,
-    recommendUserPreference: '',
-    recommendMaxItems: 50,
-  },
   preferences: {
     quality: '4K',
     subtitle: 'chinese',
@@ -314,13 +206,6 @@ const validationErrors = ref<ValidationErrorState>({
   },
   notification: {
     name: false,
-  },
-  agent: {
-    provider: false,
-    apiKey: false,
-    model: false,
-    maxContextTokens: false,
-    recommendMaxItems: false,
   },
 })
 
@@ -368,7 +253,6 @@ export function useSetupWizard() {
     t('setupWizard.downloader.title'),
     t('setupWizard.mediaServer.title'),
     t('setupWizard.notification.title'),
-    t('setupWizard.agent.title'),
     t('setupWizard.preferences.title'),
   ])
 
@@ -380,7 +264,6 @@ export function useSetupWizard() {
     t('setupWizard.downloader.description'),
     t('setupWizard.mediaServer.description'),
     t('setupWizard.notification.description'),
-    t('setupWizard.agent.description'),
     t('setupWizard.preferences.description'),
   ])
 
@@ -518,13 +401,6 @@ export function useSetupWizard() {
     }
     validationErrors.value.notification = {
       name: false,
-    }
-    validationErrors.value.agent = {
-      provider: false,
-      apiKey: false,
-      model: false,
-      maxContextTokens: false,
-      recommendMaxItems: false,
     }
   }
 
@@ -768,52 +644,6 @@ export function useSetupWizard() {
     }
   }
 
-  // 验证智能助手字段
-  function validateAgentFields(): { isValid: boolean; errors: string[] } {
-    const errors: string[] = []
-    clearValidationErrors()
-
-    if (!wizardData.value.agent.enabled) {
-      return {
-        isValid: true,
-        errors,
-      }
-    }
-
-    if (!wizardData.value.agent.provider?.trim()) {
-      errors.push(t('setupWizard.agent.providerRequired'))
-      validationErrors.value.agent.provider = true
-    }
-
-    if (!wizardData.value.agent.apiKey?.trim() && !wizardData.value.agent.authConnected) {
-      errors.push(t('setupWizard.agent.authOrApiKeyRequired'))
-      validationErrors.value.agent.apiKey = true
-    }
-
-    if (!wizardData.value.agent.model?.trim()) {
-      errors.push(t('setupWizard.agent.modelRequired'))
-      validationErrors.value.agent.model = true
-    }
-
-    if (!wizardData.value.agent.maxContextTokens || wizardData.value.agent.maxContextTokens < 1) {
-      errors.push(t('setupWizard.agent.maxContextTokensRequired'))
-      validationErrors.value.agent.maxContextTokens = true
-    }
-
-    if (
-      wizardData.value.agent.recommendEnabled &&
-      (!wizardData.value.agent.recommendMaxItems || wizardData.value.agent.recommendMaxItems < 1)
-    ) {
-      errors.push(t('setupWizard.agent.recommendMaxItemsRequired'))
-      validationErrors.value.agent.recommendMaxItems = true
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-    }
-  }
-
   // 验证当前步骤的必输项
   function validateCurrentStep(): { isValid: boolean; errors: string[] } {
     const errors: string[] = []
@@ -879,14 +709,7 @@ export function useSetupWizard() {
         }
         break
 
-      case 7: // 智能助手设置
-        if (wizardData.value.agent.enabled) {
-          const validation = validateAgentFields()
-          errors.push(...validation.errors)
-        }
-        break
-
-      case 8: // 偏好设置
+      case 7: // 偏好设置
         // 偏好设置有默认值，不需要验证
         break
     }
@@ -1173,8 +996,6 @@ export function useSetupWizard() {
         case 6:
           return await saveNotificationSettings()
         case 7:
-          return await saveAgentSettings()
-        case 8:
           return await savePreferenceSettings()
       }
     } catch (error) {
@@ -1439,55 +1260,6 @@ export function useSetupWizard() {
     }
   }
 
-  // 保存智能助手设置
-  async function saveAgentSettings() {
-    try {
-      const agentTemperature = Number(wizardData.value.agent.temperature ?? 0.3)
-      const agentSettings = {
-        AI_AGENT_ENABLE: wizardData.value.agent.enabled,
-        AI_AGENT_GLOBAL: wizardData.value.agent.enabled ? wizardData.value.agent.global : false,
-        AI_AGENT_VERBOSE: wizardData.value.agent.enabled ? wizardData.value.agent.verbose : false,
-        LLM_PROVIDER: wizardData.value.agent.provider,
-        LLM_MODEL: wizardData.value.agent.model,
-        LLM_THINKING_LEVEL: wizardData.value.agent.thinkingLevel,
-        LLM_API_PROTOCOL: wizardData.value.agent.apiProtocol || 'auto',
-        LLM_SUPPORT_IMAGE_INPUT: wizardData.value.agent.supportImageInput,
-        LLM_SUPPORT_AUDIO_INPUT: wizardData.value.agent.supportAudioInput,
-        LLM_SUPPORT_AUDIO_OUTPUT: wizardData.value.agent.supportAudioOutput,
-        LLM_API_KEY: wizardData.value.agent.apiKey,
-        LLM_BASE_URL: wizardData.value.agent.baseUrl || null,
-        LLM_USE_PROXY: wizardData.value.agent.useProxy,
-        LLM_BASE_URL_PRESET: wizardData.value.agent.baseUrlPreset || null,
-        LLM_MAX_CONTEXT_TOKENS: wizardData.value.agent.maxContextTokens,
-        LLM_USER_AGENT: wizardData.value.agent.userAgent || null,
-        LLM_TEMPERATURE: Number.isFinite(agentTemperature) ? agentTemperature : 0.3,
-        AUDIO_INPUT_PROVIDER: wizardData.value.agent.audioInputProvider || 'openai',
-        AUDIO_INPUT_API_KEY: wizardData.value.agent.audioInputApiKey || null,
-        AUDIO_INPUT_BASE_URL: wizardData.value.agent.audioInputBaseUrl || null,
-        AUDIO_INPUT_MODEL: wizardData.value.agent.audioInputModel,
-        AUDIO_INPUT_LANGUAGE: wizardData.value.agent.audioInputLanguage,
-        AUDIO_OUTPUT_PROVIDER: wizardData.value.agent.audioOutputProvider || 'openai',
-        AUDIO_OUTPUT_API_KEY: wizardData.value.agent.audioOutputApiKey || null,
-        AUDIO_OUTPUT_BASE_URL: wizardData.value.agent.audioOutputBaseUrl || null,
-        AUDIO_OUTPUT_MODEL: wizardData.value.agent.audioOutputModel,
-        AUDIO_OUTPUT_VOICE: wizardData.value.agent.audioOutputVoice,
-        AUDIO_OUTPUT_INCLUDE_TEXT: wizardData.value.agent.audioOutputIncludeText,
-        AI_AGENT_JOB_INTERVAL: wizardData.value.agent.enabled ? wizardData.value.agent.jobInterval : 0,
-        AI_AGENT_RETRY_TRANSFER: wizardData.value.agent.enabled ? wizardData.value.agent.retryTransfer : false,
-        AI_RECOMMEND_ENABLED: wizardData.value.agent.enabled && wizardData.value.agent.recommendEnabled,
-        AI_RECOMMEND_USER_PREFERENCE: wizardData.value.agent.recommendUserPreference,
-        AI_RECOMMEND_MAX_ITEMS: wizardData.value.agent.recommendMaxItems,
-      }
-
-      await api.post('system/env', agentSettings)
-      return true
-    } catch (error) {
-      console.error('Save agent settings failed:', error)
-      $toast.error(t('setupWizard.saveAgentSettingsFailed'))
-      return false
-    }
-  }
-
   // 保存资源偏好设置
   async function savePreferenceSettings() {
     try {
@@ -1559,42 +1331,6 @@ export function useSetupWizard() {
         if (result.data.SUPERUSER) {
           wizardData.value.basic.username = result.data.SUPERUSER
         }
-        wizardData.value.agent.enabled = Boolean(result.data.AI_AGENT_ENABLE)
-        wizardData.value.agent.global = Boolean(result.data.AI_AGENT_GLOBAL)
-        wizardData.value.agent.verbose = Boolean(result.data.AI_AGENT_VERBOSE)
-        wizardData.value.agent.provider = result.data.LLM_PROVIDER || 'deepseek'
-        wizardData.value.agent.authConnected = false
-        wizardData.value.agent.model = result.data.LLM_MODEL || ''
-        wizardData.value.agent.thinkingLevel = resolveThinkingLevelValue(result.data)
-        wizardData.value.agent.apiProtocol = result.data.LLM_API_PROTOCOL || 'auto'
-        wizardData.value.agent.supportImageInput = result.data.LLM_SUPPORT_IMAGE_INPUT ?? true
-        wizardData.value.agent.supportAudioInput = Boolean(result.data.LLM_SUPPORT_AUDIO_INPUT)
-        wizardData.value.agent.supportAudioOutput = Boolean(result.data.LLM_SUPPORT_AUDIO_OUTPUT)
-        wizardData.value.agent.apiKey = result.data.LLM_API_KEY || ''
-        wizardData.value.agent.baseUrl = result.data.LLM_BASE_URL || ''
-        wizardData.value.agent.useProxy = result.data.LLM_USE_PROXY ?? true
-        wizardData.value.agent.baseUrlPreset = result.data.LLM_BASE_URL_PRESET || ''
-        wizardData.value.agent.maxContextTokens = result.data.LLM_MAX_CONTEXT_TOKENS || 64
-        wizardData.value.agent.userAgent = result.data.LLM_USER_AGENT || ''
-        const agentTemperature = Number(result.data.LLM_TEMPERATURE ?? 0.3)
-        wizardData.value.agent.temperature = Number.isFinite(agentTemperature) ? agentTemperature : 0.3
-        wizardData.value.agent.audioInputProvider = result.data.AUDIO_INPUT_PROVIDER || 'openai'
-        wizardData.value.agent.audioInputApiKey = result.data.AUDIO_INPUT_API_KEY || ''
-        wizardData.value.agent.audioInputBaseUrl = result.data.AUDIO_INPUT_BASE_URL || ''
-        wizardData.value.agent.audioInputModel = result.data.AUDIO_INPUT_MODEL || 'gpt-4o-mini-transcribe'
-        wizardData.value.agent.audioInputLanguage = result.data.AUDIO_INPUT_LANGUAGE || 'zh'
-        wizardData.value.agent.audioOutputProvider = result.data.AUDIO_OUTPUT_PROVIDER || 'openai'
-        wizardData.value.agent.audioOutputApiKey = result.data.AUDIO_OUTPUT_API_KEY || ''
-        wizardData.value.agent.audioOutputBaseUrl = result.data.AUDIO_OUTPUT_BASE_URL || ''
-        wizardData.value.agent.audioOutputModel = result.data.AUDIO_OUTPUT_MODEL || 'gpt-4o-mini-tts'
-        wizardData.value.agent.audioOutputVoice = result.data.AUDIO_OUTPUT_VOICE || 'alloy'
-        wizardData.value.agent.audioOutputIncludeText = Boolean(result.data.AUDIO_OUTPUT_INCLUDE_TEXT)
-        wizardData.value.agent.jobInterval = result.data.AI_AGENT_JOB_INTERVAL || 0
-        wizardData.value.agent.retryTransfer = Boolean(result.data.AI_AGENT_RETRY_TRANSFER)
-        wizardData.value.agent.recommendEnabled = Boolean(result.data.AI_RECOMMEND_ENABLED)
-        wizardData.value.agent.recommendUserPreference = result.data.AI_RECOMMEND_USER_PREFERENCE || ''
-        wizardData.value.agent.recommendMaxItems = result.data.AI_RECOMMEND_MAX_ITEMS || 50
-
         // 如果没有API Token，则创建一个随机的
         if (!wizardData.value.basic.apiToken) {
           createRandomString()
@@ -1733,7 +1469,6 @@ export function useSetupWizard() {
     validateDownloaderFields,
     validateMediaServerFields,
     validateNotificationFields,
-    validateAgentFields,
     clearValidationErrors,
     testConnectivity,
     nextStep,

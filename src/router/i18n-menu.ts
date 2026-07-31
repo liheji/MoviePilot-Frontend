@@ -82,19 +82,6 @@ export function getNavMenus(t: Composer['t']): NavMenu[] {
       tabs: getSubscribeTvTabs(t),
     },
     {
-      title: t('navItems.workflow'),
-      full_title: t('navItems.workflow'),
-      icon: 'mdi-state-machine',
-      iconColor: 'primary',
-      to: '/workflow',
-      header: t('menu.subscribe'),
-      admin: true,
-      footer: false,
-      permission: 'manage',
-      feature: PERMISSION_FEATURE.MANAGE_WORKFLOW,
-      tabs: getWorkflowTabs(t),
-    },
-    {
       title: t('navItems.calendar'),
       full_title: t('navItems.calendar'),
       icon: 'mdi-calendar',
@@ -315,22 +302,6 @@ export function getDiscoverTabs(t: Composer['t']): NavMenuTabItem[] {
       title: t('discoverTabs.anilist'),
       tab: 'anilist',
       icon: 'mdi-alpha-a-circle-outline',
-    },
-  ]
-}
-
-/** 返回工作流页的业务标签。 */
-export function getWorkflowTabs(t: Composer['t']): NavMenuTabItem[] {
-  return [
-    {
-      title: t('workflowTabs.list'),
-      tab: 'list',
-      icon: 'mdi-workflow-outline',
-    },
-    {
-      title: t('workflowTabs.share'),
-      tab: 'share',
-      icon: 'mdi-share-variant',
     },
   ]
 }
