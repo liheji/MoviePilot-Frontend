@@ -684,6 +684,17 @@ export interface Plugin {
   installed?: boolean
   // 运行状态
   state?: boolean
+  // Lite 插件运行状态
+  runtime_status?: 'not_loaded' | 'running' | 'stopped' | 'load_error' | 'lite_incompatible'
+  // Lite 插件运行错误
+  runtime_error?: {
+    code: 'PLUGIN_LITE_INCOMPATIBLE' | 'PLUGIN_LOAD_FAILED'
+    phase: 'manifest' | 'import' | 'construct' | 'preflight' | 'initialize' | 'frontend'
+    message: string
+    retryable: boolean
+  } | null
+  // Lite 插件内容指纹
+  fingerprint?: string | null
   // 是否有详情页面
   has_page?: boolean
   // 是否有新版本
@@ -749,6 +760,7 @@ export interface PluginSidebarNavItem {
   section: 'start' | 'discovery' | 'subscribe' | 'organize' | 'system'
   permission?: 'subscribe' | 'discovery' | 'search' | 'manage' | 'admin' | null
   order: number
+  runtime_status?: Plugin['runtime_status']
 }
 
 // 渲染结构
@@ -780,6 +792,8 @@ export interface DashboardItem {
   elements: RenderProps[]
   // 渲染方式
   render_mode?: string
+  runtime_status?: Plugin['runtime_status']
+  fingerprint?: string | null
 }
 
 // 种子信息
@@ -1856,6 +1870,7 @@ export interface SubscribeShareStatistics {
 // 通用API响应
 export interface ApiResponse<T = any> {
   success: boolean
+  code?: string | null
   message?: string
   message_i18n?: string
   data: T

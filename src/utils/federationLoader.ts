@@ -1,5 +1,6 @@
 import api from '@/api'
 import { resolveFederationRemoteUrl } from '@/utils/federationUrl'
+import { filterPluginRemoteItems } from '@/utils/pluginLite'
 import {
   __federation_method_setRemote,
   __federation_method_getRemote,
@@ -15,6 +16,7 @@ export interface RemoteModule {
   id: string
   url: string
   name?: string
+  runtime_status?: 'not_loaded' | 'running' | 'stopped' | 'load_error' | 'lite_incompatible'
 }
 
 /**
@@ -133,7 +135,7 @@ async function fetchRemoteModules(): Promise<RemoteModule[]> {
     const response = await api.get('plugin/remotes?token=moviepilot', {
       signal: federationController.signal,
     })
-    return (response as any) || []
+    return filterPluginRemoteItems((response as unknown as RemoteModule[]) || [])
   } catch (error) {
     console.error('获取远程模块列表失败:', error)
     return []

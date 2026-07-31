@@ -9,6 +9,7 @@ import { formatDownloadCount } from '@/@core/utils/formatters'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { openSharedDialog } from '@/composables/useSharedDialog'
+import { isPluginRemoteAvailable } from '@/utils/pluginLite'
 
 // 插件日志面板只有点击“查看日志”时才需要，延后加载可减轻插件列表首屏。
 const PluginConfigDialog = defineAsyncComponent(() => import('../dialog/PluginConfigDialog.vue'))
@@ -54,6 +55,12 @@ const createConfirm = useConfirm()
 
 // 本身是否可见
 const isVisible = ref(true)
+const remoteUiAvailable = computed(() => isPluginRemoteAvailable(props.plugin))
+const runtimeStatusLabel = computed(() => {
+  if (props.plugin?.runtime_status === 'lite_incompatible') return '不兼容 Lite'
+  if (props.plugin?.runtime_status === 'load_error') return '加载失败'
+  return ''
+})
 
 // 菜单显示状态
 const menuVisible = ref(false)
@@ -380,6 +387,7 @@ async function visitPluginPage() {
 
 // 打开插件详情
 function openPluginDetail() {
+  if (!remoteUiAvailable.value) return
   if (props.plugin?.has_page) showPluginInfo()
   else showPluginConfig()
 }
@@ -454,7 +462,7 @@ const dropdownItems = ref([
   {
     title: t('plugin.viewData'),
     value: 1,
-    show: props.plugin?.has_page,
+    show: props.plugin?.has_page && remoteUiAvailable.value,
     props: {
       prependIcon: 'mdi-information-outline',
       click: showPluginInfo,
@@ -463,7 +471,7 @@ const dropdownItems = ref([
   {
     title: t('plugin.settings'),
     value: 2,
-    show: true,
+    show: remoteUiAvailable.value,
     props: {
       prependIcon: 'mdi-cog-outline',
       click: showPluginConfig,
@@ -492,7 +500,7 @@ const dropdownItems = ref([
   {
     title: t('plugin.reset'),
     value: 4,
-    show: true,
+    show: remoteUiAvailable.value,
     props: {
       prependIcon: 'mdi-cancel',
       color: 'warning',
@@ -613,6 +621,15 @@ watch(
                 </VAvatar>
               </div>
             </div>
+            <VChip
+              v-if="runtimeStatusLabel"
+              class="ms-4 mb-2"
+              size="x-small"
+              :color="props.plugin?.runtime_status === 'lite_incompatible' ? 'warning' : 'error'"
+              variant="flat"
+            >
+              {{ runtimeStatusLabel }}
+            </VChip>
           </div>
           <VCardText
             class="flex flex-col align-self-baseline justify-between px-2 py-2 w-full overflow-hidden max-h-10 min-h-10"

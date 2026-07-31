@@ -9,6 +9,7 @@ import PluginDataDialog from '@/components/dialog/PluginDataDialog.vue'
 import { VCard } from 'vuetify/components'
 import { getDominantColor } from '@/@core/utils/image'
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
+import { filterPluginRemoteItems } from '@/utils/pluginLite'
 
 // 国际化
 const { t } = useI18n()
@@ -169,12 +170,13 @@ async function fetchPluginsWithPage() {
     })
 
     // 只保留有详情页面且已启用的插件
-    pluginsWithPage.value = allPlugins
+    pluginsWithPage.value = filterPluginRemoteItems(allPlugins)
       .filter(plugin => plugin.has_page)
       .sort((a, b) => {
         // 按插件名称排序
         return (a.plugin_name || '').localeCompare(b.plugin_name || '')
       })
+    loadRecentPlugins()
   } catch (error) {
     console.error('获取插件列表失败:', error)
   } finally {
@@ -184,7 +186,14 @@ async function fetchPluginsWithPage() {
 
 // 加载最近访问的插件
 function loadRecentPlugins() {
-  recentPlugins.value = getRecentPlugins()
+  const recent = filterPluginRemoteItems(getRecentPlugins())
+  if (!pluginsWithPage.value.length) {
+    recentPlugins.value = recent
+    return
+  }
+
+  const compatiblePluginIds = new Set(pluginsWithPage.value.map(plugin => plugin.id))
+  recentPlugins.value = recent.filter(plugin => compatiblePluginIds.has(plugin.id))
 }
 
 // 点击插件

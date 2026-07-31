@@ -8,7 +8,9 @@ import FormRender from '../render/FormRender.vue'
 import ProgressDialog from '../dialog/ProgressDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { loadRemoteComponent } from '@/utils/federationLoader'
-import { usePluginNativeSubscribe } from '@/composables/usePluginNativeSubscribe'
+import { useUserStore } from '@/stores'
+import { createPluginHost, isPluginRemoteAvailable } from '@/utils/pluginLite'
+import { resolveLiteErrorMessage } from '@/utils/liteErrors'
 
 // 国际化
 const { t } = useI18n()
@@ -44,9 +46,15 @@ const $toast = useToast()
 // 向联邦插件提供主应用 Toast，避免远程组件自行创建通知容器。
 provide('moviepilot:toast', $toast)
 
-// 配置联邦组件沿用与其它插件宿主一致的原生订阅能力。
-const nativeSubscribe = usePluginNativeSubscribe()
-provide('moviepilot:nativeSubscribe', nativeSubscribe)
+const userStore = useUserStore()
+const pluginHost = computed(() =>
+  props.plugin?.id
+    ? createPluginHost(props.plugin, {
+        isAdmin: userStore.superUser,
+        surface: 'config',
+      })
+    : null,
+)
 
 // 是否刷新
 const isRefreshed = ref(false)
@@ -69,6 +77,9 @@ const dynamicComponent = defineAsyncComponent({
     try {
       if (!props.plugin?.id) {
         throw new Error('插件ID不存在')
+      }
+      if (!isPluginRemoteAvailable(props.plugin)) {
+        throw new Error('插件当前不可加载远程配置')
       }
 
       // 动态加载远程组件
@@ -158,7 +169,12 @@ async function savePluginConf() {
       // 通知父组件刷新
       emit('save')
     } else {
-      $toast.error(t('dialog.pluginConfig.saveFailed', { name: props.plugin?.plugin_name, message: result.message }))
+      $toast.error(
+        t('dialog.pluginConfig.saveFailed', {
+          name: props.plugin?.plugin_name,
+          message: resolveLiteErrorMessage(result),
+        }),
+      )
     }
   } catch (error) {
     console.error(error)
@@ -213,8 +229,9 @@ onBeforeMount(async () => {
         <component
           :is="dynamicComponent"
           :initial-config="pluginConfigForm"
-          :api="api"
-          :native-subscribe="nativeSubscribe"
+          :api="pluginHost?.api"
+          :host-capabilities="pluginHost?.hostCapabilities"
+          :plugin-id="pluginHost?.pluginId"
           @save="handleVueComponentSave"
           @layout="handleVueComponentLayout"
           @switch="emit('switch')"
