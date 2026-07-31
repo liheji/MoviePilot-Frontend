@@ -3,153 +3,76 @@ import api from '@/api'
 import type { DownloadingInfo } from '@/api/types'
 import { formatFileSize } from '@/@core/utils/formatters'
 
-// 输入参数
 const props = defineProps({
   info: Object as PropType<DownloadingInfo>,
   downloaderName: String,
 })
-
-// 是否显示卡片
 const cardState = ref(true)
-
-// 进度条
-function getPercentage() {
-  return props.info?.progress ?? 0
-}
-
-// 速度
-function getSpeedText() {
-  return `${formatFileSize(props.info?.size || 0)} ↑ ${props.info?.upspeed}/s ↓ ${props.info?.dlspeed}/s ${
-    props.info?.left_time
-  }`
-}
-
-// 下载状态
 const isDownloading = ref(props.info?.state === 'downloading')
+const edit = reactive({
+  category: props.info?.category || '',
+  download_limit: props.info?.download_limit ?? 0,
+  save_path: props.info?.save_path || '',
+  upload_limit: props.info?.upload_limit ?? 0,
+})
 
-// 监听props.info?.state的变化
-watch(
-  () => props.info?.state,
-  newValue => {
-    isDownloading.value = newValue === 'downloading'
-  },
-)
+watch(() => props.info?.state, state => { isDownloading.value = state === 'downloading' })
 
-// 图片是否加载完成
-const imageLoaded = ref(false)
-
-// 图片加载完成响应
-function imageLoadHandler() {
-  imageLoaded.value = true
-}
-
-// 下载状态控制
+/** 暂停或恢复当前任务。 */
 async function toggleDownload() {
   const operation = isDownloading.value ? 'stop' : 'start'
-  try {
-    const result: { [key: string]: any } = await api.get(`download/${operation}/${props.info?.hash}`, {
-      params: {
-        name: props.downloaderName,
-      },
-    })
-
-    if (result.success) isDownloading.value = !isDownloading.value
-  } catch (error) {
-    console.error(error)
-  }
+  const result = await api.get(`download/${operation}/${props.info?.hash}`, { params: { name: props.downloaderName } }) as unknown as { success?: boolean }
+  if (result.success) isDownloading.value = !isDownloading.value
 }
 
-// 删除下截
+/** 删除当前下载任务。 */
 async function deleteDownload() {
-  try {
-    await api.delete(`download/${props.info?.hash}`, { params: { name: props.downloaderName } })
-    cardState.value = false
-  } catch (error) {
-    console.error(error)
-  }
+  const result = await api.delete(`download/${props.info?.hash}`, { params: { name: props.downloaderName } }) as unknown as { success?: boolean }
+  if (result.success) cardState.value = false
+}
+
+/** 更新下载器支持的最小任务属性。 */
+async function saveTask() {
+  await api.put(`download/${props.info?.hash}`, {
+    downloader: props.downloaderName,
+    category: edit.category || undefined,
+    download_limit: edit.download_limit,
+    upload_limit: edit.upload_limit,
+    save_path: edit.save_path || undefined,
+  })
 }
 </script>
 
 <template>
-  <VHover>
-    <template #default="hover">
-      <!-- Hover 命中区域保持静止，避免卡片上浮后底边反复触发 mouseleave。 -->
-      <div v-if="cardState" v-bind="hover.props" class="downloading-card-hover-area h-full">
-        <VCard
-          :key="props.info?.hash"
-          class="downloading-card app-hover-lift-card app-surface flex flex-col h-full overflow-hidden"
-          :class="{
-            'app-hover-lift-card--hovering': hover.isHovering,
-          }"
-          min-height="150"
-        >
-        <template #image>
-          <VImg
-            :src="props.info?.media.image"
-            class="downloading-card-image"
-            aspect-ratio="2/3"
-            cover
-            @load="imageLoadHandler"
-            position="top"
-          >
-            <template #placeholder>
-              <div class="w-full h-full">
-                <VSkeletonLoader class="object-cover aspect-w-2 aspect-h-3" />
-              </div>
-            </template>
-            <template #default>
-              <div class="absolute inset-0 outline-none downloading-card-background"></div>
-            </template>
-          </VImg>
-        </template>
-
-        <div>
-          <VCardTitle class="break-words whitespace-normal text-white">
-            {{ props.info?.media.title || props.info?.name }}
-            {{
-              props.info?.media.episode
-                ? `${props.info?.media.season} ${props.info?.media.episode}`
-                : props.info?.season_episode
-            }}
-          </VCardTitle>
-
-          <VCardSubtitle class="break-words whitespace-normal text-white">
-            {{ props.info?.title }}
-          </VCardSubtitle>
-
-          <VCardText class="text-subtitle-1 pt-3 pb-1 text-white">
-            {{ getSpeedText() }}
-          </VCardText>
-
-          <VCardText v-if="getPercentage() > 0" class="text-white">
-            <VProgressLinear :model-value="getPercentage()" bg-color="success" color="success" />
-          </VCardText>
-
-          <VCardActions class="justify-space-between">
-            <VBtn :icon="`${isDownloading ? 'mdi-pause' : 'mdi-play'}`" @click="toggleDownload" />
-            <VBtn color="error" icon="mdi-trash-can-outline" @click="deleteDownload" />
-          </VCardActions>
+  <VCard v-if="cardState" flat border class="downloading-card">
+    <VCardText>
+      <div class="d-flex align-start gap-3">
+        <div class="flex-grow-1 min-w-0">
+          <div class="font-weight-medium break-all">{{ props.info?.name || props.info?.title }}</div>
+          <div class="text-body-2 text-medium-emphasis break-all mt-1">{{ props.info?.title }}</div>
         </div>
-        </VCard>
+        <VMenu location="bottom end">
+          <template #activator="{ props: menuProps }"><VBtn v-bind="menuProps" icon="mdi-pencil" variant="text" /></template>
+          <VCard width="320"><VCardText>
+            <VTextField v-model="edit.category" label="分类" density="compact" />
+            <VTextField v-model.number="edit.download_limit" label="下载限速 KB/s" type="number" density="compact" />
+            <VTextField v-model.number="edit.upload_limit" label="上传限速 KB/s" type="number" density="compact" />
+            <VTextField v-model="edit.save_path" label="保存路径" density="compact" />
+            <VBtn color="primary" prepend-icon="mdi-content-save" @click="saveTask">保存</VBtn>
+          </VCardText></VCard>
+        </VMenu>
       </div>
-    </template>
-  </VHover>
+      <div class="text-body-2 text-medium-emphasis mt-3">{{ formatFileSize(props.info?.size || 0) }} · ↑ {{ props.info?.upspeed || 0 }}/s · ↓ {{ props.info?.dlspeed || 0 }}/s</div>
+      <VProgressLinear class="mt-3" :model-value="props.info?.progress || 0" color="primary" />
+    </VCardText>
+    <VCardActions>
+      <VBtn :icon="isDownloading ? 'mdi-pause' : 'mdi-play'" :title="isDownloading ? '暂停' : '恢复'" @click="toggleDownload" />
+      <VSpacer />
+      <VBtn color="error" icon="mdi-trash-can-outline" title="删除" @click="deleteDownload" />
+    </VCardActions>
+  </VCard>
 </template>
 
-<style lang="scss" scoped>
-/* stylelint-disable selector-pseudo-class-no-unknown */
-
-.downloading-card-hover-area {
-  inline-size: 100%;
-}
-
-.downloading-card-image {
-  block-size: 100%;
-}
-
-.downloading-card-background {
-  border-radius: inherit;
-  background-image: linear-gradient(180deg, rgba(31, 41, 55, 47%) 0%, rgb(31, 41, 55) 100%);
-  pointer-events: none;
-}
+<style scoped>
+.downloading-card { border-radius: 6px; min-height: 12rem; }
 </style>
