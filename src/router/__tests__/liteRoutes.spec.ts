@@ -14,11 +14,15 @@ describe('Lite route surface', () => {
     mocks.get.mockReturnValue(false)
   })
 
-  it('removes workflow navigation while retaining plugin navigation', () => {
+  it('removes workflow and subscription navigation while retaining plugin navigation', () => {
     const translate = ((key: string) => key) as Parameters<typeof getNavMenus>[0]
     const paths = getNavMenus(translate).map(item => item.to)
 
     expect(paths).not.toContain('/workflow')
+    expect(paths).not.toContain('/subscribe/movie')
+    expect(paths).not.toContain('/subscribe/tv')
+    expect(paths).not.toContain('/subscribe-share')
+    expect(paths).not.toContain('/calendar')
     expect(paths).toContain('/plugins')
   })
 })

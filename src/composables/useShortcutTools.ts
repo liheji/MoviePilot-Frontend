@@ -14,7 +14,6 @@ const NetTestView = defineAsyncComponent(() => import('@/views/system/NetTestVie
 const RuleTestView = defineAsyncComponent(() => import('@/views/system/RuleTestView.vue'))
 const ModuleTestView = defineAsyncComponent(() => import('@/views/system/ModuleTestView.vue'))
 const WordsView = defineAsyncComponent(() => import('@/views/system/WordsView.vue'))
-const CacheView = defineAsyncComponent(() => import('@/views/system/CacheView.vue'))
 const AccountSettingService = defineAsyncComponent(() => import('@/views/system/ServiceView.vue'))
 const ShortcutLogDialog = defineAsyncComponent(() => import('@/components/dialog/ShortcutLogDialog.vue'))
 const ShortcutToolDialog = defineAsyncComponent(() => import('@/components/dialog/ShortcutToolDialog.vue'))
@@ -86,17 +85,6 @@ export function useShortcutTools() {
       component: WordsView,
       maxWidth: '60rem',
       titleText: t('shortcut.words.subtitle'),
-    },
-    {
-      title: t('shortcut.cache.title'),
-      subtitle: t('shortcut.cache.subtitle'),
-      icon: 'mdi-database',
-      dialog: 'cache',
-      bodyClass: 'cache-shortcut-dialog-body',
-      cardClass: 'cache-shortcut-dialog-card',
-      component: CacheView,
-      maxWidth: '90rem',
-      titleText: t('shortcut.cache.subtitle'),
     },
     {
       title: t('shortcut.scheduler.title'),

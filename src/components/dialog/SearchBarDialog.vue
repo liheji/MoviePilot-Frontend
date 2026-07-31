@@ -46,9 +46,7 @@ const hasDiscoveryPermission = computed(() => {
   return hasPermission(userPermissions.value, 'discovery')
 })
 
-const hasSubscribePermission = computed(() => {
-  return hasPermission(userPermissions.value, 'subscribe')
-})
+const hasSubscribePermission = computed(() => false)
 
 const hasManagePermission = computed(() => {
   return hasPermission(userPermissions.value, 'manage')

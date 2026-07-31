@@ -57,7 +57,7 @@ const globalSettings = globalSettingsStore.globalSettings
 const userStore = useUserStore()
 const userPermissions = computed(() => buildUserPermissionContext(userStore.superUser, userStore.permissions))
 const canSearch = computed(() => hasPermission(userPermissions.value, 'search'))
-const canSubscribe = computed(() => hasPermission(userPermissions.value, 'subscribe'))
+const canSubscribe = computed(() => false)
 
 // 获取主题信息
 const theme = useTheme()

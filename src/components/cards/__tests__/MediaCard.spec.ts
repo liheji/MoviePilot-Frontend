@@ -1,6 +1,6 @@
 import type { MediaInfo } from '@/api/types'
 import MediaCard from '@/components/cards/MediaCard.vue'
-import { clearCachedMediaSubscribeStatuses } from '@/utils/mediaStatusCache'
+import { clearCachedMediaExistsStatuses } from '@/utils/mediaStatusCache'
 import { fireEvent, waitFor } from '@testing-library/vue'
 import { createMediaInfo } from '@tests/support/factories/media'
 import { mediaExistsHandler } from '@tests/support/msw/handlers/media'
@@ -137,7 +137,7 @@ function installSearchHandlers(sites: Record<string, unknown>[], selected: numbe
 describe('MediaCard', () => {
   beforeEach(() => {
     intersectionObservers = []
-    clearCachedMediaSubscribeStatuses()
+    clearCachedMediaExistsStatuses()
     vi.stubGlobal('IntersectionObserver', IntersectionObserverMock)
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(console, 'log').mockImplementation(() => {})

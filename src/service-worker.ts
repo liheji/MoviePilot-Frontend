@@ -158,7 +158,6 @@ registerRoute(
     !url.pathname.includes('/api/v1/auth/') && // 登录认证入口与票据交换
     !url.pathname.includes('/api/v1/dashboard/') && // Dashboard实时监控数据
     !url.pathname.includes('/api/v1/plugin/')&& // 插件接口
-    !url.pathname.includes('/api/v1/subscribe/'), // 订阅接口
   new NetworkFirst({
     cacheName: `api-cache-${CACHE_VERSION}`,
     networkTimeoutSeconds: 5,
