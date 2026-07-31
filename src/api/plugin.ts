@@ -61,6 +61,29 @@ export class PluginScopeApiError extends Error {
   }
 }
 
+export class PluginApiOriginError extends Error {
+  readonly code = 'PLUGIN_API_ORIGIN_REJECTED'
+  readonly pluginId: string
+
+  constructor(pluginId: string) {
+    super('插件远程页面只能访问当前 MoviePilot Origin')
+    this.name = 'PluginApiOriginError'
+    this.pluginId = pluginId
+  }
+}
+
+function assertPluginApiOrigin(config: AxiosRequestConfig, pluginId: string): void {
+  if (config.baseURL !== undefined) throw new PluginApiOriginError(pluginId)
+
+  try {
+    const requestUrl = new URL(config.url || '', `${window.location.origin}/`)
+    if (requestUrl.origin !== window.location.origin) throw new PluginApiOriginError(pluginId)
+  } catch (error) {
+    if (error instanceof PluginApiOriginError) throw error
+    throw new PluginApiOriginError(pluginId)
+  }
+}
+
 function normalizeApiSegments(url: string): string[] {
   let pathname: string
   try {
@@ -122,6 +145,7 @@ export function createPluginScopedApi(options: PluginScopedApiOptions): PluginSc
   const client = options.apiClient || api
 
   async function request<T = unknown>(config: AxiosRequestConfig): Promise<T> {
+    assertPluginApiOrigin(config, options.pluginId)
     const url = config.url || ''
     const removedCapability = removedCapabilityForUrl(url)
     if (removedCapability) {

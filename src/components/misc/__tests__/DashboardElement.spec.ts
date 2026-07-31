@@ -91,4 +91,27 @@ describe('plugin Dashboard host', () => {
     await waitFor(() => expect(mocks.loadRemote).not.toHaveBeenCalled())
     expect(screen.queryByTestId('remote-dashboard')).not.toBeInTheDocument()
   })
+
+  it.each(['lite_incompatible', 'load_error'] as const)(
+    'does not render cached Vuetify elements for the %s state',
+    async runtimeStatus => {
+      await renderWithProviders(DashboardElement, {
+        props: {
+          config: {
+            attrs: { border: false },
+            cols: {},
+            elements: [{ component: 'div', text: 'cached plugin dashboard' }],
+            id: 'BrokenPlugin',
+            key: 'main',
+            name: 'Broken Dashboard',
+            render_mode: 'vuetify',
+            runtime_status: runtimeStatus,
+          },
+        },
+      })
+
+      expect(screen.queryByText('cached plugin dashboard')).not.toBeInTheDocument()
+      expect(mocks.loadRemote).not.toHaveBeenCalled()
+    },
+  )
 })
