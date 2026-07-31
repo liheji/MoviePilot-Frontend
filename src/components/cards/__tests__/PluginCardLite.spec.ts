@@ -1,7 +1,7 @@
 import PluginCard from '@/components/cards/PluginCard.vue'
 import type { Plugin } from '@/api/types'
 import { renderWithProviders } from '@tests/support/render'
-import { fireEvent, screen } from '@testing-library/vue'
+import { fireEvent, screen, waitFor } from '@testing-library/vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -73,5 +73,34 @@ describe('Lite plugin card status', () => {
 
     await fireEvent.click(container.querySelector('.plugin-card') as HTMLElement)
     expect(mocks.openSharedDialog).toHaveBeenCalledOnce()
+  })
+
+  it('updates remote menu actions when a running plugin becomes unavailable', async () => {
+    const { container, rerender } = await renderWithProviders(PluginCard, {
+      global: {
+        stubs: {
+          VIcon: { props: ['icon'], template: '<span :data-icon="icon" />' },
+          VListItem: { template: '<div class="test-menu-item"><slot name="prepend" /><slot /></div>' },
+          VMenu: { template: '<div><slot /></div>' },
+        },
+      },
+      props: {
+        plugin: { ...basePlugin, has_update: true, runtime_status: 'running' },
+      },
+    })
+
+    const menuItem = (icon: string) =>
+      container.querySelector(`[data-icon="${icon}"]`)?.closest('.test-menu-item') as HTMLElement
+    await waitFor(() => expect(menuItem('mdi-cog-outline')).toBeVisible())
+
+    await rerender({
+      plugin: { ...basePlugin, has_update: true, runtime_status: 'load_error' },
+    })
+
+    await waitFor(() => expect(menuItem('mdi-cog-outline')).not.toBeVisible())
+    expect(menuItem('mdi-information-outline')).not.toBeVisible()
+    expect(menuItem('mdi-cancel')).not.toBeVisible()
+    expect(menuItem('mdi-arrow-up-circle-outline')).toBeVisible()
+    expect(menuItem('mdi-trash-can-outline')).toBeVisible()
   })
 })

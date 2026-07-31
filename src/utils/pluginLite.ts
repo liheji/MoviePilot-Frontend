@@ -1,5 +1,10 @@
 import type { PluginApiClient, PluginScopedApi } from '@/api/plugin'
-import { createPluginScopedApi, PluginLiteApiError, PluginScopeApiError } from '@/api/plugin'
+import {
+  createPluginScopedApi,
+  PluginApiOriginError,
+  PluginLiteApiError,
+  PluginScopeApiError,
+} from '@/api/plugin'
 
 export const LITE_HOST_CAPABILITIES = Object.freeze([
   'auth',
@@ -65,4 +70,4 @@ export function createPluginHost(plugin: PluginRuntimeDescriptor, options: Plugi
   })
 }
 
-export { PluginLiteApiError, PluginScopeApiError }
+export { PluginApiOriginError, PluginLiteApiError, PluginScopeApiError }

@@ -242,7 +242,7 @@ onUnmounted(() => {
   <DashboardQuickActions v-else-if="config?.id === 'quickActions'" />
   <DashboardSystemInfo v-else-if="config?.id === 'systemInfo'" :allow-refresh="props.allowRefresh" />
   <!-- 插件仪表板 -->
-  <template v-else-if="!isNullOrEmptyObject(props.config)">
+  <template v-else-if="!isNullOrEmptyObject(props.config) && isPluginRemoteAvailable(props.config)">
     <!-- Vue 渲染模式 -->
     <div v-if="isVuePluginDashboardElement()" class="dashboard-plugin-vue-renderer">
       <component

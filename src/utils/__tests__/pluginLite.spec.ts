@@ -1,6 +1,7 @@
 import type { Plugin } from '@/api/types'
 import {
   LITE_HOST_CAPABILITIES,
+  PluginApiOriginError,
   PluginLiteApiError,
   PluginScopeApiError,
   createPluginHost,
@@ -99,6 +100,23 @@ describe('Lite plugin host', () => {
     })
 
     await expect(host.api.get('plugin/DemoPlugin/missing')).rejects.toBe(notFound)
+    expect(apiClient.post).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['an absolute cross-origin URL', { url: 'https://evil.example/api/v1/site/' }],
+    ['a protocol-relative cross-origin URL', { url: '//evil.example/api/v1/site/' }],
+    ['a caller-provided baseURL', { baseURL: 'https://evil.example/api/v1/', url: 'site/' }],
+  ])('rejects %s before the authenticated API client receives it', async (_label, config) => {
+    const apiClient = createApiClient()
+    const host = createPluginHost(compatiblePlugin, {
+      apiClient,
+      isAdmin: true,
+      surface: 'page',
+    })
+
+    await expect(host.api.request(config)).rejects.toBeInstanceOf(PluginApiOriginError)
+    expect(apiClient.request).not.toHaveBeenCalled()
     expect(apiClient.post).not.toHaveBeenCalled()
   })
 

@@ -458,7 +458,7 @@ onUnmounted(() => {
 })
 
 // 弹出菜单
-const dropdownItems = ref([
+const dropdownItems = computed(() => [
   {
     title: t('plugin.viewData'),
     value: 1,
@@ -547,18 +547,6 @@ const dropdownItems = ref([
     },
   },
 ])
-
-// 监听插件状态变化
-watch(
-  () => props.plugin?.has_update,
-  (newHasUpdate, _) => {
-    const updateItemIndex = dropdownItems.value.findIndex(item => item.value === 3)
-    if (updateItemIndex !== -1) dropdownItems.value[updateItemIndex].show = newHasUpdate
-
-    const updateHistoryItemIndex = dropdownItems.value.findIndex(item => item.value === 9)
-    if (updateHistoryItemIndex !== -1) dropdownItems.value[updateHistoryItemIndex].show = !newHasUpdate
-  },
-)
 
 // 监听插件窗口状态变化
 watch(
