@@ -10,7 +10,6 @@ import type {
   MediaSeason,
   NotExistMediaInfo,
   Site,
-  Subscribe,
   TmdbEpisode,
 } from '@/api/types'
 import NoDataFound from '@/components/states/NoDataFound.vue'
@@ -25,13 +24,7 @@ import { useGlobalSettingsStore } from '@/stores'
 import { openMediaServerItem, openDoubanApp } from '@/utils/appDeepLink'
 import { openSharedDialog } from '@/composables/useSharedDialog'
 import { getDisplayImageUrl } from '@/utils/imageUtils'
-import {
-  getMediaSubscribeId,
-  getMediaSubscribeIdentity,
-  getSubscribeMode,
-  useMediaSubscribe,
-  type SeasonSubscribeModes,
-} from '@/composables/useMediaSubscribe'
+import { getMediaId as getMediaIdentity } from '@/utils/mediaIdentity'
 
 const SearchSiteDialog = defineAsyncComponent(() => import('@/components/dialog/SearchSiteDialog.vue'))
 
@@ -57,7 +50,6 @@ const globalSettings = globalSettingsStore.globalSettings
 const userStore = useUserStore()
 const userPermissions = computed(() => buildUserPermissionContext(userStore.superUser, userStore.permissions))
 const canSearch = computed(() => hasPermission(userPermissions.value, 'search'))
-const canSubscribe = computed(() => false)
 
 // 获取主题信息
 const theme = useTheme()
@@ -67,9 +59,6 @@ const mediaDetail = ref<MediaInfo>({} as MediaInfo)
 
 // 本地是否存在，存在则包括Item信息
 const existsItemId = ref('')
-
-// 是否已订阅
-const isSubscribed = ref(false)
 
 // 是否已加载完成
 const isRefreshed = ref(false)
@@ -85,12 +74,6 @@ const existsEpisodes = ref({} as { [key: number]: number[] })
 
 // 各季缺失状态：0-已入库 1-部分缺失 2-全部缺失，没有数据也是已入库
 const seasonsNotExisted = ref<{ [key: number]: number }>({})
-
-// 各季的订阅状态
-const seasonsSubscribed = ref<{ [key: number]: boolean }>({})
-
-// 各季的订阅模式
-const subscribedSeasonModes = ref<SeasonSubscribeModes>({})
 
 // 所有站点
 const allSites = ref<Site[]>([])
@@ -201,7 +184,7 @@ async function querySelectedSites() {
 
 // 获得mediaid
 function getMediaId() {
-  return getMediaSubscribeId(mediaDetail.value)
+  return getMediaIdentity(mediaDetail.value)
 }
 
 // 判断详情是否包含可用于后续操作的稳定媒体身份。
@@ -210,10 +193,6 @@ function hasMediaIdentity() {
 }
 
 // 生成当前媒体指定季的订阅状态缓存键
-function getSubscribeStatusKey(season: number | null = mediaDetail.value?.season ?? null) {
-  return `${getMediaId()}::${season ?? 'all'}`
-}
-
 // 调用API查询详情
 async function getMediaDetail() {
   if (mediaProps.mediaid && mediaProps.type) {
@@ -229,7 +208,7 @@ async function getMediaDetail() {
       })
       if (!hasMediaIdentity()) return
 
-      const supportsEpisodeGroups = getMediaSubscribeIdentity(mediaDetail.value)?.source === 'themoviedb'
+      const supportsEpisodeGroups = getMediaIdentity(mediaDetail.value).startsWith('tmdb:')
       selectedEpisodeGroup.value = supportsEpisodeGroups ? mediaDetail.value.episode_group || '' : ''
       if (!supportsEpisodeGroups) {
         episodeGroups.value = []
@@ -243,9 +222,6 @@ async function getMediaDetail() {
       // 检查存在状态
       checkExists()
       if (mediaDetail.value.type === '电视剧') checkSeasonsNotExists()
-      // 检查订阅状态
-      if (mediaDetail.value.type === '电影') checkMovieSubscribed()
-      else checkSeasonsSubscribed()
     } catch (error) {
       console.error(error)
       detailLoadFailed.value = true
@@ -311,32 +287,6 @@ async function checkExists() {
 }
 
 // 查询当前媒体是否已订阅
-async function checkSubscribe(season: number | null = null) {
-  try {
-    return await subscribeActions.checkSubscribe(season)
-  } catch (error) {
-    console.error(error)
-  }
-
-  return false
-}
-
-// 判断订阅记录是否属于当前媒体
-function isSameSubscribeMedia(subscribe: Subscribe) {
-  const mediaId = getMediaId()
-  if (subscribe.media_source && subscribe.media_id) {
-    const prefix = subscribe.media_source === 'themoviedb' ? 'tmdb' : subscribe.media_source
-    return mediaId === `${prefix}:${subscribe.media_id}`
-  }
-  if (subscribe.mediaid) return mediaId === subscribe.mediaid
-  if (mediaDetail.value?.tmdb_id && subscribe.tmdbid) return mediaDetail.value.tmdb_id === subscribe.tmdbid
-  if (mediaDetail.value?.douban_id && subscribe.doubanid) return mediaDetail.value.douban_id === subscribe.doubanid
-  if (mediaDetail.value?.bangumi_id && subscribe.bangumiid) return mediaDetail.value.bangumi_id === subscribe.bangumiid
-  if (mediaDetail.value?.anilist_id && subscribe.anilistid) {
-    return mediaDetail.value.anilist_id === subscribe.anilistid
-  }
-  return false
-}
 
 // 检查所有季的缺失状态
 async function checkSeasonsNotExists() {
@@ -361,12 +311,6 @@ async function checkSeasonsNotExists() {
   } catch (error) {
     console.error(error)
   }
-}
-
-// 检查电影订阅状态
-async function checkMovieSubscribed() {
-  if (mediaDetail.value.type !== '电影') return
-  isSubscribed.value = await checkSubscribe()
 }
 
 // 默认排序的总集数
@@ -408,7 +352,7 @@ const getMediaSeasons = computed(() => {
 
 // 查询当前媒体可用的剧集组
 async function getEpisodeGroups() {
-  if (getMediaSubscribeIdentity(mediaDetail.value)?.source !== 'themoviedb' || !mediaDetail.value.tmdb_id) return
+  if (!getMediaIdentity(mediaDetail.value).startsWith('tmdb:') || !mediaDetail.value.tmdb_id) return
 
   episodeGroupsLoading.value = true
   try {
@@ -425,7 +369,7 @@ async function getEpisodeGroups() {
 
 // 查询指定剧集组的季信息，并忽略过期响应
 async function loadEpisodeGroupSeasons(groupId: string) {
-  if (getMediaSubscribeIdentity(mediaDetail.value)?.source !== 'themoviedb' || !groupId) {
+  if (!getMediaIdentity(mediaDetail.value).startsWith('tmdb:') || !groupId) {
     episodeGroupSeasons.value = []
     episodeGroupSeasonsLoading.value = false
     return
@@ -482,61 +426,6 @@ function scrollEpisodeGroups(direction: 'backward' | 'forward') {
     behavior: 'smooth',
     left: direction === 'backward' ? -Math.max(rail.clientWidth * 0.72, 240) : Math.max(rail.clientWidth * 0.72, 240),
   })
-}
-
-// 检查所有季的订阅状态
-async function checkSeasonsSubscribed() {
-  if (mediaDetail.value.type !== '电视剧') return
-  try {
-    const subscribes: Subscribe[] = await api.get('subscribe/')
-    const mediaSubscribes = subscribes.filter(
-      item => item.type === '电视剧' && item.season !== undefined && isSameSubscribeMedia(item),
-    )
-    const nextSubscribed: { [key: number]: boolean } = {}
-    const nextModes: SeasonSubscribeModes = {}
-
-    mediaDetail.value?.season_info?.forEach(item => {
-      const season = item.season_number ?? 0
-      nextSubscribed[season] = false
-    })
-
-    mediaSubscribes.forEach(item => {
-      const season = item.season as number
-      nextSubscribed[season] = true
-      nextModes[season] = getSubscribeMode(item)
-    })
-
-    seasonsSubscribed.value = nextSubscribed
-    subscribedSeasonModes.value = nextModes
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-// 已订阅季号列表
-const subscribedSeasonNumbers = computed(() =>
-  Object.entries(seasonsSubscribed.value)
-    .filter(([, subscribed]) => subscribed)
-    .map(([season]) => Number(season))
-    .sort((a, b) => a - b),
-)
-
-// 默认季结构中的季号集合
-const defaultSubscribeSeasonNumbers = computed(() =>
-  (mediaDetail.value?.season_info ?? []).map(season => season.season_number ?? 0),
-)
-
-// 当前媒体是否已订阅默认季结构中的全部季
-const isAllSeasonsSubscribed = computed(
-  () =>
-    mediaDetail.value.type === '电视剧' &&
-    defaultSubscribeSeasonNumbers.value.length > 0 &&
-    defaultSubscribeSeasonNumbers.value.every(season => seasonsSubscribed.value[season]),
-)
-
-// 订阅按钮响应；单季入口同时传递详情页当前选择的剧集组。
-function handleSubscribe(season: number | null = null, episodeGroup = '') {
-  subscribeActions.handleSubscribe(season, episodeGroup)
 }
 
 // 从genres中获取name，使用、分隔
@@ -658,37 +547,6 @@ function isEpisodeExists(season: number, episode: number) {
   return existsEpisodes.value[season]?.includes(episode) ?? false
 }
 
-// 计算订阅图标
-const getSubscribeIcon = computed(() => {
-  if (mediaDetail.value.type === '电视剧')
-    return subscribedSeasonNumbers.value.length > 0 ? 'mdi-heart' : 'mdi-heart-outline'
-  if (isSubscribed.value) return 'mdi-heart'
-  else return 'mdi-heart-outline'
-})
-
-// 计算订阅按钮颜色
-const getSubscribeColor = computed(() => {
-  if (mediaDetail.value.type === '电视剧') {
-    if (isAllSeasonsSubscribed.value) return 'error'
-    if (subscribedSeasonNumbers.value.length > 0) return 'warning'
-    return 'warning'
-  }
-  if (isSubscribed.value) return 'error'
-  else return 'warning'
-})
-
-// 计算订阅按钮文案
-const getSubscribeText = computed(() => {
-  if (mediaDetail.value.type === '电视剧') {
-    if (isAllSeasonsSubscribed.value) return t('media.status.allSeasonsSubscribed')
-    if (subscribedSeasonNumbers.value.length > 0) {
-      return t('media.status.seasonsSubscribed', { count: subscribedSeasonNumbers.value.length })
-    }
-    return t('media.actions.subscribe')
-  }
-  return isSubscribed.value ? t('media.status.subscribed') : t('media.actions.subscribe')
-})
-
 // 使用、拼装数组为字符串
 function joinArray(arr: string[]) {
   return arr.join('、')
@@ -738,25 +596,6 @@ async function handlePlay() {
     $toast.error('获取播放链接失败！')
   }
 }
-
-// 删除订阅处理
-function onSubscribeEditRemove() {
-  if (mediaDetail.value.type === '电影') checkMovieSubscribed()
-  else checkSeasonsSubscribed()
-}
-
-const subscribeActions = useMediaSubscribe({
-  media: () => mediaDetail.value,
-  canSubscribe: () => canSubscribe.value,
-  isSubscribed,
-  isExists: () => Boolean(existsItemId.value),
-  seasonsSubscribed,
-  subscribedSeasons: subscribedSeasonNumbers,
-  subscribedSeasonModes,
-  primarySeason: () => mediaDetail.value?.season ?? null,
-  getSubscribeStatusKey,
-  onEditRemove: onSubscribeEditRemove,
-})
 
 // 搜索前弹出站点选择框，确认后执行资源或字幕搜索。
 async function clickSearch(
@@ -889,18 +728,6 @@ onUnmounted(() => {
               <VIcon icon="mdi-subtitles-outline" />
             </template>
             {{ t('media.actions.searchSubtitle') }}
-          </VBtn>
-          <VBtn
-            v-if="canSubscribe && (mediaDetail.type === '电影' || hasMediaIdentity())"
-            class="media-action-button"
-            :color="getSubscribeColor"
-            variant="tonal"
-            @click="handleSubscribe()"
-          >
-            <template #prepend>
-              <VIcon :icon="getSubscribeIcon" />
-            </template>
-            {{ getSubscribeText }}
           </VBtn>
           <VBtn v-if="existsItemId" class="media-action-button" variant="tonal" @click="handlePlay()" color="success">
             <template #prepend>
@@ -1083,17 +910,6 @@ onUnmounted(() => {
                         <VChip v-if="seasonsNotExisted" :color="getExistColor(season.season_number || 0)" flat>
                           {{ getExistText(season.season_number || 0) }}
                         </VChip>
-                        <IconBtn
-                          v-if="canSubscribe"
-                          class="ms-1"
-                          :color="seasonsSubscribed[season.season_number || 0] ? 'error' : 'warning'"
-                          variant="text"
-                          @click.stop="handleSubscribe(season.season_number ?? null, selectedEpisodeGroup)"
-                        >
-                          <VIcon
-                            :icon="seasonsSubscribed[season.season_number || 0] ? 'mdi-heart' : 'mdi-heart-outline'"
-                          />
-                        </IconBtn>
                       </div>
                     </div>
                   </template>

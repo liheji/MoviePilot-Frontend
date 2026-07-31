@@ -37,16 +37,6 @@ const templateTypeDefaults = [
     icon: 'mdi-download-box',
     accentRgb: 'var(--v-theme-info)',
   },
-  {
-    type: 'subscribeAdded',
-    icon: 'mdi-rss-box',
-    accentRgb: 'var(--v-theme-warning)',
-  },
-  {
-    type: 'subscribeComplete',
-    icon: 'mdi-check-circle',
-    accentRgb: 'var(--v-theme-success)',
-  },
 ] as const
 
 type NotificationTemplateType = (typeof templateTypeDefaults)[number]['type']

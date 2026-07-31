@@ -1,4 +1,8 @@
 import { getNavMenus } from '@/router/i18n-menu'
+import mediaCardSource from '@/components/cards/MediaCard.vue?raw'
+import searchBarSource from '@/components/dialog/SearchBarDialog.vue?raw'
+import userCardSource from '@/components/cards/UserCard.vue?raw'
+import mediaDetailSource from '@/views/discover/MediaDetailView.vue?raw'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -24,5 +28,16 @@ describe('Lite route surface', () => {
     expect(paths).not.toContain('/subscribe-share')
     expect(paths).not.toContain('/calendar')
     expect(paths).toContain('/plugins')
+  })
+
+  it('removes subscription requests, redirects, and compatibility composables from retained media surfaces', () => {
+    const sources = [userCardSource, mediaCardSource, mediaDetailSource, searchBarSource]
+
+    for (const source of sources) {
+      expect(source).not.toContain('subscribe/')
+      expect(source).not.toMatch(/path:\s*['"]\/subscribe/)
+    }
+    expect(mediaCardSource).not.toContain('useMediaSubscribe')
+    expect(mediaDetailSource).not.toContain('useMediaSubscribe')
   })
 })

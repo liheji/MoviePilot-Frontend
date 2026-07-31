@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import api from '@/api'
-import type { Site, Plugin, Subscribe } from '@/api/types'
+import type { Site, Plugin } from '@/api/types'
 import { getNavMenus, getSettingTabs } from '@/router/i18n-menu'
 import { NavMenu } from '@/@layouts/types'
 import { useUserStore } from '@/stores'
@@ -34,7 +34,6 @@ const router = useRouter()
 const userStore = useUserStore()
 
 // 当前用户名
-const userName = userStore.userName
 const userPermissions = computed(() => buildUserPermissionContext(userStore.superUser, userStore.permissions))
 
 // 权限检查
@@ -46,8 +45,6 @@ const hasDiscoveryPermission = computed(() => {
   return hasPermission(userPermissions.value, 'discovery')
 })
 
-const hasSubscribePermission = computed(() => false)
-
 const hasManagePermission = computed(() => {
   return hasPermission(userPermissions.value, 'manage')
 })
@@ -55,9 +52,6 @@ const hasManagePermission = computed(() => {
 const hasAdminPermission = computed(() => {
   return hasPermission(userPermissions.value, 'admin')
 })
-
-// 所有订阅数据
-const SubscribeItems = ref<Subscribe[]>([])
 
 // 站点选择对话框
 const chooseSiteDialog = ref(false)
@@ -285,15 +279,6 @@ const matchedPluginItems = computed(() => {
   })
 })
 
-/** 加载订阅列表，供搜索结果匹配。 */
-async function fetchSubscribes() {
-  try {
-    SubscribeItems.value = await api.get('subscribe/')
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 /** 从接口加载用户的站点搜索偏好。 */
 const loadUserSitePreferences = async () => {
   try {
@@ -327,16 +312,6 @@ const openSiteDialog = (type: 'torrent' | 'subtitle' = 'torrent') => {
   siteSearchType.value = type
   chooseSiteDialog.value = true
 }
-
-// 匹配的订阅列表
-const matchedSubscribeItems = computed(() => {
-  if (!searchWord.value) return []
-  if (!hasSubscribePermission.value) return []
-  const lowerWord = (searchWord.value as string).toLowerCase()
-  return SubscribeItems.value.filter((item: Subscribe) => {
-    return (item.name.toLowerCase().includes(lowerWord) && (userStore.superUser || userName === item.username)) || false
-  })
-})
 
 /** 使用选中的站点执行当前资源类型搜索。 */
 function searchSites(sites: number[]) {
@@ -411,19 +386,6 @@ function searchHistory() {
   closeSearch()
 }
 
-/** 跳转到包含当前关键词的订阅分享页。 */
-function searchSubscribeShares() {
-  if (!searchWord.value) return
-  saveRecentSearches(searchWord.value)
-  router.push({
-    path: '/subscribe-share',
-    query: {
-      keyword: searchWord.value,
-    },
-  })
-  closeSearch()
-}
-
 /** 打开匹配插件的已安装详情。 */
 function showPlugin(pluginId: string) {
   router.push({
@@ -439,26 +401,6 @@ function showPlugin(pluginId: string) {
 /** 跳转到匹配的功能菜单。 */
 function goPage(to: string) {
   router.push(to)
-  closeSearch()
-}
-
-/** 根据订阅类型跳转到对应订阅详情。 */
-function goSubscribe(subscribe: Subscribe) {
-  if (subscribe.type === '电影') {
-    router.push({
-      path: '/subscribe/movie',
-      query: {
-        id: subscribe.id,
-      },
-    })
-  } else {
-    router.push({
-      path: '/subscribe/tv',
-      query: {
-        id: subscribe.id,
-      },
-    })
-  }
   closeSearch()
 }
 
@@ -485,9 +427,6 @@ onMounted(() => {
   // 根据权限加载不同的数据
   if (hasAdminPermission.value) {
     fetchInstalledPlugins()
-  }
-  if (hasSubscribePermission.value) {
-    fetchSubscribes()
   }
   loadRecentSearches()
   if (hasSearchPermission.value) {
@@ -613,25 +552,6 @@ onMounted(() => {
           </template>
 
           <VListItem
-            v-if="hasSubscribePermission"
-            density="comfortable"
-            link
-            @click="searchSubscribeShares"
-            class="search-result-item mx-2 my-1"
-          >
-            <template #prepend>
-              <div class="result-icon-wrapper">
-                <VIcon icon="mdi-share-variant" size="small" color="medium-emphasis" />
-              </div>
-            </template>
-            <VListItemTitle class="font-weight-medium text-body-2">{{ t('subscribe.searchShares') }}</VListItemTitle>
-            <VListItemSubtitle class="text-caption text-medium-emphasis">
-              {{ t('common.search') }} <span class="primary-text font-weight-medium">{{ searchWord }}</span>
-              {{ t('dialog.searchBar.subscribeShareSearch') }}
-            </VListItemSubtitle>
-          </VListItem>
-
-          <VListItem
             v-if="hasManagePermission"
             density="comfortable"
             link
@@ -649,41 +569,6 @@ onMounted(() => {
               {{ t('dialog.searchBar.historySearch') }}
             </VListItemSubtitle>
           </VListItem>
-
-          <!-- 匹配的订阅 -->
-          <template v-if="matchedSubscribeItems.length > 0">
-            <VDivider class="mx-4 my-2 search-divider" />
-            <VListSubheader class="font-weight-medium text-uppercase px-4">
-              {{ t('dialog.searchBar.subscriptions') }}
-            </VListSubheader>
-            <VListItem
-              v-for="subscribe in matchedSubscribeItems"
-              :key="subscribe.id"
-              density="comfortable"
-              link
-              @click="goSubscribe(subscribe)"
-              class="search-result-item mx-2 my-1"
-            >
-              <template #prepend>
-                <div class="result-icon-wrapper">
-                  <VIcon
-                    :icon="subscribe.type === '电影' ? 'mdi-movie-roll' : 'mdi-television-classic'"
-                    size="small"
-                    color="medium-emphasis"
-                  />
-                </div>
-              </template>
-              <VListItemTitle class="font-weight-medium text-body-2">
-                {{ subscribe.name }}
-                <span v-if="subscribe.season" class="text-caption">
-                  {{ t('resource.season') }} {{ subscribe.season }}</span
-                >
-              </VListItemTitle>
-              <VListItemSubtitle class="text-caption text-medium-emphasis">
-                {{ subscribe.type }}
-              </VListItemSubtitle>
-            </VListItem>
-          </template>
 
           <!-- 匹配的菜单/功能 -->
           <template v-if="matchedMenuItems.length > 0">

@@ -4,7 +4,7 @@ import { useToast } from 'vue-toastification'
 import { requiredValidator } from '@/@validators'
 import api from '@/api'
 import type { Context, MediaDataSource, MediaInfo } from '@/api/types'
-import { getMediaSubscribeId } from '@/composables/useMediaSubscribe'
+import { getMediaId } from '@/utils/mediaIdentity'
 import router from '@/router'
 import { useGlobalSettingsStore } from '@/stores'
 import { useI18n } from 'vue-i18n'
@@ -136,7 +136,7 @@ function viewMediaDetail() {
   router.push({
     path: '/media',
     query: {
-      mediaid: getMediaSubscribeId(mediaInfo.value),
+      mediaid: getMediaId(mediaInfo.value),
       title: mediaInfo.value.title,
       year: mediaInfo.value.year,
       type: mediaInfo.value.type,

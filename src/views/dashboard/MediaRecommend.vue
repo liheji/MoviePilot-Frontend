@@ -3,7 +3,7 @@ import api from '@/api'
 import type { MediaInfo } from '@/api/types'
 import DashboardRetryButton from '@/components/misc/DashboardRetryButton.vue'
 import { useDashboardSnapshot } from '@/composables/useDashboardSnapshot'
-import { getMediaSubscribeId } from '@/composables/useMediaSubscribe'
+import { getMediaId } from '@/utils/mediaIdentity'
 import { useGlobalSettingsStore } from '@/stores'
 import { getDisplayImageUrl } from '@/utils/imageUtils'
 import { createBuiltInRecommendSources, type RecommendViewSource } from '@/utils/recommendSources'
@@ -82,7 +82,7 @@ function isUsableMedia(item: MediaInfo) {
 /** 构造轮播项稳定键，兼容 TMDB 媒体与合集。 */
 function getMediaKey(item: MediaInfo) {
   if (item.collection_id) return `collection:${item.collection_id}`
-  return getMediaSubscribeId(item)
+  return getMediaId(item)
 }
 
 /** 加载指定推荐来源，持久快照只负责立即恢复，随后仍以成功响应更新内容。 */
@@ -159,7 +159,7 @@ function goToMediaDetail() {
   void router.push({
     path: '/media',
     query: {
-      mediaid: getMediaSubscribeId(item),
+      mediaid: getMediaId(item),
       title: item.title,
       type: item.type,
       year: item.year,

@@ -320,23 +320,6 @@ describe('glass optics geometry', () => {
       textureSource: 'wallpaper',
       trailCount: 4,
     })
-    expect(getGlassOpticalRenderProfile('high', '/subscribe/movie')).toEqual({
-      bufferQuality: 'high',
-      contentProtection: true,
-      diffusionSamples: 9,
-      flowField: true,
-      flowHalfLife: 130,
-      maxRefractionPixels: 9,
-      motionDuration: 540,
-      motionHalfLife: 125,
-      pixelRatioCap: 1.5,
-      pointerImmediateResponse: 0.58,
-      springDamping: 0.78,
-      springFrequency: 18,
-      textureLimit: 4096,
-      textureSource: 'wallpaper',
-      trailCount: 4,
-    })
     expect(getGlassOpticalRenderProfile('balanced', '/dashboard')).toEqual({
       bufferQuality: 'balanced',
       contentProtection: false,

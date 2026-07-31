@@ -1275,9 +1275,6 @@ export function useSetupWizard() {
             // 保存规则组名称到其他设置
             const ruleGroupNames = wizardData.value.preferences.ruleSequences.map(rule => [rule.name])
 
-            // 保存到 SubscribeFilterRuleGroups
-            await api.post('system/setting/SubscribeFilterRuleGroups', ruleGroupNames)
-
             // 保存到 BestVersionFilterRuleGroups
             await api.post('system/setting/BestVersionFilterRuleGroups', ruleGroupNames)
           }

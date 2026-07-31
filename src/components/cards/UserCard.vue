@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import api from '@/api'
-import { Subscribe, User } from '@/api/types'
+import { User } from '@/api/types'
 import { useUserStore } from '@/stores'
 import avatar1 from '@images/avatars/avatar-1.png'
 import { useToast } from 'vue-toastification'
@@ -51,31 +51,12 @@ const createConfirm = useConfirm()
 // 提示框
 const $toast = useToast()
 
-// 用户电影订阅数量
-const movieSubscriptions = ref(0)
-
-// 用户电视剧订阅数量
-const tvShowSubscriptions = ref(0)
-
 // 显示名称 - 如果有昵称则优先显示昵称
 const displayName = computed(() => {
   const settingsNickname = props.user.settings?.nickname as string | undefined
   const nickname = props.user.nickname || settingsNickname
   return nickname || props.user.name
 })
-
-// 按用户查询订阅数量
-async function fetchSubscriptions() {
-  try {
-    const result: Subscribe[] = await api.get(`subscribe/user/${props.user.name}`)
-    if (result) {
-      movieSubscriptions.value = result.filter(item => item.type === '电影').length
-      tvShowSubscriptions.value = result.filter(item => item.type === '电视剧').length
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
 
 // 删除用户
 async function removeUser() {
@@ -122,9 +103,6 @@ function onUserUpdate() {
   emit('save')
 }
 
-onMounted(() => {
-  fetchSubscriptions()
-})
 </script>
 <template>
   <!-- Hover 命中区域保持静止，避免卡片上浮后底边反复触发 mouseleave。 -->
@@ -198,17 +176,6 @@ onMounted(() => {
             </div>
           </div>
 
-          <!-- 移动端订阅数据信息 -->
-          <div v-if="isMobile" class="d-flex gap-5 mt-2">
-            <div class="d-flex align-center">
-              <VIcon size="x-small" icon="mdi-movie-outline" color="primary" class="mr-1" />
-              <span class="text-body-2">{{ movieSubscriptions }}</span>
-            </div>
-            <div class="d-flex align-center">
-              <VIcon size="x-small" icon="mdi-television-classic" color="primary" class="mr-1" />
-              <span class="text-body-2">{{ tvShowSubscriptions }}</span>
-            </div>
-          </div>
         </VCardTitle>
 
         <!-- 头部操作按钮 -->
@@ -248,9 +215,6 @@ onMounted(() => {
         <VChip v-if="user.permissions.search" size="x-small" color="blue" variant="outlined" label>
           {{ t('dialog.userAddEdit.permissions.search') }}
         </VChip>
-        <VChip v-if="user.permissions.subscribe" size="x-small" color="green" variant="outlined" label>
-          {{ t('dialog.userAddEdit.permissions.subscribe') }}
-        </VChip>
         <VChip v-if="user.permissions.manage" size="x-small" color="orange" variant="outlined" label>
           {{ t('dialog.userAddEdit.permissions.manage') }}
         </VChip>
@@ -264,45 +228,6 @@ onMounted(() => {
         <span class="text-body-2 truncate">{{ user.email || t('user.noEmail') }}</span>
       </VCardText>
 
-      <!-- PC端显示订阅统计信息 -->
-      <VCardText v-if="!isMobile" class="px-4 pt-0 pb-4">
-        <div rounded="lg" class="d-flex justify-space-around">
-          <div class="d-flex align-center gap-3">
-            <VAvatar
-              tile
-              rounded="lg"
-              size="large"
-              class="mr-1"
-              :class="user.is_superuser ? 'admin-stats-container' : 'user-stats-container'"
-            >
-              <div :class="['d-flex align-center justify-center rounded-lg w-10 h-10']">
-                <VIcon :color="user.is_superuser ? 'warning' : 'primary'" icon="mdi-movie-outline" size="20" />
-              </div>
-            </VAvatar>
-            <div class="d-flex flex-column">
-              <span class="text-lg text-medium-emphasis font-weight-bold">{{ movieSubscriptions }}</span>
-              <span class="text-caption text-medium-emphasis">{{ t('user.movieSubscriptions') }}</span>
-            </div>
-          </div>
-          <div class="d-flex align-center gap-3">
-            <VAvatar
-              tile
-              rounded="lg"
-              size="large"
-              class="mr-1"
-              :class="user.is_superuser ? 'admin-stats-container' : 'user-stats-container'"
-            >
-              <div :class="['d-flex align-center justify-center rounded-lg w-10 h-10']">
-                <VIcon :color="user.is_superuser ? 'warning' : 'primary'" icon="mdi-television-classic" />
-              </div>
-            </VAvatar>
-            <div class="d-flex flex-column">
-              <span class="text-lg text-medium-emphasis">{{ tvShowSubscriptions }}</span>
-              <span class="text-caption text-medium-emphasis">{{ t('user.tvSubscriptions') }}</span>
-            </div>
-          </div>
-        </div>
-      </VCardText>
     </div>
     </VCard>
   </div>
@@ -350,14 +275,6 @@ onMounted(() => {
   content: '';
   inset: -5px;
   pointer-events: none;
-}
-
-.admin-stats-container {
-  background-color: rgba(var(--v-theme-warning), 0.1);
-}
-
-.user-stats-container {
-  background-color: rgba(var(--v-theme-primary), 0.1);
 }
 
 @keyframes pulse {
