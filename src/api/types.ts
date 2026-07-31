@@ -635,6 +635,14 @@ export interface DownloadingInfo {
   dlspeed?: string
   // 上传速度
   upspeed?: string
+  // 下载器分类
+  category?: string
+  // 下载限速 KB/s
+  download_limit?: number
+  // 上传限速 KB/s
+  upload_limit?: number
+  // 保存路径
+  save_path?: string
   // 媒体信息
   media: { [key: string]: any }
   // 下载用户ID
