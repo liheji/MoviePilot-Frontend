@@ -10,7 +10,6 @@ const { wizardData, selectNotification, validationErrors } = useSetupWizard()
 const notificationTypes = [
   { value: '资源下载', title: t('notificationSwitch.resourceDownload') },
   { value: '整理入库', title: t('notificationSwitch.organize') },
-  { value: '订阅', title: t('notificationSwitch.subscribe') },
   { value: '站点', title: t('notificationSwitch.site') },
   { value: '媒体服务器', title: t('notificationSwitch.mediaServer') },
   { value: '手动处理', title: t('notificationSwitch.manual') },

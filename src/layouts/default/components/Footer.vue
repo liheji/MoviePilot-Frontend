@@ -39,7 +39,6 @@ const userPermissions = computed(() => {
       is_superuser: false,
       discovery: false,
       search: false,
-      subscribe: false,
       manage: false,
     }
   }
@@ -182,8 +181,6 @@ const shouldRenderFooterNav = computed(() => appMode.value && props.showNav)
 const shouldRevealFooterNav = computed(() => shouldRenderFooterNav.value && !isLaunchLoading.value)
 
 const legacyDynamicMenuTitleKeyMap: Record<string, string> = {
-  'components.subscribeHistory.title': 'dialog.subscribeHistory.title',
-  'components.subscribeEdit.titleDefault': 'dialog.subscribeEdit.titleDefault',
   'components.transferQueue.title': 'dialog.transferQueue.title',
   'components.pluginMarketSetting.title': 'dialog.pluginMarketSetting.title',
 }

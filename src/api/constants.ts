@@ -267,10 +267,6 @@ export const notificationSwitchOptions = [
     value: '整理入库',
   },
   {
-    title: i18n.global.t('notificationSwitch.subscribe'),
-    value: '订阅',
-  },
-  {
     title: i18n.global.t('notificationSwitch.site'),
     value: '站点',
   },

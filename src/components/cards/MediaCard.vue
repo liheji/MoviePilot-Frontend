@@ -10,18 +10,13 @@ import noImage from '@images/no-image.jpeg'
 import { getDisplayImageUrl, getLogoUrl } from '@/utils/imageUtils'
 import api from '@/api'
 import { formatRating } from '@/@core/utils/formatters'
-import type { MediaInfo, Site, Subscribe } from '@/api/types'
+import type { MediaInfo, Site } from '@/api/types'
 import router from '@/router'
 import { useUserStore, useGlobalSettingsStore } from '@/stores'
 import { mediaTypeDict } from '@/api/constants'
 import { buildUserPermissionContext, hasPermission } from '@/utils/permission'
 import { openSharedDialog } from '@/composables/useSharedDialog'
-import {
-  getMediaSubscribeId,
-  getSubscribeMode,
-  useMediaSubscribe,
-  type SeasonSubscribeModes,
-} from '@/composables/useMediaSubscribe'
+import { getMediaId as getMediaIdentity } from '@/utils/mediaIdentity'
 import {
   getCachedMediaExistsStatus,
   setCachedMediaExistsStatus,
@@ -53,7 +48,6 @@ const globalSettings = globalSettingsStore.globalSettings
 const userStore = useUserStore()
 const userPermissions = computed(() => buildUserPermissionContext(userStore.superUser, userStore.permissions))
 const canSearch = computed(() => hasPermission(userPermissions.value, 'search'))
-const canSubscribe = computed(() => false)
 
 // 图片加载状态
 const isImageLoaded = ref(false)
@@ -61,21 +55,8 @@ const isImageLoaded = ref(false)
 // 图片加载失败
 const imageLoadError = ref(false)
 
-// 当前订阅状态
-const isSubscribed = ref(false)
-
 // 本地存在状态
 const isExists = ref(false)
-
-// 当前媒体已订阅的季号
-const subscribedSeasons = ref<number[]>([])
-
-// 当前媒体已订阅季的订阅模式
-const subscribedSeasonModes = ref<SeasonSubscribeModes>({})
-
-const subscribedSeasonsLoaded = ref(false)
-
-const subscribedSeasonsLoading = ref(false)
 
 // 来源角标字典
 const sourceIconDict: { [key: string]: any } = {
@@ -145,11 +126,7 @@ async function querySelectedSites() {
 
 // 获得mediaid
 function getMediaId() {
-  return getMediaSubscribeId(props.media)
-}
-
-function getSubscribeStatusKey(season: number | null = props.media?.season ?? null) {
-  return `${getMediaId()}::${season ?? 'all'}`
+  return getMediaIdentity(props.media)
 }
 
 function getExistsStatusKey() {
@@ -164,64 +141,11 @@ function getExistsStatusKey() {
   ].join('::')
 }
 
-function isSameSubscribeMedia(subscribe: Subscribe) {
-  const mediaId = getMediaId()
-  if (subscribe.media_source && subscribe.media_id) {
-    const prefix = subscribe.media_source === 'themoviedb' ? 'tmdb' : subscribe.media_source
-    return mediaId === `${prefix}:${subscribe.media_id}`
-  }
-  if (subscribe.mediaid) return mediaId === subscribe.mediaid
-  if (props.media?.tmdb_id && subscribe.tmdbid) return props.media.tmdb_id === subscribe.tmdbid
-  if (props.media?.douban_id && subscribe.doubanid) return props.media.douban_id === subscribe.doubanid
-  if (props.media?.bangumi_id && subscribe.bangumiid) return props.media.bangumi_id === subscribe.bangumiid
-  if (props.media?.anilist_id && subscribe.anilistid) return props.media.anilist_id === subscribe.anilistid
-  return false
-}
-
 // 角标颜色
 function getChipColor(type: string) {
   if (type === '电影') return 'border-blue-500 bg-blue-600'
   else if (type === '电视剧') return ' bg-indigo-500 border-indigo-600'
   else return 'border-purple-600 bg-purple-600'
-}
-
-// 查询当前媒体是否已订阅
-async function handleCheckSubscribe() {
-  try {
-    isSubscribed.value = await checkSubscribe(props.media?.season ?? null)
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-async function querySubscribedSeasons() {
-  if (
-    props.media?.type !== '电视剧' ||
-    !isSubscribed.value ||
-    subscribedSeasonsLoaded.value ||
-    subscribedSeasonsLoading.value
-  ) {
-    return
-  }
-
-  subscribedSeasonsLoading.value = true
-  try {
-    const subscribes: Subscribe[] = await api.get('subscribe/')
-    const mediaSubscribes = subscribes.filter(
-      item => item.type === '电视剧' && item.season !== undefined && isSameSubscribeMedia(item),
-    )
-
-    subscribedSeasons.value = mediaSubscribes.map(item => item.season as number).sort((a, b) => a - b)
-    subscribedSeasonModes.value = mediaSubscribes.reduce<SeasonSubscribeModes>((modes, item) => {
-      if (item.season !== undefined) modes[item.season] = getSubscribeMode(item)
-      return modes
-    }, {})
-    subscribedSeasonsLoaded.value = true
-  } catch (error) {
-    console.error(error)
-  } finally {
-    subscribedSeasonsLoading.value = false
-  }
 }
 
 // 查询当前媒体是否已入库
@@ -246,17 +170,6 @@ async function handleCheckExists() {
   } catch (error) {
     console.error(error)
   }
-}
-
-// 调用API检查是否已订阅，电视剧需要指定季
-async function checkSubscribe(season: number | null) {
-  return subscribeActions.checkSubscribe(season)
-}
-
-// 爱心订阅按钮响应
-async function handleSubscribe() {
-  await querySubscribedSeasons()
-  subscribeActions.handleSubscribe()
 }
 
 // 打开详情页
@@ -308,7 +221,6 @@ function resetMediaCardDetailState() {
 function handleMediaCardClick(isHovering: boolean | null | undefined) {
   if (isTouchLikePointer.value && !isMediaCardDetailVisible(isHovering)) {
     activeTouchMediaCardId.value = mediaCardId
-    querySubscribedSeasons()
     return
   }
 
@@ -363,7 +275,6 @@ function handleCheckLazy() {
   if (props.media?.collection_id) {
     return
   }
-  handleCheckSubscribe()
   handleCheckExists()
 }
 
@@ -401,32 +312,10 @@ function getMediaTypeText(type: string | undefined) {
   return mediaTypeDict[type]
 }
 
-const subscribeActions = useMediaSubscribe({
-  media: () => props.media,
-  canSubscribe: () => canSubscribe.value,
-  isSubscribed,
-  isExists: () => isExists.value,
-  subscribedSeasons,
-  subscribedSeasonModes,
-  primarySeason: () => props.media?.season ?? null,
-  getSubscribeStatusKey,
-})
-
-watch(isSubscribed, subscribed => {
-  subscribedSeasonsLoaded.value = false
-  if (!subscribed) {
-    subscribedSeasons.value = []
-    subscribedSeasonModes.value = {}
-  }
-})
-
 watch(
   () => props.media,
   () => {
     resetMediaCardDetailState()
-    subscribedSeasons.value = []
-    subscribedSeasonModes.value = {}
-    subscribedSeasonsLoaded.value = false
   },
 )
 
@@ -452,7 +341,7 @@ onBeforeUnmount(() => {
   <VHover>
     <template #default="hover">
       <!-- Hover 命中区域保持静止，避免卡片上浮后底边反复触发 mouseleave。 -->
-      <div ref="mediaCardRef" v-bind="hover.props" class="media-card-hover-area" @mouseenter="querySubscribedSeasons">
+      <div ref="mediaCardRef" v-bind="hover.props" class="media-card-hover-area">
         <VCard
           :height="props.height"
           :width="props.width"
@@ -497,13 +386,6 @@ onBeforeUnmount(() => {
             <div v-else class="flex align-center justify-between">
               <IconBtn v-if="canSearch" icon="mdi-magnify" color="white" size="small" @click.stop="clickSearch" />
               <VSpacer />
-              <IconBtn
-                v-if="canSubscribe"
-                :icon="isSubscribed ? 'mdi-heart' : 'mdi-heart-outline'"
-                :color="isSubscribed ? 'error' : 'white'"
-                size="small"
-                @click.stop="handleSubscribe"
-              />
             </div>
           </VCardText>
           <!-- 类型角标 -->
@@ -560,19 +442,4 @@ onBeforeUnmount(() => {
   line-height: 1rem;
 }
 
-.media-card-subscribe-summary {
-  display: flex;
-  align-items: center;
-  color: white;
-  font-size: 0.75rem;
-  gap: 0.25rem;
-  line-height: 1rem;
-  min-block-size: 1.25rem;
-}
-
-.media-card-subscribe-summary span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 </style>
