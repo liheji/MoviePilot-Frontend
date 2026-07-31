@@ -147,25 +147,9 @@
       "count": 2
     }
   },
-  "src/components/cards/SubscribeCard.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 5
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "vue/no-v-text-v-html-on-component": {
-      "count": 2
-    }
-  },
   "src/components/cards/UserCard.vue": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
-    }
-  },
-  "src/components/cards/__tests__/SubscribeCard.spec.ts": {
-    "sonarjs/super-linear-regex": {
-      "count": 2
     }
   },
   "src/components/dialog/AboutDialog.vue": {
@@ -214,11 +198,6 @@
     },
     "prefer-const": {
       "count": 1
-    }
-  },
-  "src/components/dialog/ForkSubscribeDialog.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 5
     }
   },
   "src/components/dialog/MediaInfoDialog.vue": {
@@ -323,34 +302,6 @@
       "count": 5
     }
   },
-  "src/components/dialog/SubscribeEditDialog.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 8
-    }
-  },
-  "src/components/dialog/SubscribeHistoryDialog.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 3
-    },
-    "vue/no-v-text-v-html-on-component": {
-      "count": 1
-    }
-  },
-  "src/components/dialog/SubscribeSeasonDialog.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "src/components/dialog/SubscribeShareDialog.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "src/components/dialog/SubscribeShareStatisticsDialog.vue": {
-    "vue/no-side-effects-in-computed-properties": {
-      "count": 1
-    }
-  },
   "src/components/dialog/TransferQueueDialog.vue": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -378,16 +329,6 @@
   "src/components/dialog/UserAuthDialog.vue": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
-    }
-  },
-  "src/components/dialog/__tests__/ForkSubscribeDialog.spec.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/components/dialog/__tests__/SubscribeSeasonDialog.spec.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 2
     }
   },
   "src/components/field/CronField.vue": {
@@ -500,14 +441,6 @@
       "count": 1
     }
   },
-  "src/composables/__tests__/useMediaSubscribe.spec.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
   "src/composables/useCacheManager.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -539,14 +472,6 @@
       "count": 1
     },
     "sonarjs/no-dead-store": {
-      "count": 1
-    }
-  },
-  "src/composables/useMediaSubscribe.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 6
-    },
-    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
@@ -583,7 +508,7 @@
       "count": 2
     },
     "vue/valid-v-for": {
-      "count": 5
+      "count": 4
     }
   },
   "src/layouts/default/components/Footer.vue": {
@@ -619,11 +544,6 @@
     },
     "sonarjs/no-ignored-exceptions": {
       "count": 2
-    }
-  },
-  "src/pages/__tests__/subscribe.spec.ts": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
     }
   },
   "src/pages/credits.vue": {
@@ -907,23 +827,6 @@
       "count": 1
     }
   },
-  "src/views/setting/AccountSettingSubscribe.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 12
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "no-empty": {
-      "count": 1
-    },
-    "no-prototype-builtins": {
-      "count": 1
-    },
-    "sonarjs/no-ignored-exceptions": {
-      "count": 1
-    }
-  },
   "src/views/setting/AccountSettingSystem.vue": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
@@ -937,37 +840,6 @@
   "src/views/setup/PreferencesSettingsStep.vue": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
-    }
-  },
-  "src/views/subscribe/FullCalendarView.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "src/views/subscribe/SubscribeListView.vue": {
-    "prefer-const": {
-      "count": 1
-    }
-  },
-  "src/views/subscribe/SubscribePopularView.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    },
-    "prefer-const": {
-      "count": 1
-    }
-  },
-  "src/views/subscribe/SubscribeShareView.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    },
-    "prefer-const": {
-      "count": 1
-    }
-  },
-  "src/views/system/CacheView.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 4
     }
   },
   "src/views/system/LoggingView.vue": {

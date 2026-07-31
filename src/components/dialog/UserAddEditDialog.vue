@@ -86,7 +86,6 @@ const userForm = ref<ExtendedUser>({
   permissions: {
     discovery: true,
     search: true,
-    subscribe: true,
     manage: false,
     features: buildDefaultFeaturePermissions(),
   },
@@ -115,12 +114,6 @@ const permissionOptions = [
     title: t('dialog.userAddEdit.permissions.search'),
     description: t('dialog.userAddEdit.permissions.searchDesc'),
     icon: 'mdi-magnify',
-  },
-  {
-    key: 'subscribe',
-    title: t('dialog.userAddEdit.permissions.subscribe'),
-    description: t('dialog.userAddEdit.permissions.subscribeDesc'),
-    icon: 'mdi-rss',
   },
   {
     key: 'manage',

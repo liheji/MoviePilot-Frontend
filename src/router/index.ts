@@ -76,49 +76,6 @@ const router = createRouter({
           },
         },
         {
-          path: '/subscribe/movie',
-          component: () => import('../pages/subscribe.vue'),
-          meta: {
-            keepAlive: true,
-            keepAliveKey: 'subscribe-movie',
-            requiresAuth: true,
-            permission: 'subscribe',
-            feature: PERMISSION_FEATURE.SUBSCRIBE_MOVIE,
-            subType: '电影',
-          },
-        },
-        {
-          path: '/subscribe/tv',
-          component: () => import('../pages/subscribe.vue'),
-          meta: {
-            keepAlive: true,
-            keepAliveKey: 'subscribe-tv',
-            requiresAuth: true,
-            permission: 'subscribe',
-            feature: PERMISSION_FEATURE.SUBSCRIBE_TV,
-            subType: '电视剧',
-          },
-        },
-        {
-          path: '/subscribe-share',
-          component: () => import('../pages/subscribe-share.vue'),
-          meta: {
-            requiresAuth: true,
-            permission: 'subscribe',
-            feature: PERMISSION_FEATURE.SUBSCRIBE_SHARE,
-          },
-        },
-        {
-          path: '/calendar',
-          component: () => import('../pages/calendar.vue'),
-          meta: {
-            keepAlive: true,
-            requiresAuth: true,
-            permission: 'subscribe',
-            feature: PERMISSION_FEATURE.SUBSCRIBE_CALENDAR,
-          },
-        },
-        {
           path: '/downloading',
           component: () => import('../pages/downloading.vue'),
           meta: {

@@ -61,9 +61,6 @@ const startMenus = ref<NavMenu[]>([])
 // 发现菜单项
 const discoveryMenus = ref<NavMenu[]>([])
 
-// 订阅菜单项
-const subscribeMenus = ref<NavMenu[]>([])
-
 // 整理菜单项
 const organizeMenus = ref<NavMenu[]>([])
 
@@ -79,7 +76,6 @@ const horizontalNavGroups = computed(() =>
   [
     { title: t('menu.start'), icon: 'mdi-home-outline', items: startMenus.value },
     { title: t('menu.discovery'), icon: 'mdi-compass-outline', items: discoveryMenus.value },
-    { title: t('menu.subscribe'), icon: 'mdi-rss', items: subscribeMenus.value },
     { title: t('menu.organize'), icon: 'mdi-folder-play-outline', items: organizeMenus.value },
     { title: t('menu.system'), icon: 'mdi-cog-outline', items: systemMenus.value },
   ].filter(group => group.items.length > 0),
@@ -439,9 +435,6 @@ function appendPluginSidebarMenus() {
       case 'discovery':
         discoveryMenus.value.push(navMenu)
         break
-      case 'subscribe':
-        subscribeMenus.value.push(navMenu)
-        break
       case 'organize':
         organizeMenus.value.push(navMenu)
         break
@@ -461,7 +454,6 @@ onMounted(async () => {
   // 获取菜单列表
   startMenus.value = getMenuList(t('menu.start'))
   discoveryMenus.value = getMenuList(t('menu.discovery'))
-  subscribeMenus.value = getMenuList(t('menu.subscribe'))
   organizeMenus.value = getMenuList(t('menu.organize'))
   systemMenus.value = getMenuList(t('menu.system'))
 
@@ -646,14 +638,6 @@ onMounted(async () => {
         }"
       />
       <VerticalNavLink v-for="item in discoveryMenus" :item="item" />
-      <!-- 👉 订阅 -->
-      <VerticalNavSectionTitle
-        v-if="subscribeMenus.length > 0"
-        :item="{
-          heading: t('menu.subscribe'),
-        }"
-      />
-      <VerticalNavLink v-for="item in subscribeMenus" :item="item" />
       <!-- 👉 整理 -->
       <VerticalNavSectionTitle
         v-if="organizeMenus.length > 0"

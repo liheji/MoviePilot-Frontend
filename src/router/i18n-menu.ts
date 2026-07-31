@@ -56,43 +56,6 @@ export function getNavMenus(t: Composer['t']): NavMenu[] {
       tabs: getDiscoverTabs(t),
     },
     {
-      title: t('navItems.movie'),
-      full_title: t('navItems.movieSubscribe'),
-      icon: 'mdi-movie-open-outline',
-      iconColor: 'success',
-      to: '/subscribe/movie',
-      header: t('menu.subscribe'),
-      admin: false,
-      footer: false,
-      permission: 'subscribe',
-      feature: PERMISSION_FEATURE.SUBSCRIBE_MOVIE,
-      tabs: getSubscribeMovieTabs(t),
-    },
-    {
-      title: t('navItems.tv'),
-      full_title: t('navItems.tvSubscribe'),
-      icon: 'mdi-television',
-      iconColor: 'warning',
-      to: '/subscribe/tv',
-      header: t('menu.subscribe'),
-      admin: false,
-      footer: false,
-      permission: 'subscribe',
-      feature: PERMISSION_FEATURE.SUBSCRIBE_TV,
-      tabs: getSubscribeTvTabs(t),
-    },
-    {
-      title: t('navItems.calendar'),
-      full_title: t('navItems.calendar'),
-      icon: 'mdi-calendar',
-      iconColor: 'info',
-      to: '/calendar',
-      header: t('menu.subscribe'),
-      admin: false,
-      permission: 'subscribe',
-      feature: PERMISSION_FEATURE.SUBSCRIBE_CALENDAR,
-    },
-    {
       title: t('navItems.downloadManager'),
       icon: 'mdi-download-outline',
       iconColor: 'info',
@@ -213,53 +176,10 @@ export function getSettingTabs(t: Composer['t']): NavMenuTabItem[] {
       description: t('settingTabs.search.description'),
     },
     {
-      title: t('settingTabs.subscribe.title'),
-      icon: 'mdi-rss',
-      tab: 'subscribe',
-      description: t('settingTabs.subscribe.description'),
-    },
-    {
       title: t('settingTabs.notification.title'),
       icon: 'mdi-bell',
       tab: 'notification',
       description: t('settingTabs.notification.description'),
-    },
-  ]
-}
-
-/** 返回电影订阅页的业务标签。 */
-export function getSubscribeMovieTabs(t: Composer['t']): NavMenuTabItem[] {
-  return [
-    {
-      title: t('subscribeTabs.movie.mysub'),
-      tab: 'mysub',
-      icon: 'mdi-bell-check',
-    },
-    {
-      title: t('subscribeTabs.movie.popular'),
-      tab: 'popular',
-      icon: 'mdi-fire',
-    },
-  ]
-}
-
-/** 返回电视剧订阅页的业务标签。 */
-export function getSubscribeTvTabs(t: Composer['t']): NavMenuTabItem[] {
-  return [
-    {
-      title: t('subscribeTabs.tv.mysub'),
-      tab: 'mysub',
-      icon: 'mdi-bell-check',
-    },
-    {
-      title: t('subscribeTabs.tv.popular'),
-      tab: 'popular',
-      icon: 'mdi-fire',
-    },
-    {
-      title: t('subscribeTabs.tv.share'),
-      tab: 'share',
-      icon: 'mdi-share-variant',
     },
   ]
 }
@@ -307,7 +227,7 @@ export function getDiscoverTabs(t: Composer['t']): NavMenuTabItem[] {
 }
 
 /** 插件侧栏分组（与后端 get_sidebar_nav 的 section 一致） */
-export type PluginSidebarSection = 'start' | 'discovery' | 'subscribe' | 'organize' | 'system'
+export type PluginSidebarSection = 'start' | 'discovery' | 'organize' | 'system'
 
 /**
  * 将插件声明的 section 映射为与 getNavMenus 一致的已翻译 header（用于 NavMenu.header）
@@ -316,7 +236,6 @@ export function pluginSidebarSectionToHeaderKey(section: string, t: Composer['t'
   const map: Record<string, string> = {
     start: 'menu.start',
     discovery: 'menu.discovery',
-    subscribe: 'menu.subscribe',
     organize: 'menu.organize',
     system: 'menu.system',
   }

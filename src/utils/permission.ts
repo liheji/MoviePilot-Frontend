@@ -1,5 +1,5 @@
 // 权限类型定义
-export type UserPermissionCategoryKey = 'discovery' | 'search' | 'subscribe' | 'manage'
+export type UserPermissionCategoryKey = 'discovery' | 'search' | 'manage'
 export type UserPermissionKey = UserPermissionCategoryKey | 'admin'
 export type UserPermissionFeatureKey = string
 export type UserPermissionFeatureMap = Record<UserPermissionFeatureKey, boolean>
@@ -16,7 +16,6 @@ export interface UserPermissionFeatureOption {
 export interface UserPermissions {
   discovery: boolean // 发现权限
   search: boolean // 搜索权限
-  subscribe: boolean // 订阅权限
   manage: boolean // 管理权限
   admin?: boolean // 管理员权限，仅用于前端入口标识，实际由 is_superuser 决定
   features?: UserPermissionFeatureMap // 功能级权限，缺省功能默认继承分类权限
@@ -29,10 +28,6 @@ export const PERMISSION_FEATURE = {
   DISCOVERY_RECOMMEND: 'discovery.recommend',
   DISCOVERY_EXPLORE: 'discovery.explore',
   SEARCH_RESOURCE: 'search.resource',
-  SUBSCRIBE_MOVIE: 'subscribe.movie',
-  SUBSCRIBE_TV: 'subscribe.tv',
-  SUBSCRIBE_CALENDAR: 'subscribe.calendar',
-  SUBSCRIBE_SHARE: 'subscribe.share',
   MANAGE_WORKFLOW: 'manage.workflow',
   MANAGE_DOWNLOADING: 'manage.downloading',
   MANAGE_HISTORY: 'manage.history',
@@ -64,38 +59,6 @@ export const USER_PERMISSION_FEATURES: UserPermissionFeatureOption[] = [
     descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.resourceSearch',
     icon: 'mdi-magnify',
     path: '/resource',
-  },
-  {
-    key: PERMISSION_FEATURE.SUBSCRIBE_MOVIE,
-    permission: 'subscribe',
-    titleKey: 'dialog.userAddEdit.permissions.features.movieSubscribe',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.movieSubscribe',
-    icon: 'mdi-movie-open-outline',
-    path: '/subscribe/movie',
-  },
-  {
-    key: PERMISSION_FEATURE.SUBSCRIBE_TV,
-    permission: 'subscribe',
-    titleKey: 'dialog.userAddEdit.permissions.features.tvSubscribe',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.tvSubscribe',
-    icon: 'mdi-television',
-    path: '/subscribe/tv',
-  },
-  {
-    key: PERMISSION_FEATURE.SUBSCRIBE_CALENDAR,
-    permission: 'subscribe',
-    titleKey: 'dialog.userAddEdit.permissions.features.calendar',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.calendar',
-    icon: 'mdi-calendar',
-    path: '/calendar',
-  },
-  {
-    key: PERMISSION_FEATURE.SUBSCRIBE_SHARE,
-    permission: 'subscribe',
-    titleKey: 'dialog.userAddEdit.permissions.features.subscribeShare',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.subscribeShare',
-    icon: 'mdi-share-variant',
-    path: '/subscribe-share',
   },
   {
     key: PERMISSION_FEATURE.MANAGE_WORKFLOW,
@@ -165,7 +128,6 @@ export function normalizeUserPermissions(permissions: Partial<UserPermissions> |
   return {
     discovery: permissionData.discovery ?? DEFAULT_PERMISSIONS.discovery,
     search: permissionData.search ?? DEFAULT_PERMISSIONS.search,
-    subscribe: permissionData.subscribe ?? DEFAULT_PERMISSIONS.subscribe,
     manage: permissionData.manage ?? DEFAULT_PERMISSIONS.manage,
     admin: permissionData.admin ?? DEFAULT_PERMISSIONS.admin,
     features,
@@ -184,7 +146,6 @@ export function buildUserPermissionContext(isSuperuser: boolean, permissions: Pa
 export const DEFAULT_PERMISSIONS: UserPermissions = {
   discovery: true,
   search: true,
-  subscribe: true,
   manage: false,
   admin: false,
   features: {},
@@ -194,7 +155,6 @@ export const DEFAULT_PERMISSIONS: UserPermissions = {
 export const ADMIN_PERMISSIONS: UserPermissions = {
   discovery: true,
   search: true,
-  subscribe: true,
   manage: true,
   admin: true,
   features: buildDefaultFeaturePermissions(),

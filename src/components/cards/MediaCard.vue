@@ -24,7 +24,6 @@ import {
 } from '@/composables/useMediaSubscribe'
 import {
   getCachedMediaExistsStatus,
-  getCachedMediaSubscribeStatus,
   setCachedMediaExistsStatus,
 } from '@/utils/mediaStatusCache'
 
@@ -54,7 +53,7 @@ const globalSettings = globalSettingsStore.globalSettings
 const userStore = useUserStore()
 const userPermissions = computed(() => buildUserPermissionContext(userStore.superUser, userStore.permissions))
 const canSearch = computed(() => hasPermission(userPermissions.value, 'search'))
-const canSubscribe = computed(() => hasPermission(userPermissions.value, 'subscribe'))
+const canSubscribe = computed(() => false)
 
 // 图片加载状态
 const isImageLoaded = ref(false)
@@ -189,10 +188,7 @@ function getChipColor(type: string) {
 // 查询当前媒体是否已订阅
 async function handleCheckSubscribe() {
   try {
-    const subscribed = await getCachedMediaSubscribeStatus(getSubscribeStatusKey(props.media?.season ?? null), () =>
-      checkSubscribe(props.media?.season ?? null),
-    )
-    isSubscribed.value = subscribed
+    isSubscribed.value = await checkSubscribe(props.media?.season ?? null)
   } catch (error) {
     console.error(error)
   }

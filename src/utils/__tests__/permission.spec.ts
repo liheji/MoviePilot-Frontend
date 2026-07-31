@@ -56,14 +56,18 @@ describe('permission utilities', () => {
   })
 
   it('checks category permissions as explicit booleans', () => {
-    const permissions = { discovery: true, search: false, subscribe: 1, manage: undefined }
+    const permissions = { discovery: true, search: false, manage: undefined }
 
     expect(hasPermission(permissions, 'discovery')).toBe(true)
     expect(hasPermission(permissions, 'search')).toBe(false)
-    expect(hasPermission(permissions, 'subscribe')).toBe(false)
     expect(hasPermission(null, 'manage')).toBe(false)
     expect(hasAnyPermission(permissions, ['search', 'discovery'])).toBe(true)
     expect(hasAllPermissions(permissions, ['discovery', 'search'])).toBe(false)
+  })
+
+  it('does not expose subscription categories or feature entries in Lite', () => {
+    expect(Object.keys(DEFAULT_PERMISSIONS)).not.toContain('subscribe')
+    expect(USER_PERMISSION_FEATURES.every(feature => !feature.key.startsWith('subscribe.'))).toBe(true)
   })
 
   it('inherits missing feature flags but honors explicit denial and parent categories', () => {
