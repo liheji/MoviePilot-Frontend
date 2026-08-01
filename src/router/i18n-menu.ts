@@ -16,7 +16,7 @@ export function getNavMenus(t: Composer['t']): NavMenu[] {
       permission: 'admin',
     },
     {
-      title: t('navItems.searchResult'),
+      title: t('navItems.torrentSearch'),
       icon: 'mdi-magnify',
       iconColor: 'info',
       to: '/resource',
@@ -26,41 +26,41 @@ export function getNavMenus(t: Composer['t']): NavMenu[] {
       feature: PERMISSION_FEATURE.SEARCH_RESOURCE,
     },
     {
-      title: t('navItems.downloadManager'),
+      title: t('navItems.downloadTasks'),
       icon: 'mdi-download-outline',
       iconColor: 'info',
       to: '/downloading',
-      header: t('menu.organize'),
+      header: t('menu.management'),
       admin: false,
       permission: 'manage',
       feature: PERMISSION_FEATURE.MANAGE_DOWNLOADING,
     },
     {
-      title: t('navItems.pluginManager'),
+      title: t('navItems.plugins'),
       icon: 'mdi-puzzle-outline',
       iconColor: 'primary',
       to: '/plugins',
-      header: t('menu.system'),
+      header: t('menu.management'),
       admin: true,
       permission: 'admin',
       tabs: getPluginTabs(t),
     },
     {
-      title: t('navItems.siteManager'),
+      title: t('navItems.sites'),
       icon: 'mdi-web',
       iconColor: 'info',
       to: '/site',
-      header: t('menu.system'),
+      header: t('menu.management'),
       admin: true,
       permission: 'manage',
       feature: PERMISSION_FEATURE.MANAGE_SITE,
     },
     {
-      title: t('navItems.userManager'),
+      title: t('navItems.users'),
       icon: 'mdi-account-group-outline',
       iconColor: 'success',
       to: '/user',
-      header: t('menu.system'),
+      header: t('menu.management'),
       admin: true,
       permission: 'admin',
     },
@@ -69,7 +69,7 @@ export function getNavMenus(t: Composer['t']): NavMenu[] {
       icon: 'mdi-cog-outline',
       iconColor: 'secondary',
       to: '/setting',
-      header: t('menu.system'),
+      header: t('menu.settings'),
       admin: true,
       permission: 'admin',
       tabs: getSettingTabs(t),
@@ -131,7 +131,7 @@ export function getPluginTabs(t: Composer['t']): NavMenuTabItem[] {
 
 
 /** 插件侧栏分组（与后端 get_sidebar_nav 的 section 一致） */
-export type PluginSidebarSection = 'start' | 'organize' | 'system'
+export type PluginSidebarSection = 'start' | 'manage' | 'settings'
 
 /**
  * 将插件声明的 section 映射为与 getNavMenus 一致的已翻译 header（用于 NavMenu.header）
@@ -139,8 +139,10 @@ export type PluginSidebarSection = 'start' | 'organize' | 'system'
 export function pluginSidebarSectionToHeaderKey(section: string, t: Composer['t']): string {
   const map: Record<string, string> = {
     start: 'menu.start',
-    organize: 'menu.organize',
-    system: 'menu.system',
+    manage: 'menu.management',
+    settings: 'menu.settings',
+    organize: 'menu.management',
+    system: 'menu.management',
   }
-  return t(map[section] ?? 'menu.system')
+  return t(map[section] ?? 'menu.management')
 }
