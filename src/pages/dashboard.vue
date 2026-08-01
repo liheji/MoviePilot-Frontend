@@ -70,16 +70,13 @@ interface DashboardGridLayoutItem {
 
 // 参考桌面端设计稿定义默认排布；用户保存过的布局仍优先于这里的初始值。
 const DASHBOARD_DESKTOP_DEFAULT_LAYOUT: DashboardGridLayoutConfig = {
-  storage: { x: 0, y: 0, w: 4, h: 7 },
-  mediaStatistic: { x: 4, y: 0, w: 8, h: 7 },
-  speed: { x: 0, y: 7, w: 4, h: 12 },
-  recentImports: { x: 4, y: 7, w: 4, h: 15 },
-  scheduler: { x: 8, y: 7, w: 4, h: 15 },
-  memory: { x: 0, y: 22, w: 4, h: DASHBOARD_RESOURCE_CHART_ROWS },
-  cpu: { x: 4, y: 22, w: 4, h: DASHBOARD_RESOURCE_CHART_ROWS },
-  quickActions: { x: 8, y: 22, w: 4, h: 5 },
-  systemInfo: { x: 8, y: 27, w: 4, h: 6 },
-  mediaRecommend: { x: 0, y: 33, w: 8, h: 17 },
+  mediaStatistic: { x: 0, y: 0, w: 8, h: 7 },
+  speed: { x: 8, y: 0, w: 4, h: 12 },
+  scheduler: { x: 0, y: 7, w: 4, h: 15 },
+  memory: { x: 4, y: 7, w: 4, h: DASHBOARD_RESOURCE_CHART_ROWS },
+  cpu: { x: 8, y: 12, w: 4, h: DASHBOARD_RESOURCE_CHART_ROWS },
+  systemInfo: { x: 0, y: 22, w: 4, h: 6 },
+  mediaRecommend: { x: 4, y: 22, w: 8, h: 17 },
 }
 
 // 单个设备档位的仪表盘配置，将布局与显示项绑定到同一份持久化数据。
@@ -171,15 +168,6 @@ const orderConfig = ref<DashboardOrderConfig>([])
 // 仪表板配置
 const dashboardConfigs = ref<DashboardItem[]>([
   {
-    id: 'storage',
-    name: t('dashboard.storage'),
-    key: '',
-    attrs: {},
-    cols: { cols: 12, md: 4 },
-    rows: 7,
-    elements: [],
-  },
-  {
     id: 'mediaStatistic',
     name: t('dashboard.mediaStatistic'),
     key: '',
@@ -249,48 +237,6 @@ const dashboardConfigs = ref<DashboardItem[]>([
     attrs: {},
     cols: { cols: 12, sm: 3, md: 4 },
     rows: DASHBOARD_RESOURCE_CHART_ROWS,
-    elements: [],
-  },
-  {
-    id: 'library',
-    name: t('dashboard.library'),
-    key: '',
-    attrs: {},
-    cols: { cols: 12 },
-    elements: [],
-  },
-  {
-    id: 'playing',
-    name: t('dashboard.playing'),
-    key: '',
-    attrs: {},
-    cols: { cols: 12 },
-    elements: [],
-  },
-  {
-    id: 'latest',
-    name: t('dashboard.latest'),
-    key: '',
-    attrs: {},
-    cols: { cols: 12 },
-    elements: [],
-  },
-  {
-    id: 'recentImports',
-    name: t('dashboard.recentImports'),
-    key: '',
-    attrs: {},
-    cols: { cols: 12, sm: 2, md: 4 },
-    rows: 15,
-    elements: [],
-  },
-  {
-    id: 'quickActions',
-    name: t('dashboard.quickActions.title'),
-    key: '',
-    attrs: {},
-    cols: { cols: 12, sm: 3, md: 4 },
-    rows: 5,
     elements: [],
   },
   {
@@ -437,16 +383,10 @@ function getDefaultDashboardEnableConfig(): DashboardEnableConfig {
     mediaRecommend: true,
     scheduler: true,
     speed: true,
-    storage: true,
     weeklyOverview: false,
     cpu: true,
     memory: true,
     network: false,
-    library: false,
-    playing: false,
-    latest: false,
-    recentImports: true,
-    quickActions: true,
     systemInfo: true,
   }
 }

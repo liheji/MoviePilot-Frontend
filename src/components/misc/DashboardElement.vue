@@ -31,7 +31,6 @@ const asyncDashboardOptions = {
 }
 
 const builtInDashboardComponentLoaders: Record<string, DashboardComponentLoader> = {
-  storage: () => import('@/views/dashboard/AnalyticsStorage.vue'),
   mediaStatistic: () => import('@/views/dashboard/AnalyticsMediaStatistic.vue'),
   mediaRecommend: () => import('@/views/dashboard/MediaRecommend.vue'),
   weeklyOverview: () => import('@/views/dashboard/AnalyticsWeeklyOverview.vue'),
@@ -40,11 +39,6 @@ const builtInDashboardComponentLoaders: Record<string, DashboardComponentLoader>
   cpu: () => import('@/views/dashboard/AnalyticsCpu.vue'),
   memory: () => import('@/views/dashboard/AnalyticsMemory.vue'),
   network: () => import('@/views/dashboard/AnalyticsNetwork.vue'),
-  library: () => import('@/views/dashboard/MediaServerLibrary.vue'),
-  playing: () => import('@/views/dashboard/MediaServerPlaying.vue'),
-  latest: () => import('@/views/dashboard/MediaServerLatest.vue'),
-  recentImports: () => import('@/views/dashboard/DashboardRecentImports.vue'),
-  quickActions: () => import('@/views/dashboard/DashboardQuickActions.vue'),
   systemInfo: () => import('@/views/dashboard/DashboardSystemInfo.vue'),
 }
 
@@ -76,7 +70,6 @@ function createAsyncDashboardComponent(id: string) {
 }
 
 // 内置仪表盘按需加载，关闭的卡片不再挤进 dashboard 首屏 chunk。
-const AnalyticsStorage = createAsyncDashboardComponent('storage')
 const AnalyticsMediaStatistic = createAsyncDashboardComponent('mediaStatistic')
 const MediaRecommend = createAsyncDashboardComponent('mediaRecommend')
 const AnalyticsWeeklyOverview = createAsyncDashboardComponent('weeklyOverview')
@@ -85,11 +78,6 @@ const AnalyticsScheduler = createAsyncDashboardComponent('scheduler')
 const AnalyticsCpu = createAsyncDashboardComponent('cpu')
 const AnalyticsMemory = createAsyncDashboardComponent('memory')
 const AnalyticsNetwork = createAsyncDashboardComponent('network')
-const MediaServerLibrary = createAsyncDashboardComponent('library')
-const MediaServerPlaying = createAsyncDashboardComponent('playing')
-const MediaServerLatest = createAsyncDashboardComponent('latest')
-const DashboardRecentImports = createAsyncDashboardComponent('recentImports')
-const DashboardQuickActions = createAsyncDashboardComponent('quickActions')
 const DashboardSystemInfo = createAsyncDashboardComponent('systemInfo')
 
 // 输入参数
@@ -226,8 +214,7 @@ onUnmounted(() => {
 </script>
 <template>
   <!-- 系统内置的仪表板 -->
-  <AnalyticsStorage v-if="config?.id === 'storage'" />
-  <AnalyticsMediaStatistic v-else-if="config?.id === 'mediaStatistic'" />
+  <AnalyticsMediaStatistic v-if="config?.id === 'mediaStatistic'" />
   <MediaRecommend v-else-if="config?.id === 'mediaRecommend'" />
   <AnalyticsWeeklyOverview v-else-if="config?.id === 'weeklyOverview'" />
   <AnalyticsSpeed v-else-if="config?.id === 'speed'" :allowRefresh="props.allowRefresh" />
@@ -235,11 +222,6 @@ onUnmounted(() => {
   <AnalyticsCpu v-else-if="config?.id === 'cpu'" :allowRefresh="props.allowRefresh" />
   <AnalyticsMemory v-else-if="config?.id === 'memory'" :allowRefresh="props.allowRefresh" />
   <AnalyticsNetwork v-else-if="config?.id === 'network'" :allowRefresh="props.allowRefresh" />
-  <MediaServerLibrary v-else-if="config?.id === 'library'" />
-  <MediaServerPlaying v-else-if="config?.id === 'playing'" />
-  <MediaServerLatest v-else-if="config?.id === 'latest'" />
-  <DashboardRecentImports v-else-if="config?.id === 'recentImports'" />
-  <DashboardQuickActions v-else-if="config?.id === 'quickActions'" />
   <DashboardSystemInfo v-else-if="config?.id === 'systemInfo'" :allow-refresh="props.allowRefresh" />
   <!-- 插件仪表板 -->
   <template v-else-if="!isNullOrEmptyObject(props.config) && isPluginRemoteAvailable(props.config)">

@@ -5,9 +5,7 @@ import { useRouter } from 'vue-router'
 import { useSetupWizard } from '@/composables/useSetupWizard'
 import BasicSettingsStep from '@/views/setup/BasicSettingsStep.vue'
 import SiteAuthSettingsStep from '@/views/setup/SiteAuthSettingsStep.vue'
-import StorageSettingsStep from '@/views/setup/StorageSettingsStep.vue'
 import DownloaderSettingsStep from '@/views/setup/DownloaderSettingsStep.vue'
-import MediaServerSettingsStep from '@/views/setup/MediaServerSettingsStep.vue'
 import NotificationSettingsStep from '@/views/setup/NotificationSettingsStep.vue'
 import PreferencesSettingsStep from '@/views/setup/PreferencesSettingsStep.vue'
 import ConnectivityTest from '@/views/setup/ConnectivityTest.vue'
@@ -107,28 +105,18 @@ onMounted(async () => {
               <SiteAuthSettingsStep />
             </VStepperWindowItem>
 
-            <!-- 步骤3：存储目录 -->
+            <!-- 步骤3：下载器 -->
             <VStepperWindowItem :value="3">
-              <StorageSettingsStep />
-            </VStepperWindowItem>
-
-            <!-- 步骤4：下载器 -->
-            <VStepperWindowItem :value="4">
               <DownloaderSettingsStep />
             </VStepperWindowItem>
 
-            <!-- 步骤5：媒体服务器 -->
-            <VStepperWindowItem :value="5">
-              <MediaServerSettingsStep />
-            </VStepperWindowItem>
-
-            <!-- 步骤6：通知 -->
-            <VStepperWindowItem :value="6">
+            <!-- 步骤4：通知 -->
+            <VStepperWindowItem :value="4">
               <NotificationSettingsStep />
             </VStepperWindowItem>
 
-            <!-- 步骤7：资源偏好 -->
-            <VStepperWindowItem :value="7">
+            <!-- 步骤5：资源偏好 -->
+            <VStepperWindowItem :value="5">
               <PreferencesSettingsStep />
             </VStepperWindowItem>
           </VStepperWindow>
