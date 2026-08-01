@@ -86,17 +86,6 @@ const router = createRouter({
           },
         },
         {
-          path: '/history',
-          component: () => import('../pages/history.vue'),
-          meta: {
-            keepAlive: true,
-            requiresAuth: true,
-            permission: 'manage',
-            feature: PERMISSION_FEATURE.MANAGE_HISTORY,
-            hideFooter: true,
-          },
-        },
-        {
           path: '/site',
           component: () => import('../pages/site.vue'),
           meta: {
@@ -184,17 +173,6 @@ const router = createRouter({
             requiresAuth: true,
             permission: 'discovery',
             feature: PERMISSION_FEATURE.DISCOVERY_EXPLORE,
-          },
-        },
-        {
-          path: '/filemanager',
-          component: () => import('../pages/filemanager.vue'),
-          meta: {
-            keepAlive: true,
-            requiresAuth: true,
-            permission: 'manage',
-            feature: PERMISSION_FEATURE.MANAGE_FILEMANAGER,
-            hideFooter: true,
           },
         },
         {

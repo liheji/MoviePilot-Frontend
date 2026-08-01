@@ -258,14 +258,6 @@
       "count": 4
     }
   },
-  "src/components/dialog/ReorganizeDialog.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 14
-    },
-    "sonarjs/super-linear-regex": {
-      "count": 1
-    }
-  },
   "src/components/dialog/SharedDialogHost.vue": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
@@ -337,33 +329,6 @@
     }
   },
   "src/components/field/PathField.vue": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/components/filebrowser/FileBrowser.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 4
-    }
-  },
-  "src/components/filebrowser/FileList.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 6
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "prefer-const": {
-      "count": 1
-    },
-    "vue/no-v-text-v-html-on-component": {
-      "count": 2
-    }
-  },
-  "src/components/filebrowser/FileToolbar.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    },
     "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
@@ -487,10 +452,10 @@
   },
   "src/composables/useSetupWizard.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 21
+      "count": 14
     },
     "sonarjs/no-duplicated-branches": {
-      "count": 2
+      "count": 1
     }
   },
   "src/composables/useSharedDialog.ts": {
@@ -715,16 +680,6 @@
       "count": 1
     }
   },
-  "src/views/dashboard/MediaServerLibrary.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "src/views/dashboard/MediaServerPlaying.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
   "src/views/discover/MediaCardSlideView.vue": {
     "@typescript-eslint/no-unused-vars": {
       "count": 1
@@ -757,33 +712,6 @@
   "src/views/reorganize/DownloadingListView.vue": {
     "@typescript-eslint/no-unused-vars": {
       "count": 2
-    }
-  },
-  "src/views/reorganize/FileBrowserView.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    },
-    "prefer-const": {
-      "count": 1
-    }
-  },
-  "src/views/reorganize/TransferHistoryView.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 11
-    },
-    "vue/no-v-text-v-html-on-component": {
-      "count": 3
-    }
-  },
-  "src/views/setting/AccountSettingDirectory.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 10
-    },
-    "no-prototype-builtins": {
-      "count": 1
-    },
-    "sonarjs/super-linear-regex": {
-      "count": 1
     }
   },
   "src/views/setting/AccountSettingNotification.vue": {
@@ -830,11 +758,6 @@
   "src/views/setting/AccountSettingSystem.vue": {
     "@typescript-eslint/no-explicit-any": {
       "count": 4
-    }
-  },
-  "src/views/setup/MediaServerSettingsStep.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
     }
   },
   "src/views/setup/PreferencesSettingsStep.vue": {

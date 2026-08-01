@@ -23,7 +23,7 @@ describe('Lite setup wizard', () => {
   it('removes the agent step and agent configuration data', () => {
     const wizard = useSetupWizard()
 
-    expect(wizard.totalSteps).toBe(7)
+    expect(wizard.totalSteps).toBe(5)
     expect(wizard.stepTitles.value).not.toContain('setupWizard.agent.title')
     expect(wizard.wizardData.value).not.toHaveProperty('agent')
     expect(wizard).not.toHaveProperty('validateAgentFields')
