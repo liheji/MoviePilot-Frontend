@@ -360,6 +360,8 @@ export default {
   },
   menu: {
     start: 'Start',
+    management: 'Management',
+    settings: 'Settings',
     discovery: 'Discovery',
     subscribe: 'Subscribe',
     organize: 'Organize',
@@ -372,6 +374,7 @@ export default {
     site: 'Sites',
     search: 'Search',
     searchResult: 'Search Results',
+    torrentSearch: 'Torrent Search',
     download: 'Download',
     movieSubscribe: 'Movie Subscription',
     tvSubscribe: 'TV Subscription',
@@ -389,12 +392,16 @@ export default {
     workflow: 'Workflow',
     calendar: 'Calendar',
     downloadManager: 'Download Manager',
+    downloadTasks: 'Download Tasks',
     mediaOrganize: 'Media Organize',
     fileManager: 'File Manager',
     pluginManager: 'Plugins',
     siteManager: 'Site Management',
     userManager: 'User Management',
     settings: 'Settings',
+    plugins: 'Plugins',
+    sites: 'Sites',
+    users: 'Users',
   },
   settingTabs: {
     system: {

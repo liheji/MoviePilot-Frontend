@@ -352,6 +352,8 @@ export default {
   },
   menu: {
     start: '开始',
+    management: '管理',
+    settings: '设置',
     discovery: '发现',
     subscribe: '订阅',
     organize: '整理',
@@ -364,6 +366,7 @@ export default {
     site: '站点',
     search: '搜索',
     searchResult: '搜索结果',
+    torrentSearch: '种子搜索',
     download: '下载',
     movieSubscribe: '电影订阅',
     tvSubscribe: '电视剧订阅',
@@ -381,12 +384,16 @@ export default {
     workflow: '工作流',
     calendar: '日历',
     downloadManager: '下载管理',
+    downloadTasks: '下载任务',
     mediaOrganize: '媒体整理',
     fileManager: '文件管理',
     pluginManager: '插件',
     siteManager: '站点管理',
     userManager: '用户管理',
     settings: '设定',
+    plugins: '插件',
+    sites: '站点',
+    users: '用户',
   },
   settingTabs: {
     system: {

@@ -57,11 +57,11 @@ const canAdmin = computed(() => hasPermission(userPermissions.value, 'admin'))
 // 开始菜单项
 const startMenus = ref<NavMenu[]>([])
 
-// 整理菜单项
-const organizeMenus = ref<NavMenu[]>([])
+// 管理菜单项
+const managementMenus = ref<NavMenu[]>([])
 
-// 系统菜单项
-const systemMenus = ref<NavMenu[]>([])
+// 设置菜单项
+const settingsMenus = ref<NavMenu[]>([])
 
 // 主题定制器的水平布局只在桌面 UI 中启用，App 模式始终保留移动端导航。
 const showHorizontalThemeNav = computed(() => {
@@ -71,8 +71,8 @@ const showHorizontalThemeNav = computed(() => {
 const horizontalNavGroups = computed(() =>
   [
     { title: t('menu.start'), icon: 'mdi-home-outline', items: startMenus.value },
-    { title: t('menu.organize'), icon: 'mdi-folder-play-outline', items: organizeMenus.value },
-    { title: t('menu.system'), icon: 'mdi-cog-outline', items: systemMenus.value },
+    { title: t('menu.management'), icon: 'mdi-briefcase-outline', items: managementMenus.value },
+    { title: t('menu.settings'), icon: 'mdi-cog-outline', items: settingsMenus.value },
   ].filter(group => group.items.length > 0),
 )
 
@@ -427,12 +427,11 @@ function appendPluginSidebarMenus() {
       case 'start':
         startMenus.value.push(navMenu)
         break
-      case 'organize':
-        organizeMenus.value.push(navMenu)
+      case 'settings':
+        settingsMenus.value.push(navMenu)
         break
-      case 'system':
       default:
-        systemMenus.value.push(navMenu)
+        managementMenus.value.push(navMenu)
         break
     }
   }
@@ -445,8 +444,8 @@ onMounted(async () => {
 
   // 获取菜单列表
   startMenus.value = getMenuList(t('menu.start'))
-  organizeMenus.value = getMenuList(t('menu.organize'))
-  systemMenus.value = getMenuList(t('menu.system'))
+  managementMenus.value = getMenuList(t('menu.management'))
+  settingsMenus.value = getMenuList(t('menu.settings'))
 
   await pluginSidebarNavStore.ensureSidebarNav()
   appendPluginSidebarMenus()
@@ -617,22 +616,22 @@ onMounted(async () => {
 
     <template #vertical-nav-content>
       <VerticalNavLink v-for="item in startMenus" :item="item" />
-      <!-- 👉 整理 -->
+      <!-- 👉 管理 -->
       <VerticalNavSectionTitle
-        v-if="organizeMenus.length > 0"
+        v-if="managementMenus.length > 0"
         :item="{
-          heading: t('menu.organize'),
+          heading: t('menu.management'),
         }"
       />
-      <VerticalNavLink v-for="item in organizeMenus" :item="item" />
-      <!-- 👉 系统 -->
+      <VerticalNavLink v-for="item in managementMenus" :item="item" />
+      <!-- 👉 设置 -->
       <VerticalNavSectionTitle
-        v-if="systemMenus.length > 0"
+        v-if="settingsMenus.length > 0"
         :item="{
-          heading: t('menu.system'),
+          heading: t('menu.settings'),
         }"
       />
-      <VerticalNavLink v-for="item in systemMenus" :item="item" />
+      <VerticalNavLink v-for="item in settingsMenus" :item="item" />
     </template>
 
     <template #after-vertical-nav-items />

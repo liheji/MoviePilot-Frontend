@@ -193,31 +193,28 @@ describe('SiteCard interactions', () => {
     if (_case === 'HTTP failure') expect(mocks.toastError).toHaveBeenCalledOnce()
   })
 
-  it('opens each shared dialog with exact props, close events, and refresh ownership', async () => {
+  it('only opens retained site dialogs and keeps card clicks inert', async () => {
     const { container, emitted, site } = await renderCard()
 
     await fireEvent.click(container.querySelector('.site-card') as Element)
-    expect(getDialogCall().props).toEqual({ site })
-    expect(getDialogCall().options).toEqual({ closeOn: ['close'] })
-    getDialogCall().events.close()
-    expect(emitted('refresh-stats')).toEqual([[site.domain]])
+    expect(mocks.openSharedDialog).not.toHaveBeenCalled()
 
     await fireEvent.click(getActionButton(container, 1))
-    expect(getDialogCall(1).props).toEqual({ site })
-    expect(getDialogCall(1).options).toEqual({ closeOn: ['close'] })
+    expect(getDialogCall().props).toEqual({ site })
+    expect(getDialogCall().options).toEqual({ closeOn: ['close'] })
 
     await fireEvent.click(getActionButton(container, 2))
-    expect(getDialogCall(2).props).toEqual({ site })
-    expect(getDialogCall(2).options).toEqual({ closeOn: ['close', 'done'] })
-    getDialogCall(2).events.done()
-    expect(emitted('refresh-stats')).toEqual([[site.domain], [site.domain]])
+    expect(getDialogCall(1).props).toEqual({ site })
+    expect(getDialogCall(1).options).toEqual({ closeOn: ['close', 'done'] })
+    getDialogCall(1).events.done()
+    expect(emitted('refresh-stats')).toEqual([[site.domain]])
 
     await fireEvent.click(getActionButton(container, 3))
     await fireEvent.click(await screen.findByText('编辑站点'))
-    expect(getDialogCall(3).props).toEqual({ siteid: site.id })
-    expect(getDialogCall(3).options).toEqual({ closeOn: ['close', 'save', 'remove'] })
-    getDialogCall(3).events.save()
-    getDialogCall(3).events.remove()
+    expect(getDialogCall(2).props).toEqual({ siteid: site.id })
+    expect(getDialogCall(2).options).toEqual({ closeOn: ['close', 'save', 'remove'] })
+    getDialogCall(2).events.save()
+    getDialogCall(2).events.remove()
     expect(emitted('update')).toHaveLength(1)
     expect(emitted('remove')).toHaveLength(1)
   })

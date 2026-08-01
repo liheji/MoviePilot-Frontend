@@ -14,7 +14,6 @@ import { openSharedDialog } from '@/composables/useSharedDialog'
 
 const SiteAddEditDialog = defineAsyncComponent(() => import('../dialog/SiteAddEditDialog.vue'))
 const SiteCookieUpdateDialog = defineAsyncComponent(() => import('../dialog/SiteCookieUpdateDialog.vue'))
-const SiteResourceDialog = defineAsyncComponent(() => import('../dialog/SiteResourceDialog.vue'))
 const SiteUserDataDialog = defineAsyncComponent(() => import('../dialog/SiteUserDataDialog.vue'))
 
 // 显示器宽度
@@ -105,18 +104,6 @@ async function handleSiteUpdate() {
   )
 }
 
-// 打开资源浏览弹窗
-async function handleResourceBrowse() {
-  openSharedDialog(
-    SiteResourceDialog,
-    { site: cardProps.site },
-    {
-      close: onSiteResourceDone,
-    },
-    { closeOn: ['close'] },
-  )
-}
-
 // 打开站点用户数据弹窗
 async function handleSiteUserData() {
   openSharedDialog(SiteUserDataDialog, { site: cardProps.site }, {}, { closeOn: ['close'] })
@@ -138,14 +125,6 @@ function handleSiteEdit() {
 // 打开站点页面
 function openSitePage() {
   window.open(cardProps.site?.url, '_blank')
-}
-
-function handleCardClick() {
-  if (cardProps.sortable) {
-    return
-  }
-
-  handleResourceBrowse()
 }
 
 function handleSiteUrlClick() {
@@ -225,12 +204,6 @@ function onSiteCookieUpdated() {
   emit('refresh-stats', cardProps.site?.domain)
 }
 
-// 资源浏览弹窗关闭后的回调
-function onSiteResourceDone() {
-  // 资源操作完成后刷新统计数据
-  emit('refresh-stats', cardProps.site?.domain)
-}
-
 // 装载时查询站点图标
 onMounted(() => {
   getSiteIcon()
@@ -249,7 +222,6 @@ onMounted(() => {
             'border-error': statColor === 'error',
             'border-warning': statColor === 'warning',
             'border-success': statColor === 'success',
-            'cursor-pointer site-card--hoverable': !cardProps.sortable,
             'cursor-move': cardProps.sortable,
             'site-card--sortable': cardProps.sortable,
           },
@@ -257,8 +229,7 @@ onMounted(() => {
         :ripple="false"
         variant="flat"
         elevation="0"
-        :hover="!cardProps.sortable"
-        @click="handleCardClick"
+        :hover="false"
       >
         <!-- 装饰性状态指示器 -->
         <div v-if="cardProps.site?.is_active" class="site-status-indicator" :class="statColor"></div>
