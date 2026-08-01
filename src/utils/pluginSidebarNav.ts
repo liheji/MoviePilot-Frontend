@@ -17,7 +17,7 @@ export function navMenuFromPluginSidebarItem(
   item: PluginSidebarNavItem,
   t: Composer['t'],
 ): NavMenu & { permission?: string } {
-  const section = item.section || 'system'
+  const section = item.section || 'settings'
   const header = pluginSidebarSectionToHeaderKey(section, t)
   return {
     title: item.title,
@@ -47,7 +47,7 @@ export function filterPluginSidebarNavEntries(
   const out: PluginNavMenuEntry[] = []
   for (const item of items) {
     if (!isPluginRemoteAvailable(item)) continue
-    const section = item.section || 'system'
+  const section = item.section || 'settings'
     const navMenu = navMenuFromPluginSidebarItem(item, t)
     if (!filterMenusByPermission([navMenu], userPermissions).length) {
       continue

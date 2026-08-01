@@ -48,7 +48,7 @@ describe('auth store', () => {
           nav_key: 'main',
           order: 1,
           plugin_id: 'demo',
-          section: 'system',
+          section: 'settings',
           title: 'Demo',
         },
       ],

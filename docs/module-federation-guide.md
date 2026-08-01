@@ -399,8 +399,8 @@ function saveComplete() {
 | `nav_key`    | URL 路径段，唯一标识本入口（同一插件可多入口）                                        |
 | `title`      | 侧栏显示标题                                                                          |
 | `icon`       | MDI 图标名，如 `mdi-rss`                                                              |
-| `section`    | 分组：`start` / `discovery` / `subscribe` / `organize` / `system`                     |
-| `permission` | 可选：`subscribe` / `discovery` / `search` / `manage` / `admin`，与主应用菜单权限一致 |
+| `section`    | 分组：`start` / `manage` / `settings` |
+| `permission` | 可选：`search` / `manage` / `admin`，与主应用菜单权限一致 |
 | `order`      | 可选：同组内排序，数值越小越靠前                                                      |
 
 ```python
@@ -410,8 +410,8 @@ def get_sidebar_nav(self) -> List[Dict[str, Any]]:
             "nav_key": "main",
             "title": "示例订阅页",
             "icon": "mdi-rss",
-            "section": "subscribe",
-            "permission": "subscribe",
+            "section": "manage",
+            "permission": "manage",
             "order": 10,
         }
     ]

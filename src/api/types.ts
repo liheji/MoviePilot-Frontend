@@ -599,7 +599,7 @@ export interface PluginSidebarNavItem {
   nav_key: string
   title: string
   icon: string
-  section: 'start' | 'organize' | 'system'
+  section: 'start' | 'manage' | 'settings'
   permission?: 'search' | 'manage' | 'admin' | null
   order: number
   runtime_status?: Plugin['runtime_status']
