@@ -1,15 +1,9 @@
-import { useGlobalSettingsStore } from '@/stores'
 import type { NavMenu, NavMenuTabItem } from '@/@layouts/types'
 import type { Composer } from 'vue-i18n'
 import { PERMISSION_FEATURE } from '@/utils/permission'
 
 /** 构建当前语言与全局模式对应的主导航菜单。 */
 export function getNavMenus(t: Composer['t']): NavMenu[] {
-  const globalSettingsStore = useGlobalSettingsStore()
-
-  // 检查是否为高级模式
-  const isAdvancedMode = globalSettingsStore.get('ADVANCED_MODE') !== false
-
   return [
     {
       title: t('navItems.dashboard'),
@@ -30,30 +24,6 @@ export function getNavMenus(t: Composer['t']): NavMenu[] {
       admin: false,
       permission: 'search',
       feature: PERMISSION_FEATURE.SEARCH_RESOURCE,
-    },
-    {
-      title: t('navItems.recommend'),
-      icon: 'mdi-star-outline',
-      iconColor: 'primary',
-      to: '/recommend',
-      header: t('menu.discovery'),
-      admin: false,
-      footer: true,
-      permission: 'discovery',
-      feature: PERMISSION_FEATURE.DISCOVERY_RECOMMEND,
-      tabs: getRecommendTabs(t),
-    },
-    {
-      title: t('navItems.explore'),
-      icon: 'mdi-apple-safari',
-      iconColor: 'info',
-      to: '/discover',
-      header: t('menu.discovery'),
-      admin: false,
-      footer: true,
-      permission: 'discovery',
-      feature: PERMISSION_FEATURE.DISCOVERY_EXPLORE,
-      tabs: getDiscoverTabs(t),
     },
     {
       title: t('navItems.downloadManager'),
@@ -94,31 +64,16 @@ export function getNavMenus(t: Composer['t']): NavMenu[] {
       admin: true,
       permission: 'admin',
     },
-    ...(isAdvancedMode
-      ? [
-          {
-            title: t('navItems.settings'),
-            icon: 'mdi-cog-outline',
-            iconColor: 'secondary',
-            to: '/setting',
-            header: t('menu.system'),
-            admin: true,
-            permission: 'admin',
-            tabs: getSettingTabs(t),
-          } as NavMenu,
-        ]
-      : []),
-  ]
-}
-
-/** 返回推荐页可用的分类标签。 */
-export function getRecommendTabs(t: Composer['t']): NavMenuTabItem[] {
-  return [
-    { title: t('recommend.all'), icon: 'mdi-filmstrip-box-multiple', tab: t('recommend.all') },
-    { title: t('recommend.categoryMovie'), icon: 'mdi-movie', tab: t('recommend.categoryMovie') },
-    { title: t('recommend.categoryTV'), icon: 'mdi-television-classic', tab: t('recommend.categoryTV') },
-    { title: t('recommend.categoryAnime'), icon: 'mdi-animation', tab: t('recommend.categoryAnime') },
-    { title: t('recommend.categoryRankings'), icon: 'mdi-trophy', tab: t('recommend.categoryRankings') },
+    {
+      title: t('navItems.settings'),
+      icon: 'mdi-cog-outline',
+      iconColor: 'secondary',
+      to: '/setting',
+      header: t('menu.system'),
+      admin: true,
+      permission: 'admin',
+      tabs: getSettingTabs(t),
+    },
   ]
 }
 
@@ -174,34 +129,9 @@ export function getPluginTabs(t: Composer['t']): NavMenuTabItem[] {
   ]
 }
 
-/** 返回发现页的媒体来源标签。 */
-export function getDiscoverTabs(t: Composer['t']): NavMenuTabItem[] {
-  return [
-    {
-      title: t('discoverTabs.themoviedb'),
-      tab: 'themoviedb',
-      icon: 'mdi-movie-search-outline',
-    },
-    {
-      title: t('discoverTabs.douban'),
-      tab: 'douban',
-      icon: 'mdi-book-open-page-variant-outline',
-    },
-    {
-      title: t('discoverTabs.bangumi'),
-      tab: 'bangumi',
-      icon: 'mdi-calendar-star-outline',
-    },
-    {
-      title: t('discoverTabs.anilist'),
-      tab: 'anilist',
-      icon: 'mdi-alpha-a-circle-outline',
-    },
-  ]
-}
 
 /** 插件侧栏分组（与后端 get_sidebar_nav 的 section 一致） */
-export type PluginSidebarSection = 'start' | 'discovery' | 'organize' | 'system'
+export type PluginSidebarSection = 'start' | 'organize' | 'system'
 
 /**
  * 将插件声明的 section 映射为与 getNavMenus 一致的已翻译 header（用于 NavMenu.header）
@@ -209,7 +139,6 @@ export type PluginSidebarSection = 'start' | 'discovery' | 'organize' | 'system'
 export function pluginSidebarSectionToHeaderKey(section: string, t: Composer['t']): string {
   const map: Record<string, string> = {
     start: 'menu.start',
-    discovery: 'menu.discovery',
     organize: 'menu.organize',
     system: 'menu.system',
   }

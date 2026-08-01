@@ -84,7 +84,6 @@ const userForm = ref<ExtendedUser>({
   avatar: avatar1,
   is_otp: false,
   permissions: {
-    discovery: true,
     search: true,
     manage: false,
     features: buildDefaultFeaturePermissions(),
@@ -104,12 +103,6 @@ const userForm = ref<ExtendedUser>({
 // 权限选项
 const permissionOptions = [
   {
-    key: 'discovery',
-    title: t('dialog.userAddEdit.permissions.discovery'),
-    description: t('dialog.userAddEdit.permissions.discoveryDesc'),
-    icon: 'mdi-star-outline',
-  },
-  {
     key: 'search',
     title: t('dialog.userAddEdit.permissions.search'),
     description: t('dialog.userAddEdit.permissions.searchDesc'),
@@ -123,7 +116,7 @@ const permissionOptions = [
   },
 ] as const
 
-const activePermissionCategory = ref<UserPermissionCategoryKey>('discovery')
+const activePermissionCategory = ref<UserPermissionCategoryKey>('search')
 
 // 权限状态计算属性
 const userPermissions = computed({

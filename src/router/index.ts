@@ -46,26 +46,6 @@ const router = createRouter({
           },
         },
         {
-          path: '/recommend',
-          component: () => import('../pages/recommend.vue'),
-          meta: {
-            keepAlive: true,
-            requiresAuth: true,
-            permission: 'discovery',
-            feature: PERMISSION_FEATURE.DISCOVERY_RECOMMEND,
-          },
-        },
-        {
-          path: '/discover',
-          component: () => import('../pages/discover.vue'),
-          meta: {
-            keepAlive: true,
-            requiresAuth: true,
-            permission: 'discovery',
-            feature: PERMISSION_FEATURE.DISCOVERY_EXPLORE,
-          },
-        },
-        {
           path: '/resource',
           component: () => import('../pages/resource.vue'),
           meta: {
@@ -136,43 +116,6 @@ const router = createRouter({
             keepAlive: true,
             requiresAuth: true,
             permission: 'admin',
-          },
-        },
-        {
-          path: '/browse/:paths+',
-          component: () => import('../pages/browse.vue'),
-          props: true,
-          meta: {
-            keepAlive: true,
-            keepAliveByFullPath: true,
-            requiresAuth: true,
-            permission: 'discovery',
-            feature: PERMISSION_FEATURE.DISCOVERY_EXPLORE,
-          },
-        },
-        {
-          path: '/credits/:paths+',
-          component: () => import('../pages/credits.vue'),
-          props: true,
-          meta: {
-            requiresAuth: true,
-          },
-        },
-        {
-          path: '/person',
-          component: () => import('../pages/person.vue'),
-          props: true,
-          meta: {
-            requiresAuth: true,
-          },
-        },
-        {
-          path: '/media',
-          component: () => import('../pages/media.vue'),
-          meta: {
-            requiresAuth: true,
-            permission: 'discovery',
-            feature: PERMISSION_FEATURE.DISCOVERY_EXPLORE,
           },
         },
         {

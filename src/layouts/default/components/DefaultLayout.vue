@@ -4,7 +4,6 @@ import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 import Footer from './Footer.vue'
 import UserNofification from './UserNotification.vue'
-import SearchBar from './SearchBar.vue'
 import ShortcutBar from './ShortcutBar.vue'
 import UserProfile from './UserProfile.vue'
 import QuickAccess from './QuickAccess.vue'
@@ -58,9 +57,6 @@ const canAdmin = computed(() => hasPermission(userPermissions.value, 'admin'))
 // 开始菜单项
 const startMenus = ref<NavMenu[]>([])
 
-// 发现菜单项
-const discoveryMenus = ref<NavMenu[]>([])
-
 // 整理菜单项
 const organizeMenus = ref<NavMenu[]>([])
 
@@ -75,7 +71,6 @@ const showHorizontalThemeNav = computed(() => {
 const horizontalNavGroups = computed(() =>
   [
     { title: t('menu.start'), icon: 'mdi-home-outline', items: startMenus.value },
-    { title: t('menu.discovery'), icon: 'mdi-compass-outline', items: discoveryMenus.value },
     { title: t('menu.organize'), icon: 'mdi-folder-play-outline', items: organizeMenus.value },
     { title: t('menu.system'), icon: 'mdi-cog-outline', items: systemMenus.value },
   ].filter(group => group.items.length > 0),
@@ -432,9 +427,6 @@ function appendPluginSidebarMenus() {
       case 'start':
         startMenus.value.push(navMenu)
         break
-      case 'discovery':
-        discoveryMenus.value.push(navMenu)
-        break
       case 'organize':
         organizeMenus.value.push(navMenu)
         break
@@ -453,7 +445,6 @@ onMounted(async () => {
 
   // 获取菜单列表
   startMenus.value = getMenuList(t('menu.start'))
-  discoveryMenus.value = getMenuList(t('menu.discovery'))
   organizeMenus.value = getMenuList(t('menu.organize'))
   systemMenus.value = getMenuList(t('menu.system'))
 
@@ -510,16 +501,12 @@ onMounted(async () => {
         <IconBtn v-if="appMode" class="ms-n2" @click="goBack">
           <VIcon icon="mdi-arrow-left" size="32" />
         </IconBtn>
-        <!-- 👉 Search Bar -->
-        <SearchBar v-if="!showHorizontalThemeNav" />
         <!-- 👉 Spacer -->
         <VSpacer />
         <div
           class="theme-navbar-actions d-flex align-center"
           :class="{ 'theme-navbar-actions--horizontal': showHorizontalThemeNav }"
         >
-          <!-- 👉 Horizontal Search Bar -->
-          <SearchBar v-if="showHorizontalThemeNav" />
           <!-- 👉 Shortcuts -->
           <ShortcutBar v-if="canAdmin" />
           <!-- 👉 Notification -->
@@ -630,14 +617,6 @@ onMounted(async () => {
 
     <template #vertical-nav-content>
       <VerticalNavLink v-for="item in startMenus" :item="item" />
-      <!-- 👉 发现 -->
-      <VerticalNavSectionTitle
-        v-if="discoveryMenus.length > 0"
-        :item="{
-          heading: t('menu.discovery'),
-        }"
-      />
-      <VerticalNavLink v-for="item in discoveryMenus" :item="item" />
       <!-- 👉 整理 -->
       <VerticalNavSectionTitle
         v-if="organizeMenus.length > 0"
