@@ -1,5 +1,5 @@
 // 权限类型定义
-export type UserPermissionCategoryKey = 'discovery' | 'search' | 'manage'
+export type UserPermissionCategoryKey = 'search' | 'manage'
 export type UserPermissionKey = UserPermissionCategoryKey | 'admin'
 export type UserPermissionFeatureKey = string
 export type UserPermissionFeatureMap = Record<UserPermissionFeatureKey, boolean>
@@ -14,7 +14,6 @@ export interface UserPermissionFeatureOption {
 }
 
 export interface UserPermissions {
-  discovery: boolean // 发现权限
   search: boolean // 搜索权限
   manage: boolean // 管理权限
   admin?: boolean // 管理员权限，仅用于前端入口标识，实际由 is_superuser 决定
@@ -25,33 +24,12 @@ export type UserPermissionContext = UserPermissions & { is_superuser?: boolean; 
 export type PermissionProtectedItem = { permission?: UserPermissionKey; feature?: UserPermissionFeatureKey }
 
 export const PERMISSION_FEATURE = {
-  DISCOVERY_RECOMMEND: 'discovery.recommend',
-  DISCOVERY_EXPLORE: 'discovery.explore',
   SEARCH_RESOURCE: 'search.resource',
-  MANAGE_WORKFLOW: 'manage.workflow',
   MANAGE_DOWNLOADING: 'manage.downloading',
-  MANAGE_HISTORY: 'manage.history',
-  MANAGE_FILEMANAGER: 'manage.filemanager',
   MANAGE_SITE: 'manage.site',
 } as const
 
 export const USER_PERMISSION_FEATURES: UserPermissionFeatureOption[] = [
-  {
-    key: PERMISSION_FEATURE.DISCOVERY_RECOMMEND,
-    permission: 'discovery',
-    titleKey: 'dialog.userAddEdit.permissions.features.recommend',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.recommend',
-    icon: 'mdi-star-outline',
-    path: '/recommend',
-  },
-  {
-    key: PERMISSION_FEATURE.DISCOVERY_EXPLORE,
-    permission: 'discovery',
-    titleKey: 'dialog.userAddEdit.permissions.features.explore',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.explore',
-    icon: 'mdi-apple-safari',
-    path: '/discover',
-  },
   {
     key: PERMISSION_FEATURE.SEARCH_RESOURCE,
     permission: 'search',
@@ -61,36 +39,12 @@ export const USER_PERMISSION_FEATURES: UserPermissionFeatureOption[] = [
     path: '/resource',
   },
   {
-    key: PERMISSION_FEATURE.MANAGE_WORKFLOW,
-    permission: 'manage',
-    titleKey: 'dialog.userAddEdit.permissions.features.workflow',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.workflow',
-    icon: 'mdi-state-machine',
-    path: '/workflow',
-  },
-  {
     key: PERMISSION_FEATURE.MANAGE_DOWNLOADING,
     permission: 'manage',
     titleKey: 'dialog.userAddEdit.permissions.features.downloading',
     descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.downloading',
     icon: 'mdi-download-outline',
     path: '/downloading',
-  },
-  {
-    key: PERMISSION_FEATURE.MANAGE_HISTORY,
-    permission: 'manage',
-    titleKey: 'dialog.userAddEdit.permissions.features.history',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.history',
-    icon: 'mdi-folder-play-outline',
-    path: '/history',
-  },
-  {
-    key: PERMISSION_FEATURE.MANAGE_FILEMANAGER,
-    permission: 'manage',
-    titleKey: 'dialog.userAddEdit.permissions.features.fileManager',
-    descriptionKey: 'dialog.userAddEdit.permissions.featureDescriptions.fileManager',
-    icon: 'mdi-folder-multiple-outline',
-    path: '/filemanager',
   },
   {
     key: PERMISSION_FEATURE.MANAGE_SITE,
@@ -126,7 +80,6 @@ export function normalizeUserPermissions(permissions: Partial<UserPermissions> |
   ) as UserPermissionFeatureMap
 
   return {
-    discovery: permissionData.discovery ?? DEFAULT_PERMISSIONS.discovery,
     search: permissionData.search ?? DEFAULT_PERMISSIONS.search,
     manage: permissionData.manage ?? DEFAULT_PERMISSIONS.manage,
     admin: permissionData.admin ?? DEFAULT_PERMISSIONS.admin,
@@ -144,7 +97,6 @@ export function buildUserPermissionContext(isSuperuser: boolean, permissions: Pa
 
 // 默认权限配置
 export const DEFAULT_PERMISSIONS: UserPermissions = {
-  discovery: true,
   search: true,
   manage: false,
   admin: false,
@@ -153,7 +105,6 @@ export const DEFAULT_PERMISSIONS: UserPermissions = {
 
 // 管理员权限配置
 export const ADMIN_PERMISSIONS: UserPermissions = {
-  discovery: true,
   search: true,
   manage: true,
   admin: true,

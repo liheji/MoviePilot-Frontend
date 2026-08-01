@@ -101,22 +101,6 @@
       "count": 1
     }
   },
-  "src/components/cards/MediaCard.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 3
-    },
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    },
-    "no-useless-assignment": {
-      "count": 1
-    }
-  },
-  "src/components/cards/PersonCard.vue": {
-    "no-useless-assignment": {
-      "count": 1
-    }
-  },
   "src/components/cards/PluginAppCard.vue": {
     "@typescript-eslint/no-explicit-any": {
       "count": 2
@@ -197,11 +181,6 @@
       "count": 1
     },
     "prefer-const": {
-      "count": 1
-    }
-  },
-  "src/components/dialog/MediaInfoDialog.vue": {
-    "@typescript-eslint/no-unused-vars": {
       "count": 1
     }
   },
@@ -343,11 +322,6 @@
       "count": 3
     }
   },
-  "src/components/misc/MediaIdSelector.vue": {
-    "vue/no-v-text-v-html-on-component": {
-      "count": 1
-    }
-  },
   "src/components/misc/OpticalLogoLab.vue": {
     "no-useless-assignment": {
       "count": 1
@@ -473,7 +447,7 @@
       "count": 2
     },
     "vue/valid-v-for": {
-      "count": 4
+      "count": 3
     }
   },
   "src/layouts/default/components/Footer.vue": {
@@ -509,16 +483,6 @@
     },
     "sonarjs/no-ignored-exceptions": {
       "count": 2
-    }
-  },
-  "src/pages/credits.vue": {
-    "prefer-const": {
-      "count": 1
-    }
-  },
-  "src/pages/dashboard.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
     }
   },
   "src/pages/login.vue": {
@@ -661,36 +625,6 @@
     }
   },
   "src/utils/themeLogo.ts": {
-    "no-useless-assignment": {
-      "count": 1
-    }
-  },
-  "src/views/dashboard/AnalyticsCpu.vue": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/views/dashboard/AnalyticsMemory.vue": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/views/dashboard/AnalyticsSpeed.vue": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/views/discover/MediaCardSlideView.vue": {
-    "@typescript-eslint/no-unused-vars": {
-      "count": 1
-    }
-  },
-  "src/views/discover/PersonCardListView.vue": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 2
-    }
-  },
-  "src/views/discover/PersonDetailView.vue": {
     "no-useless-assignment": {
       "count": 1
     }

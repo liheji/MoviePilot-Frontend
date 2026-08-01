@@ -1,8 +1,5 @@
 import { getNavMenus } from '@/router/i18n-menu'
-import mediaCardSource from '@/components/cards/MediaCard.vue?raw'
-import searchBarSource from '@/components/dialog/SearchBarDialog.vue?raw'
 import userCardSource from '@/components/cards/UserCard.vue?raw'
-import mediaDetailSource from '@/views/discover/MediaDetailView.vue?raw'
 import routerSource from '@/router/index.ts?raw'
 import setupSource from '@/pages/setup.vue?raw'
 import dashboardSource from '@/pages/dashboard.vue?raw'
@@ -34,15 +31,11 @@ describe('Lite route surface', () => {
     expect(paths).toContain('/plugins')
   })
 
-  it('removes subscription requests, redirects, and compatibility composables from retained media surfaces', () => {
-    const sources = [userCardSource, mediaCardSource, mediaDetailSource, searchBarSource]
-
-    for (const source of sources) {
-      expect(source).not.toContain('subscribe/')
-      expect(source).not.toMatch(/path:\s*['"]\/subscribe/)
+  it('removes media discovery routes and retained user surfaces do not request subscriptions', () => {
+    for (const path of ['/recommend', '/discover', '/browse', '/media', '/person', '/credits']) {
+      expect(routerSource).not.toContain(`path: '${path}`)
     }
-    expect(mediaCardSource).not.toContain('useMediaSubscribe')
-    expect(mediaDetailSource).not.toContain('useMediaSubscribe')
+    expect(userCardSource).not.toContain('subscribe/')
   })
 
   it('keeps downloading while removing organize, storage, and media server surfaces', () => {
