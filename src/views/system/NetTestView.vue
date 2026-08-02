@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import api from '@/api'
 import { getLogoUrl } from '@/utils/imageUtils'
-import tvdb from '@images/logos/thetvdb.jpeg'
 import { useI18n } from 'vue-i18n'
 
 // 国际化
@@ -31,7 +30,6 @@ interface Address {
 }
 
 function resolveTargetImage(icon: string) {
-  if (icon === 'tvdb') return tvdb
   return getLogoUrl(icon)
 }
 

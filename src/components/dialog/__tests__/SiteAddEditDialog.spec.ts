@@ -60,7 +60,7 @@ describe('SiteAddEditDialog', () => {
     const { events } = await renderDialog('add')
 
     await user.type(screen.getByLabelText('站点地址'), 'https://new.example.com/')
-    await fireEvent.update(screen.getByLabelText('RSS地址'), 'https://new.example.com/rss')
+    expect(screen.queryByLabelText('RSS地址')).not.toBeInTheDocument()
     await fireEvent.update(screen.getByLabelText('超时时间（秒）'), '30')
     await fireEvent.update(screen.getByLabelText('站点Cookie'), 'session=test')
     await fireEvent.update(screen.getByLabelText('站点User-Agent'), 'Goal5C-UA')
@@ -74,7 +74,6 @@ describe('SiteAddEditDialog', () => {
     await fireEvent.update(screen.getByLabelText('周期内访问次数'), '5')
     await fireEvent.update(screen.getByLabelText('访问间隔（秒）'), '2')
     await user.click(screen.getByLabelText('使用代理访问'))
-    await user.click(screen.getByLabelText('浏览器仿真'))
     await user.click(screen.getByRole('button', { name: '新增站点' }))
 
     await waitFor(() => expect(saved).toHaveBeenCalledOnce())
@@ -86,8 +85,6 @@ describe('SiteAddEditDialog', () => {
       limit_interval: '60',
       limit_seconds: '2',
       proxy: true,
-      render: true,
-      rss: 'https://new.example.com/rss',
       timeout: '30',
       token: 'Bearer goal5c',
       ua: 'Goal5C-UA',
@@ -145,7 +142,6 @@ describe('SiteAddEditDialog', () => {
       limit_interval: 60,
       limit_seconds: 2,
       proxy: 1,
-      render: 0,
       token: 'token',
     })
     server.use(siteDetailsHandler(site.id, site), siteDownloadersHandler([createSiteDownloader({ name: '下载器 A' })]))
@@ -153,7 +149,6 @@ describe('SiteAddEditDialog', () => {
 
     expect(await screen.findByText(site.name)).toBeInTheDocument()
     expect(screen.getByLabelText('使用代理访问')).toBeChecked()
-    expect(screen.getByLabelText('浏览器仿真')).not.toBeChecked()
     expect(screen.getByLabelText('限制站点访问频率')).toBeChecked()
     expect(screen.getByDisplayValue('api-key')).toBeInTheDocument()
   })

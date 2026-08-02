@@ -9,17 +9,10 @@ import {
 } from '@/utils/permission'
 import { useI18n } from 'vue-i18n'
 
-const NameTestView = defineAsyncComponent(() => import('@/views/system/NameTestView.vue'))
 const NetTestView = defineAsyncComponent(() => import('@/views/system/NetTestView.vue'))
-const RuleTestView = defineAsyncComponent(() => import('@/views/system/RuleTestView.vue'))
 const ModuleTestView = defineAsyncComponent(() => import('@/views/system/ModuleTestView.vue'))
-const WordsView = defineAsyncComponent(() => import('@/views/system/WordsView.vue'))
-const AccountSettingService = defineAsyncComponent(() => import('@/views/system/ServiceView.vue'))
 const ShortcutLogDialog = defineAsyncComponent(() => import('@/components/dialog/ShortcutLogDialog.vue'))
 const ShortcutToolDialog = defineAsyncComponent(() => import('@/components/dialog/ShortcutToolDialog.vue'))
-
-// 定时服务在捷径与仪表板中共用的图标，避免两个入口的视觉语义漂移。
-export const SCHEDULER_SHORTCUT_ICON = 'mdi-list-box'
 
 export type ShortcutToolItem = PermissionProtectedItem & {
   bodyClass?: string
@@ -43,24 +36,6 @@ export function useShortcutTools() {
 
   const shortcuts: ShortcutToolItem[] = [
     {
-      title: t('shortcut.recognition.title'),
-      subtitle: t('shortcut.recognition.subtitle'),
-      icon: 'mdi-text-recognition',
-      dialog: 'nameTest',
-      component: NameTestView,
-      maxWidth: '65rem',
-      titleText: t('shortcut.recognition.title'),
-    },
-    {
-      title: t('shortcut.rule.title'),
-      subtitle: t('shortcut.rule.subtitle'),
-      icon: 'mdi-filter-cog',
-      dialog: 'ruleTest',
-      component: RuleTestView,
-      maxWidth: '65rem',
-      titleText: t('shortcut.rule.subtitle'),
-    },
-    {
       title: t('shortcut.log.title'),
       subtitle: t('shortcut.log.subtitle'),
       icon: 'mdi-file-document',
@@ -74,29 +49,6 @@ export function useShortcutTools() {
       dialog: 'netTest',
       component: NetTestView,
       titleText: t('shortcut.network.subtitle'),
-    },
-    {
-      title: t('shortcut.words.title'),
-      subtitle: t('shortcut.words.subtitle'),
-      icon: 'mdi-file-word-box',
-      dialog: 'words',
-      bodyClass: 'words-shortcut-dialog-body pa-0',
-      cardClass: 'words-shortcut-dialog-card',
-      component: WordsView,
-      maxWidth: '60rem',
-      titleText: t('shortcut.words.subtitle'),
-    },
-    {
-      title: t('shortcut.scheduler.title'),
-      subtitle: t('shortcut.scheduler.subtitle'),
-      icon: SCHEDULER_SHORTCUT_ICON,
-      dialog: 'scheduler',
-      bodyClass: 'scheduler-shortcut-dialog-body pa-0',
-      cardClass: 'scheduler-shortcut-dialog-card',
-      component: AccountSettingService,
-      maxWidth: '60rem',
-      titleText: t('shortcut.scheduler.subtitle'),
-      dialogSubtitle: t('setting.scheduler.subtitle'),
     },
     {
       title: t('shortcut.system.title'),

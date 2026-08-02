@@ -181,7 +181,6 @@ const shouldRenderFooterNav = computed(() => appMode.value && props.showNav)
 const shouldRevealFooterNav = computed(() => shouldRenderFooterNav.value && !isLaunchLoading.value)
 
 const legacyDynamicMenuTitleKeyMap: Record<string, string> = {
-  'components.transferQueue.title': 'dialog.transferQueue.title',
   'components.pluginMarketSetting.title': 'dialog.pluginMarketSetting.title',
 }
 
@@ -324,10 +323,9 @@ function handleDynamicMenuItemClick(item: DynamicButtonMenuItem) {
   pointer-events: none;
 }
 
-// 底部导航挂载在 body 上，而主题定制器与 Agent 面板受 .v-application 的层叠上下文限制，
-// 无法仅靠 z-index 压过它。移动端两者都是全屏面板，打开时直接隐藏底部导航。
-html[data-theme-customizer-open='true'],
-html[data-agent-assistant-open='true'] {
+// 底部导航挂载在 body 上，主题定制器受 .v-application 的层叠上下文限制。
+// 移动端主题定制器打开时直接隐藏底部导航。
+html[data-theme-customizer-open='true'] {
   .footer-nav-container {
     visibility: hidden;
     opacity: 0;

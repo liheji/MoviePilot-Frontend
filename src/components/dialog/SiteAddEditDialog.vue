@@ -26,7 +26,6 @@ const emit = defineEmits(['save', 'remove', 'close'])
 const siteForm = ref<Site>({
   id: props.siteid ?? 0,
   url: '',
-  rss: '',
   cookie: '',
   ua: '',
   pri: 0,
@@ -84,7 +83,6 @@ async function fetchSiteInfo() {
   try {
     siteForm.value = await api.get(`site/${props.siteid}`)
     siteForm.value.proxy = siteForm.value.proxy === 1
-    siteForm.value.render = siteForm.value.render === 1
   } catch (error) {
     console.error(error)
   }
@@ -194,15 +192,6 @@ onMounted(async () => {
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="12" md="6">
-              <VTextField
-                v-model="siteForm.rss"
-                :label="t('site.fields.rss')"
-                :hint="t('site.hints.rss')"
-                persistent-hint
-                prepend-inner-icon="mdi-rss"
-              />
-            </VCol>
             <VCol cols="6" md="3">
               <VTextField
                 v-model="siteForm.timeout"
@@ -326,14 +315,6 @@ onMounted(async () => {
                 v-model="siteForm.proxy"
                 :label="t('site.fields.useProxy')"
                 :hint="t('site.hints.useProxy')"
-                persistent-hint
-              />
-            </VCol>
-            <VCol cols="12" md="6">
-              <VSwitch
-                v-model="siteForm.render"
-                :label="t('site.fields.browserSimulation')"
-                :hint="t('site.hints.browserSimulation')"
                 persistent-hint
               />
             </VCol>

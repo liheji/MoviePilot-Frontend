@@ -9,12 +9,9 @@ const { wizardData, selectNotification, validationErrors } = useSetupWizard()
 // 消息类型下拉字典
 const notificationTypes = [
   { value: '资源下载', title: t('notificationSwitch.resourceDownload') },
-  { value: '整理入库', title: t('notificationSwitch.organize') },
   { value: '站点', title: t('notificationSwitch.site') },
-  { value: '媒体服务器', title: t('notificationSwitch.mediaServer') },
   { value: '手动处理', title: t('notificationSwitch.manual') },
   { value: '插件', title: t('notificationSwitch.plugin') },
-  { value: '智能体', title: t('notificationSwitch.agent') },
   { value: '其它', title: t('notificationSwitch.other') },
 ]
 </script>

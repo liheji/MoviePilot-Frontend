@@ -5,7 +5,6 @@ import api from '@/api'
 import type { Plugin } from '@/api/types'
 import { getLogoUrl } from '@/utils/imageUtils'
 import { getCardAccentRgbFromImage } from '@/composables/useCardAccentColor'
-import { formatDownloadCount } from '@/@core/utils/formatters'
 import { useDisplay } from 'vuetify'
 import { useI18n } from 'vue-i18n'
 import { openSharedDialog } from '@/composables/useSharedDialog'
@@ -22,7 +21,6 @@ const PluginVersionHistoryDialog = defineAsyncComponent(() => import('../dialog/
 // 输入参数
 const props = defineProps({
   plugin: Object as PropType<Plugin>,
-  count: Number, // 下载次数
   action: Boolean, // 动作标识
   width: String,
   height: String,
@@ -642,10 +640,6 @@ watch(
                   {{ props.plugin?.plugin_author }}
                 </a>
               </div>
-              <span v-if="props.count" class="ms-2 flex-shrink-0 download-count items-center align-middle">
-                <VIcon size="small" icon="mdi-download" />
-                <span class="text-sm">{{ formatDownloadCount(props.count) }}</span>
-              </span>
             </div>
             <div v-if="!props.sortable" class="absolute bottom-0 right-0">
               <IconBtn @click.stop>

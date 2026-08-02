@@ -170,9 +170,7 @@ export function useGlassOpticalInteractionSource(): GlassOpticalInteractionSourc
       }
     }
 
-    const fixedSurface = document.querySelectorAll<HTMLElement>(
-      '.agent-assistant-panel, .layout-navbar, .layout-vertical-nav',
-    )
+    const fixedSurface = document.querySelectorAll<HTMLElement>('.layout-navbar, .layout-vertical-nav')
     for (const surface of fixedSurface) {
       const rect = surface.getBoundingClientRect()
       if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) return 'fixed'
@@ -375,7 +373,6 @@ interface PreparedWallpaperTexture {
 }
 
 const SURFACE_SELECTORS = [
-  { rank: 1, selector: '.agent-assistant-panel', space: 'fixed' },
   { rank: 1, selector: '.login-card', space: 'fixed' },
   { rank: 2, selector: '.layout-vertical-nav', space: 'fixed' },
   { rank: 2, selector: '.layout-navbar', space: 'fixed' },
@@ -391,7 +388,7 @@ const SURFACE_SELECTORS = [
     space: 'scroll',
   },
   { rank: 3, selector: '[data-glass-optical-surface]', space: 'scroll' },
-  // 推荐、订阅、媒体详情与设置页共用该交互卡片契约，不按业务路由维护 renderer 白名单。
+  // 当前保留页面共用该交互卡片契约，不按业务路由维护 renderer 白名单。
   { rank: 4, selector: '.app-hover-lift-card', space: 'scroll' },
   // 顶层业务卡片共享玻璃表面语义；嵌套卡片由表面收集阶段折叠，避免按页面维护白名单。
   { rank: 5, selector: '.layout-page-content .v-card', space: 'scroll' },

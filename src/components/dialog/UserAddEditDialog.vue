@@ -626,15 +626,6 @@ onMounted(() => {
                 prepend-inner-icon="mdi-message"
               />
             </VCol>
-            <VCol cols="12" md="6">
-              <VTextField
-                v-model="userForm.settings.douban_userid"
-                density="comfortable"
-                clearable
-                label="豆瓣用户"
-                prepend-inner-icon="mdi-movie"
-              />
-            </VCol>
           </VRow>
           <VDivider class="my-10" v-if="canControl">
             <span>{{ t('dialog.userAddEdit.permissions.title') }}</span>

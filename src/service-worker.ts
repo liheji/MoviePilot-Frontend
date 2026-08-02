@@ -125,30 +125,12 @@ registerRoute(
   }),
 )
 
-// TMDB 图片 - 优先缓存
-registerRoute(
-  ({ url }) => url.hostname === 'image.tmdb.org',
-  new CacheFirst({
-    cacheName: `tmdb-image-cache-${RESOURCE_VERSION}`,
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200],
-      }),
-      new ExpirationPlugin({
-        maxEntries: 300,
-        maxAgeSeconds: 7 * 24 * 60 * 60, // 7天
-      }),
-    ],
-  }),
-)
-
 // API GET 请求 - 优先网络
 registerRoute(
   ({ url, request }) =>
     url.pathname.includes('/api/v1/') &&
     request.method === 'GET' &&
     !url.pathname.includes('/api/v1/search/') && // 搜索接口结果动态变化，避免缓存导致重复搜索失效
-    !url.pathname.includes('/api/v1/site/cookie/') && // 站点 Cookie 更新是副作用请求，不能缓存
     !url.pathname.includes('/api/v1/system/message') && // SSE实时消息流
     !url.pathname.includes('/api/v1/system/progress/') && // SSE实时进度流
     !url.pathname.includes('/api/v1/system/logging') && // SSE实时日志流
@@ -157,7 +139,7 @@ registerRoute(
     !url.pathname.includes('/api/v1/mfa/') && // 多因素认证接口
     !url.pathname.includes('/api/v1/auth/') && // 登录认证入口与票据交换
     !url.pathname.includes('/api/v1/dashboard/') && // Dashboard实时监控数据
-    !url.pathname.includes('/api/v1/plugin/')&& // 插件接口
+    !url.pathname.includes('/api/v1/plugin/') && // 插件接口
   new NetworkFirst({
     cacheName: `api-cache-${CACHE_VERSION}`,
     networkTimeoutSeconds: 5,
@@ -192,7 +174,6 @@ async function cleanupRuntimeCaches(onlyOld: boolean = false) {
     'image-cache',
     'font-cache',
     'api-cache',
-    'tmdb-image-cache',
   ]
 
   // 当前版本的缓存全名
@@ -201,7 +182,6 @@ async function cleanupRuntimeCaches(onlyOld: boolean = false) {
     `static-resources-${CACHE_VERSION}`,
     `image-cache-${RESOURCE_VERSION}`,
     `font-cache-${RESOURCE_VERSION}`,
-    `tmdb-image-cache-${RESOURCE_VERSION}`,
     `api-cache-${CACHE_VERSION}`,
   ]
 

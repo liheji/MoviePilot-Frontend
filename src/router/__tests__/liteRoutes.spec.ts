@@ -1,9 +1,9 @@
-import { getNavMenus } from '@/router/i18n-menu'
+import { getNavMenus, getSettingTabs } from '@/router/i18n-menu'
 import userCardSource from '@/components/cards/UserCard.vue?raw'
 import routerSource from '@/router/index.ts?raw'
 import setupSource from '@/pages/setup.vue?raw'
 import dashboardSource from '@/pages/dashboard.vue?raw'
-import dashboardElementSource from '@/components/misc/DashboardElement.vue?raw'
+import systemSettingSource from '@/views/setting/AccountSettingSystem.vue?raw'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -47,7 +47,18 @@ describe('Lite route surface', () => {
 
     for (const id of ['storage', 'library', 'playing', 'latest', 'recentImports', 'quickActions']) {
       expect(dashboardSource).not.toContain(`id: '${id}'`)
-      expect(dashboardElementSource).not.toContain(`'${id}'`)
     }
+  })
+
+  it('keeps original status cards on the dashboard and moves downloader configuration into system settings', () => {
+    const translate = ((key: string) => key) as Parameters<typeof getNavMenus>[0]
+    const settingTabs = getSettingTabs(translate).map(item => item.tab)
+
+    expect(dashboardSource).toContain("@/components/cards/SiteCard.vue")
+    expect(dashboardSource).toContain("@/components/cards/DownloaderCard.vue")
+    expect(dashboardSource).toContain('plugin/dashboard/meta')
+    expect(dashboardSource).toContain('LitePluginDashboardElement.vue')
+    expect(settingTabs).not.toContain('downloader')
+    expect(systemSettingSource).toContain('AccountSettingDownloader')
   })
 })

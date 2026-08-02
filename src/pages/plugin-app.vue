@@ -8,6 +8,7 @@ import { useUserStore } from '@/stores'
 import { createPluginHost, isPluginRemoteAvailable } from '@/utils/pluginLite'
 
 const route = useRoute()
+const { t } = useI18n()
 
 const pluginId = computed(() => route.params.pluginId as string)
 const navKey = computed(() => (route.params.navKey as string) || 'main')
@@ -63,7 +64,7 @@ watch(
 
 <template>
   <div class="plugin-app-page" data-glass-optical-mode="static-material">
-    <VAlert v-if="loadError" type="error" class="ma-4" title="组件加载错误"> 无法加载插件全页组件。 </VAlert>
+    <VAlert v-if="loadError" type="error" class="ma-4" :title="t('litePlugin.loadErrorTitle')">{{ t('litePlugin.loadErrorText') }}</VAlert>
     <VSkeletonLoader v-else-if="!RemoteView" class="ma-4" type="article, article, article" />
     <component
       v-else

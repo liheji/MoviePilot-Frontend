@@ -45,9 +45,6 @@ const siteSetting = ref<any>({
     SITEDATA_REFRESH_INTERVAL: 0,
     SITE_MESSAGE: false,
     SEARCH_RESOURCE_PAGES: 1,
-    BROWSER_EMULATION: 'cloakbrowser',
-    OCR_HOST: '',
-    FLARESOLVERR_URL: '',
   },
 })
 
@@ -70,12 +67,6 @@ const SiteDataRefreshIntervalItems = [
   { title: t('setting.site.syncInterval.daily'), value: 24 },
   { title: t('setting.site.syncInterval.weekly'), value: 168 },
   { title: t('setting.site.syncInterval.never'), value: 0 },
-]
-
-// 站点访问仿真方式
-const BrowserEmulationItems = [
-  { title: 'CloakBrowser', value: 'cloakbrowser' },
-  { title: 'FlareSolverr', value: 'flaresolverr' },
 ]
 
 // 重置站点
@@ -267,36 +258,6 @@ useSilentSettingRefresh(loadSiteSettings, {
                 />
               </VCol>
 
-              <VCol cols="12" md="6">
-                <VSelect
-                  v-model="siteSetting.Site.BROWSER_EMULATION"
-                  :items="BrowserEmulationItems"
-                  :label="t('setting.site.browserEmulation')"
-                  :hint="t('setting.site.browserEmulationHint')"
-                  persistent-hint
-                  prepend-inner-icon="mdi-web"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
-                  v-model="siteSetting.Site.OCR_HOST"
-                  :label="t('setting.site.ocrHost')"
-                  placeholder="https://movie-pilot.org"
-                  :hint="t('setting.site.ocrHostHint')"
-                  persistent-hint
-                  prepend-inner-icon="mdi-text-recognition"
-                />
-              </VCol>
-              <VCol cols="12" md="6" v-if="siteSetting.Site.BROWSER_EMULATION == 'flaresolverr'">
-                <VTextField
-                  v-model="siteSetting.Site.FLARESOLVERR_URL"
-                  :label="t('setting.site.flaresolverrUrl')"
-                  :placeholder="'http://127.0.0.1:8191'"
-                  :hint="t('setting.site.flaresolverrUrlHint')"
-                  persistent-hint
-                  prepend-inner-icon="mdi-server"
-                />
-              </VCol>
             </VRow>
             <VRow>
               <VCol cols="12" md="6">

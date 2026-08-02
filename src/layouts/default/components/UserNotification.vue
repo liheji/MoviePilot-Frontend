@@ -11,7 +11,7 @@ import { useConfirm } from '@/composables/useConfirm'
 type NotificationDisplayItem =
   | { kind: 'section'; key: string; title: string; count: number }
   | { kind: 'notification'; key: string; notification: SystemNotification }
-type NotificationClearScope = 'all' | 'system' | 'media'
+type NotificationClearScope = 'all' | 'system'
 
 const { t } = useI18n()
 const { useDelayedSSE } = useBackground()
@@ -45,13 +45,6 @@ const notificationClearOptions = computed(() => [
     icon: 'mdi-alert-circle-outline',
     color: 'error',
     count: notificationClearCounts.value.system,
-  },
-  {
-    scope: 'media' as const,
-    title: t('notification.clearMediaMessages'),
-    icon: 'mdi-image-outline',
-    color: 'primary',
-    count: notificationClearCounts.value.media,
   },
   {
     scope: 'all' as const,
@@ -226,7 +219,6 @@ function getNotificationClearCounts() {
   const counts: Record<NotificationClearScope, number> = {
     all: notificationList.value.length,
     system: 0,
-    media: 0,
   }
 
   notificationList.value.forEach(item => {
@@ -244,7 +236,7 @@ function removeNotificationsByScope(scope: NotificationClearScope) {
     return
   }
 
-  notificationList.value = notificationList.value.filter(item => getNotificationClearScope(item) !== scope)
+  notificationList.value = []
   page.value = 1
   hasMore.value = true
   rebuildNotificationKeys()
@@ -255,14 +247,12 @@ function removeNotificationsByScope(scope: NotificationClearScope) {
 /** 获取不同清理范围的确认文案。 */
 function getClearConfirmText(scope: NotificationClearScope) {
   if (scope === 'system') return t('notification.clearSystemConfirm')
-  if (scope === 'media') return t('notification.clearMediaConfirm')
   return t('notification.clearAllConfirm')
 }
 
 /** 获取不同清理范围的成功文案。 */
 function getClearSuccessText(scope: NotificationClearScope) {
   if (scope === 'system') return t('notification.clearSystemSuccess')
-  if (scope === 'media') return t('notification.clearMediaSuccess')
   return t('notification.clearAllSuccess')
 }
 
@@ -408,9 +398,6 @@ function markAllAsRead() {
 function getNotificationIcon(item: SystemNotification) {
   if (getNotificationKind(item) === 'plugin') return 'mdi-puzzle-outline'
   if (item.mtype === '资源下载') return 'mdi-download'
-  if (item.mtype === '整理入库') return 'mdi-folder-check-outline'
-  if (item.mtype === '订阅') return 'mdi-rss'
-  if (item.mtype === '智能体') return 'lucide:bot'
   return getNotificationKind(item) === 'system' ? 'mdi-alert-circle-outline' : 'mdi-bell-outline'
 }
 
@@ -419,29 +406,18 @@ function getNotificationColor(item: SystemNotification) {
   if (getNotificationKind(item) === 'system') return 'error'
   if (getNotificationKind(item) === 'plugin') return 'warning'
   if (item.mtype === '资源下载') return 'info'
-  if (item.mtype === '整理入库') return 'success'
-  if (item.mtype === '订阅') return 'primary'
   return 'secondary'
 }
 
-/** 判断通知是否有真实媒体图，决定是否使用媒体缩略图样式。 */
-function isMediaNotification(item: SystemNotification) {
-  return Boolean(item.image)
-}
-
-/** 获取通知清理范围，目前通知中心展示上以是否包含图片区分媒体和系统消息。 */
+/** Lite 通知中心仅保留统一系统消息范围。 */
 function getNotificationClearScope(item: SystemNotification): Exclude<NotificationClearScope, 'all'> {
-  return isMediaNotification(item) ? 'media' : 'system'
+  void item
+  return 'system'
 }
 
-/** 按系统类消息和媒体消息生成带分组标题的虚拟列表数据。 */
+/** 将 Lite 通知按统一系统分组生成虚拟列表数据。 */
 function buildNotificationDisplayList(items: SystemNotification[]) {
-  const systemItems = items.filter(item => !isMediaNotification(item))
-  const mediaItems = items.filter(isMediaNotification)
-  const sections = [
-    { key: 'system', title: t('notification.systemMessages'), items: systemItems },
-    { key: 'media', title: t('notification.mediaMessages'), items: mediaItems },
-  ]
+  const sections = [{ key: 'system', title: t('notification.systemMessages'), items }]
   const displayItems: NotificationDisplayItem[] = []
 
   sections.forEach(section => {
@@ -622,7 +598,6 @@ watch(appsMenu, handleNotificationMenuVisibleChange)
                   class="notification-row"
                   :class="{
                     'notification-row--unread': item.notification.read === false,
-                    'notification-row--media': isMediaNotification(item.notification),
                   }"
                   role="button"
                   tabindex="0"

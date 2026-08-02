@@ -14,6 +14,12 @@ MoviePilot 使用自动注册机制来加载远程组件：
 
 ## 常见错误
 
+### 0. 插件显示为“不兼容 Lite”
+
+**原因**：插件的 `plugin_lite.json` 声明了 Lite 未提供的宿主能力，或远程组件请求了 `anthropic`、`browser`、`media`、`mcp`、`subscribe`、`transfer`、`storage`、`mediaserver`、`workflow`、`agent`、`openai`、`rss`、`servarr` 或 `subtitle` 中的已删除 API 前缀。
+
+**解决方案**：仅声明并调用 `auth`、`plugin.api`、`plugin.data`、`plugin.static`、`plugin.dashboard`、`plugin.sidebar`、`site`、`torrent.search`、`download.task`、`message` 等 Lite 宿主能力。修改声明或调用后，重新构建并更新插件；不要通过兼容层调用被删除的领域接口。
+
 ### 1. "Module name 'vue' does not resolve to a valid URL"
 
 **原因**：远程组件无法正确解析共享依赖的 URL，通常是因为共享依赖配置不正确。

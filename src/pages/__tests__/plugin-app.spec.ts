@@ -103,7 +103,7 @@ describe('plugin AppPage host', () => {
     ])
     await renderPluginApp()
 
-    await waitFor(() => expect(screen.getByText('无法加载插件全页组件。')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(i18n.global.t('litePlugin.loadErrorText'))).toBeInTheDocument())
     expect(mocks.loadRemote).not.toHaveBeenCalled()
   })
 })

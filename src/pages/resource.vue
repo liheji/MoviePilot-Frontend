@@ -8,11 +8,10 @@ import { useToast } from 'vue-toastification'
 const AddDownloadDialog = defineAsyncComponent(() => import('@/components/dialog/AddDownloadDialog.vue'))
 const route = useRoute()
 const toast = useToast()
+const { t } = useI18n()
 
 interface LiteTorrentResult {
   enclosure: string
-  meta_info: { subtitle?: string | null; title?: string | null }
-  media_info: null
   result_handle: string
   torrent_info: TorrentInfo
 }
@@ -26,7 +25,19 @@ const siteFilter = ref<string[]>([])
 const promotionFilter = ref<'all' | 'free' | 'normal'>('all')
 const sortBy = ref<'published' | 'size' | 'seeders'>('published')
 
-const siteOptions = computed(() => sites.value.map(site => ({ title: site.name, value: String(site.id) })))
+const siteOptions = computed(() => sites.value
+  .filter(site => site.is_active)
+  .map(site => ({ title: site.name, value: String(site.id) })))
+const promotionOptions = computed(() => [
+  { title: t('liteSearch.allPromotions'), value: 'all' },
+  { title: t('liteSearch.free'), value: 'free' },
+  { title: t('liteSearch.nonFree'), value: 'normal' },
+])
+const sortOptions = computed(() => [
+  { title: t('liteSearch.published'), value: 'published' },
+  { title: t('liteSearch.size'), value: 'size' },
+  { title: t('liteSearch.seeders'), value: 'seeders' },
+])
 const resultSiteOptions = computed(() => [...new Map(results.value.map(result => [
   String(result.torrent_info.site || ''),
   result.torrent_info.site_name || String(result.torrent_info.site || ''),
@@ -36,7 +47,7 @@ const resultSiteOptions = computed(() => [...new Map(results.value.map(result =>
 async function search() {
   const searchKeyword = keyword.value.trim()
   if (!searchKeyword) {
-    toast.error('请输入搜索关键词')
+    toast.error(t('liteSearch.keywordRequired'))
     return
   }
   loading.value = true
@@ -46,13 +57,13 @@ async function search() {
     }) as unknown as { success?: boolean; message?: string; data?: LiteTorrentResult[] }
     if (!response.success) {
       results.value = []
-      toast.error(response.message || '未找到资源')
+      toast.error(response.message || t('liteSearch.noResults'))
       return
     }
     results.value = Array.isArray(response.data) ? response.data : []
   } catch (error) {
     console.error(error)
-    toast.error(error instanceof Error ? error.message : '搜索失败')
+    toast.error(error instanceof Error ? error.message : t('liteSearch.searchFailed'))
   } finally {
     loading.value = false
   }
@@ -73,11 +84,11 @@ function openDownload(result: LiteTorrentResult) {
     AddDownloadDialog,
     {
       resultHandle: result.result_handle || result.enclosure,
-      title: result.meta_info.title,
+      title: result.torrent_info.title,
       torrent: result.torrent_info,
     },
     {
-      done: () => toast.success('下载任务已添加'),
+      done: () => toast.success(t('liteSearch.downloadAdded')),
       error: (message: string) => message && toast.error(message),
     },
     { closeOn: ['close', 'done', 'error'] },
@@ -108,7 +119,8 @@ onMounted(async () => {
         <VTextField
           v-model="keyword"
           class="keyword-field"
-          label="关键词"
+          density="compact"
+          :label="t('liteSearch.keyword')"
           hide-details
           prepend-inner-icon="mdi-magnify"
           @keyup.enter="search"
@@ -116,34 +128,35 @@ onMounted(async () => {
         <VSelect
           v-model="selectedSites"
           class="site-field"
+          density="compact"
           :items="siteOptions"
-          label="站点"
+          :label="t('liteSearch.sites')"
           multiple
           clearable
           hide-details
           prepend-inner-icon="mdi-server-network"
         />
-        <VBtn color="primary" prepend-icon="mdi-magnify" :loading="loading" @click="search">搜索</VBtn>
+        <VBtn color="primary" prepend-icon="mdi-magnify" :loading="loading" @click="search">{{ t('liteSearch.search') }}</VBtn>
       </VCardText>
     </VCard>
 
     <div v-if="results.length" class="d-flex flex-wrap align-center gap-3 mb-4">
-      <VSelect v-model="siteFilter" class="filter-field" :items="resultSiteOptions" label="结果站点" multiple clearable hide-details />
+      <VSelect v-model="siteFilter" class="filter-field" :items="resultSiteOptions" :label="t('liteSearch.resultSites')" multiple clearable hide-details />
       <VSelect
         v-model="promotionFilter"
         class="filter-field"
-        :items="[{ title: '全部促销', value: 'all' }, { title: '免费', value: 'free' }, { title: '非免费', value: 'normal' }]"
-        label="促销"
+        :items="promotionOptions"
+        :label="t('liteSearch.promotion')"
         hide-details
       />
       <VSelect
         v-model="sortBy"
         class="filter-field"
-        :items="[{ title: '发布时间', value: 'published' }, { title: '大小', value: 'size' }, { title: '做种数', value: 'seeders' }]"
-        label="排序"
+        :items="sortOptions"
+        :label="t('liteSearch.sort')"
         hide-details
       />
-      <span class="text-medium-emphasis text-body-2">{{ visibleResults.length }} 个结果</span>
+      <span class="text-medium-emphasis text-body-2">{{ t('liteSearch.resultCount', { count: visibleResults.length }) }}</span>
     </div>
 
     <div v-if="visibleResults.length" class="result-list">
@@ -151,8 +164,8 @@ onMounted(async () => {
         <VCardText class="d-flex flex-wrap align-center gap-4 py-3">
           <div class="result-copy">
             <div class="font-weight-medium break-all">{{ result.torrent_info.title }}</div>
-            <div v-if="result.meta_info.subtitle || result.torrent_info.description" class="text-body-2 text-medium-emphasis break-all mt-1">
-              {{ result.meta_info.subtitle || result.torrent_info.description }}
+            <div v-if="result.torrent_info.description" class="text-body-2 text-medium-emphasis break-all mt-1">
+              {{ result.torrent_info.description }}
             </div>
             <div class="d-flex flex-wrap gap-2 mt-2 text-body-2 text-medium-emphasis">
               <span>{{ result.torrent_info.site_name }}</span>
@@ -160,26 +173,30 @@ onMounted(async () => {
               <span v-if="result.torrent_info.pubdate">{{ formatDateDifference(result.torrent_info.pubdate) }}</span>
               <span>↑ {{ result.torrent_info.seeders || 0 }}</span>
               <span>↓ {{ result.torrent_info.peers || 0 }}</span>
-              <VChip v-if="result.torrent_info.downloadvolumefactor === 0" size="x-small" color="success">免费</VChip>
-              <VChip v-else-if="result.torrent_info.volume_factor" size="x-small">{{ result.torrent_info.volume_factor }}</VChip>
+              <VChip v-if="result.torrent_info.downloadvolumefactor === 0" size="x-small" color="success">{{ t('liteSearch.free') }}</VChip>
+              <VChip v-else-if="result.torrent_info.volume_factor && result.torrent_info.volume_factor !== '未知'" size="x-small">{{ result.torrent_info.volume_factor }}</VChip>
             </div>
           </div>
           <VSpacer />
-          <VBtn color="primary" prepend-icon="mdi-download" @click="openDownload(result)">下载</VBtn>
+          <VBtn color="primary" prepend-icon="mdi-download" @click="openDownload(result)">{{ t('liteSearch.download') }}</VBtn>
         </VCardText>
       </VCard>
     </div>
 
-    <VEmptyState v-else-if="!loading" icon="mdi-magnify" title="搜索站点种子" text="输入关键词后查看原始种子结果" />
+    <VEmptyState v-else-if="!loading" icon="mdi-magnify" :title="t('liteSearch.emptyTitle')" :text="t('liteSearch.emptyText')" />
   </div>
 </template>
 
 <style scoped>
 .resource-workbench { max-width: 1280px; margin: 0 auto; }
-.keyword-field { min-width: min(100%, 22rem); flex: 1 1 22rem; }
-.site-field { min-width: min(100%, 16rem); flex: 1 1 16rem; }
+.keyword-field { min-width: min(100%, 18rem); flex: 1 1 18rem; }
+.site-field { min-width: min(100%, 14rem); flex: 1 1 14rem; }
 .filter-field { min-width: min(100%, 11rem); flex: 1 1 11rem; }
 .result-list { display: grid; gap: 0.75rem; }
 .result-row { border-radius: 6px; }
 .result-copy { min-width: 0; flex: 1 1 30rem; }
+
+@media (max-width: 480px) {
+  .filter-field:first-child { min-width: 100%; flex-basis: 100%; }
+}
 </style>

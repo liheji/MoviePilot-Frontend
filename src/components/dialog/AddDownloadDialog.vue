@@ -45,7 +45,7 @@ async function loadChoices() {
 async function addDownload() {
   const resultHandle = props.resultHandle || props.torrent?.enclosure
   if (!resultHandle) {
-    emit('error', '缺少种子结果句柄')
+    emit('error', t('liteDownloadTask.missingResultHandle'))
     return
   }
   startNProgress()
@@ -95,7 +95,7 @@ onMounted(loadChoices)
           <VListItem v-if="torrent?.size" :title="formatFileSize(torrent.size)" />
         </VList>
         <VSelect v-model="selectedDownloader" :items="downloaderOptions" :label="t('dialog.addDownload.downloader')" prepend-inner-icon="mdi-download" />
-        <VSelect v-model="selectedDirectory" :items="directoryOptions" :label="t('dialog.addDownload.savePath')" clearable prepend-inner-icon="mdi-folder" />
+        <VSelect v-model="selectedDirectory" :items="directoryOptions" :label="t('dialog.addDownload.saveDirectory')" clearable prepend-inner-icon="mdi-folder" />
       </VCardText>
       <VDivider />
       <VCardActions>

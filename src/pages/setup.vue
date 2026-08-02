@@ -7,7 +7,6 @@ import BasicSettingsStep from '@/views/setup/BasicSettingsStep.vue'
 import SiteAuthSettingsStep from '@/views/setup/SiteAuthSettingsStep.vue'
 import DownloaderSettingsStep from '@/views/setup/DownloaderSettingsStep.vue'
 import NotificationSettingsStep from '@/views/setup/NotificationSettingsStep.vue'
-import PreferencesSettingsStep from '@/views/setup/PreferencesSettingsStep.vue'
 import ConnectivityTest from '@/views/setup/ConnectivityTest.vue'
 import { useDisplay } from 'vuetify'
 
@@ -115,10 +114,6 @@ onMounted(async () => {
               <NotificationSettingsStep />
             </VStepperWindowItem>
 
-            <!-- 步骤5：资源偏好 -->
-            <VStepperWindowItem :value="5">
-              <PreferencesSettingsStep />
-            </VStepperWindowItem>
           </VStepperWindow>
 
           <!-- 连通性测试进度条 -->

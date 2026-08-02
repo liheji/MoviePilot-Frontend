@@ -67,7 +67,7 @@ useKeepAliveRefresh(fetchData, {
   <ProgressiveCardGrid
     v-if="filteredDataList.length > 0"
     :items="filteredDataList"
-    :get-item-key="item => item.hash || item.name"
+    :get-item-key="item => item.hash || item.title"
     :min-item-width="320"
     :estimated-item-height="230"
   >

@@ -68,18 +68,6 @@ const AsyncApexChart = defineAsyncComponent(async () => {
   return component
 })
 
-const AsyncCronVuetify = defineAsyncComponent(async () => {
-  return (await import('@vue-js-cron/vuetify')).CronVuetify
-})
-
-const AsyncCronField = defineAsyncComponent(async () => {
-  return (await import('./components/field/CronField.vue')).default
-})
-
-const AsyncPathField = defineAsyncComponent(async () => {
-  return (await import('./components/field/PathField.vue')).default
-})
-
 // 创建Vue实例
 const app = createApp(App)
 
@@ -99,11 +87,8 @@ app.use(stateRestorePlugin)
 app
   .component('VAceEditor', AsyncAceEditor)
   .component('VApexChart', AsyncApexChart)
-  .component('VCronVuetify', AsyncCronVuetify)
   .component('VDialogCloseBtn', DialogCloseBtn)
   .component('VScrollToTopBtn', ScrollToTopBtn)
-  .component('VCronField', AsyncCronField)
-  .component('VPathField', AsyncPathField)
   .component('VPageContentTitle', PageContentTitle)
 
 // 6. 注册其他插件
