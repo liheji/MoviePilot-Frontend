@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import api from '@/api'
 import type { Plugin } from '@/api/types'
-import { formatDownloadCount } from '@/@core/utils/formatters'
 import { getLogoUrl } from '@/utils/imageUtils'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
@@ -31,7 +30,6 @@ const props = defineProps({
     type: Object as PropType<Plugin>,
     required: true,
   },
-  count: Number,
 })
 
 // 定义触发的自定义事件
@@ -240,10 +238,6 @@ onUnmounted(() => {
                     <VBtn variant="tonal" @click="showUpdateHistory" prepend-icon="mdi-update">
                       {{ t('plugin.versionHistory') }}
                     </VBtn>
-                  </div>
-                  <div class="plugin-market-detail-actions__downloads" v-if="props.count">
-                    <VIcon icon="mdi-fire" />
-                    {{ t('plugin.totalDownloads', { count: formatDownloadCount(props.count) }) }}
                   </div>
                 </div>
               </VCardItem>

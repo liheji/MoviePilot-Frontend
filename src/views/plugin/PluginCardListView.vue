@@ -4,7 +4,6 @@ import api from '@/api'
 import type { Plugin } from '@/api/types'
 import NoDataFound from '@/components/states/NoDataFound.vue'
 import { useDisplay } from 'vuetify'
-import { isNullOrEmptyObject } from '@/@core/utils'
 import { getPluginTabs } from '@/router/i18n-menu'
 import { useDynamicButton, type DynamicButtonMenuItem } from '@/composables/useDynamicButton'
 import { useI18n } from 'vue-i18n'
@@ -125,14 +124,13 @@ registerHeaderTab({
 const pluginId = ref(route.query.id)
 
 // 当前排序字段
-const activeSort = ref<string | null>(null)
+const activeSort = ref<string | null>('plugin_name')
 
 // 插件顺序配置
 const orderConfig = ref<{ id: string; type?: string; order?: number }[]>([])
 
 // 排序选项
 const sortOptions = computed(() => [
-  { title: t('plugin.sort.popular'), value: 'count' },
   { title: t('plugin.sort.name'), value: 'plugin_name' },
   { title: t('plugin.sort.author'), value: 'plugin_author' },
   { title: t('plugin.sort.repository'), value: 'repo_url' },
@@ -173,9 +171,6 @@ const isAppMarketLoaded = ref(false)
 
 // APP市场窗口
 const PluginAppDialog = ref(false)
-
-// 插件安装统计
-const PluginStatistics = ref<{ [key: string]: number }>({})
 
 // 插件市场刷新状态
 const isMarketRefreshing = ref(false)
@@ -896,26 +891,16 @@ async function fetchUninstalledPlugins(force: boolean = false, context: KeepAliv
   }
 }
 
-// 加载插件统计数据
-async function getPluginStatistics() {
-  try {
-    PluginStatistics.value = await api.get('plugin/statistic')
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 // 加载所有数据
 async function refreshData(context: KeepAliveRefreshContext = {}) {
   await fetchInstalledPlugins(context)
   await fetchUninstalledPlugins(false, context)
-  await getPluginStatistics()
   // 重新加载文件夹配置，确保分身插件能正确显示在文件夹中
   await loadPluginFolders()
 }
 
 // 对uninstalledList进行排序到sortedUninstalledList
-watch([marketList, filterForm, activeSort, PluginStatistics], () => {
+watch([marketList, filterForm, activeSort], () => {
   // 匹配过滤函数
   const match = (filter: Array<string>, value: unknown) => {
     const text = normalizeMarketText(value).trim()
@@ -950,16 +935,10 @@ watch([marketList, filterForm, activeSort, PluginStatistics], () => {
   })
 
   // 排序
-  if (!isNullOrEmptyObject(PluginStatistics.value)) {
-    if (!activeSort.value || activeSort.value === 'count') {
-      sortedUninstalledList.value = sortedUninstalledList.value.sort((a, b) => {
-        return (PluginStatistics.value[b.id || '0'] ?? 0) - (PluginStatistics.value[a.id || '0'] ?? 0)
-      })
-    } else if (activeSort.value) {
-      sortedUninstalledList.value = sortedUninstalledList.value.sort((a: any, b: any) => {
-        return a[activeSort.value ?? ''] > b[activeSort.value ?? ''] ? 1 : -1
-      })
-    }
+  if (activeSort.value) {
+    sortedUninstalledList.value = sortedUninstalledList.value.sort((a: any, b: any) => {
+      return a[activeSort.value ?? ''] > b[activeSort.value ?? ''] ? 1 : -1
+    })
   }
 
   // 显示前20个
@@ -985,7 +964,6 @@ async function refreshMarket() {
   isMarketRefreshing.value = true
   try {
     await fetchUninstalledPlugins(true, { silent: false, source: 'manual' })
-    await getPluginStatistics()
   } catch (error) {
     console.error(error)
   } finally {
@@ -998,13 +976,11 @@ async function refreshActiveTabData(context: KeepAliveRefreshContext = {}) {
 
   if (activeTab.value === 'market') {
     await fetchUninstalledPlugins(false, context)
-    await getPluginStatistics()
     return
   }
 
   await fetchInstalledPlugins(context)
   await fetchUninstalledPlugins(false, context)
-  await getPluginStatistics()
   // 文件夹配置可能在其它入口被插件操作改变，重新进入时同步一次。
   await loadPluginFolders()
 }
@@ -1646,13 +1622,13 @@ function onDragStartPlugin(evt: any) {
             <VListItem
               v-for="option in sortOptions"
               :key="option.value"
-              :active="(activeSort || 'count') === option.value"
+              :active="activeSort === option.value"
               @click="selectMarketSort(option.value)"
               density="compact"
             >
               <VListItemTitle>{{ option.title }}</VListItemTitle>
               <template #append>
-                <VIcon v-if="(activeSort || 'count') === option.value" icon="mdi-check" color="primary" size="small" />
+                <VIcon v-if="activeSort === option.value" icon="mdi-check" color="primary" size="small" />
               </template>
             </VListItem>
           </VList>
@@ -1746,7 +1722,6 @@ function onDragStartPlugin(evt: any) {
                 <template #item="{ element }">
                   <PluginMixedSortCard
                     :item="element"
-                    :plugin-statistics="PluginStatistics"
                     :plugin-actions="pluginActions"
                     :sortable="true"
                     @open-folder="openFolder"
@@ -1774,7 +1749,6 @@ function onDragStartPlugin(evt: any) {
                 <template #default="{ item }">
                   <PluginMixedSortCard
                     :item="item"
-                    :plugin-statistics="PluginStatistics"
                     :plugin-actions="pluginActions"
                     :sortable="false"
                     @open-folder="openFolder"
@@ -1808,7 +1782,6 @@ function onDragStartPlugin(evt: any) {
                 <template #item="{ element }">
                   <PluginMixedSortCard
                     :item="{ type: 'plugin', id: element.id, data: element, order: 0 }"
-                    :plugin-statistics="PluginStatistics"
                     :plugin-actions="pluginActions"
                     :sortable="true"
                     :show-remove-button="true"
@@ -1832,7 +1805,6 @@ function onDragStartPlugin(evt: any) {
                 <template #default="{ item }">
                   <PluginMixedSortCard
                     :item="{ type: 'plugin', id: item.id, data: item, order: 0 }"
-                    :plugin-statistics="PluginStatistics"
                     :plugin-actions="pluginActions"
                     :sortable="false"
                     :show-remove-button="true"
@@ -1885,7 +1857,7 @@ function onDragStartPlugin(evt: any) {
               :estimated-item-height="260"
             >
               <template #default="{ item }">
-                <PluginAppCard :plugin="item" :count="PluginStatistics[item.id || '0']" @install="pluginInstalled" />
+                <PluginAppCard :plugin="item" @install="pluginInstalled" />
               </template>
             </ProgressiveCardGrid>
           </VInfiniteScroll>

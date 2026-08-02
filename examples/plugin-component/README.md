@@ -1,6 +1,8 @@
 # MoviePilot 插件远程组件示例
 
-这是 MoviePilot 插件远程组件的示例项目，展示了如何正确配置和开发与主应用兼容的远程组件。本示例包含 Page、Config、Dashboard、AppPage，以及可选的 `AppPageSettings`（`nav_key=settings` 时由主应用优先加载，用于演示「一插件多全页界面」）。
+这是 MoviePilot Lite 插件远程组件的示例项目，展示了如何正确配置和开发与主应用兼容的远程组件。本示例包含 Page、Config、Dashboard、AppPage，以及可选的 `AppPageSettings`（`nav_key=settings` 时由主应用优先加载，用于演示「一插件多全页界面」）。
+
+示例仅应使用 Lite 已提供的 `plugin.api`、`site`、`torrent.search`、`download.task`、`message` 等宿主能力；不得调用媒体、订阅、整理、存储、媒体服务器、工作流或 Agent 接口。完整约束见[模块联邦开发指南](../../docs/module-federation-guide.md)。
 
 ## 1. 开发环境准备
 

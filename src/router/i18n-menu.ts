@@ -93,12 +93,6 @@ export function getSettingTabs(t: Composer['t']): NavMenuTabItem[] {
       description: t('settingTabs.site.description'),
     },
     {
-      title: t('settingTabs.rule.title'),
-      icon: 'mdi-filter',
-      tab: 'rule',
-      description: t('settingTabs.rule.description'),
-    },
-    {
       title: t('settingTabs.search.title'),
       icon: 'mdi-magnify',
       tab: 'search',

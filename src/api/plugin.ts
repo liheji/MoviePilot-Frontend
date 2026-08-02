@@ -2,13 +2,20 @@ import api from '@/api'
 import type { AxiosRequestConfig } from 'axios'
 
 export const REMOVED_PLUGIN_CAPABILITIES = [
+  'anthropic',
+  'browser',
   'media',
+  'mcp',
   'subscribe',
   'transfer',
   'storage',
   'mediaserver',
   'workflow',
   'agent',
+  'openai',
+  'rss',
+  'servarr',
+  'subtitle',
 ] as const
 
 export type RemovedPluginCapability = (typeof REMOVED_PLUGIN_CAPABILITIES)[number]

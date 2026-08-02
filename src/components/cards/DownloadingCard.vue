@@ -3,6 +3,7 @@ import api from '@/api'
 import type { DownloadingInfo } from '@/api/types'
 import { formatFileSize } from '@/@core/utils/formatters'
 
+const { t } = useI18n()
 const props = defineProps({
   info: Object as PropType<DownloadingInfo>,
   downloaderName: String,
@@ -48,17 +49,16 @@ async function saveTask() {
     <VCardText>
       <div class="d-flex align-start gap-3">
         <div class="flex-grow-1 min-w-0">
-          <div class="font-weight-medium break-all">{{ props.info?.name || props.info?.title }}</div>
-          <div class="text-body-2 text-medium-emphasis break-all mt-1">{{ props.info?.title }}</div>
+          <div class="font-weight-medium break-all">{{ props.info?.title }}</div>
         </div>
         <VMenu location="bottom end">
           <template #activator="{ props: menuProps }"><VBtn v-bind="menuProps" icon="mdi-pencil" variant="text" /></template>
           <VCard width="320"><VCardText>
-            <VTextField v-model="edit.category" label="分类" density="compact" />
-            <VTextField v-model.number="edit.download_limit" label="下载限速 KB/s" type="number" density="compact" />
-            <VTextField v-model.number="edit.upload_limit" label="上传限速 KB/s" type="number" density="compact" />
-            <VTextField v-model="edit.save_path" label="保存路径" density="compact" />
-            <VBtn color="primary" prepend-icon="mdi-content-save" @click="saveTask">保存</VBtn>
+            <VTextField v-model="edit.category" :label="t('liteDownloadTask.category')" density="compact" />
+            <VTextField v-model.number="edit.download_limit" :label="t('liteDownloadTask.downloadLimit')" type="number" density="compact" />
+            <VTextField v-model.number="edit.upload_limit" :label="t('liteDownloadTask.uploadLimit')" type="number" density="compact" />
+            <VTextField v-model="edit.save_path" :label="t('liteDownloadTask.savePath')" density="compact" />
+            <VBtn color="primary" prepend-icon="mdi-content-save" @click="saveTask">{{ t('common.save') }}</VBtn>
           </VCardText></VCard>
         </VMenu>
       </div>
@@ -66,9 +66,9 @@ async function saveTask() {
       <VProgressLinear class="mt-3" :model-value="props.info?.progress || 0" color="primary" />
     </VCardText>
     <VCardActions>
-      <VBtn :icon="isDownloading ? 'mdi-pause' : 'mdi-play'" :title="isDownloading ? '暂停' : '恢复'" @click="toggleDownload" />
+      <VBtn :icon="isDownloading ? 'mdi-pause' : 'mdi-play'" :title="isDownloading ? t('common.pause') : t('liteDownloadTask.resume')" @click="toggleDownload" />
       <VSpacer />
-      <VBtn color="error" icon="mdi-trash-can-outline" title="删除" @click="deleteDownload" />
+      <VBtn color="error" icon="mdi-trash-can-outline" :title="t('common.delete')" @click="deleteDownload" />
     </VCardActions>
   </VCard>
 </template>

@@ -87,7 +87,7 @@ describe('SiteCard display', () => {
 
   it('renders active site metadata, transfer values, feature flags, and a healthy border', async () => {
     const { container, site } = await renderCard(
-      { filter: 'free', limit_interval: 10, proxy: true, render: true },
+      { filter: 'free', limit_interval: 10, proxy: true },
       {
         data: createSiteUserData({ download: 1024, upload: 2048 }),
         stats: createSiteStatistic({ lst_state: 0, seconds: 2 }),
@@ -99,7 +99,7 @@ describe('SiteCard display', () => {
     expect(screen.getByText('2.00 KB')).toBeInTheDocument()
     expect(screen.getByText('1.00 KB')).toBeInTheDocument()
     expect(container.querySelector('.site-card')).toHaveClass('border-success')
-    expect(container.querySelectorAll('.ml-auto.flex.shrink-0.items-center.gap-2 > div')).toHaveLength(4)
+    expect(container.querySelectorAll('.ml-auto.flex.shrink-0.items-center.gap-2 > div')).toHaveLength(3)
     expect(
       [...container.querySelectorAll('.border-t .v-progress-linear')].map(progress =>
         progress.getAttribute('aria-valuenow'),
@@ -182,7 +182,7 @@ describe('SiteCard interactions', () => {
     const { container, emitted, site } = await renderCard()
     server.use(deleteSiteHandler(site.id, response, status, requested))
 
-    await fireEvent.click(getActionButton(container, 3))
+    await fireEvent.click(getActionButton(container, 2))
     await fireEvent.click(await screen.findByText('删除站点'))
     await waitFor(() => expect(mocks.confirm).toHaveBeenCalledOnce())
 
@@ -204,17 +204,11 @@ describe('SiteCard interactions', () => {
     expect(getDialogCall().options).toEqual({ closeOn: ['close'] })
 
     await fireEvent.click(getActionButton(container, 2))
-    expect(getDialogCall(1).props).toEqual({ site })
-    expect(getDialogCall(1).options).toEqual({ closeOn: ['close', 'done'] })
-    getDialogCall(1).events.done()
-    expect(emitted('refresh-stats')).toEqual([[site.domain]])
-
-    await fireEvent.click(getActionButton(container, 3))
     await fireEvent.click(await screen.findByText('编辑站点'))
-    expect(getDialogCall(2).props).toEqual({ siteid: site.id })
-    expect(getDialogCall(2).options).toEqual({ closeOn: ['close', 'save', 'remove'] })
-    getDialogCall(2).events.save()
-    getDialogCall(2).events.remove()
+    expect(getDialogCall(1).props).toEqual({ siteid: site.id })
+    expect(getDialogCall(1).options).toEqual({ closeOn: ['close', 'save', 'remove'] })
+    getDialogCall(1).events.save()
+    getDialogCall(1).events.remove()
     expect(emitted('update')).toHaveLength(1)
     expect(emitted('remove')).toHaveLength(1)
   })

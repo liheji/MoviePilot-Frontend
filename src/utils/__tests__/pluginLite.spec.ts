@@ -53,7 +53,7 @@ describe('Lite plugin host', () => {
     expect(Object.isFrozen(host)).toBe(true)
   })
 
-  it.each(['media', 'subscribe', 'transfer', 'storage', 'mediaserver', 'workflow', 'agent'] as const)(
+  it.each(['media', 'subscribe', 'transfer', 'storage', 'mediaserver', 'workflow', 'agent', 'mcp', 'servarr', 'openai', 'anthropic', 'subtitle', 'rss', 'browser'] as const)(
     'rejects removed %s APIs locally and reports the current fingerprint for administrators',
     async capability => {
       const apiClient = createApiClient()

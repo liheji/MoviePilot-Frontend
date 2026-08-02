@@ -11,14 +11,12 @@ interface MixedSortItem {
 
 interface Props {
   item: MixedSortItem
-  pluginStatistics?: { [key: string]: number }
   pluginActions?: { [key: string]: boolean }
   showRemoveButton?: boolean
   sortable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  pluginStatistics: () => ({}),
   pluginActions: () => ({}),
   showRemoveButton: false,
   sortable: false,
@@ -102,7 +100,6 @@ function handleDropToFolder(event: DragEvent) {
     <!-- 插件卡片 -->
     <div v-else-if="item.type === 'plugin'" class="plugin-item-wrapper h-full" :data-plugin-id="item.id">
       <PluginCard
-        :count="pluginStatistics[item.id] || 0"
         :plugin="item.data"
         :action="pluginActions[item.id] || false"
         :sortable="sortable"

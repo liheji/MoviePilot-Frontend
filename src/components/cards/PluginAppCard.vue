@@ -4,7 +4,6 @@ import type { Plugin } from '@/api/types'
 import { getLogoUrl } from '@/utils/imageUtils'
 import { getCardAccentRgbFromImage } from '@/composables/useCardAccentColor'
 import { isNullOrEmptyObject } from '@/@core/utils'
-import { formatDownloadCount } from '@/@core/utils/formatters'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import { openSharedDialog } from '@/composables/useSharedDialog'
@@ -21,7 +20,6 @@ const props = defineProps({
   plugin: Object as PropType<Plugin>,
   width: String,
   height: String,
-  count: Number,
 })
 
 // 定义触发的自定义事件
@@ -194,7 +192,6 @@ function showPluginDetail() {
     PluginMarketDetailDialog,
     {
       plugin: props.plugin,
-      count: props.count,
     },
     {
       install: () => emit('install'),
@@ -316,10 +313,6 @@ onUnmounted(() => {
                 >
                   {{ props.plugin?.plugin_author }}
                 </a>
-              </div>
-              <div v-if="props.count" class="ms-2 flex-shrink-0 download-count align-middle items-center">
-                <VIcon size="small" icon="mdi-download" />
-                <span class="text-sm">{{ formatDownloadCount(props.count) }}</span>
               </div>
             </div>
             <div class="absolute bottom-0 right-0">

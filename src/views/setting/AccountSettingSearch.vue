@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useToast } from 'vue-toastification'
 import api from '@/api'
-import type { FilterRuleGroup, Site } from '@/api/types'
+import type { Site } from '@/api/types'
 import { useI18n } from 'vue-i18n'
 import { useSilentSettingRefresh } from '@/composables/useSilentSettingRefresh'
 
@@ -21,55 +21,15 @@ const $toast = useToast()
 // 所有站点
 const allSites = ref<Site[]>([])
 
-// 选中订阅站点
+// 选中搜索站点
 const selectedSites = ref<number[]>([])
 
 // 系统设置
 const SystemSettings = ref<any>({
   Basic: {
-    SEARCH_MULTIPLE_NAME: false,
-    DOWNLOAD_SUBTITLE: false,
-    AUTO_DOWNLOAD_USER: null,
     TORRENT_TAG: 'MOVIEPILOT',
   },
 })
-
-// 媒体信息数据源字典
-const mediaSourcesDict = [
-  {
-    title: 'TheMovieDb',
-    value: 'themoviedb',
-  },
-  {
-    title: '豆瓣',
-    value: 'douban',
-  },
-  {
-    title: 'Bangumi',
-    value: 'bangumi',
-  },
-  {
-    title: 'AniList',
-    value: 'anilist',
-  },
-]
-
-// 当前选中的媒体信息数据源
-const selectedMediaSource = ref([])
-
-// 当前选中的过滤规则组
-const selectedFilterGroup = ref([])
-
-// 过滤规则组选择项
-const filterRuleGroupOptions = computed(() => {
-  return filterRuleGroups.value.map(item => ({
-    title: item.name,
-    value: item.name,
-  }))
-})
-
-// 所有规则组列表
-const filterRuleGroups = ref<FilterRuleGroup[]>([])
 
 // 查询所有站点
 async function querySites() {
@@ -78,16 +38,6 @@ async function querySites() {
 
     // 过滤站点，只有启用的站点才显示
     allSites.value = data.filter(item => item.is_active)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-// 加载规则组
-async function queryFilterRuleGroups() {
-  try {
-    const result: { [key: string]: any } = await api.get('system/setting/UserFilterRuleGroups')
-    filterRuleGroups.value = result.data?.value ?? []
   } catch (error) {
     console.log(error)
   }
@@ -107,23 +57,10 @@ async function querySelectedSites() {
 // 保存用户选中的站点
 async function saveSelectedSites() {
   try {
-    // 用户名密码
     const result: { [key: string]: any } = await api.post('system/setting/IndexerSites', selectedSites.value)
 
-    if (result.success) $toast.success('搜索站点保存成功')
-    else $toast.error('搜索站点保存失败！')
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-// 调用API查询设置
-async function loadSearchSetting() {
-  try {
-    const result1: { [key: string]: any } = await api.get('system/setting/SEARCH_SOURCE')
-    if (result1.success) selectedMediaSource.value = result1.data?.value?.split(',')
-    const result2: { [key: string]: any } = await api.get('system/setting/SearchFilterRuleGroups')
-    if (result2.success) selectedFilterGroup.value = result2.data?.value
+    if (result.success) $toast.success(t('setting.search.saveSuccess'))
+    else $toast.error(t('setting.search.saveFailed'))
   } catch (error) {
     console.log(error)
   }
@@ -144,27 +81,12 @@ async function saveSystemSetting(value: { [key: string]: any }) {
 // 调用API保存设置
 async function saveSearchSetting() {
   try {
-    const result1: { [key: string]: any } = await api.post(
-      'system/setting/SEARCH_SOURCE',
-      selectedMediaSource.value.join(','),
-    )
-
-    if (!result1 || !result1.success) {
-      $toast.error(`媒体搜索数据源保存失败：${result1?.message}！`)
-      return
-    }
-
-    const result2: { [key: string]: any } = await api.post(
-      'system/setting/SearchFilterRuleGroups',
-      selectedFilterGroup.value,
-    )
-
     const result3 = await saveSystemSetting(SystemSettings.value.Basic)
 
-    if (result2.success && result3) {
-      $toast.success('搜索基础设置保存成功')
+    if (result3) {
+      $toast.success(t('setting.search.saveSuccess'))
     } else {
-      $toast.error('搜索基础设置保存失败！')
+      $toast.error(t('setting.search.saveFailed'))
     }
   } catch (error) {
     console.log(error)
@@ -189,7 +111,7 @@ async function loadSystemSettings() {
 }
 
 async function loadPageData() {
-  await Promise.all([querySites(), queryFilterRuleGroups(), querySelectedSites(), loadSearchSetting(), loadSystemSettings()])
+  await Promise.all([querySites(), querySelectedSites(), loadSystemSettings()])
 }
 
 onMounted(() => {
@@ -207,37 +129,9 @@ useSilentSettingRefresh(loadPageData, {
       <VCard>
         <VCardItem>
           <VCardTitle>{{ t('setting.search.basicSettings') }}</VCardTitle>
-          <VCardSubtitle>{{ t('setting.search.basicSettingsDesc') }}</VCardSubtitle>
+          <VCardSubtitle>{{ t('liteSearch.settings.basicDescription') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
-          <VRow>
-            <VCol cols="12" md="6">
-              <VSelect
-                v-model="selectedMediaSource"
-                multiple
-                clearable
-                chips
-                :items="mediaSourcesDict"
-                :label="t('setting.search.mediaSource')"
-                :hint="t('setting.search.mediaSourceHint')"
-                persistent-hint
-                prepend-inner-icon="mdi-database-search"
-              />
-            </VCol>
-            <VCol cols="12" md="6">
-              <VAutocomplete
-                v-model="selectedFilterGroup"
-                multiple
-                clearable
-                chips
-                :items="filterRuleGroupOptions"
-                :label="t('setting.search.filterRuleGroup')"
-                :hint="t('setting.search.filterRuleGroupHint')"
-                persistent-hint
-                prepend-inner-icon="mdi-filter"
-              />
-            </VCol>
-          </VRow>
           <VRow>
             <VCol cols="12" md="6">
               <VTextField
@@ -247,32 +141,6 @@ useSilentSettingRefresh(loadPageData, {
                 :hint="t('setting.search.downloadLabelHint')"
                 persistent-hint
                 prepend-inner-icon="mdi-tag"
-              />
-            </VCol>
-            <VCol cols="12" md="6">
-              <VCombobox
-                v-model="SystemSettings.Basic.AUTO_DOWNLOAD_USER"
-                :label="t('setting.search.downloadUser')"
-                :placeholder="t('setting.search.downloadUserPlaceholder')"
-                :hint="t('setting.search.downloadUserHint')"
-                persistent-hint
-                prepend-inner-icon="mdi-account"
-              />
-            </VCol>
-            <VCol cols="12" md="6">
-              <VSwitch
-                v-model="SystemSettings.Basic.SEARCH_MULTIPLE_NAME"
-                :label="t('setting.search.multipleNameSearch')"
-                :hint="t('setting.search.multipleNameSearchHint')"
-                persistent-hint
-              />
-            </VCol>
-            <VCol cols="12" md="6">
-              <VSwitch
-                v-model="SystemSettings.Basic.DOWNLOAD_SUBTITLE"
-                :label="t('setting.search.downloadSubtitle')"
-                :hint="t('setting.search.downloadSubtitleHint')"
-                persistent-hint
               />
             </VCol>
           </VRow>
@@ -294,7 +162,7 @@ useSilentSettingRefresh(loadPageData, {
       <VCard>
         <VCardItem>
           <VCardTitle>{{ t('setting.search.downloadSite') }}</VCardTitle>
-          <VCardSubtitle>{{ t('setting.search.downloadSiteDesc') }}</VCardSubtitle>
+          <VCardSubtitle>{{ t('liteSearch.settings.siteScopeDescription') }}</VCardSubtitle>
         </VCardItem>
         <VCardText>
           <VChipGroup v-model="selectedSites" column multiple>

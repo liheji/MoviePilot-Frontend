@@ -1052,6 +1052,7 @@ html[data-theme='transparent'].transparent-glass-realtime .v-theme--transparent 
 // 保证卡片右上角的浮动操作区始终高于可点击的卡片内容层，避免误触发详情打开。
 .app-card-top-action {
   z-index: 2;
+  inset-inline-end: 4rem !important;
 }
 
 .app-card-summary {
@@ -1129,7 +1130,7 @@ html[data-theme='transparent'].transparent-glass-realtime .v-theme--transparent 
 }
 
 .app-card-summary--double-action .app-card-summary__content {
-  padding-inline-end: 5rem;
+  padding-inline-end: 6rem;
 }
 
 .app-card-summary--title-subtitle {
@@ -1357,43 +1358,12 @@ html[data-theme='transparent'].transparent-glass-realtime .v-theme--transparent 
   grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
 }
 
-.grid-directory-card {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
-}
-
-.grid-filterrule-card {
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-}
-
-.grid-customrule-card {
-  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
-}
-
-.grid-subscribe-card {
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-}
-
-@media (width <= 599px) {
-  .grid-subscribe-card {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
-}
-
 .grid-user-card {
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
 }
 
 .grid-app-card {
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-}
-
-.grid-workflow-card {
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-}
-
-.grid-workflow-share-card {
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
 }
 
 // 文本样式
@@ -1500,7 +1470,6 @@ html[data-theme='transparent'].transparent-glass-realtime .v-theme--transparent 
 }
 
 :root {
-  --agent-assistant-fab-offset: 30rem;
   --theme-customizer-fab-offset: 420px;
 }
 
@@ -1614,10 +1583,8 @@ html[data-theme='transparent'].transparent-glass-realtime .v-theme--transparent 
     pointer-events: auto;
   }
 
-  // 展开后的页面操作栈应优先接收指针，避免被停靠的智能助手入口截走 hover。
-  html:not([data-agent-assistant-open='true']):not([data-theme-customizer-open='true'])
-    .compact-fab-stack:has(> :nth-child(2)):hover,
-  html:not([data-agent-assistant-open='true']):not([data-theme-customizer-open='true'])
+  html:not([data-theme-customizer-open='true']) .compact-fab-stack:has(> :nth-child(2)):hover,
+  html:not([data-theme-customizer-open='true'])
     .compact-fab-stack:has(> :nth-child(2)):focus-within {
     z-index: 2101;
   }
@@ -1758,13 +1725,6 @@ html[data-theme='transparent'].transparent-glass-realtime .v-theme--transparent 
     inset-inline-end: calc(var(--theme-customizer-fab-offset) + 2rem);
   }
 
-  html[data-agent-assistant-open='true'] .compact-fab-stack {
-    inset-inline-end: calc(var(--agent-assistant-fab-offset) + max(1rem, calc(env(safe-area-inset-right) + 1rem)));
-  }
-
-  html[data-agent-assistant-open='true'] .global-action-buttons {
-    inset-inline-end: calc(var(--agent-assistant-fab-offset) + 2rem);
-  }
 }
 
 @media (width >= 601px) and (width <= 768px) {
@@ -1774,11 +1734,6 @@ html[data-theme='transparent'].transparent-glass-realtime .v-theme--transparent 
     );
   }
 
-  html[data-agent-assistant-open='true'] .compact-fab-stack {
-    inset-inline-end: calc(
-      var(--agent-assistant-fab-offset) + max(0.875rem, calc(env(safe-area-inset-right) + 0.875rem))
-    );
-  }
 }
 
 .apexcharts-title-text {

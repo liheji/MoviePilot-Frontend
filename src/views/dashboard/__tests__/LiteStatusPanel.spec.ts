@@ -3,6 +3,9 @@ import LiteStatusPanel from '@/views/dashboard/LiteStatusPanel.vue'
 import { renderWithProviders } from '@tests/support/render'
 import { screen } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { cwd } from 'node:process'
 
 describe('LiteStatusPanel', () => {
   it.each([
@@ -22,6 +25,13 @@ describe('LiteStatusPanel', () => {
 
     expect(screen.getByText('站点')).toBeInTheDocument()
     expect(screen.getByText(summary)).toBeInTheDocument()
+  })
+
+  it('uses readable status text and compact panel sizing', () => {
+    const source = readFileSync(resolve(cwd(), 'src/views/dashboard/LiteStatusPanel.vue'), 'utf-8')
+
+    expect(source).toContain('lite-status-panel__summary')
+    expect(source).toContain('min-block-size: 96px')
   })
 })
 

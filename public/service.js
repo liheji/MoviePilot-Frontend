@@ -1,6 +1,9 @@
-const path = require('node:path')
-const express = require('express')
-const proxy = require('express-http-proxy')
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+import express from 'express'
+import proxy from 'express-http-proxy'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const app = express()
 const port = process.env.NGINX_PORT || 3000

@@ -13,7 +13,6 @@ import { useDisplay } from 'vuetify'
 import { openSharedDialog } from '@/composables/useSharedDialog'
 
 const SiteAddEditDialog = defineAsyncComponent(() => import('../dialog/SiteAddEditDialog.vue'))
-const SiteCookieUpdateDialog = defineAsyncComponent(() => import('../dialog/SiteCookieUpdateDialog.vue'))
 const SiteUserDataDialog = defineAsyncComponent(() => import('../dialog/SiteUserDataDialog.vue'))
 
 // 显示器宽度
@@ -90,18 +89,6 @@ async function testSite() {
     testButtonText.value = t('site.testConnectivity')
     testButtonDisable.value = false
   }
-}
-
-// 打开更新站点Cookie UA弹窗
-async function handleSiteUpdate() {
-  openSharedDialog(
-    SiteCookieUpdateDialog,
-    { site: cardProps.site },
-    {
-      done: onSiteCookieUpdated,
-    },
-    { closeOn: ['close', 'done'] },
-  )
 }
 
 // 打开站点用户数据弹窗
@@ -198,12 +185,6 @@ function saveSite() {
   emit('update')
 }
 
-// 更新站点Cookie UA后的回调
-function onSiteCookieUpdated() {
-  // Cookie更新后刷新统计数据
-  emit('refresh-stats', cardProps.site?.domain)
-}
-
 // 装载时查询站点图标
 onMounted(() => {
   getSiteIcon()
@@ -278,17 +259,6 @@ onMounted(() => {
                 >
                   <VIcon
                     icon="mdi-network-outline"
-                    size="16"
-                    color="primary"
-                    :class="cardProps.sortable ? 'opacity-85' : 'opacity-85 hover:opacity-100'"
-                  />
-                </div>
-                <div
-                  v-if="cardProps.site?.render"
-                  :class="cardProps.sortable ? '' : 'hover:bg-primary/8 transition-colors'"
-                >
-                  <VIcon
-                    icon="mdi-apple-safari"
                     size="16"
                     color="primary"
                     :class="cardProps.sortable ? 'opacity-85' : 'opacity-85 hover:opacity-100'"
@@ -379,11 +349,6 @@ onMounted(() => {
           <!-- 用户数据按钮 -->
           <VBtn icon variant="text" @click.stop="handleSiteUserData" size="36">
             <VIcon icon="mdi-chart-bell-curve" size="20" />
-          </VBtn>
-
-          <!-- 更新按钮 -->
-          <VBtn icon variant="text" @click.stop="handleSiteUpdate" size="36">
-            <VIcon icon="mdi-refresh" size="20" />
           </VBtn>
 
           <!-- 更多选项按钮 -->

@@ -166,7 +166,7 @@ export default defineConfig(({ command, mode, isPreview }) => ({
   ],
   define: {
     'process.env': {},
-    '__APP_VERSION__': JSON.stringify(`v${packageJson.version}`),
+    '__APP_VERSION__': JSON.stringify(`lite-v${packageJson.version}`),
     '__BUILD_TIME__': JSON.stringify(buildTime),
     '__PWA_DEVELOPMENT__': JSON.stringify(isPwaDevelopmentEnabled(mode, process.env.npm_lifecycle_event)),
   },

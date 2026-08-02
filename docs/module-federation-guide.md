@@ -2,9 +2,11 @@
 
 ## 1. 概述
 
-MoviePilot前端采用模块联邦(Module Federation)技术实现插件的动态加载和集成。本文档详细说明如何开发符合要求的远程模块，以便在MoviePilot中作为插件使用。
+MoviePilot Lite 前端采用模块联邦(Module Federation)技术实现插件的动态加载和集成。本文档说明如何开发可由 Lite 宿主加载的远程模块。
 
-关联阅读后端插件开发文档：[第三方插件开发说明](https://github.com/jxxghp/MoviePilot-Plugins/blob/main/README.md)
+Lite 只提供站点、关键词种子搜索、下载任务、消息和插件宿主能力。声明或调用 `anthropic`、`browser`、`media`、`mcp`、`subscribe`、`transfer`、`storage`、`mediaserver`、`workflow`、`agent`、`openai`、`rss`、`servarr` 或 `subtitle` 的插件可以安装和更新，但会被标记为“不兼容 Lite”并拒绝启用。
+
+关联阅读后端 Lite 功能边界：[MoviePilot Lite 说明](https://github.com/liheji/MoviePilot/blob/lite/docs/lite.md)
 
 ## 2. 技术要求
 
@@ -328,7 +330,7 @@ Lite 的完整能力列表固定为 `auth`、`plugin.api`、`plugin.data`、`plu
 }
 ```
 
-缺少该文件按空依赖处理。格式错误、未知版本、未知能力，或声明 `media`、`subscribe`、`transfer`、`storage`、`mediaserver`、`workflow`、`agent` 中任一已删除能力时，插件可安装和更新，但会被标记为“不兼容 Lite”并拒绝启用。
+缺少该文件按空依赖处理。格式错误、未知版本、未知能力，或声明 `anthropic`、`browser`、`media`、`mcp`、`subscribe`、`transfer`、`storage`、`mediaserver`、`workflow`、`agent`、`openai`、`rss`、`servarr` 或 `subtitle` 中任一已删除能力时，插件可安装和更新，但会被标记为“不兼容 Lite”并拒绝启用。
 
 ### 5.6 玻璃光学表面
 
@@ -408,8 +410,8 @@ def get_sidebar_nav(self) -> List[Dict[str, Any]]:
     return [
         {
             "nav_key": "main",
-            "title": "示例订阅页",
-            "icon": "mdi-rss",
+            "title": "示例站点工具",
+            "icon": "mdi-web",
             "section": "manage",
             "permission": "manage",
             "order": 10,

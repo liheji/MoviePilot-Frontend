@@ -13,8 +13,6 @@ export interface WizardData {
     username: string
     password: string
     confirmPassword: string
-    recognizeSource: string
-    ocrHost: string
     proxyHost: string
     githubToken: string
   }
@@ -34,21 +32,6 @@ export interface WizardData {
     enabled: boolean
     config: any
     switchs: any[]
-  }
-  preferences: {
-    quality: string
-    subtitle: string
-    resolution: string
-    personalizationOptions?: {
-      excludeDolbyVision: boolean
-      excludeBluray: boolean
-    }
-    ruleSequences?: Array<{
-      name: string
-      rule_string: string
-      media_type: string
-      category: string
-    }>
   }
 }
 
@@ -80,13 +63,11 @@ export interface ValidationErrorState {
 
 // 全局状态，所有组件共享
 const currentStep = ref(1)
-const totalSteps = 5
+const totalSteps = 4
 
 // 加载状态
 const isLoading = ref(false)
 
-// 选中的预设规则
-const selectedPreset = ref('')
 
 // 可认证站点列表
 const authSites = ref<{
@@ -112,8 +93,6 @@ const wizardData = ref<WizardData>({
     username: '',
     password: '',
     confirmPassword: '',
-    recognizeSource: 'themoviedb',
-    ocrHost: '',
     proxyHost: '',
     githubToken: '',
   },
@@ -133,11 +112,6 @@ const wizardData = ref<WizardData>({
     enabled: false,
     config: {},
     switchs: [],
-  },
-  preferences: {
-    quality: '4K',
-    subtitle: 'chinese',
-    resolution: '2160p',
   },
 })
 
@@ -200,7 +174,6 @@ export function useSetupWizard() {
     t('setupWizard.siteAuth.title'),
     t('setupWizard.downloader.title'),
     t('setupWizard.notification.title'),
-    t('setupWizard.preferences.title'),
   ])
 
   // 步骤描述
@@ -209,7 +182,6 @@ export function useSetupWizard() {
     t('setupWizard.siteAuth.description'),
     t('setupWizard.downloader.description'),
     t('setupWizard.notification.description'),
-    t('setupWizard.preferences.description'),
   ])
 
   // 创建随机API Token
@@ -275,38 +247,6 @@ export function useSetupWizard() {
       wizardData.value.notification.enabled = true
       // 不清空config和switchs，保留用户已输入的值
     }
-  }
-
-  // 选择预设规则
-  function selectPreset(preset: string) {
-    selectedPreset.value = preset
-
-    switch (preset) {
-      case '4k':
-        wizardData.value.preferences.quality = '4K'
-        wizardData.value.preferences.subtitle = 'bilingual'
-        wizardData.value.preferences.resolution = '2160p'
-        break
-      case 'balanced':
-        wizardData.value.preferences.quality = '1080P'
-        wizardData.value.preferences.subtitle = 'chinese'
-        wizardData.value.preferences.resolution = '1080p'
-        break
-      case 'chinese':
-        wizardData.value.preferences.quality = '1080P'
-        wizardData.value.preferences.subtitle = 'chinese'
-        wizardData.value.preferences.resolution = '1080p'
-        break
-    }
-  }
-
-  // 更新偏好设置
-  function updatePreferences(
-    personalizationOptions: { excludeDolbyVision: boolean; excludeBluray: boolean },
-    ruleSequences: Array<{ name: string; rule_string: string; media_type: string; category: string }>,
-  ) {
-    wizardData.value.preferences.personalizationOptions = personalizationOptions
-    wizardData.value.preferences.ruleSequences = ruleSequences
   }
 
   // 清除验证错误状态
@@ -766,8 +706,6 @@ export function useSetupWizard() {
           return await saveDownloaderSettings()
         case 4:
           return await saveNotificationSettings()
-        case 5:
-          return await savePreferenceSettings()
       }
     } catch (error) {
       console.error('Save current step settings failed:', error)
@@ -812,7 +750,7 @@ export function useSetupWizard() {
             is_superuser: currentUser.is_superuser,
           }
 
-          await api.put(`user/${currentUser.id}`, userData)
+          await api.put('user/', { ...userData, id: currentUser.id })
         } else {
           // 如果用户不存在，创建新用户（通常不会发生）
           const userData = {
@@ -837,8 +775,6 @@ export function useSetupWizard() {
       const basicSettings = {
         APP_DOMAIN: wizardData.value.basic.appDomain,
         API_TOKEN: wizardData.value.basic.apiToken,
-        RECOGNIZE_SOURCE: 'themoviedb',
-        OCR_HOST: wizardData.value.basic.ocrHost,
         PROXY_HOST: wizardData.value.basic.proxyHost,
         GITHUB_TOKEN: wizardData.value.basic.githubToken,
       }
@@ -958,36 +894,6 @@ export function useSetupWizard() {
     }
   }
 
-  // 保存资源偏好设置
-  async function savePreferenceSettings() {
-    try {
-      // 如果有自定义规则序列，保存到用户过滤规则组
-      if (wizardData.value.preferences.ruleSequences && wizardData.value.preferences.ruleSequences.length > 0) {
-        try {
-          // 保存当前选中的规则组到 UserFilterRuleGroups
-          const filterResponse: { [key: string]: any } = await api.post(
-            'system/setting/UserFilterRuleGroups',
-            wizardData.value.preferences.ruleSequences,
-          )
-          if (filterResponse.success) {
-            // 保存规则组名称到其他设置
-            const ruleGroupNames = wizardData.value.preferences.ruleSequences.map(rule => [rule.name])
-
-            // 保存到 BestVersionFilterRuleGroups
-            await api.post('system/setting/BestVersionFilterRuleGroups', ruleGroupNames)
-          }
-        } catch (error) {
-          console.error('Save rule sequences failed:', error)
-        }
-      }
-      return true
-    } catch (error) {
-      console.error('Save preference settings failed:', error)
-      $toast.error(t('setupWizard.savePreferenceSettingsFailed'))
-      return false
-    }
-  }
-
   // 保存设置向导完成状态
   async function saveSetupWizardState() {
     try {
@@ -1015,9 +921,6 @@ export function useSetupWizard() {
         }
         if (result.data.PROXY_HOST) {
           wizardData.value.basic.proxyHost = result.data.PROXY_HOST
-        }
-        if (result.data.OCR_HOST) {
-          wizardData.value.basic.ocrHost = result.data.OCR_HOST
         }
         if (result.data.GITHUB_TOKEN) {
           wizardData.value.basic.githubToken = result.data.GITHUB_TOKEN
@@ -1112,7 +1015,6 @@ export function useSetupWizard() {
     stepDescriptions,
     wizardData,
     authSites,
-    selectedPreset,
     connectivityTest,
     validationErrors,
     isLoading,
@@ -1122,8 +1024,6 @@ export function useSetupWizard() {
     copyValue,
     selectDownloader,
     selectNotification,
-    selectPreset,
-    updatePreferences,
     validateCurrentStep,
     validateSiteAuthFields,
     validateDownloaderFields,

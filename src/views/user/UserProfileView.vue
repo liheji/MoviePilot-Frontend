@@ -555,15 +555,6 @@ watch(
                     prepend-inner-icon="mdi-message"
                   />
                 </VCol>
-                <VCol cols="12" md="6">
-                  <VTextField
-                    v-model="accountInfo.settings.douban_userid"
-                    density="comfortable"
-                    clearable
-                    :label="t('profile.doubanUser')"
-                    prepend-inner-icon="mdi-movie"
-                  />
-                </VCol>
               </VRow>
               <VRow>
                 <!-- 👉 Form Actions -->

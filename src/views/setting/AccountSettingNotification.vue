@@ -28,11 +28,6 @@ const NotificationTemplateEditorDialog = defineAsyncComponent(
 // 通知模板入口的图标和强调色统一维护，避免模板中散落长判断。
 const templateTypeDefaults = [
   {
-    type: 'organizeSuccess',
-    icon: 'mdi-folder-check',
-    accentRgb: 'var(--v-theme-primary)',
-  },
-  {
     type: 'downloadAdded',
     icon: 'mdi-download-box',
     accentRgb: 'var(--v-theme-info)',
@@ -82,19 +77,7 @@ const notificationSwitchs = ref<NotificationSwitchConf[]>([
     action: 'all',
   },
   {
-    type: '整理入库',
-    action: 'all',
-  },
-  {
-    type: '订阅',
-    action: 'all',
-  },
-  {
     type: '站点',
-    action: 'admin',
-  },
-  {
-    type: '媒体服务器',
     action: 'admin',
   },
   {
@@ -103,10 +86,6 @@ const notificationSwitchs = ref<NotificationSwitchConf[]>([
   },
   {
     type: '插件',
-    action: 'admin',
-  },
-  {
-    type: '智能体',
     action: 'admin',
   },
   {
@@ -333,7 +312,10 @@ async function loadNotificationSwitchs() {
   try {
     const result: { [key: string]: any } = await api.get('system/setting/NotificationSwitchs')
     if (result.data?.value && result.data?.value.length > 0) {
-      const savedSwitchs: NotificationSwitchConf[] = result.data.value
+      const supportedTypes = new Set(notificationSwitchs.value.map(item => item.type))
+      const savedSwitchs: NotificationSwitchConf[] = result.data.value.filter((item: NotificationSwitchConf) =>
+        supportedTypes.has(item.type),
+      )
       // 合并默认值中存在但后端数据中缺失的类型（如新增的类型）
       const defaults = notificationSwitchs.value
       for (const def of defaults) {

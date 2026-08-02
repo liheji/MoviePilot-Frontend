@@ -1,36 +1,37 @@
 <script setup lang="ts">
 import api from '@/api'
-import type { DashboardItem } from '@/api/types'
-import DashboardElement from '@/components/misc/DashboardElement.vue'
+import type { DashboardItem, DownloaderConf, Site } from '@/api/types'
+import DownloaderCard from '@/components/cards/DownloaderCard.vue'
+import LitePluginDashboardElement from '@/components/misc/LitePluginDashboardElement.vue'
+import SiteCard from '@/components/cards/SiteCard.vue'
 import LiteIssuesList from '@/views/dashboard/LiteIssuesList.vue'
 import LiteStatusPanel from '@/views/dashboard/LiteStatusPanel.vue'
 
+const { t } = useI18n()
+
 type ResourceStatus = 'loading' | 'ready' | 'empty' | 'error'
-type StatusSource = 'sites' | 'downloaders' | 'plugins'
-type PluginDashboardMeta = Pick<DashboardItem, 'id' | 'key' | 'name'>
+type StatusSource = 'sites' | 'downloaders'
 
-const statusSources: StatusSource[] = ['sites', 'downloaders', 'plugins']
-
-const sites = ref<unknown[]>([])
-const downloaders = ref<unknown[]>([])
-const plugins = ref<unknown[]>([])
+const statusSources: StatusSource[] = ['sites', 'downloaders']
 const pluginDashboards = ref<DashboardItem[]>([])
+
+const sites = ref<Site[]>([])
+const downloaders = ref<DownloaderConf[]>([])
+const activeSiteCount = computed(() => sites.value.filter(site => site.is_active).length)
 const errors = reactive<Record<StatusSource, string | undefined>>({
   sites: undefined,
   downloaders: undefined,
-  plugins: undefined,
 })
 const status = reactive<Record<StatusSource, ResourceStatus>>({
   sites: 'loading',
   downloaders: 'loading',
-  plugins: 'loading',
 })
 
 function summary(resourceStatus: ResourceStatus, count: number, label: string): string {
-  if (resourceStatus === 'loading') return '正在读取状态'
-  if (resourceStatus === 'error') return '读取状态失败'
-  if (resourceStatus === 'empty') return `尚未配置${label}`
-  return `${count} 个${label}可用`
+  if (resourceStatus === 'loading') return t('liteDashboard.loadingStatus')
+  if (resourceStatus === 'error') return t('liteDashboard.readStatusFailed')
+  if (resourceStatus === 'empty') return t('liteDashboard.notConfigured', { resource: label })
+  return t('liteDashboard.available', { count, resource: label })
 }
 
 const currentIssues = computed(() => statusSources
@@ -44,29 +45,37 @@ async function loadStatus<T>(key: StatusSource, path: string, target: Ref<T[]>):
     status[key] = target.value.length ? 'ready' : 'empty'
   } catch {
     status[key] = 'error'
-    errors[key] = `${key} 状态读取失败`
+    errors[key] = t('liteDashboard.resourceStatusReadFailed', {
+      resource: t(`liteDashboard.${key}`),
+    })
   }
 }
 
 async function loadPluginDashboards(): Promise<void> {
   try {
-    const metadata = await api.get('plugin/dashboard/meta') as unknown as PluginDashboardMeta[]
-    const dashboards = await Promise.all(
-      metadata.map(async ({ id, key, name }) => {
-        const config = await api.get(`plugin/dashboard/${id}/${key}`) as unknown as DashboardItem | null
-        return config ? { ...config, id, key, name } : undefined
-      }),
-    )
-    pluginDashboards.value = dashboards.filter((config): config is DashboardItem => Boolean(config))
+    const metadata = await api.get('plugin/dashboard/meta')
+    const items = Array.isArray(metadata) ? metadata : metadata?.data ?? []
+    const dashboards = await Promise.all(items.map(async (item: { id?: string; key?: string }) => {
+      if (!item?.id) return null
+      const key = item.key || ''
+      const path = key
+        ? `plugin/dashboard/${encodeURIComponent(item.id)}/${encodeURIComponent(key)}`
+        : `plugin/dashboard/${encodeURIComponent(item.id)}`
+      try {
+        return await api.get(path) as DashboardItem
+      } catch {
+        return null
+      }
+    }))
+    pluginDashboards.value = dashboards.filter((item): item is DashboardItem => Boolean(item?.id))
   } catch {
-    errors.plugins ??= '插件扩展读取失败'
+    pluginDashboards.value = []
   }
 }
 
 onMounted(() => {
   void loadStatus('sites', 'site/', sites)
   void loadStatus('downloaders', 'download/clients', downloaders)
-  void loadStatus('plugins', 'plugin/?state=installed', plugins)
   void loadPluginDashboards()
 })
 </script>
@@ -75,34 +84,77 @@ onMounted(() => {
   <section class="lite-dashboard">
     <div class="lite-dashboard__heading">
       <div>
-        <h1>仪表盘</h1>
-        <p>站点搜索与下载状态</p>
+        <h1>{{ t('liteDashboard.title') }}</h1>
+        <p>{{ t('liteDashboard.description') }}</p>
       </div>
-      <VBtn to="/resource" color="primary" prepend-icon="mdi-magnify">搜索种子</VBtn>
+      <VBtn to="/resource" color="primary" prepend-icon="mdi-magnify">{{ t('liteDashboard.searchTorrents') }}</VBtn>
     </div>
-    <div class="lite-dashboard__status">
-      <LiteStatusPanel title="站点" icon="mdi-web" :status="status.sites" :summary="summary(status.sites, sites.length, '站点')" />
-      <LiteStatusPanel title="下载器" icon="mdi-download-outline" :status="status.downloaders" :summary="summary(status.downloaders, downloaders.length, '下载器')" />
-      <LiteStatusPanel title="插件" icon="mdi-puzzle-outline" :status="status.plugins" :summary="summary(status.plugins, plugins.length, '插件')" />
+    <div class="lite-dashboard__status" :aria-label="t('liteDashboard.resourceStatus')">
+      <LiteStatusPanel :title="t('liteDashboard.sites')" icon="mdi-web" :status="status.sites" :summary="summary(status.sites, activeSiteCount, t('liteDashboard.sites'))" />
+      <LiteStatusPanel :title="t('liteDashboard.downloaders')" icon="mdi-download-outline" :status="status.downloaders" :summary="summary(status.downloaders, downloaders.length, t('liteDashboard.downloaders'))" />
     </div>
-    <LiteIssuesList :issues="currentIssues" />
-    <section v-if="pluginDashboards.length" class="lite-dashboard__plugins">
-      <h2>插件扩展</h2>
+    <LiteIssuesList v-if="currentIssues.length" :issues="currentIssues" />
+    <section class="lite-dashboard__section" aria-labelledby="dashboard-sites">
+      <div class="lite-dashboard__section-heading">
+        <h2 id="dashboard-sites">{{ t('liteDashboard.sites') }}</h2>
+        <VBtn to="/site" variant="text" size="small">{{ t('liteDashboard.manageSites') }}</VBtn>
+      </div>
+      <div v-if="sites.length" class="grid gap-4 grid-site-card">
+        <SiteCard v-for="site in sites" :key="site.id" :site="site" />
+      </div>
+      <VAlert v-else-if="status.sites === 'empty'" type="info" variant="tonal">
+        <div class="d-flex flex-wrap align-center justify-space-between gap-3">
+          <span>{{ t('liteDashboard.notConfigured', { resource: t('liteDashboard.sites') }) }}</span>
+          <VBtn to="/site" size="small" variant="text">{{ t('liteDashboard.addSite') }}</VBtn>
+        </div>
+      </VAlert>
+    </section>
+    <section class="lite-dashboard__section" aria-labelledby="dashboard-downloaders">
+      <div class="lite-dashboard__section-heading">
+        <h2 id="dashboard-downloaders">{{ t('liteDashboard.downloaders') }}</h2>
+        <VBtn to="/setting?tab=system" variant="text" size="small">{{ t('liteDashboard.configureDownloaders') }}</VBtn>
+      </div>
+      <div v-if="downloaders.length" class="grid gap-3 grid-app-card">
+        <DownloaderCard
+          v-for="downloader in downloaders"
+          :key="downloader.name"
+          :downloader="downloader"
+          :downloaders="downloaders"
+          :editable="false"
+        />
+      </div>
+      <VAlert v-else-if="status.downloaders === 'empty'" type="info" variant="tonal">
+        <div class="d-flex flex-wrap align-center justify-space-between gap-3">
+          <span>{{ t('liteDashboard.notConfigured', { resource: t('liteDashboard.downloaders') }) }}</span>
+          <VBtn to="/setting?tab=system" size="small" variant="text">{{ t('liteDashboard.addDownloader') }}</VBtn>
+        </div>
+      </VAlert>
+    </section>
+    <section v-if="pluginDashboards.length" class="lite-dashboard__section" aria-labelledby="dashboard-plugins">
+      <div class="lite-dashboard__section-heading">
+        <h2 id="dashboard-plugins">{{ t('liteDashboard.pluginExtensions') }}</h2>
+      </div>
       <div class="lite-dashboard__plugin-grid">
-        <DashboardElement v-for="config in pluginDashboards" :key="`${config.id}:${config.key}`" :config="config" :allow-refresh="false" />
+        <LitePluginDashboardElement
+          v-for="dashboard in pluginDashboards"
+          :key="`${dashboard.id}:${dashboard.key}`"
+          :config="dashboard"
+        />
       </div>
     </section>
   </section>
 </template>
 
 <style scoped>
-.lite-dashboard { display: grid; gap: 24px; max-inline-size: 1200px; margin-inline: auto; padding: 24px; }
+.lite-dashboard { display: grid; gap: 20px; max-inline-size: 1200px; margin-inline: auto; padding: 24px; }
 .lite-dashboard__heading { align-items: center; display: flex; gap: 16px; justify-content: space-between; }
-.lite-dashboard__heading h1 { font-size: 24px; margin: 0; }
-.lite-dashboard__heading p { color: rgb(var(--v-theme-on-surface-variant)); margin: 4px 0 0; }
-.lite-dashboard__status { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.lite-dashboard__plugins { display: grid; gap: 16px; }
-.lite-dashboard__plugins h2 { font-size: 18px; margin: 0; }
-.lite-dashboard__plugin-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.lite-dashboard__heading h1 { color: rgb(var(--v-theme-on-surface)); font-size: 24px; margin: 0; }
+.lite-dashboard__heading p { color: rgb(var(--v-theme-on-surface)); margin: 4px 0 0; opacity: .78; }
+.lite-dashboard__status { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lite-dashboard__section { display: grid; gap: 16px; }
+.lite-dashboard__section-heading { align-items: center; display: flex; justify-content: space-between; }
+.lite-dashboard__section-heading h2 { color: rgb(var(--v-theme-on-surface)); font-size: 18px; margin: 0; }
+.lite-dashboard__section-heading :deep(.v-btn) { color: rgb(var(--v-theme-primary)); font-weight: 600; }
+.lite-dashboard__plugin-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 @media (width <= 768px) { .lite-dashboard { padding: 16px; } .lite-dashboard__status { grid-template-columns: 1fr; } }
 </style>
