@@ -52,7 +52,7 @@ Build output is written to `dist/`. Use `public/nginx.conf` as a same-origin rev
 node dist/service.js
 ```
 
-Release artifacts always use the `lite-v<package-version>` tag. Backend installation, Docker builds, and self-updates must consume this Lite tag, never a full-version `v*` frontend package.
+Release artifacts always use the `v<package-version>` tag (the current Lite line is `9.9.9`). Backend installation, Docker builds, and self-updates consume this Lite tag only, never a legacy full-version `v1.*`/`v2.*` frontend package.
 
 This repository has no Dockerfile or Compose configuration. Production Docker images are assembled by the backend repository from prebuilt frontend assets; do not add browser-engine downloads to frontend images or build scripts.
 

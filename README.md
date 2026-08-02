@@ -52,7 +52,7 @@ yarn build
 node dist/service.js
 ```
 
-发布产物的标签固定为 `lite-v<package-version>`。后端的安装、Docker 构建与自更新只能下载此 Lite 标签，不能使用完整版本的 `v*` 前端包。
+发布产物的标签固定为 `v<package-version>`（当前 Lite 主线版本为 `9.9.9`）。后端的安装、Docker 构建与自更新只能下载该 Lite 发布标签，不能使用旧完整版本的 `v1.*` / `v2.*` 前端包。
 
 本仓库不包含 Dockerfile 或 Compose 文件。正式 Docker 镜像由后端仓库消费已构建的前端产物；不要在前端镜像或构建脚本中预下载浏览器内核。
 

@@ -54,6 +54,6 @@ describe('前端测试 workflow', () => {
       expect(buildWorkflow).toContain(`- '${path}'`)
     }
     expect(buildWorkflow).toContain('yarn --frozen-lockfile')
-    expect(buildWorkflow).toContain('frontend_version=lite-v$frontend_version')
+    expect(buildWorkflow).toContain('frontend_version=v$frontend_version')
   })
 })
