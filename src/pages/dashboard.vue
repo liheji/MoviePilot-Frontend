@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import api from '@/api'
 import type { DashboardItem, DownloaderConf, Site } from '@/api/types'
-import DownloaderCard from '@/components/cards/DownloaderCard.vue'
 import LitePluginDashboardElement from '@/components/misc/LitePluginDashboardElement.vue'
-import SiteCard from '@/components/cards/SiteCard.vue'
 import LiteIssuesList from '@/views/dashboard/LiteIssuesList.vue'
 import LiteStatusPanel from '@/views/dashboard/LiteStatusPanel.vue'
 
@@ -87,7 +85,6 @@ onMounted(() => {
         <h1>{{ t('liteDashboard.title') }}</h1>
         <p>{{ t('liteDashboard.description') }}</p>
       </div>
-      <VBtn to="/resource" color="primary" prepend-icon="mdi-magnify">{{ t('liteDashboard.searchTorrents') }}</VBtn>
     </div>
     <div class="lite-dashboard__status" :aria-label="t('liteDashboard.resourceStatus')">
       <LiteStatusPanel :title="t('liteDashboard.sites')" icon="mdi-web" :status="status.sites" :summary="summary(status.sites, activeSiteCount, t('liteDashboard.sites'))" />
@@ -99,9 +96,20 @@ onMounted(() => {
         <h2 id="dashboard-sites">{{ t('liteDashboard.sites') }}</h2>
         <VBtn to="/site" variant="text" size="small">{{ t('liteDashboard.manageSites') }}</VBtn>
       </div>
-      <div v-if="sites.length" class="grid gap-4 grid-site-card">
-        <SiteCard v-for="site in sites" :key="site.id" :site="site" />
-      </div>
+      <VList v-if="sites.length" class="lite-dashboard__resource-list" data-testid="dashboard-site-list" lines="two">
+        <VListItem v-for="site in sites" :key="site.id">
+          <template #prepend>
+            <VIcon icon="mdi-web" />
+          </template>
+          <VListItemTitle>{{ site.name }}</VListItemTitle>
+          <VListItemSubtitle>{{ site.domain || site.url }}</VListItemSubtitle>
+          <template #append>
+            <VChip :color="site.is_active ? 'success' : 'default'" size="small" variant="tonal">
+              {{ site.is_active ? t('common.active') : t('common.inactive') }}
+            </VChip>
+          </template>
+        </VListItem>
+      </VList>
       <VAlert v-else-if="status.sites === 'empty'" type="info" variant="tonal">
         <div class="d-flex flex-wrap align-center justify-space-between gap-3">
           <span>{{ t('liteDashboard.notConfigured', { resource: t('liteDashboard.sites') }) }}</span>
@@ -114,15 +122,25 @@ onMounted(() => {
         <h2 id="dashboard-downloaders">{{ t('liteDashboard.downloaders') }}</h2>
         <VBtn to="/setting?tab=system" variant="text" size="small">{{ t('liteDashboard.configureDownloaders') }}</VBtn>
       </div>
-      <div v-if="downloaders.length" class="grid gap-3 grid-app-card">
-        <DownloaderCard
-          v-for="downloader in downloaders"
-          :key="downloader.name"
-          :downloader="downloader"
-          :downloaders="downloaders"
-          :editable="false"
-        />
-      </div>
+      <VList v-if="downloaders.length" class="lite-dashboard__resource-list" data-testid="dashboard-downloader-list" lines="two">
+        <VListItem v-for="downloader in downloaders" :key="downloader.name">
+          <template #prepend>
+            <VIcon icon="mdi-download-outline" />
+          </template>
+          <VListItemTitle>{{ downloader.name }}</VListItemTitle>
+          <VListItemSubtitle>{{ downloader.type }}</VListItemSubtitle>
+          <template #append>
+            <div class="d-flex align-center ga-2">
+              <VChip v-if="downloader.default" color="primary" size="small" variant="tonal">
+                {{ t('common.default') }}
+              </VChip>
+              <VChip :color="downloader.enabled ? 'success' : 'default'" size="small" variant="tonal">
+                {{ downloader.enabled ? t('common.active') : t('common.inactive') }}
+              </VChip>
+            </div>
+          </template>
+        </VListItem>
+      </VList>
       <VAlert v-else-if="status.downloaders === 'empty'" type="info" variant="tonal">
         <div class="d-flex flex-wrap align-center justify-space-between gap-3">
           <span>{{ t('liteDashboard.notConfigured', { resource: t('liteDashboard.downloaders') }) }}</span>
@@ -155,6 +173,8 @@ onMounted(() => {
 .lite-dashboard__section-heading { align-items: center; display: flex; justify-content: space-between; }
 .lite-dashboard__section-heading h2 { color: rgb(var(--v-theme-on-surface)); font-size: 18px; margin: 0; }
 .lite-dashboard__section-heading :deep(.v-btn) { color: rgb(var(--v-theme-primary)); font-weight: 600; }
+.lite-dashboard__resource-list { border: 1px solid rgb(var(--v-theme-outline)); border-radius: 6px; }
+.lite-dashboard__resource-list :deep(.v-list-item + .v-list-item) { border-block-start: 1px solid rgb(var(--v-theme-outline-variant)); }
 .lite-dashboard__plugin-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 @media (width <= 768px) { .lite-dashboard { padding: 16px; } .lite-dashboard__status { grid-template-columns: 1fr; } }
 </style>

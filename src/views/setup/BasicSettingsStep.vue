@@ -121,6 +121,16 @@ const usernameErrorMessage = computed(() => {
         </VCol>
         <VCol cols="12" md="6">
           <VTextField
+            v-model="wizardData.basic.ocrHost"
+            :label="t('setting.system.ocrHost')"
+            :hint="t('setting.system.ocrHostHint')"
+            placeholder="https://movie-pilot.org"
+            persistent-hint
+            prepend-inner-icon="mdi-text-recognition"
+          />
+        </VCol>
+        <VCol cols="12" md="6">
+          <VTextField
             v-model="wizardData.basic.proxyHost"
             :label="t('setting.system.proxyHost')"
             :hint="t('setting.system.proxyHostHint')"

@@ -13,6 +13,7 @@ export interface WizardData {
     username: string
     password: string
     confirmPassword: string
+    ocrHost: string
     proxyHost: string
     githubToken: string
   }
@@ -93,6 +94,7 @@ const wizardData = ref<WizardData>({
     username: '',
     password: '',
     confirmPassword: '',
+    ocrHost: '',
     proxyHost: '',
     githubToken: '',
   },
@@ -775,6 +777,7 @@ export function useSetupWizard() {
       const basicSettings = {
         APP_DOMAIN: wizardData.value.basic.appDomain,
         API_TOKEN: wizardData.value.basic.apiToken,
+        OCR_HOST: wizardData.value.basic.ocrHost,
         PROXY_HOST: wizardData.value.basic.proxyHost,
         GITHUB_TOKEN: wizardData.value.basic.githubToken,
       }
@@ -921,6 +924,9 @@ export function useSetupWizard() {
         }
         if (result.data.PROXY_HOST) {
           wizardData.value.basic.proxyHost = result.data.PROXY_HOST
+        }
+        if (result.data.OCR_HOST) {
+          wizardData.value.basic.ocrHost = result.data.OCR_HOST
         }
         if (result.data.GITHUB_TOKEN) {
           wizardData.value.basic.githubToken = result.data.GITHUB_TOKEN

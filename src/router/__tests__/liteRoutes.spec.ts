@@ -50,12 +50,14 @@ describe('Lite route surface', () => {
     }
   })
 
-  it('keeps original status cards on the dashboard and moves downloader configuration into system settings', () => {
+  it('keeps read-only site and downloader lists on the dashboard and moves downloader configuration into system settings', () => {
     const translate = ((key: string) => key) as Parameters<typeof getNavMenus>[0]
     const settingTabs = getSettingTabs(translate).map(item => item.tab)
 
-    expect(dashboardSource).toContain("@/components/cards/SiteCard.vue")
-    expect(dashboardSource).toContain("@/components/cards/DownloaderCard.vue")
+    expect(dashboardSource).not.toContain('SiteCard')
+    expect(dashboardSource).not.toContain('DownloaderCard')
+    expect(dashboardSource).toContain('data-testid="dashboard-site-list"')
+    expect(dashboardSource).toContain('data-testid="dashboard-downloader-list"')
     expect(dashboardSource).toContain('plugin/dashboard/meta')
     expect(dashboardSource).toContain('LitePluginDashboardElement.vue')
     expect(settingTabs).not.toContain('downloader')

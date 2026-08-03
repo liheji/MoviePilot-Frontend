@@ -9,23 +9,6 @@ vi.mock('@/api', () => ({
   default: { get: (...args: unknown[]) => mocks.apiGet(...args) },
 }))
 
-vi.mock('@/components/cards/SiteCard.vue', () => ({
-  default: {
-    props: { site: { required: true, type: Object } },
-    template: '<article data-testid="site-card">{{ site.name }}</article>',
-  },
-}))
-
-vi.mock('@/components/cards/DownloaderCard.vue', () => ({
-  default: {
-    props: {
-      downloader: { required: true, type: Object },
-      downloaders: { required: true, type: Array },
-    },
-    template: '<article data-testid="downloader-card">{{ downloader.name }}</article>',
-  },
-}))
-
 vi.mock('@/components/misc/LitePluginDashboardElement.vue', () => ({
   default: { template: '<div data-testid="plugin-dashboard" />' },
 }))
@@ -51,7 +34,7 @@ describe('Lite dashboard', () => {
     expect(screen.getAllByText('读取状态失败')).toHaveLength(2)
   })
 
-  it('uses existing site and downloader cards and loads plugin dashboard extensions', async () => {
+  it('uses read-only site and downloader lists and loads plugin dashboard extensions', async () => {
     mocks.apiGet.mockImplementation((path: string) => {
       if (path === 'site/') return Promise.resolve([{ id: 1, name: '测试站点' }])
       if (path === 'download/clients') return Promise.resolve([{ name: 'qBittorrent', enabled: true }])
@@ -61,8 +44,8 @@ describe('Lite dashboard', () => {
 
     await renderWithProviders(DashboardPage)
 
-    expect(await screen.findByTestId('site-card')).toHaveTextContent('测试站点')
-    expect(screen.getByTestId('downloader-card')).toHaveTextContent('qBittorrent')
+    expect(await screen.findByTestId('dashboard-site-list')).toHaveTextContent('测试站点')
+    expect(screen.getByTestId('dashboard-downloader-list')).toHaveTextContent('qBittorrent')
     expect(screen.queryByText('当前没有需要处理的问题')).not.toBeInTheDocument()
     expect(mocks.apiGet).toHaveBeenCalledWith('plugin/dashboard/meta')
     expect(mocks.apiGet).not.toHaveBeenCalledWith('plugin/?state=installed')

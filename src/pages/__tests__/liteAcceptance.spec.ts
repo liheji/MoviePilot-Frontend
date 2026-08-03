@@ -48,7 +48,11 @@ describe('Lite frontend acceptance surface', () => {
 
   it('uses the existing locale contract for Lite dashboard and search copy', () => {
     expect(dashboardSource).toContain("t('liteDashboard.title')")
-    expect(dashboardSource).toContain("t('liteDashboard.searchTorrents')")
+    expect(dashboardSource).not.toContain("t('liteDashboard.searchTorrents')")
+    expect(dashboardSource).not.toContain('SiteCard')
+    expect(dashboardSource).not.toContain('DownloaderCard')
+    expect(dashboardSource).toContain('data-testid="dashboard-site-list"')
+    expect(dashboardSource).toContain('data-testid="dashboard-downloader-list"')
     expect(resourceSource).toContain("t('liteSearch.keyword')")
     expect(resourceSource).toContain("t('liteSearch.emptyTitle')")
   })
@@ -59,11 +63,11 @@ describe('Lite frontend acceptance surface', () => {
     expect(accountSettingSearchSource).not.toContain("setting.search.mediaSource")
   })
 
-  it('does not expose the removed OCR service setting', () => {
-    for (const source of [basicSettingsStepSource, accountSettingSiteSource, setupWizardSource]) {
-      expect(source).not.toContain('ocrHost')
-      expect(source).not.toContain('OCR_HOST')
-    }
+  it('keeps the OCR service setting without restoring browser emulation', () => {
+    expect(basicSettingsStepSource).toContain('wizardData.basic.ocrHost')
+    expect(setupWizardSource).toContain('OCR_HOST: wizardData.value.basic.ocrHost')
+    expect(setupWizardSource).toContain('result.data.OCR_HOST')
+    expect(accountSettingSiteSource).not.toContain('browserSimulation')
   })
 
   it('does not advertise removed media or transfer variables in notification templates', () => {
