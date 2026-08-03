@@ -272,7 +272,7 @@ describe('Lite 前端表面', () => {
     const dashboard = readFileSync(dashboardPath, 'utf8')
 
     expect(dashboard).toContain('const activeSiteCount = computed(() => sites.value.filter(site => site.is_active).length)')
-    expect(dashboard).toContain('summary(status.sites, activeSiteCount, t(\'liteDashboard.sites\'))')
+    expect(dashboard).toContain("t('liteDashboard.configuredSummary', { configured: sites.length, enabled: activeSiteCount })")
   })
 
   it('不保留季集匹配或高级种子筛选的孤立前端代码', () => {

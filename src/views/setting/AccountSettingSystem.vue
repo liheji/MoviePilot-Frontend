@@ -23,6 +23,7 @@ const props = defineProps({
 const SystemSettings = ref({
   APP_DOMAIN: null as string | null,
   API_TOKEN: null as string | null,
+  OCR_HOST: null as string | null,
   WALLPAPER: '' as string,
   GITHUB_TOKEN: null as string | null,
   PROXY_HOST: null as string | null,
@@ -94,7 +95,7 @@ async function saveSystemSettings(keys: Array<keyof typeof SystemSettings.value>
 async function saveBasicSettings() {
   savingBasic.value = true
   try {
-    const saved = await saveSystemSettings(['APP_DOMAIN', 'API_TOKEN', 'WALLPAPER', 'GITHUB_TOKEN'])
+    const saved = await saveSystemSettings(['APP_DOMAIN', 'API_TOKEN', 'OCR_HOST', 'WALLPAPER', 'GITHUB_TOKEN'])
     if (!saved) {
       $toast.error(t('setting.system.saveFailed'))
       return
@@ -204,6 +205,15 @@ useSilentSettingRefresh(loadPageData, {
                 :placeholder="t('setting.system.githubTokenFormat')"
                 persistent-hint
                 prepend-inner-icon="mdi-github"
+              />
+            </VCol>
+            <VCol cols="12" md="6">
+              <VTextField
+                v-model="SystemSettings.OCR_HOST"
+                :label="t('setting.system.ocrHost')"
+                :hint="t('setting.system.ocrHostHint')"
+                persistent-hint
+                prepend-inner-icon="mdi-text-recognition"
               />
             </VCol>
             <VCol cols="12" md="6">

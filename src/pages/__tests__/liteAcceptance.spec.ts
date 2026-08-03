@@ -14,6 +14,7 @@ import downloadingListSource from '@/views/reorganize/DownloadingListView.vue?ra
 import dashboardSource from '@/pages/dashboard.vue?raw'
 import basicSettingsStepSource from '@/views/setup/BasicSettingsStep.vue?raw'
 import setupWizardSource from '@/composables/useSetupWizard.ts?raw'
+import accountSettingSystemSource from '@/views/setting/AccountSettingSystem.vue?raw'
 import enUsLocaleSource from '@/locales/en-US.ts?raw'
 import zhCnLocaleSource from '@/locales/zh-CN.ts?raw'
 import zhTwLocaleSource from '@/locales/zh-TW.ts?raw'
@@ -53,6 +54,15 @@ describe('Lite frontend acceptance surface', () => {
     expect(dashboardSource).not.toContain('DownloaderCard')
     expect(dashboardSource).toContain('data-testid="dashboard-site-list"')
     expect(dashboardSource).toContain('data-testid="dashboard-downloader-list"')
+    expect(dashboardSource).toContain("'site/statistic'")
+    expect(dashboardSource).toContain("'site/userdata/latest'")
+    expect(dashboardSource).toContain("'system/setting/Downloaders'")
+    expect(dashboardSource).toContain('dashboard/downloader?name=')
+    expect(dashboardSource).toContain('path_mapping')
+    expect(dashboardSource).not.toContain('downloader.config.host')
+    expect(dashboardSource).not.toContain('liteDashboard.defaultCount')
+    expect(dashboardSource).toContain("t('liteDashboard.bonus')")
+    expect(dashboardSource).not.toContain('site/userdata/${site.id}')
     expect(resourceSource).toContain("t('liteSearch.keyword')")
     expect(resourceSource).toContain("t('liteSearch.emptyTitle')")
   })
@@ -67,6 +77,9 @@ describe('Lite frontend acceptance surface', () => {
     expect(basicSettingsStepSource).toContain('wizardData.basic.ocrHost')
     expect(setupWizardSource).toContain('OCR_HOST: wizardData.value.basic.ocrHost')
     expect(setupWizardSource).toContain('result.data.OCR_HOST')
+    expect(accountSettingSystemSource).toContain('OCR_HOST: null as string | null')
+    expect(accountSettingSystemSource).toContain("'OCR_HOST'")
+    expect(accountSettingSystemSource).toContain('SystemSettings.OCR_HOST')
     expect(accountSettingSiteSource).not.toContain('browserSimulation')
   })
 
